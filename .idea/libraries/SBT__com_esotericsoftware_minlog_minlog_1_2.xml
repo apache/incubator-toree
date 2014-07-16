@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: com.esotericsoftware.minlog:minlog:1.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.esotericsoftware.minlog/minlog/jars/minlog-1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.esotericsoftware.minlog/minlog/docs/minlog-1.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.esotericsoftware.minlog/minlog/srcs/minlog-1.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

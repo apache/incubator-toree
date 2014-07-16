@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: commons-collections:commons-collections:3.2.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/commons-collections/commons-collections/jars/commons-collections-3.2.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/commons-collections/commons-collections/docs/commons-collections-3.2.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/commons-collections/commons-collections/srcs/commons-collections-3.2.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

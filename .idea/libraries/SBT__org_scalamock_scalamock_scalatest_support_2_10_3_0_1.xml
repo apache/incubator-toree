@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.scalamock:scalamock-scalatest-support_2.10:3.0.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.scalamock/scalamock-scalatest-support_2.10/jars/scalamock-scalatest-support_2.10-3.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.scalamock/scalamock-scalatest-support_2.10/docs/scalamock-scalatest-support_2.10-3.0.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.scalamock/scalamock-scalatest-support_2.10/srcs/scalamock-scalatest-support_2.10-3.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

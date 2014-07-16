@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.eclipse.jetty.orbit:javax.activation:1.1.0.v201105071233">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.eclipse.jetty.orbit/javax.activation/jars/javax.activation-1.1.0.v201105071233.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.eclipse.jetty.orbit/javax.activation/docs/javax.activation-1.1.0.v201105071233-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.eclipse.jetty.orbit/javax.activation/srcs/javax.activation-1.1.0.v201105071233-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

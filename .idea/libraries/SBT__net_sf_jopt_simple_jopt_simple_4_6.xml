@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: net.sf.jopt-simple:jopt-simple:4.6">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/net.sf.jopt-simple/jopt-simple/jars/jopt-simple-4.6.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/net.sf.jopt-simple/jopt-simple/docs/jopt-simple-4.6-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/net.sf.jopt-simple/jopt-simple/srcs/jopt-simple-4.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

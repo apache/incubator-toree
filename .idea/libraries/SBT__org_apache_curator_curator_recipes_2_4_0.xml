@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.apache.curator:curator-recipes:2.4.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.curator/curator-recipes/jars/curator-recipes-2.4.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.curator/curator-recipes/docs/curator-recipes-2.4.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.curator/curator-recipes/srcs/curator-recipes-2.4.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

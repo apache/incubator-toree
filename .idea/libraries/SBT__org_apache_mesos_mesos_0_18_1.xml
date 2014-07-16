@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="SBT: org.apache.mesos:mesos:0.18.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.mesos/mesos/jars/mesos-0.18.1.jar!/" />
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.mesos/mesos/jars/mesos-0.18.1-shaded-protobuf.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.mesos/mesos/docs/mesos-0.18.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.mesos/mesos/srcs/mesos-0.18.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

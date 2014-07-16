@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: com.fasterxml.jackson.core:jackson-core:2.3.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.fasterxml.jackson.core/jackson-core/jars/jackson-core-2.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.fasterxml.jackson.core/jackson-core/docs/jackson-core-2.3.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.fasterxml.jackson.core/jackson-core/srcs/jackson-core-2.3.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

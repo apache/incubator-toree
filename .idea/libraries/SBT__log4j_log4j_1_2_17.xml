@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: log4j:log4j:1.2.17">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/log4j/log4j/jars/log4j-1.2.17.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/log4j/log4j/docs/log4j-1.2.17-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/log4j/log4j/srcs/log4j-1.2.17-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

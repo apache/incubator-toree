@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: com.github.jnr:jnr-constants:0.8.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.jnr/jnr-constants/jars/jnr-constants-0.8.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.jnr/jnr-constants/docs/jnr-constants-0.8.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.jnr/jnr-constants/srcs/jnr-constants-0.8.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

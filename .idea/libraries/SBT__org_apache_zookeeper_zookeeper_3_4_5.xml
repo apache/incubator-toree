@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.apache.zookeeper:zookeeper:3.4.5">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.zookeeper/zookeeper/jars/zookeeper-3.4.5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.zookeeper/zookeeper/docs/zookeeper-3.4.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.zookeeper/zookeeper/srcs/zookeeper-3.4.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

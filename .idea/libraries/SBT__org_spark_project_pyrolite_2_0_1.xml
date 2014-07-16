@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.spark-project:pyrolite:2.0.1">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.spark-project/pyrolite/jars/pyrolite-2.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.spark-project/pyrolite/docs/pyrolite-2.0.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.spark-project/pyrolite/srcs/pyrolite-2.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

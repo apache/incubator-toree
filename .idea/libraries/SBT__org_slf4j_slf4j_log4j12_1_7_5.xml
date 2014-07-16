@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.slf4j:slf4j-log4j12:1.7.5">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.slf4j/slf4j-log4j12/jars/slf4j-log4j12-1.7.5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.slf4j/slf4j-log4j12/docs/slf4j-log4j12-1.7.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.slf4j/slf4j-log4j12/srcs/slf4j-log4j12-1.7.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

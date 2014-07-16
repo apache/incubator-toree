@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: io.netty:netty-all:4.0.17.Final">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/io.netty/netty-all/jars/netty-all-4.0.17.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/io.netty/netty-all/docs/netty-all-4.0.17.Final-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/io.netty/netty-all/srcs/netty-all-4.0.17.Final-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

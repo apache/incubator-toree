@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.scalactic:scalactic_2.10:2.2.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.scalactic/scalactic_2.10/jars/scalactic_2.10-2.2.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.scalactic/scalactic_2.10/docs/scalactic_2.10-2.2.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.scalactic/scalactic_2.10/srcs/scalactic_2.10-2.2.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

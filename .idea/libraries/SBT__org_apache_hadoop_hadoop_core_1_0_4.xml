@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SBT: org.apache.hadoop:hadoop-core:1.0.4">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.hadoop/hadoop-core/jars/hadoop-core-1.0.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

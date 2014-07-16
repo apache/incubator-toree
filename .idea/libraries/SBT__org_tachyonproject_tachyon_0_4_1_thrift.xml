@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: org.tachyonproject:tachyon:0.4.1-thrift">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.tachyonproject/tachyon/jars/tachyon-0.4.1-thrift.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.tachyonproject/tachyon/docs/tachyon-0.4.1-thrift-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.tachyonproject/tachyon/srcs/tachyon-0.4.1-thrift-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: com.fasterxml.jackson.core:jackson-databind:2.3.2">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.fasterxml.jackson.core/jackson-databind/jars/jackson-databind-2.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.fasterxml.jackson.core/jackson-databind/docs/jackson-databind-2.3.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.fasterxml.jackson.core/jackson-databind/srcs/jackson-databind-2.3.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

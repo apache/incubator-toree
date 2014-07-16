@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: com.codahale.metrics:metrics-core:3.0.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.codahale.metrics/metrics-core/jars/metrics-core-3.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.codahale.metrics/metrics-core/docs/metrics-core-3.0.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.codahale.metrics/metrics-core/srcs/metrics-core-3.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

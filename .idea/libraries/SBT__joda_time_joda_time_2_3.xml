@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: joda-time:joda-time:2.3">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/joda-time/joda-time/jars/joda-time-2.3.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/joda-time/joda-time/docs/joda-time-2.3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/joda-time/joda-time/srcs/joda-time-2.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

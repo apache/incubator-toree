@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="SBT: commons-lang:commons-lang:2.4">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/commons-lang/commons-lang/jars/commons-lang-2.4.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.ivy2/cache/commons-lang/commons-lang/docs/commons-lang-2.4-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/commons-lang/commons-lang/srcs/commons-lang-2.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="SBT:: scala-compiler-bundle:2.10.3">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.IdeaIC13/system/SBT/boot/scala-2.10.3/lib/scala-library.jar!/" />
+      <root url="jar://$USER_HOME$/.IdeaIC13/system/SBT/boot/scala-2.10.3/lib/scala-reflect.jar!/" />
+      <root url="jar://$USER_HOME$/.IdeaIC13/system/SBT/boot/scala-2.10.3/lib/scala-compiler.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

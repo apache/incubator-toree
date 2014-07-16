@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SBT: xmlenc:xmlenc:0.52">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/xmlenc/xmlenc/jars/xmlenc-0.52.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
