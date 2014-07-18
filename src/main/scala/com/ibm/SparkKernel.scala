@@ -25,13 +25,46 @@ object SparkKernel extends App {
     }
   }
 
+  //lazy val urls = java.lang.Thread.currentThread.getContextClassLoader match {
+  //  case cl: java.net.URLClassLoader => cl.getURLs.toList
+  //  case _ => error("classloader is not a URLClassLoader")
+  //}
+  //lazy val classpath = urls map {_.toString}
+
+  //val loop = new SparkILoop()
+  //val settings: Settings = new SparkCommandLine(options.tail).settings
+
+
+  //settings.usejavacp.value = true
+  //settings.classpath.value = classpath.distinct.mkString(java.io.File.pathSeparator)
+  //loop.process(settings)
+
   /** TESTING */
   val settings: Settings = new SparkCommandLine(options.tail).settings
+
+  {
+    val cl = this.getClass.getClassLoader // or getClassLoader.getParent, or one more getParent...
+
+    val urls = cl match {
+      case cl: java.net.URLClassLoader => cl.getURLs.toList
+      case a => sys.error("oops: I was expecting an URLClassLoader, foud a " + a.getClass)
+    }
+    val classpath = urls map {
+      _.toString
+    }
+
+    settings.classpath.value = classpath.distinct.mkString(java.io.File.pathSeparator)
+    settings.embeddedDefaults(cl) // or getClass.getClassLoader
+  }
+
+  /*
   settings.bootclasspath.value +=
     scala.tools.util.PathResolver.Environment.javaBootClassPath + File.pathSeparator + "lib/scala-library.jar"
   val sparkIMain: SparkIMain = new SparkIMain(settings, new JPrintWriter(Console.out, true)) {
     override protected def parentClassLoader = settings.getClass.getClassLoader()
   }
+  */
+  val sparkIMain: SparkIMain = new SparkIMain(settings, new JPrintWriter(Console.out, true))
 
   def createSparkContext: SparkContext = {
     val execUri = System.getenv("SPARK_EXECUTOR_URI")
@@ -54,14 +87,14 @@ object SparkKernel extends App {
 
   sparkIMain.beQuietDuring {
     sparkIMain.interpret("""
-         @transient val sc = com.ibm.SparkKernel.createSparkContext();
+         @transient val sc = com.ibm.SparkKernel.createSparkContext
             """)
     sparkIMain.interpret("import org.apache.spark.SparkContext._")
   }
 
   sparkIMain.interpret(
     """
-      val count = spark.parallelize(1 to 10).count()
+      val count = sc.parallelize(1 to 10).count()
     """)
 
   sparkIMain.interpret("""
