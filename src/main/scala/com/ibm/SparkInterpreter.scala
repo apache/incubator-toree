@@ -6,6 +6,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.{JPrintWriter, LoopCommands}
 
+// TODO: Convert our Console.out... to a standard provided to this class
 class SparkInterpreter(args: List[String]) {
   val settings: Settings = new SparkCommandLine(args).settings
 
@@ -14,7 +15,7 @@ class SparkInterpreter(args: List[String]) {
 
     val urls = cl match {
       case cl: java.net.URLClassLoader => cl.getURLs.toList
-      case a =>
+      case a => // TODO: Should we really be using sys.error here?
         sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
     }
     val classpath = urls map { _.toString }
@@ -22,17 +23,18 @@ class SparkInterpreter(args: List[String]) {
     settings.classpath.value = classpath.distinct.mkString(java.io.File.pathSeparator)
   }
 
-  private var sparkIMain: SparkIMain = null
+  private var sparkIMain: SparkIMain = _
   var context: SparkContext = _
 
+  // TODO: Move variable logic to separate traits
   protected def createSparkContext(classServerUri: String): SparkContext = {
     val execUri = System.getenv("SPARK_EXECUTOR_URI")
     val conf = new SparkConf()
       // NOTE: Can easily test on a standalone cluster by running
       //       ./sbin/start-all.sh (master/worker configured for localhost
       //       by default) as long as have SSH service enabled
-      //.setMaster("spark://Roberts-MacBook-Pro-3.local:7077")
-      .setMaster("local[*]")
+      .setMaster("spark://Roberts-MacBook-Pro-3.local:7077")
+      //.setMaster("local[*]")
       .setAppName("Spark shell")
       //.setJars(jars)
       .set("spark.repl.class.uri", classServerUri)
@@ -68,7 +70,7 @@ class SparkInterpreter(args: List[String]) {
         "sc", "org.apache.spark.SparkContext",
         this.context, List( """@transient"""))
 
-      Console.out.println("Importing org.apache.spark.SparkContext._")
+      Console.out.println("Adding org.apache.spark.SparkContext._ to imports")
       sparkIMain.addImports("org.apache.spark.SparkContext._")
     }
     sparkIMain
@@ -83,7 +85,7 @@ class SparkInterpreter(args: List[String]) {
       sparkIMain.interpret("""sc.stop""")
     }
 
-    sparkIMain.close
+    sparkIMain.close()
 
     sparkIMain = null
   }
