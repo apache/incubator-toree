@@ -6,9 +6,14 @@ class SparkInterpreterSpec extends FunSpec with Matchers {
 
   describe("SparkInterpreter") {
     describe("#interpret") {
+
     }
 
-    describe("#") {
+    describe("#start") {
+
+    }
+
+    describe("#stop") {
 
     }
   }
