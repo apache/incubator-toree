@@ -63,7 +63,6 @@ libraryDependencies +=
 // NOTE: The above run also works with local[*].
 //
 
-// NOTE: We are leveraging Akka's ZeroMQ since it is more supported
 libraryDependencies += "org.spark-project.akka" %% "akka-actor" % "2.2.3-shaded-protobuf" // Apache v2
 
 libraryDependencies += "org.spark-project.akka" %% "akka-zeromq" % "2.2.3-shaded-protobuf" // Apache v2
