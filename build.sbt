@@ -35,8 +35,7 @@ ivyConfigurations += Configurations.ScalaTool
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-library" % scalaVersion.value,
   "org.scala-lang" % "scala-compiler" % scalaVersion.value % "scala-tool",
-  "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-  "org.scala-lang" % "jline" % scalaVersion.value
+  "org.scala-lang" % "scala-reflect" % scalaVersion.value
 )
 
 //
@@ -57,7 +56,7 @@ libraryDependencies +=
   ("org.apache.spark" %% "spark-repl" % "1.0.1")
 
 //
-// ZEROMQ DEPENDENCIES
+// AKKA DEPENDENCIES (from Spark project)
 //
 // NOTE: Able to run `sbt clean compile run` against standalone cluster with
 //       akka-actor, akka-zeromq, and play-json included.
@@ -65,9 +64,9 @@ libraryDependencies +=
 //
 
 // NOTE: We are leveraging Akka's ZeroMQ since it is more supported
-libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.4" // Apache v2
+libraryDependencies += "org.spark-project.akka" %% "akka-actor" % "2.2.3-shaded-protobuf" // Apache v2
 
-libraryDependencies += "com.typesafe.akka" %% "akka-zeromq" % "2.3.4" // Apache v2
+libraryDependencies += "org.spark-project.akka" %% "akka-zeromq" % "2.2.3-shaded-protobuf" // Apache v2
 
 //
 // JSON DEPENDENCIES
