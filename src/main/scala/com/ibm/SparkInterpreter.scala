@@ -8,6 +8,8 @@ import scala.tools.nsc.interpreter.{JPrintWriter, LoopCommands}
 
 // TODO: Convert our Console.out... to a standard provided to this class
 class SparkInterpreter(args: List[String]) {
+  private val SparkApplicationName = "IBM Spark Kernel"
+
   val settings: Settings = new SparkCommandLine(args).settings
 
   /* Add scala.runtime libraries to interpreter classpath */ {
@@ -34,10 +36,13 @@ class SparkInterpreter(args: List[String]) {
       //       ./sbin/start-all.sh (master/worker configured for localhost
       //       by default) as long as have SSH service enabled
       .setMaster("spark://Roberts-MacBook-Pro-3.local:7077")
+      // NOTE: The above as well as local[*] have worked with sbt run after adding
+      //       fork = true and removing akka libraries
       //.setMaster("local[*]")
-      .setAppName("Spark shell")
+      .setAppName(SparkApplicationName)
       //.setJars(jars)
       .set("spark.repl.class.uri", classServerUri)
+      //.set("spark.driver.host", "localhost")
     if (execUri != null) {
       conf.set("spark.executor.uri", execUri)
     }

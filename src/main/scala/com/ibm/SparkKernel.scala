@@ -33,12 +33,14 @@ object SparkKernel extends App {
 
   // Configure our interpreter to shut down when the JVM shuts down
   // TODO: This does not work
-  /*val mainThread = Thread.currentThread()
+  val mainThread = Thread.currentThread()
   Runtime.getRuntime.addShutdownHook(new Thread() {
     override def run() = {
       intp.stop()
       if (mainThread.isAlive) mainThread.join()
     }
-  })*/
-  intp.stop()
+  })
+
+  Console.println("Ctrl-C to terminate this kernel!")
+  while (true) Thread.sleep(1000)
 }
