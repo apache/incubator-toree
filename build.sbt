@@ -2,6 +2,10 @@ name := "SparkKernel"
 
 version := "0.1.0"
 
+fork := true // http://www.scala-sbt.org/0.13/docs/Running-Project-Code.html#Deserialization+and+class+loading
+
+//exportJars := true
+
 scalaVersion := "2.10.4"
 
 sbtVersion := "0.13.5"
@@ -38,13 +42,26 @@ libraryDependencies ++= Seq(
 //
 // SPARK DEPENDENCIES
 //
+// NOTE: Currently, version must match deployed Spark cluster version.
+//
+// TODO: Could kernel dynamically link to Spark library to allow multiple
+// TODO: Spark versions? E.g. Spark 1.0.0 and Spark 1.0.1
+//
 
-libraryDependencies += "org.apache.spark" %% "spark-core" % "1.0.1" // Apache v2
+// Apache v2
+libraryDependencies +=
+  ("org.apache.spark" %% "spark-core" % "1.0.1")
 
-libraryDependencies += "org.apache.spark" %% "spark-repl" % "1.0.1" // Apache v2
+// Apache v2
+libraryDependencies +=
+  ("org.apache.spark" %% "spark-repl" % "1.0.1")
 
 //
 // ZEROMQ DEPENDENCIES
+//
+// NOTE: Able to run `sbt clean compile run` against standalone cluster with
+//       akka-actor, akka-zeromq, and play-json included.
+// NOTE: The above run also works with local[*].
 //
 
 // NOTE: We are leveraging Akka's ZeroMQ since it is more supported
@@ -74,4 +91,11 @@ libraryDependencies += "org.scalactic" %% "scalactic" % "2.2.0" % "test" // Apac
 
 libraryDependencies +=
   "org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test" // MIT
+
+
+//
+// PLUGIN TASK UPDATES
+//
+
+net.virtualvoid.sbt.graph.Plugin.graphSettings
 
