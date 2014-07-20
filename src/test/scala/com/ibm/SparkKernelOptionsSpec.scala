@@ -74,5 +74,22 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
         options.verbose should be (false)
       }
     }
+
+    describe("when received --master=<value>") {
+      it("should set master to specified value") {
+        val expected = "test"
+        val options = new SparkKernelOptions(s"--master=$expected" :: Nil)
+
+        options.master should be (Some(expected))
+      }
+    }
+
+    describe("when not received --master=<value>") {
+      it("should set master to local[*]") {
+        val options = new SparkKernelOptions(Nil)
+
+        options.master should be (Some("local[*]"))
+      }
+    }
   }
 }

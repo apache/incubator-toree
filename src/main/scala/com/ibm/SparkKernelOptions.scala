@@ -6,6 +6,7 @@ import joptsimple.OptionParser
 import joptsimple.OptionSpec
 
 class SparkKernelOptions(args: Seq[String]) {
+  private val DefaultMasterArg = "local[*]"
   private val parser = new OptionParser()
 
   /*
@@ -22,6 +23,10 @@ class SparkKernelOptions(args: Seq[String]) {
   private val _profile =
     parser.accepts("profile", "path to IPython JSON connection file")
       .withRequiredArg().ofType(classOf[File])
+  private val _master =
+    parser.accepts("master", "location of master Spark node")
+      .withRequiredArg().ofType(classOf[String])
+      .defaultsTo(DefaultMasterArg)
   private val options = parser.parse(args: _*)
 
   /*
@@ -46,6 +51,7 @@ class SparkKernelOptions(args: Seq[String]) {
     case None => true // Default value
   }
   val profile: Option[File] = get(_profile)
+  val master: Option[String] = get(_master)
 
   /**
    *
