@@ -20,8 +20,8 @@ object SparkKernel extends App {
     if (options.create_context) println("Creating a new context!")
     if (options.verbose) println("Running verbosely!")
     options.profile match {
-      case Some(_) =>
-        println("Loading ZeroMQ settings from profile!")
+      case Some(profileFile) =>
+        println(s"Loading ZeroMQ settings from ${profileFile}!")
       case None =>
         println("No profile received! Using default ZeroMQ settings!")
     }
