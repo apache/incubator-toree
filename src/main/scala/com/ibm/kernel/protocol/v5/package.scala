@@ -33,4 +33,10 @@ package object v5 {
     "ok", _: Int, _: Option[Payloads],
     _: Option[UserExpressions], None, None, None
   )
+
+  type ExecuteReplyError = ExecuteReply
+  val ExecuteReplyError = ExecuteReply(
+    "error", _: Int, None, None, _: Option[String], _: Option[String],
+    _: Option[List[String]]
+  )
 }
