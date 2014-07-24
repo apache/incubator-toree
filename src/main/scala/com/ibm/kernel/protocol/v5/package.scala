@@ -74,4 +74,12 @@ package object v5 {
   val CompleteReplyOk = CompleteReply(
     _: List[String], _: Int, _: Int, _: Metadata, "ok", None, None, None
   )
+
+  // Provide an CompleteReplyError type and object representing a
+  // partially-completed CompleteReply
+  type CompleteReplyError = CompleteReply
+  val CompleteReplyError = CompleteReply(
+    _: List[String], _: Int, _: Int, _: Metadata, "error", _: Option[String],
+    _: Option[String], _: Option[List[String]]
+  )
 }
