@@ -2,17 +2,21 @@ package com.ibm.kernel.protocol.v5.content
 
 import com.ibm.kernel.protocol.v5.UserExpressions
 import play.api.libs.json._
-import play.api.libs.json.Reads._
-import play.api.libs.functional.syntax._
 
 case class ExecuteRequest(
   code: String,
   silent: Boolean,
-  storeHistory: Boolean,
+  store_history: Boolean,
   user_expressions: UserExpressions,
   allow_stdin: Boolean
 )
 
+object ExecuteRequest {
+  implicit val executeRequestReads = Json.reads[ExecuteRequest]
+  implicit val executeRequestWrites = Json.writes[ExecuteRequest]
+}
+
+/* LEFT FOR REFERENCE IN CREATING CUSTOM READ/WRITE
 object ExecuteRequest {
   implicit val headerReads: Reads[ExecuteRequest] = (
     (JsPath \ "code").read[String] and
@@ -30,4 +34,5 @@ object ExecuteRequest {
     (JsPath \ "allow_stdin").write[Boolean]
   )(unlift(ExecuteRequest.unapply)) // Case class provides the unapply method
 }
+*/
 
