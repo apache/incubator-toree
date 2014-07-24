@@ -1,6 +1,6 @@
 package com.ibm.kernel.protocol
 
-import com.ibm.kernel.protocol.v5.content.{InspectReply, ExecuteReply}
+import com.ibm.kernel.protocol.v5.content.{CompleteReply, InspectReply, ExecuteReply}
 
 package object v5 {
   // Provide a UUID type representing a string (there is no object)
@@ -66,5 +66,12 @@ package object v5 {
   val InspectReplyError = InspectReply(
     "error", _: Data, _: Metadata, _: Option[String],
     _: Option[String], _: Option[List[String]]
+  )
+
+  // Provide an CompleteReplyOk type and object representing a
+  // partially-completed CompleteReply
+  type CompleteReplyOk = CompleteReply
+  val CompleteReplyOk = CompleteReply(
+    _: List[String], _: Int, _: Int, _: Metadata, "ok", None, None, None
   )
 }

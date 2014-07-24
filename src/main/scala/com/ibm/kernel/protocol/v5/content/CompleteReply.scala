@@ -3,7 +3,16 @@ package com.ibm.kernel.protocol.v5.content
 import com.ibm.kernel.protocol.v5.Metadata
 import play.api.libs.json.Json
 
-case class CompleteReply (matches: List[String], cursor_start: Int, cursor_end: Int, metadata: Metadata, status: String )
+case class CompleteReply (
+  matches: List[String],
+  cursor_start: Int,
+  cursor_end: Int,
+  metadata: Metadata,
+  status: String,
+  ename: Option[String],
+  evalue: Option[String],
+  traceback: Option[List[String]]
+)
 
 object CompleteReply{
   implicit val completeReplyReads = Json.reads[CompleteReply]

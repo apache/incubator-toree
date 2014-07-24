@@ -16,12 +16,12 @@ class CompleteReplyTest extends FunSpec with Matchers {
     "cursor_start": 1,
     "cursor_end": 5,
     "metadata": {},
-    "status": "ok"
+    "status": "<STRING>"
   }
-                                                """)
+  """)
 
   val completeReply: CompleteReply = CompleteReply(
-    List(), 1, 5, Map(), "ok"
+    List(), 1, 5, Map(), "<STRING>", None, None, None
   )
 
   describe("CompleteReply") {
