@@ -39,4 +39,9 @@ package object v5 {
     "error", _: Int, None, None, _: Option[String], _: Option[String],
     _: Option[List[String]]
   )
+
+  type ExecuteReplyAbort = ExecuteReply
+  val ExecuteReplyAbort = ExecuteReply(
+    "abort", _: Int, None, None, None, None, None
+  )
 }
