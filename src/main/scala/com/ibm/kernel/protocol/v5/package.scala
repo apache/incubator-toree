@@ -34,12 +34,16 @@ package object v5 {
     _: Option[UserExpressions], None, None, None
   )
 
+  // Provide an ExecuteReplyError type and object representing a
+  // partially-completed ExecuteReply
   type ExecuteReplyError = ExecuteReply
   val ExecuteReplyError = ExecuteReply(
     "error", _: Int, None, None, _: Option[String], _: Option[String],
     _: Option[List[String]]
   )
 
+  // Provide an ExecuteReplyAbort type and object representing a
+  // partially-completed ExecuteReply
   type ExecuteReplyAbort = ExecuteReply
   val ExecuteReplyAbort = ExecuteReply(
     "abort", _: Int, None, None, None, None, None
