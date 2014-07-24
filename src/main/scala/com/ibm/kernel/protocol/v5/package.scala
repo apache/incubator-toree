@@ -42,8 +42,8 @@ package object v5 {
   // partially-completed ExecuteReply
   type ExecuteReplyError = ExecuteReply
   val ExecuteReplyError = ExecuteReply(
-    "error", _: Int, None, None, _: Option[String], _: Option[String],
-    _: Option[List[String]]
+    "error", _: Int, None, None, _: Option[String],
+    _: Option[String], _: Option[List[String]]
   )
 
   // Provide an ExecuteReplyAbort type and object representing a
@@ -58,5 +58,13 @@ package object v5 {
   type InspectReplyOk = InspectReply
   val InspectReplyOk = InspectReply(
     "ok", _: Data, _: Metadata, None, None, None
+  )
+
+  // Provide an InspectReplyOk type and object representing a
+  // partially-completed InspectReply
+  type InspectReplyError = InspectReply
+  val InspectReplyError = InspectReply(
+    "error", _: Data, _: Metadata, _: Option[String],
+    _: Option[String], _: Option[List[String]]
   )
 }
