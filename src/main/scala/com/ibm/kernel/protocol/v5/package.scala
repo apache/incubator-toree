@@ -1,6 +1,6 @@
 package com.ibm.kernel.protocol
 
-import com.ibm.kernel.protocol.v5.content.ExecuteReply
+import com.ibm.kernel.protocol.v5.content.{InspectReply, ExecuteReply}
 
 package object v5 {
   // Provide a UUID type representing a string (there is no object)
@@ -13,6 +13,10 @@ package object v5 {
   // Provide a Metadata type and object representing a map
   type Metadata = Map[String, String]
   val Metadata = Map
+
+  // Provide a Data type and object representing a map
+  type Data = Map[String, String]
+  val Data = Map
 
   // Provide a UserExpressions type and object representing a map
   type UserExpressions = Map[String, String]
@@ -47,5 +51,12 @@ package object v5 {
   type ExecuteReplyAbort = ExecuteReply
   val ExecuteReplyAbort = ExecuteReply(
     "abort", _: Int, None, None, None, None, None
+  )
+
+  // Provide an InspectReplyOk type and object representing a
+  // partially-completed InspectReply
+  type InspectReplyOk = InspectReply
+  val InspectReplyOk = InspectReply(
+    "ok", _: Data, _: Metadata, None, None, None
   )
 }
