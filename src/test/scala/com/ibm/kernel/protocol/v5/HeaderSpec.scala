@@ -15,7 +15,7 @@ class HeaderSpec extends FunSpec with Matchers {
   }
   """)
 
-  val header: Header = new Header(
+  val header: Header = Header(
     "<UUID>", "<STRING>", "<UUID>", "<STRING>", "<FLOAT>"
   )
 
