@@ -1,5 +1,7 @@
 package com.ibm.kernel.protocol
 
+import com.ibm.kernel.protocol.v5.content.ExecuteReply
+
 package object v5 {
   // Provide a UUID type representing a string (there is no object)
   type UUID = String
@@ -15,4 +17,20 @@ package object v5 {
   // Provide a UserExpressions type and object representing a map
   type UserExpressions = Map[String, String]
   val UserExpressions = Map
+
+  // Provide a Payloads type and object representing a list of maps
+  type Payloads = List[Map[String, String]]
+  val Payloads = List
+
+  // Provide an ExecuteReplyOk type and object representing a
+  // partially-completed ExecuteReply
+  //
+  // TODO: Is there a way to wrap the Option arguments in Some(...)?
+  //       E.g. ExecuteReplyOk(3, [], {}) =>
+  //            ExecuteReply("ok", 3, Some([]), Some({}), None, None, None
+  type ExecuteReplyOk = ExecuteReply
+  val ExecuteReplyOk = ExecuteReply(
+    "ok", _: Int, _: Option[Payloads],
+    _: Option[UserExpressions], None, None, None
+  )
 }
