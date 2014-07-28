@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.JPrintWriter
 
-class ScalaInterpreter(
+case class ScalaInterpreter(
   args: List[String],
   out: OutputStream
 ) {
