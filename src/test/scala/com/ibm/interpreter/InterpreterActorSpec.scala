@@ -93,6 +93,19 @@ class InterpreterActorSpec extends TestKit(
 
         expectMsgClass(10 seconds, classOf[ExecuteReplyError])
       }
+
+      it("should return a failure message if an unknown message was sent") {
+        val mockInterpreter = mock[ScalaInterpreter]
+        val interpreter =
+          system.actorOf(Props(
+            classOf[InterpreterActor],
+            mockInterpreter
+          ))
+
+        interpreter ! "???" // TODO: Provide a better unknown message?
+
+        expectMsg(10 seconds, "Unknown message") // TODO: Replace with real type
+      }
     }
   }
 }
