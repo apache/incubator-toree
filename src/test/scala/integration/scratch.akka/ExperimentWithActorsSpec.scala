@@ -1,4 +1,4 @@
-package integration.akka
+package scratch.akka
 
 import scala.concurrent.duration._
 import akka.actor._
