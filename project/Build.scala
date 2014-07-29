@@ -16,8 +16,8 @@ object TestTasks extends Build {
         testOptions in SystemTest := Seq(Tests.Filter(sysFilter))
       )
 
-  def sysFilter(name: String): Boolean = name endsWith "SpecForSystem"
-  def intFilter(name: String): Boolean = name endsWith "SpecForIntegration"
+  def sysFilter(name: String): Boolean = (name endsWith "SpecForSystem") || (name startsWith "system.")
+  def intFilter(name: String): Boolean = (name endsWith "SpecForIntegration") || (name startsWith "integration.")
   def unitFilter(name: String): Boolean = (name endsWith "Spec") && !intFilter(name) && !sysFilter(name)
 
   lazy val UnitTest = config("unit") extend(Test)

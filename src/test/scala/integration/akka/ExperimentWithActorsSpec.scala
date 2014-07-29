@@ -1,4 +1,4 @@
-package com.ibm.kernel.akka
+package integration.akka
 
 import scala.concurrent.duration._
 import akka.actor._
