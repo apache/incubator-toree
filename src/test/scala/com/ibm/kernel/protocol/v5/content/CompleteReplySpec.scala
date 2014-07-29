@@ -7,7 +7,7 @@ import play.api.libs.json.{JsPath, JsValue, Json}
 /**
  * Created by Senkwich on 7/24/14.
  */
-class CompleteReplyTest extends FunSpec with Matchers {
+class CompleteReplySpec extends FunSpec with Matchers {
 
 
   val completeReplyJson: JsValue = Json.parse("""

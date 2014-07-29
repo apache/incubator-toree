@@ -87,8 +87,7 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % "test" // Apac
 
 libraryDependencies += "org.scalactic" %% "scalactic" % "2.2.0" % "test" // Apache v2
 
-libraryDependencies +=
-  "org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test" // MIT
+libraryDependencies += "org.mockito" % "mockito-core" % "1.9.5" // MIT
 
 libraryDependencies +=
   "org.spark-project.akka" %% "akka-testkit" % "2.2.3-shaded-protobuf" % "test" // MIT

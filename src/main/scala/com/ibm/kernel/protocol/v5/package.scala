@@ -1,6 +1,6 @@
 package com.ibm.kernel.protocol
 
-import com.ibm.kernel.protocol.v5.content.{CompleteReply, InspectReply, ExecuteReply}
+import com.ibm.kernel.protocol.v5.content.{ShutdownRequest, CompleteReply, InspectReply, ExecuteReply}
 
 package object v5 {
   // Provide a UUID type representing a string (there is no object)
@@ -82,4 +82,8 @@ package object v5 {
     _: List[String], _: Int, _: Int, _: Metadata, "error", _: Option[String],
     _: Option[String], _: Option[List[String]]
   )
+
+  // ShutdownReply message is exactly the same format as ShutdownRequest
+  type ShutdownReply = ShutdownRequest
+  val ShutdownReply = ShutdownRequest
 }

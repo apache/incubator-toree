@@ -2,6 +2,7 @@ package com.ibm
 
 import java.io.File
 
+import com.ibm.interpreter.ScalaInterpreter
 import org.apache.spark.{SparkContext, SparkConf}
 import org.apache.spark.repl.{SparkILoop, SparkIMain, SparkCommandLine}
 
@@ -28,8 +29,23 @@ object SparkKernel extends App {
   }
 
   /** TESTING */
-  val intp = new SparkInterpreter(options.tail)
+  val intp = new ScalaInterpreter(options.tail, Console.out)
   intp.start()
+
+  val conf = new SparkConf()
+  conf.setMaster("local[*]")
+    .setAppName("IBM Spark Kernel")
+    //.set("spark.executor.uri", "...")
+    //.setSparkHome("...")
+  intp.sparkIMain.beQuietDuring {
+    //logger.info("Creating a new context identified by 'sc'")
+    conf.set("spark.repl.class.uri", intp.sparkIMain.classServer.uri)
+    intp.sparkIMain.bind(
+      "sc", "org.apache.spark.SparkContext",
+      new SparkContext(conf), List( """@transient"""))
+  }
+
+  // Run some code
   intp.interpret("""val count = sc.parallelize(1 to 10).count()""")
   intp.interpret("""println("Count = " + count)""")
 
@@ -39,6 +55,8 @@ object SparkKernel extends App {
   Runtime.getRuntime.addShutdownHook(new Thread() {
     override def run() = {
       intp.stop()
+      // TODO: Check if you can magically access the spark context to stop it
+      // TODO: inside a different thread
       if (mainThread.isAlive) mainThread.join()
     }
   })
