@@ -17,3 +17,19 @@ backlog of tasks to complete.
       which means that unlimited messages could be fed to the construct; so, 
       defining Tuple support would allow us to check specifically for a 
       three-element array in JSON and also output a three-element array
+
+* IPython shim layer
+
+    * IPython notebook does not support connecting to an existing kernel (only
+      the console and qtconsole support this)
+
+    * Solution is to have a shim kernel that the IPython notebook starts up,
+      which serves as a proxy to a real kernel
+
+    * Thought is to reuse our SparkKernel code to have two sets of bindings,
+      one for a frontend and another for a backend
+
+        java -jar shimkernel.jar \
+            --proxy_from {connection_file} \
+            --proxy_to {kernel_file}
+
