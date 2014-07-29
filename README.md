@@ -46,3 +46,37 @@ plugins:
     * See [this link](https://github.com/orfjackal/idea-sbt-plugin/wiki) for
       documentation regarding setting up the SBT plugin
 
+Running Tests
+-------------
+
+There are three levels of test in this project:
+
+1. Unit - tests that isolate a specific class/object/etc for its functionality
+
+2. Integration - tests that illustrate functionality between multiple
+   components
+
+3. System - tests that demonstrate correctness across the entire system
+
+To execute specific tests, run sbt with the following:
+
+1. Unit - `sbt unit:test`
+
+2. Integration - `sbt integration:test`
+
+3. System - `sbt system:test`
+
+To run all tests, use `sbt test`!
+
+The naming convention for tests is as follows:
+
+1. Unit - test classes end with _Spec_
+   e.g. CompleteRequestSpec
+
+2. Integration - test classes end with _SpecForIntegration_
+   e.g. InterpreterWithActorSpecForIntegration
+
+3. System - test classes end with _SpecForSystem_
+   e.g. InputToAddJarForSystem
+
+

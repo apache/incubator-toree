@@ -1,7 +1,7 @@
 import sbt._
 import Keys._
 
-object B extends Build {
+object TestTasks extends Build {
   lazy val root =
     Project("root", file("."))
       .configs( UnitTest )
