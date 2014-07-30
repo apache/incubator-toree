@@ -9,9 +9,9 @@ import scala.tools.nsc.interpreter._
 class InterpreterActor(interpreter: ScalaInterpreter) extends Actor {
   require(interpreter != null)
 
-  override def preStart = interpreter.start()
+  //override def preStart = interpreter.start()
 
-  override def postStop = interpreter.stop()
+  //override def postStop = interpreter.stop()
 
   override def receive: Receive = {
     case executeRequest: ExecuteRequest =>

@@ -3,7 +3,7 @@ import Keys._
 
 object TestTasks extends Build {
   lazy val root =
-    Project("root", file("."))
+    Project("SparkKernel", file("."))
       .configs( UnitTest )
       .configs( IntegrationTest )
       .configs( SystemTest )
