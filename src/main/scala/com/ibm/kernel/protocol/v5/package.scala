@@ -1,6 +1,11 @@
 package com.ibm.kernel.protocol
 
-import com.ibm.kernel.protocol.v5.content.{ShutdownRequest, CompleteReply, InspectReply, ExecuteReply}
+import akka.util.ByteString
+import akka.zeromq.ZMQMessage
+import com.ibm.kernel.protocol.v5.content._
+import play.api.libs.json.Json
+
+import scala.collection.immutable.Seq
 
 package object v5 {
   // Provide a UUID type representing a string (there is no object)
@@ -86,4 +91,18 @@ package object v5 {
   // ShutdownReply message is exactly the same format as ShutdownRequest
   type ShutdownReply = ShutdownRequest
   val ShutdownReply = ShutdownRequest
+
+  implicit def ByteStringToString(byteString : ByteString) : String = {
+    new String(byteString.toArray)
+  }
+
+  implicit def ZMQMessageToKernelMessage(message: ZMQMessage) : KernelMessage = {
+    val delimiterIndex: Int = message.frames.indexOf(ByteString("<IDS|MSG>".getBytes()))
+    val ids: Seq[String] = message.frames.take(delimiterIndex).map((byteString : ByteString) =>  { new String(byteString.toArray) })
+    val header = Json.parse(message.frames(delimiterIndex + 2)).as[Header]
+    val parentHeader = Json.parse(message.frames(delimiterIndex + 3)).as[ParentHeader]
+    val metadata = Json.parse(message.frames(delimiterIndex + 4)).as[Metadata]
+    new KernelMessage(ids,message.frame(delimiterIndex + 1)
+      ,header, parentHeader, metadata, message.frame(delimiterIndex + 5))
+  }
 }
