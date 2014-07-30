@@ -15,6 +15,7 @@ object SocketFactory {
  */
 class  SocketFactory(socketConfig: SocketConfig) {
   val HeartbeatConnection = SocketConnection(socketConfig.transport, socketConfig.ip, socketConfig.hb_port)
+  val ShellConnection = SocketConnection(socketConfig.transport, socketConfig.ip, socketConfig.shell_port)
 
   /**
    * Creates a ZeroMQ reply socket representing the server endpoint for heartbeat messages
@@ -22,7 +23,7 @@ class  SocketFactory(socketConfig: SocketConfig) {
    * @param listener The actor who will receive
    * @return The ActorRef created for the socket connection
    */
-  def Heartbeat(system: ActorSystem, listener: ScalaActorRef) : ActorRef = {
+  def Heartbeat(system: ActorSystem, listener: ActorRef) : ActorRef = {
     ZeroMQExtension(system).newRepSocket(Array(Listener(listener), Bind(HeartbeatConnection.toString)))
   }
 
@@ -34,5 +35,25 @@ class  SocketFactory(socketConfig: SocketConfig) {
    */
   def HeartbeatClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
     ZeroMQExtension(system).newReqSocket(Array(Listener(listener), Connect(HeartbeatConnection.toString)))
+  }
+
+  /**
+   * Creates a ZeroMQ reply socket representing the server endpoint for shell messages
+   * @param system The actor system the socket actor will belong
+   * @param listener The actor who will receive
+   * @return The ActorRef created for the socket connection
+   */
+  def Shell(system: ActorSystem, listener: ActorRef) : ActorRef = {
+    ZeroMQExtension(system).newRouterSocket(Array(Listener(listener), Bind(ShellConnection.toString)))
+  }
+
+  /**
+   * Creates a ZeroMQ request socket representing the client endpoint for shell messages
+   * @param system The actor system the socket actor will belong
+   * @param listener The actor who will receive
+   * @return The ActorRef created for the socket connection
+   */
+  def ShellClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
+    ZeroMQExtension(system).newDealerSocket(Array(Listener(listener), Connect(ShellConnection.toString)))
   }
 }
