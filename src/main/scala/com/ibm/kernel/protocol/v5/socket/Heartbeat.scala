@@ -1,8 +1,8 @@
-package com.ibm.zeromq
+package com.ibm.kernel.protocol.v5.socket
 
 import akka.actor.Actor
 
-class HeartbeatActor extends Actor {
+class Heartbeat extends Actor {
   override def receive: Receive = {
     case message => sender ! message
   }

@@ -1,27 +1,27 @@
-package com.ibm.zeromq
+package com.ibm.kernel.protocol.v5.socket
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.ByteString
 import akka.zeromq.ZMQMessage
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{FunSpecLike, Matchers}
 
-object HeartbeatActorSpec {
+object HeartbeatSpec {
   val config = """
     akka {
       loglevel = "WARNING"
     }"""
 }
 
-class HeartbeatActorSpec extends TestKit(ActorSystem("HeartbeatActorSpec", ConfigFactory.parseString(HeartbeatActorSpec.config)))
+class HeartbeatSpec extends TestKit(ActorSystem("HeartbeatActorSpec", ConfigFactory.parseString(HeartbeatActorSpec.config)))
   with ImplicitSender with FunSpecLike with Matchers {
   val SomeMessage: String = "some message"
   val SomeZMQMessage: ZMQMessage = ZMQMessage(ByteString(SomeMessage.getBytes))
   
 
   describe("HeartbeatActor") {
-    val heartbeat = system.actorOf(Props[HeartbeatActor])
+    val heartbeat = system.actorOf(Props[Heartbeat])
 
     describe("#receive") {
       it("should reply with the same string") {
