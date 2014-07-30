@@ -19,8 +19,10 @@ object ShellSpec {
 
 class ShellSpec extends TestKit(ActorSystem("ShellActorSpec", ConfigFactory.parseString(ShellSpec.config)))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
-  val SomeMessage: String = "some message"
-  val SomeZMQMessage: ZMQMessage = ZMQMessage(ByteString(SomeMessage.getBytes))
+
+  // TODO replace with actual kernel message
+  val KernelMessage: String = "some kernel message"
+  val SomeZMQMessage: ZMQMessage = ZMQMessage(ByteString(KernelMessage.getBytes))
 
 
   describe("ShellActor") {
@@ -31,9 +33,10 @@ class ShellSpec extends TestKit(ActorSystem("ShellActorSpec", ConfigFactory.pars
     val shell = system.actorOf(Props(classOf[Shell], socketFactory))
 
     describe("#receive") {
-      it("should reply with the same string") {
-        shell ! SomeMessage
-        probe.expectMsg(SomeMessage)
+      // TODO test that the response type changed
+      it("should reply with a ZMQMessage") {
+        shell ! KernelMessage
+        probe.expectMsg(KernelMessage)
       }
 
       it("should reply with the same ZMQMessage") {

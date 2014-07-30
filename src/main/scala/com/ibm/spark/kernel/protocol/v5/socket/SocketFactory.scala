@@ -1,8 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.socket
 
-import akka.actor.{ScalaActorRef, ActorRef, ActorSystem}
-import akka.zeromq.{Connect, Bind, ZeroMQExtension, Listener}
-import com.ibm.spark.kernel.protocol.v5.interpreter.tasks._
+import akka.actor.{ActorRef, ActorSystem}
+import akka.zeromq.{Bind, Connect, Listener, ZeroMQExtension}
 
 object SocketFactory {
   def apply(socketConfig: SocketConfig) = {
@@ -17,6 +16,7 @@ object SocketFactory {
 class  SocketFactory(socketConfig: SocketConfig) {
   val HeartbeatConnection = SocketConnection(socketConfig.transport, socketConfig.ip, socketConfig.hb_port)
   val ShellConnection = SocketConnection(socketConfig.transport, socketConfig.ip, socketConfig.shell_port)
+  val IOPubConnection = SocketConnection(socketConfig.transport, socketConfig.ip, socketConfig.iopub_port)
 
   /**
    * Creates a ZeroMQ reply socket representing the server endpoint for heartbeat messages
@@ -56,5 +56,24 @@ class  SocketFactory(socketConfig: SocketConfig) {
    */
   def ShellClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
     ZeroMQExtension(system).newDealerSocket(Array(Listener(listener), Connect(ShellConnection.toString)))
+  }
+
+  /**
+   * Creates a ZeroMQ reply socket representing the server endpoint for IOPub messages
+   * @param system The actor system the socket actor will belong
+   * @return The ActorRef created for the socket connection
+   */
+  def IOPub(system: ActorSystem) : ActorRef = {
+    ZeroMQExtension(system).newPubSocket(Bind(IOPubConnection.toString))
+  }
+
+  /**
+   * Creates a ZeroMQ request socket representing the client endpoint for IOPub messages
+   * @param system The actor system the socket actor will belong
+   * @param listener The actor who will receive
+   * @return The ActorRef created for the socket connection
+   */
+  def IOPubClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
+    ZeroMQExtension(system).newSubSocket(Array(Listener(listener), Connect(IOPubConnection.toString)))
   }
 }

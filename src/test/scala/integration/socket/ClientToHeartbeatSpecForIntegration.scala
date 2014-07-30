@@ -18,7 +18,7 @@ class ClientToHeartbeatSpecForIntegration extends FunSpec with Matchers{
   val heartbeat = system.actorOf(Props(classOf[Heartbeat], socketFactory), "Heartbeat")
   val stack =  new BlockingStack()
   val clientSocket : ActorRef = socketFactory.HeartbeatClient(system,
-    system.actorOf(Props(classOf[StackActor], stack), "Queue"))
+    system.actorOf(Props(classOf[StackActor], stack), "HeartbeatQueue"))
 
   describe("Client-Heartbeat Integration"){
     describe("Client"){

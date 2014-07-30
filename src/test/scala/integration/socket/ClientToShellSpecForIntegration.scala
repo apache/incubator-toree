@@ -13,12 +13,12 @@ class ClientToShellSpecForIntegration extends FunSpec with Matchers {
   implicit val timeout = Timeout(5.seconds)
 
   val system = ActorSystem("ShellClient")
-  val socketConfig = SocketConfig(-1,-1, -1, 8000, -1, "127.0.0.1", "tcp","hmac-sha256","")
+  val socketConfig = SocketConfig(-1,-1, -1, 8001, -1, "127.0.0.1", "tcp","hmac-sha256","")
   val socketFactory : SocketFactory = SocketFactory(socketConfig)
-  val heartbeat = system.actorOf(Props(classOf[Heartbeat], socketFactory), "Shell")
+  val shell = system.actorOf(Props(classOf[Heartbeat], socketFactory), "Shell")
   val stack =  new BlockingStack()
   val clientSocket : ActorRef = socketFactory.HeartbeatClient(system,
-    system.actorOf(Props(classOf[StackActor], stack), "Queue"))
+    system.actorOf(Props(classOf[StackActor], stack), "ShellQueue"))
 
   describe("Client-Shell Integration"){
     describe("Client"){
