@@ -1,4 +1,4 @@
-package com.ibm.interpreter.tasks
+package com.ibm.kernel.protocol.v5.interpreter.tasks
 
 import akka.actor.{Props, ActorSystem}
 import akka.testkit.{ImplicitSender, TestKit}

@@ -2,6 +2,7 @@ package com.ibm.kernel.protocol.v5.socket
 
 import akka.actor.{ScalaActorRef, ActorRef, ActorSystem}
 import akka.zeromq.{Connect, Bind, ZeroMQExtension, Listener}
+import com.ibm.kernel.protocol.v5.interpreter.tasks._
 
 object SocketFactory {
   def apply(socketConfig: SocketConfig) = {

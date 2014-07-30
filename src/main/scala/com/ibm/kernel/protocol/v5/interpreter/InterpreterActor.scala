@@ -1,10 +1,10 @@
-package com.ibm.interpreter
+package com.ibm.kernel.protocol.v5.interpreter
 
-import akka.actor.{ActorRef, Props, Actor}
+import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.{ask, pipe}
 import akka.util.Timeout
-import com.ibm.interpreter.tasks._
-import com.ibm.kernel.protocol.v5._
+import com.ibm.interpreter.Interpreter
+import com.ibm.kernel.protocol.v5.interpreter.tasks._
 import com.ibm.kernel.protocol.v5.content._
 
 import scala.concurrent.duration._
@@ -22,9 +22,9 @@ object InterpreterActor {
 //
 // Does this mean that the interpreter instance is not gc and is passed in?
 //
-class InterpreterActor(interpreter: Interpreter) extends Actor {
-  require(interpreter != null)
-
+class InterpreterActor(
+  interpreterTaskFactor: InterpreterTaskFactory
+) extends Actor {
   // NOTE: Required to provide the execution context for futures with akka
   import context._
 
@@ -41,10 +41,13 @@ class InterpreterActor(interpreter: Interpreter) extends Actor {
    */
   override def preStart = {
     executeRequestTask =
-      context.actorOf(ExecuteRequestTaskActor.props(interpreter))
+      interpreterTaskFactor.ExecuteRequestTask(context, "executeCode")
+    println("NEW ACTOR: " + executeRequestTask.path.toString)
   }
   
   override def receive: Receive = {
+    // TODO: Get output from running code (need to clear output stream each
+    // TODO: time interpreter is run)
     case executeRequest: ExecuteRequest =>
       (executeRequestTask ? executeRequest) recover {
         case ex: Exception => // TODO: Provide failure message type to be passed around?
