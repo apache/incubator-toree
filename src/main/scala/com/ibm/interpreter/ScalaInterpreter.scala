@@ -1,17 +1,17 @@
 package com.ibm.interpreter
 
 import java.io.OutputStream
-import org.apache.spark.SparkContext
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain}
 import org.slf4j.LoggerFactory
 
+import scala.tools.nsc.interpreter._
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.JPrintWriter
 
 case class ScalaInterpreter(
   args: List[String],
   out: OutputStream
-) {
+) extends Interpreter {
   private val logger = LoggerFactory.getLogger(classOf[ScalaInterpreter])
   val settings: Settings = new SparkCommandLine(args).settings
 
@@ -33,10 +33,12 @@ case class ScalaInterpreter(
    */
   var sparkIMain: SparkIMain = _
 
-  def interpret(code: String) = {
+  override def interpret(code: String, silent: Boolean = false) = {
     require(sparkIMain != null)
 
-    sparkIMain.interpret(code)
+    if (silent) sparkIMain.beSilentDuring {
+      sparkIMain.interpret(code)
+    } else sparkIMain.interpret(code)
   }
 
   // NOTE: Convention is to force parentheses if a side effect occurs.
@@ -55,7 +57,7 @@ case class ScalaInterpreter(
   //     bind("sc", sparkKernelContext.toSparkContext)
   //
   // SparkScalaInterpreter.start.with( "sc", {} )
-  def start() = {
+  override def start() = {
     require(sparkIMain == null)
 
     sparkIMain = new SparkIMain(settings, new JPrintWriter(out, true))
@@ -72,7 +74,7 @@ case class ScalaInterpreter(
   }
 
   // NOTE: Convention is to force parentheses if a side effect occurs.
-  def stop() = {
+  override def stop() = {
     require(sparkIMain != null)
 
     logger.info("Shutting down interpreter")

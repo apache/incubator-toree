@@ -14,17 +14,17 @@ import com.ibm.kernel.protocol.v5.content._
 import com.ibm.kernel.protocol.v5._
 import org.slf4j.Logger
 
-object InterpreterWithActorSpec {
+object InterpreterActorSpec {
   val config = """
     akka {
       loglevel = "WARNING"
     }"""
 }
 
-class IntepreterWithActorSpec extends TestKit(
+class InterpreterActorSpec extends TestKit(
   ActorSystem(
-    "InterpreterWithActorSpec",
-    ConfigFactory.parseString(InterpreterWithActorSpec.config)
+    "InterpreterActorSpec",
+    ConfigFactory.parseString(InterpreterActorSpec.config)
   )
 ) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
 {
@@ -64,7 +64,7 @@ class IntepreterWithActorSpec extends TestKit(
 
   describe("Interpreter Actor with Scala Interpreter") {
     describe("#receive") {
-      it("should return ok if the code is executed successfully") {
+      it("should return ok if the execute request is executed successfully") {
         val interpreterActor =
           system.actorOf(Props(
             classOf[InterpreterActor],
@@ -81,7 +81,7 @@ class IntepreterWithActorSpec extends TestKit(
         expectMsgClass(classOf[ExecuteReplyOk])
       }
 
-      it("should return error if the code fails") {
+      it("should return error if the execute request fails") {
         val interpreterActor =
           system.actorOf(Props(
             classOf[InterpreterActor],
