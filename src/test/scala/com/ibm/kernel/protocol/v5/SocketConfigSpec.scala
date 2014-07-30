@@ -1,5 +1,6 @@
 package com.ibm.kernel.protocol.v5
 
+import com.ibm.kernel.protocol.v5.socket.SocketConfig
 import org.scalatest.{FunSpec, Matchers}
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, JsValue, Json}

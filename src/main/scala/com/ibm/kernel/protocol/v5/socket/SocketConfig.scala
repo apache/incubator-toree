@@ -1,4 +1,4 @@
-package com.ibm.kernel.protocol.v5
+package com.ibm.kernel.protocol.v5.socket
 
 import play.api.libs.json.Json
 
