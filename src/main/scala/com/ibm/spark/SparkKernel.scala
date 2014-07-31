@@ -32,6 +32,7 @@ object SparkKernel extends App {
   private val ioPubActor = new IOPub(socketFactory)
 
   /** TESTING */
+  /*
   val intp = new ScalaInterpreter(options.tail, new FileOutputStream(new File("/tmp/chip.txt")))
   intp.start()
 
@@ -107,4 +108,5 @@ object SparkKernel extends App {
 
   Console.println("Ctrl-C to terminate this kernel!")
   while (true) Thread.sleep(1000)
+  */
 }

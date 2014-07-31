@@ -8,12 +8,12 @@ import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
 import com.ibm.spark.interpreter.ScalaInterpreter
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.typesafe.config.ConfigFactory
-import org.apache.log4j.spi.NOPLogger
 import org.apache.spark.{SparkContext, SparkConf}
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpecLike}
 
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5._
+import scala.concurrent.duration._
 import org.slf4j.Logger
 
 object InterpreterActorSpec {
@@ -31,7 +31,7 @@ class InterpreterActorSpec extends TestKit(
 ) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
 {
 
-  private val output = new StringWriter()
+  private val output = new ByteArrayOutputStream()
   private val interpreter = ScalaInterpreter(List(), output)
 
   private val conf = new SparkConf()
@@ -41,7 +41,7 @@ class InterpreterActorSpec extends TestKit(
   private var context: SparkContext = _
 
   before {
-    output.getBuffer.setLength(0)
+    output.reset()
     interpreter.start()
 
     val intp = interpreter.sparkIMain
@@ -80,7 +80,10 @@ class InterpreterActorSpec extends TestKit(
 
         interpreterActor ! executeRequest
 
-        expectMsgClass(classOf[ExecuteReplyOk])
+        val response =
+          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, String]]
+        response._1 shouldBe a [ExecuteReplyOk]
+        response._2 shouldBe a [String]
       }
 
       it("should return error if the execute request fails") {
@@ -97,7 +100,10 @@ class InterpreterActorSpec extends TestKit(
 
         interpreterActor ! executeRequest
 
-        expectMsgClass(classOf[ExecuteReplyError])
+        val response =
+          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, String]]
+        response._1 shouldBe a [ExecuteReplyError]
+        response._2 shouldBe a [String]
       }
     }
   }
