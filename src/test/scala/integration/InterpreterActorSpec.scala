@@ -4,14 +4,16 @@ import java.io.ByteArrayOutputStream
 
 import akka.actor.{Props, ActorSystem}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.ibm.interpreter.{ScalaInterpreter, InterpreterActor}
+import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
+import com.ibm.spark.interpreter.ScalaInterpreter
+import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.typesafe.config.ConfigFactory
 import org.apache.log4j.spi.NOPLogger
 import org.apache.spark.{SparkContext, SparkConf}
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpecLike}
 
-import com.ibm.kernel.protocol.v5.content._
-import com.ibm.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.content._
+import com.ibm.spark.kernel.protocol.v5._
 import org.slf4j.Logger
 
 object InterpreterActorSpec {
@@ -68,7 +70,7 @@ class InterpreterActorSpec extends TestKit(
         val interpreterActor =
           system.actorOf(Props(
             classOf[InterpreterActor],
-            interpreter
+            new InterpreterTaskFactory(interpreter)
           ))
 
         val executeRequest = ExecuteRequest(
@@ -85,7 +87,7 @@ class InterpreterActorSpec extends TestKit(
         val interpreterActor =
           system.actorOf(Props(
             classOf[InterpreterActor],
-            interpreter
+            new InterpreterTaskFactory(interpreter)
           ))
 
         val executeRequest = ExecuteRequest(

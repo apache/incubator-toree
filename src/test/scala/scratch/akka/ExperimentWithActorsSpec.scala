@@ -94,10 +94,10 @@ class ExperimentWithActorsSpec extends FunSpec with Matchers{
       }).start
 
       try {
-        system.awaitTermination(1.minute)
+        system.awaitTermination(5.seconds)
       }
       catch {
-        case _ => system.shutdown()
+        case _: Throwable => system.shutdown()
       }
 
       println("DONE!")
