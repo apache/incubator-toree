@@ -10,7 +10,7 @@ import test.utils.{StackActor, BlockingStack}
 import scala.concurrent.duration._
 
 class ClientToShellSpecForIntegration extends FunSpec with Matchers {
-  implicit val timeout = Timeout(5 seconds)
+  implicit val timeout = Timeout(5.seconds)
 
   val system = ActorSystem("ShellClient")
   val socketConfig = SocketConfig(-1,-1, -1, 8000, -1, "127.0.0.1", "tcp","hmac-sha256","")

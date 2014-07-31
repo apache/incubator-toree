@@ -36,7 +36,7 @@ class BlockingStack {
       popN(count - 1)
     } else
       items.synchronized {
-        items pop
+        items.pop()
       }
     }
 }

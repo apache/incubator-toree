@@ -7,6 +7,15 @@ import play.api.libs.json.Json
 
 import scala.collection.immutable.Seq
 
+//
+// NOTE: This is brought in to remove feature warnings regarding the use of
+//       implicit conversions regarding the following:
+//
+//       1. ByteStringToString
+//       2. ZMQMessageToKernelMessage
+//
+import scala.language.implicitConversions
+
 package object v5 {
   // Provide a UUID type representing a string (there is no object)
   type UUID = String
@@ -96,13 +105,19 @@ package object v5 {
     new String(byteString.toArray)
   }
 
-  implicit def ZMQMessageToKernelMessage(message: ZMQMessage) : KernelMessage = {
-    val delimiterIndex: Int = message.frames.indexOf(ByteString("<IDS|MSG>".getBytes()))
-    val ids: Seq[String] = message.frames.take(delimiterIndex).map((byteString : ByteString) =>  { new String(byteString.toArray) })
+  implicit def ZMQMessageToKernelMessage(message: ZMQMessage): KernelMessage = {
+    val delimiterIndex: Int =
+      message.frames.indexOf(ByteString("<IDS|MSG>".getBytes()))
+    val ids: Seq[String] =
+      message.frames.take(delimiterIndex).map(
+        (byteString : ByteString) =>  { new String(byteString.toArray) }
+      )
     val header = Json.parse(message.frames(delimiterIndex + 2)).as[Header]
-    val parentHeader = Json.parse(message.frames(delimiterIndex + 3)).as[ParentHeader]
+    val parentHeader =
+      Json.parse(message.frames(delimiterIndex + 3)).as[ParentHeader]
     val metadata = Json.parse(message.frames(delimiterIndex + 4)).as[Metadata]
-    new KernelMessage(ids,message.frame(delimiterIndex + 1)
-      ,header, parentHeader, metadata, message.frame(delimiterIndex + 5))
+
+    new KernelMessage(ids,message.frame(delimiterIndex + 1),
+      header, parentHeader, metadata, message.frame(delimiterIndex + 5))
   }
 }

@@ -29,7 +29,7 @@ class InterpreterActor(
   import context._
 
   // NOTE: Required for ask (?) to function... maybe can define elsewhere?
-  implicit val timeout = Timeout(5 seconds)
+  implicit val timeout = Timeout(5.seconds)
 
   //
   // List of child actors that the interpreter contains
