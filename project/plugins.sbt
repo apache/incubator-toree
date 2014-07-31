@@ -1,5 +1,7 @@
 logLevel := Level.Warn
 
+resolvers += Classpaths.sbtPluginReleases
+
 // Provides the ability to create an uber-jar using `sbt assembly`
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.11.2")
 
@@ -10,5 +12,5 @@ addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 // `sbt dependencyTree`; there are other commands provided as well
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 
-// Provides ability to view code coverage via `sbt jacoco:cover`
-addSbtPlugin("de.johoop" % "jacoco4sbt" % "2.1.6") // Eclipse Public License v1.0
+// Provides ability to view code coverage via `sbt scoverage:test`
+addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.5.1")
