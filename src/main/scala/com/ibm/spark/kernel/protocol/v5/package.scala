@@ -105,9 +105,14 @@ package object v5 {
     new String(byteString.toArray)
   }
 
+  implicit def StringToByteString(string : String) : ByteString = {
+    ByteString(string.getBytes())
+  }
+
   implicit def ZMQMessageToKernelMessage(message: ZMQMessage): KernelMessage = {
     val delimiterIndex: Int =
       message.frames.indexOf(ByteString("<IDS|MSG>".getBytes()))
+    //  TODO Handle the case where there is no delimeter
     val ids: Seq[String] =
       message.frames.take(delimiterIndex).map(
         (byteString : ByteString) =>  { new String(byteString.toArray) }
@@ -121,7 +126,19 @@ package object v5 {
       header, parentHeader, metadata, message.frame(delimiterIndex + 5))
   }
 
-  object MessageTypes extends Enumeration {
+  implicit def KernelMessageToZMQMessage(kernelMessage : KernelMessage) : ZMQMessage = {
+    val frames: scala.collection.mutable.ListBuffer[ByteString] = scala.collection.mutable.ListBuffer()
+    kernelMessage.ids.map((id : String) => frames += id )
+    frames += "<IDS|MSG>"
+    frames += kernelMessage.signature
+    frames += Json.toJson(kernelMessage.header).toString()
+    frames += Json.toJson(kernelMessage.parentHeader).toString()
+    frames += Json.toJson(kernelMessage.metadata).toString
+    frames += kernelMessage.contentString
+    ZMQMessage(frames  : _*)
+  }
+
+  object MessageType extends Enumeration {
     type MessageType    = Value
 
     //  Shell Router/Dealer Messages
