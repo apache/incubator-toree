@@ -1,14 +1,13 @@
-package com.ibm.kernel.protocol.v5.socket
+package com.ibm.spark.kernel.protocol.v5.socket
 
-import akka.actor.{Props, ActorRef, ActorSystem}
-import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import akka.util.ByteString
-import akka.zeromq.ZMQMessage
+import akka.actor.{ActorSystem, Props}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import com.ibm.kernel.protocol.v5.socket.IOPub
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{Matchers, FunSpecLike}
+import org.scalatest.{FunSpecLike, Matchers}
 
 object IOPubSpec {
   val config ="""
