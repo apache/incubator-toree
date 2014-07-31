@@ -1,6 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.content
 
 import play.api.libs.json.Json
+import com.ibm.spark.kernel.protocol.v5._
 
 case class ExecuteResult (
   execution_count: Int,
