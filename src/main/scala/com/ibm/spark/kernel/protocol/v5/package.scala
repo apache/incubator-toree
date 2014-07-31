@@ -120,4 +120,33 @@ package object v5 {
     new KernelMessage(ids,message.frame(delimiterIndex + 1),
       header, parentHeader, metadata, message.frame(delimiterIndex + 5))
   }
+
+  object MessageTypes extends Enumeration {
+    type MessageType    = Value
+
+    //  Shell Router/Dealer Messages
+    val CompleteRequest = Value("complete_request")
+    val CompleteReply   = Value("complete_reply")
+    val ConnectRequest  = Value("connect_request")
+    val ConnectReply    = Value("connect_reply")
+    val ExecuteRequest  = Value("execute_request")
+    val ExecuteReply    = Value("execute_reply")
+    val HistoryRequest  = Value("history_request")
+    val HistoryReply    = Value("history_reply")
+    val InspectRequest  = Value("inspect_request")
+    val InspectReply    = Value("inspect_reply")
+    val KernelInfoRequest  = Value("kernel_info_request")
+    val KernelInfoReply    = Value("kernel_info_reply")
+    val ShutdownRequest = Value("shutdown_request")
+    val ShutdownReply   = Value("shutdown_reply")
+
+    //  Pub/Sub Messages
+    val ClearOutput     = Value("clear_output")
+    val DisplayData     = Value("display_data")
+    val Error           = Value("error")
+    val ExecuteInput    = Value("execute_input")
+    val ExecuteResult   = Value("execute_result")
+    val Status          = Value("status")
+    val Stream          = Value("stream")
+  }
 }
