@@ -3,7 +3,7 @@ package integration.socket
 import akka.actor.{ActorRef, Props, ActorSystem}
 import akka.util.Timeout
 import akka.zeromq._
-import com.ibm.kernel.protocol.v5.socket.{Heartbeat, SocketFactory, SocketConfig, Shell}
+import com.ibm.spark.kernel.protocol.v5.socket.{Heartbeat, SocketFactory, SocketConfig, Shell}
 import org.scalatest.{FunSpec, Matchers}
 import test.utils.{StackActor, BlockingStack}
 
