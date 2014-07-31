@@ -1,11 +1,11 @@
 package integration.socket
 
-import akka.actor.{ActorRef, Props, ActorSystem}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.util.Timeout
 import akka.zeromq.Connecting
-import com.ibm.kernel.protocol.v5.socket.{IOPub, Heartbeat, SocketFactory, SocketConfig}
+import com.ibm.spark.kernel.protocol.v5.socket.{SocketConfig, IOPub, SocketFactory}
 import org.scalatest.{FunSpec, Matchers}
-import test.utils.{StackActor, BlockingStack}
+import test.utils.{BlockingStack, StackActor}
 
 import scala.concurrent.duration._
 

@@ -1,6 +1,6 @@
-package com.ibm.kernel.protocol.v5.socket
+package com.ibm.spark.kernel.protocol.v5.socket
 
-import akka.actor.{ActorLogging, Actor}
+import akka.actor.{Actor, ActorLogging}
 
 /**
  * The server endpoint for IOPub messages specified in the IPython Kernel Spec

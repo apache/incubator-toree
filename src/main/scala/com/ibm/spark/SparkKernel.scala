@@ -1,16 +1,11 @@
 package com.ibm.spark
 
-import java.io.File
-
 import com.ibm.spark.interpreter.ScalaInterpreter
-import org.apache.spark.{SparkContext, SparkConf}
-import org.apache.spark.repl.{SparkILoop, SparkIMain, SparkCommandLine}
-
-import scala.tools.nsc.interpreter.JPrintWriter
-import scala.tools.nsc.{CompilerCommand, Settings}
+import com.ibm.spark.kernel.protocol.v5.socket._
+import org.apache.spark.{SparkConf, SparkContext}
 
 object SparkKernel extends App {
-  val options = new SparkKernelOptions(args)
+  private val options = new SparkKernelOptions(args)
 
   if (options.help) {
     options.printHelpOn(System.out)
@@ -27,6 +22,13 @@ object SparkKernel extends App {
         println("No profile received! Using default ZeroMQ settings!")
     }
   }
+
+  // Create socket actors
+  private val socketConfigReader = new SocketConfigReader(options.profile)
+  private val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
+  private val heartbeatActor = new Heartbeat(socketFactory)
+  private val shellActor = new Shell(socketFactory)
+  private val ioPubActor = new IOPub(socketFactory)
 
   /** TESTING */
   val intp = new ScalaInterpreter(options.tail, Console.out)

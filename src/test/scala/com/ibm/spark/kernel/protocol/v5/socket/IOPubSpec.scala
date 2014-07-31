@@ -2,7 +2,6 @@ package com.ibm.spark.kernel.protocol.v5.socket
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import com.ibm.kernel.protocol.v5.socket.IOPub
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._
