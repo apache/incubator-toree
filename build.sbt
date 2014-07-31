@@ -99,3 +99,4 @@ libraryDependencies +=
 
 net.virtualvoid.sbt.graph.Plugin.graphSettings
 
+jacoco.settings
