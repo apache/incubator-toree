@@ -1,5 +1,6 @@
 package com.ibm.spark
 
+import java.io.{FileOutputStream, PrintWriter, File}
 import com.ibm.spark.interpreter.ScalaInterpreter
 import com.ibm.spark.kernel.protocol.v5.socket._
 import org.apache.spark.{SparkConf, SparkContext}
@@ -31,7 +32,7 @@ object SparkKernel extends App {
   private val ioPubActor = new IOPub(socketFactory)
 
   /** TESTING */
-  val intp = new ScalaInterpreter(options.tail, Console.out)
+  val intp = new ScalaInterpreter(options.tail, new FileOutputStream(new File("/tmp/chip.txt")))
   intp.start()
 
   val conf = new SparkConf()
@@ -48,8 +49,49 @@ object SparkKernel extends App {
   }
 
   // Run some code
-  intp.interpret("""val count = sc.parallelize(1 to 10).count()""")
-  intp.interpret("""println("Count = " + count)""")
+  import scala.tools.nsc.interpreter._
+  {
+    val (result, output) = intp.interpret( """val count = sc.parallelize(1 to 10).count()""")
+    result match {
+      case IR.Success => println("Success: " + output)
+    }
+  }
+  {
+    val (result, output) = intp.interpret( """println("Count = " + count)""")
+    result match {
+      case IR.Success => println("Success: " + output)
+    }
+  }
+  {
+    val (result, output) = intp.interpret( """val count = sc.parallelize(1 to 3).count()""")
+    result match {
+      case IR.Success => println("Success: " + output)
+    }
+  }
+  {
+    val (result, output) = intp.interpret( """println("Count = " + count)""")
+    result match {
+      case IR.Success => println("Success: " + output)
+    }
+  }
+  {
+    val (result, output) = intp.interpret( """count""")
+    result match {
+      case IR.Success => println("Success: " + output)
+    }
+  }
+  {
+    val (result, output) = intp.interpret( """System.err.println("System.err.println = " + count)""")
+    result match {
+      case IR.Success => println("Success: " + output)
+    }
+  }
+  {
+    val (result, output) = intp.interpret( """System.out.println("System.out.println = " + count)""")
+    result match {
+      case IR.Success => println("Success: " + output)
+    }
+  }
 
   // Configure our interpreter to shut down when the JVM shuts down
   // TODO: This does not work

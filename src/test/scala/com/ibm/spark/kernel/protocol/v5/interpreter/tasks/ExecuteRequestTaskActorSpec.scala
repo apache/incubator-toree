@@ -48,6 +48,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
         executeRequestTask ! executeRequest
 
+        // TODO: Convert to tuple of (ExecuteReplyOk, ExecuteResult)
         expectMsgClass(classOf[ExecuteReplyOk])
       }
 
@@ -69,6 +70,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
         executeRequestTask ! executeRequest
 
+        // TODO: Convert to tuple of (ExecuteReplyError, ExecuteResult)
         expectMsgClass(classOf[ExecuteReplyError])
       }
 
@@ -90,6 +92,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
         executeRequestTask ! executeRequest
 
+        // TODO: Convert to tuple of (ExecuteReplyError, ExecuteResult)
         expectMsgClass(classOf[ExecuteReplyError])
       }
 

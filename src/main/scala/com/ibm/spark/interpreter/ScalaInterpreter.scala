@@ -1,8 +1,12 @@
 package com.ibm.spark.interpreter
 
+import java.io.{PrintWriter, StringWriter}
+
+import com.ibm.spark.utils.MultiWriter
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain}
 import org.slf4j.LoggerFactory
 
+import scala.tools.nsc.interpreter.OutputStream
 import scala.tools.nsc.interpreter._
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.JPrintWriter
@@ -31,13 +35,29 @@ case class ScalaInterpreter(
    * TODO: Refactor this such that SparkIMain is not exposed publicly!
    */
   var sparkIMain: SparkIMain = _
+  private val lastResultOut = new StringWriter()
+  private val multiWriter =
+    MultiWriter(List(new PrintWriter(out), lastResultOut))
 
   override def interpret(code: String, silent: Boolean = false) = {
     require(sparkIMain != null)
 
-    if (silent) sparkIMain.beSilentDuring {
-      sparkIMain.interpret(code)
-    } else sparkIMain.interpret(code)
+    var result: IR.Result = null
+    var output: ExecutionOutput = ""
+
+    if (silent) {
+      sparkIMain.beSilentDuring {
+        result = sparkIMain.interpret(code)
+      }
+    } else {
+      result = sparkIMain.interpret(code)
+      output = lastResultOut.toString
+    }
+
+    // Clear our output (per result)
+    lastResultOut.getBuffer.setLength(0)
+
+    (result, output)
   }
 
   // NOTE: Convention is to force parentheses if a side effect occurs.
@@ -59,12 +79,21 @@ case class ScalaInterpreter(
   override def start() = {
     require(sparkIMain == null)
 
-    sparkIMain = new SparkIMain(settings, new JPrintWriter(out, true))
+    sparkIMain = new SparkIMain(settings, new JPrintWriter(multiWriter, true))
 
     logger.info("Initializing interpreter")
     sparkIMain.initializeSynchronous()
 
     sparkIMain.beQuietDuring {
+      logger.info("Adding com.ibm.spark.interpreter.printers._ to imports")
+
+      // TODO: Write printer overrides for Console and System.out and System.err
+      //sparkIMain.addImports("com.ibm.spark.interpreter.printers._")
+
+      // NOTE: This technically works, but only one wrapper is allowed and it
+      //       feels less stable than shadowing the set of prints
+      sparkIMain.setExecutionWrapper("Console.withOut(Console.err)")
+
       logger.info("Adding org.apache.spark.SparkContext._ to imports")
       sparkIMain.addImports("org.apache.spark.SparkContext._")
     }

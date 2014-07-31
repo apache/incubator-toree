@@ -17,25 +17,23 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor {
 
   override def receive: Receive = {
     case executeRequest: ExecuteRequest =>
-      val success = interpreter.interpret(executeRequest.code)
+      val (success, output) = interpreter.interpret(executeRequest.code)
       success match {
         case IR.Success =>
-          sender ! ExecuteReplyOk(
-            1,
-            Some(Payloads()),
-            Some(UserExpressions()))
+          sender ! (
+            ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
+            output
+          )
         case IR.Error =>
-          sender ! ExecuteReplyError(
-            1,
-            Some("NAME"),
-            Some("VALUE"),
-            Some(List()))
+          sender ! (
+            ExecuteReplyError(1, Some("NAME"), Some("VALUE"), Some(List())),
+            output
+          )
         case _ =>
-          sender ! ExecuteReplyError(
-            1,
-            Some("Incomplete"),
-            Some("More input needed!"),
-            Some(List()))
+          sender ! (
+            ExecuteReplyError(1, Some("Incomplete"), Some("More input needed!"), Some(List())),
+            output
+          )
       }
     case _ =>
       sender ! "Unknown message" // TODO: Provide a failure message type to be passed around?

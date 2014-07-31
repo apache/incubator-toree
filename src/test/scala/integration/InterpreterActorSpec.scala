@@ -1,6 +1,6 @@
 package integration
 
-import java.io.ByteArrayOutputStream
+import java.io.{StringWriter, ByteArrayOutputStream}
 
 import akka.actor.{Props, ActorSystem}
 import akka.testkit.{ImplicitSender, TestKit}
@@ -31,8 +31,8 @@ class InterpreterActorSpec extends TestKit(
 ) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
 {
 
-  private val outputStream = new ByteArrayOutputStream()
-  private val interpreter = ScalaInterpreter(List(), outputStream)
+  private val output = new StringWriter()
+  private val interpreter = ScalaInterpreter(List(), output)
 
   private val conf = new SparkConf()
     .setMaster("local[*]")
@@ -41,7 +41,7 @@ class InterpreterActorSpec extends TestKit(
   private var context: SparkContext = _
 
   before {
-    outputStream.reset()
+    output.getBuffer.setLength(0)
     interpreter.start()
 
     val intp = interpreter.sparkIMain

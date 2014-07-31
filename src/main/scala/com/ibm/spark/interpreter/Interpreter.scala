@@ -4,6 +4,11 @@ import scala.tools.nsc.interpreter._
 
 trait Interpreter {
   /**
+   * Represents the output from an interpret execution.
+   */
+  type ExecutionOutput = String
+
+  /**
    * Starts the interpreter, initializing any internal state.
    * @return A reference to the interpreter
    */
@@ -19,7 +24,9 @@ trait Interpreter {
    * Executes the provided code with the option to silence output.
    * @param code The code to execute
    * @param silent Whether or not to execute the code silently (no output)
-   * @return The success/failure of the interpretation
+   * @return The success/failure of the interpretation and the output from the
+   *         execution
    */
-  def interpret(code: String, silent: Boolean = false): IR.Result
+  def interpret(code: String, silent: Boolean = false): (IR.Result, ExecutionOutput)
+  //def interpret(code: String, silent: Boolean = false): IR.Result
 }
