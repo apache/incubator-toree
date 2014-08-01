@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel.protocol.v5
 
-import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.actor.{ActorSelection, ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
@@ -28,7 +28,8 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     	it("should relay KernelMessage"){
         val actorLoader : ActorLoader = mock[ActorLoader]
         val probe : TestProbe = TestProbe()
-        when(actorLoader.load(any[MessageType])).thenReturn(probe.ref)
+        val mockSelection: ActorSelection = system.actorSelection(probe.ref.path.toString)
+        when(actorLoader.load(any[MessageType])).thenReturn(mockSelection)
         val relay : ActorRef = system.actorOf(Props(classOf[Relay], actorLoader))
         relay ! kernelMessage
         probe.expectMsg(kernelMessage)
@@ -37,7 +38,8 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
       it("should relay ZMQMessage as KernelMessage"){
         val actorLoader : ActorLoader = mock[ActorLoader]
         val probe : TestProbe = TestProbe()
-        when(actorLoader.load(any[MessageType])).thenReturn(probe.ref)
+        val mockSelection: ActorSelection = system.actorSelection(probe.ref.path.toString)
+        when(actorLoader.load(any[MessageType])).thenReturn(mockSelection)
         val relay : ActorRef = system.actorOf(Props(classOf[Relay], actorLoader))
         relay ! zmqMessage
         probe.expectMsg(kernelMessage)

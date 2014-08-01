@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel.protocol.v5
 
-import akka.actor.ActorRef
+import akka.actor._
 import com.ibm.spark.kernel.protocol.v5.MessageType._
 
 /**
@@ -15,5 +15,13 @@ trait ActorLoader {
    * @param messageType The message type for which to find an actor
    * @return An ActorRef to pass the message along
    */
-  def load(messageType: MessageType) : ActorRef
+def load(messageType: MessageType) : ActorSelection
+}
+
+case class SimpleActorLoader(actorRefFactory : ActorRefFactory) extends ActorLoader {
+  private val messageTypeActors: String = "/user/%s"
+
+  override def load(messageType: MessageType): ActorSelection = {
+    actorRefFactory.actorSelection(messageTypeActors.format(messageType.toString))
+  }
 }
