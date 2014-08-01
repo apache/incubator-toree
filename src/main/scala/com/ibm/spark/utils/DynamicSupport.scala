@@ -28,9 +28,17 @@ case class DynamicSupport(
     method match {
       case Some(m) => invokeMethod(m, Nil)
       case _ =>
-        val field = klass.getDeclaredField(name)
-        field.setAccessible(true)
-        field.get(instance)
+        try {
+          val field = klass.getDeclaredField(name)
+          field.setAccessible(true)
+          field.get(instance)
+        } catch {
+          case ex: NoSuchFieldException =>
+            throw new NoSuchFieldException(
+              klass.getName + "." + name + " does not exist!"
+            )
+          case ex: Throwable => throw ex
+        }
     }
   }
 

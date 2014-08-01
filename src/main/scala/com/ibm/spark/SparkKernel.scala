@@ -25,14 +25,15 @@ object SparkKernel extends App {
   }
 
   // Create socket actors
+  /*
   private val socketConfigReader = new SocketConfigReader(options.profile)
   private val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
   private val heartbeatActor = new Heartbeat(socketFactory)
   private val shellActor = new Shell(socketFactory)
   private val ioPubActor = new IOPub(socketFactory)
+  */
 
   /** TESTING */
-  /*
   val intp = new ScalaInterpreter(options.tail, Console.out)
   //val intp = new ScalaInterpreter(options.tail, Console.out)
   intp.start()
@@ -55,51 +56,43 @@ object SparkKernel extends App {
   {
     val (result, output) = intp.interpret( """val count = sc.parallelize(1 to 10).count()""")
     result match {
-      case IR.Success => println("Success: " + output.trim)
-      case _ => println("Something went wrong: " + output.trim)
+      case IR.Success => println("Success: " + output.left.get.trim)
+      case _ => println("Something went wrong: " + output.right.get)
     }
   }
   {
     val (result, output) = intp.interpret( """Console.println("\"Console.println(Count is " + count + ")\"")""")
     result match {
-      case IR.Success => println("Success: " + output.trim)
-      case _ => println("Something went wrong: " + output.trim)
+      case IR.Success => println("Success: " + output.left.get.trim)
+      case _ => println("Something went wrong: " + output.right.get)
     }
   }
   {
     val (result, output) = intp.interpret( """println("\"println(Count is " + count + ")\"")""")
     result match {
-      case IR.Success => println("Success: " + output.trim)
-      case _ => println("Something went wrong: " + output.trim)
+      case IR.Success => println("Success: " + output.left.get.trim)
+      case _ => println("Something went wrong: " + output.right.get)
     }
   }
   {
     val (result, output) = intp.interpret( """Console.println(Console.BLACK)""")
     result match {
-      case IR.Success => println("Success: " + output.trim)
-      case _ => println("Something went wrong: " + output.trim)
+      case IR.Success => println("Success: " + output.left.get.trim)
+      case _ => println("Something went wrong: " + output.right.get)
     }
   }
   {
     val (result, output) = intp.interpret( """Console.potato""")
     result match {
-      case IR.Success => println("Success: " + output.trim)
-      case _ => println("Something went wrong: " + output.trim)
+      case IR.Success => println("Success: " + output.left.get.trim)
+      case _ => println("Something went wrong: " + output.right.get)
     }
   }
-  val ex: Option[AnyRef] = intp.sparkIMain.valueOfTerm("lastException")
-  ex match {
-    case Some(e) =>
-      println(e.asInstanceOf[Throwable])
-      println(e.asInstanceOf[Throwable].getStackTrace.mkString("\n"))
-    case _ => println("Unable to load: " + "lastException")
-  }
-
   {
     val (result, output) = intp.interpret( """System.out.println("System.out.println")""")
     result match {
-      case IR.Success => println("Success: " + output.trim)
-      case _ => println("Something went wrong: " + output.trim)
+      case IR.Success => println("Success: " + output.left.get.trim)
+      case _ => println("Something went wrong: " + output.right.get)
     }
   }
 
@@ -117,5 +110,4 @@ object SparkKernel extends App {
 
   Console.println("Ctrl-C to terminate this kernel!")
   while (true) Thread.sleep(1000)
-  */
 }

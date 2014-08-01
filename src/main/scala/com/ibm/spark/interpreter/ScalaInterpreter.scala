@@ -19,6 +19,7 @@ case class ScalaInterpreter(
   out: OutputStream
 ) extends Interpreter {
   private val logger = LoggerFactory.getLogger(classOf[ScalaInterpreter])
+  private val ExecutionExceptionName = "lastException"
   val settings: Settings = new SparkCommandLine(args).settings
 
   /* Add scala.runtime libraries to interpreter classpath */ {
@@ -42,7 +43,9 @@ case class ScalaInterpreter(
   private val lastResultOut = new ByteArrayOutputStream()
   private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
 
-  override def interpret(code: String, silent: Boolean = false) = {
+  override def interpret(code: String, silent: Boolean = false):
+    (IR.Result, Either[ExecutionOutput, ExecutionError]) =
+  {
     require(sparkIMain != null)
     println(code)
 
@@ -55,13 +58,31 @@ case class ScalaInterpreter(
       }
     } else {
       result = sparkIMain.interpret(code)
-      output = lastResultOut.toString(Charset.defaultCharset().displayName())
+      output =
+        lastResultOut.toString(Charset.defaultCharset().displayName()).trim
     }
 
     // Clear our output (per result)
     lastResultOut.reset()
 
-    (result, output)
+    // Determine whether to provide an error or output
+    result match {
+      case IR.Success => (result, Left(output))
+      case IR.Incomplete => (result, Left(output))
+      case IR.Error =>
+        var executionError: ExecutionError = null
+        sparkIMain.valueOfTerm(ExecutionExceptionName) match {
+          case Some(e) =>
+            val ex = e.asInstanceOf[Throwable]
+            executionError = ExecutionError(
+              ex.getClass.getName,
+              ex.getLocalizedMessage,
+              ex.getStackTrace.map(_.toString).toList
+            )
+          case _ =>
+        }
+        (result, Right(executionError))
+    }
   }
 
   // NOTE: Convention is to force parentheses if a side effect occurs.

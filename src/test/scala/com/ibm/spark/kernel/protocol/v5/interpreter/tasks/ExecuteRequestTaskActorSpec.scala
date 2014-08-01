@@ -12,8 +12,11 @@ import org.mockito.Mockito._
 import org.scalatest.mock._
 import org.scalatest.{FunSpecLike, Matchers}
 
+import com.ibm.spark.interpreter._
+
 import scala.tools.nsc.interpreter._
 import scala.concurrent.duration._
+import scala.util.Either.LeftProjection
 
 object ExecuteRequestTaskActorSpec {
   val config = """
@@ -33,7 +36,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
     describe("#receive") {
       it("should return an ExecuteReplyOk if the interpreter returns success") {
         val mockInterpreter = mock[Interpreter]
-        doReturn(IR.Success, "").when(mockInterpreter)
+        doReturn(IR.Success, Left(new ExecutionOutput)).when(mockInterpreter)
           .interpret(anyString(), anyBoolean())
 
         val executeRequestTask =
@@ -51,14 +54,14 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
         // TODO: Convert to tuple of (ExecuteReplyOk, ExecuteResult)
         val response =
-          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, String]]
-        response._1 shouldBe a [ExecuteReplyOk]
-        response._2 shouldBe a [String]
+          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, ExecuteResult]]
+        response._1 shouldBe an [ExecuteReplyOk]
+        response._2 shouldBe an [ExecuteResult]
       }
 
       it("should return an ExecuteReplyError if the interpreter returns error") {
         val mockInterpreter = mock[Interpreter]
-        doReturn(IR.Error, "").when(mockInterpreter)
+        doReturn(IR.Error, Right(mock[ExecutionError])).when(mockInterpreter)
           .interpret(anyString(), anyBoolean())
 
         val executeRequestTask =
@@ -76,14 +79,14 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
         // TODO: Convert to tuple of (ExecuteReplyError, ExecuteResult)
         val response =
-          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, String]]
-        response._1 shouldBe a [ExecuteReplyError]
-        response._2 shouldBe a [String]
+          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, ExecuteResult]]
+        response._1 shouldBe an [ExecuteReplyError]
+        response._2 shouldBe an [ExecuteResult]
       }
 
       it("should return an ExecuteReplyError if the interpreter returns incomplete") {
         val mockInterpreter = mock[Interpreter]
-        doReturn(IR.Incomplete, "").when(mockInterpreter)
+        doReturn(IR.Incomplete, Right("")).when(mockInterpreter)
           .interpret(anyString(), anyBoolean())
 
         val executeRequestTask =
@@ -101,9 +104,9 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
         // TODO: Convert to tuple of (ExecuteReplyError, ExecuteResult)
         val response =
-          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, String]]
-        response._1 shouldBe a [ExecuteReplyError]
-        response._2 shouldBe a [String]
+          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, ExecuteResult]]
+        response._1 shouldBe an [ExecuteReplyError]
+        response._2 shouldBe an [ExecuteResult]
       }
 
       it("should return a failure message if an unknown message was sent") {

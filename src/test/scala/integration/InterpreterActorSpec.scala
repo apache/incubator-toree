@@ -81,9 +81,9 @@ class InterpreterActorSpec extends TestKit(
         interpreterActor ! executeRequest
 
         val response =
-          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, String]]
-        response._1 shouldBe a [ExecuteReplyOk]
-        response._2 shouldBe a [String]
+          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, ExecuteResult]]
+        response._1 shouldBe an [ExecuteReplyOk]
+        response._2 shouldBe an [ExecuteResult]
       }
 
       it("should return error if the execute request fails") {
@@ -101,9 +101,9 @@ class InterpreterActorSpec extends TestKit(
         interpreterActor ! executeRequest
 
         val response =
-          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, String]]
-        response._1 shouldBe a [ExecuteReplyError]
-        response._2 shouldBe a [String]
+          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, ExecuteResult]]
+        response._1 shouldBe an [ExecuteReplyError]
+        response._2 shouldBe an [ExecuteResult]
       }
     }
   }
