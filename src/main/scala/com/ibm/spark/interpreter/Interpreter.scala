@@ -23,5 +23,5 @@ trait Interpreter {
    *         execution
    */
   def interpret(code: String, silent: Boolean = false):
-    (IR.Result, Either[ExecutionOutput, ExecutionError])
+    (IR.Result, Either[ExecuteOutput, ExecuteError])
 }

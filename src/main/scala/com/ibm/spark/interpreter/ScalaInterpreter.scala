@@ -44,13 +44,13 @@ case class ScalaInterpreter(
   private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
 
   override def interpret(code: String, silent: Boolean = false):
-    (IR.Result, Either[ExecutionOutput, ExecutionError]) =
+    (IR.Result, Either[ExecuteOutput, ExecuteError]) =
   {
     require(sparkIMain != null)
     println(code)
 
     var result: IR.Result = null
-    var output: ExecutionOutput = ""
+    var output: ExecuteOutput = ""
 
     if (silent) {
       sparkIMain.beSilentDuring {
@@ -70,11 +70,11 @@ case class ScalaInterpreter(
       case IR.Success => (result, Left(output))
       case IR.Incomplete => (result, Left(output))
       case IR.Error =>
-        var executionError: ExecutionError = null
+        var executionError: ExecuteError = null
         sparkIMain.valueOfTerm(ExecutionExceptionName) match {
           case Some(e) =>
             val ex = e.asInstanceOf[Throwable]
-            executionError = ExecutionError(
+            executionError = ExecuteError(
               ex.getClass.getName,
               ex.getLocalizedMessage,
               ex.getStackTrace.map(_.toString).toList
