@@ -15,13 +15,26 @@ trait ActorLoader {
    * @param messageType The message type for which to find an actor
    * @return An ActorRef to pass the message along
    */
-def load(messageType: MessageType) : ActorSelection
+  def load(messageType: MessageType) : ActorSelection
+
+  def loadInterpreterActor() : ActorSelection
+  def loadRelayActor() : ActorSelection
 }
 
 case class SimpleActorLoader(actorRefFactory : ActorRefFactory) extends ActorLoader {
   private val messageTypeActors: String = "/user/%s"
+  private val interpreterActorPath: String = "/user/interpreter"
+  private val relayActorPath: String = "/user/relay"
 
   override def load(messageType: MessageType): ActorSelection = {
     actorRefFactory.actorSelection(messageTypeActors.format(messageType.toString))
+  }
+
+  override def loadInterpreterActor(): ActorSelection = {
+    actorRefFactory.actorSelection(interpreterActorPath)
+  }
+
+  override def loadRelayActor(): ActorSelection = {
+    actorRefFactory.actorSelection(relayActorPath)
   }
 }

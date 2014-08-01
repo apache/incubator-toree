@@ -7,15 +7,14 @@ import play.api.libs.json.Json
 import com.ibm.spark.kernel.protocol.v5._
 
 /**
- * Receives a KernelInfoRequest KernelMessage and returns a KernelInfoResponse
+ * Receives a KernelInfoRequest KernelMessage and returns a KernelInfoReply
  * KernelMessage.
  */
 class KernelInfoRequestHandler extends Actor with ActorLogging {
   override def receive: Receive = {
     case message: KernelMessage =>
-      log.debug("Sending kernel info response message")
+      log.debug("Sending kernel info reply message")
 
-      //val kernelInfoRequest = Json.parse(message.contentString).as[KernelInfoRequest]
       val kernelInfo = SparkKernelInfo
       val kernelInfoReply = KernelInfoReply(
         kernelInfo.protocol_version,
@@ -43,7 +42,5 @@ class KernelInfoRequestHandler extends Actor with ActorLogging {
         Json.toJson(kernelInfoReply).toString
       )
       sender ! kernelResponseMessage
-    case _ =>
-      sender ! "Error: Expected KernelMessage"
   }
 }
