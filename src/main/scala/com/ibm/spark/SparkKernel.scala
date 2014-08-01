@@ -25,15 +25,14 @@ object SparkKernel extends App {
   }
 
   // Create socket actors
-  /*
   private val socketConfigReader = new SocketConfigReader(options.profile)
   private val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
   private val heartbeatActor = new Heartbeat(socketFactory)
   private val shellActor = new Shell(socketFactory)
   private val ioPubActor = new IOPub(socketFactory)
-  */
 
   /** TESTING */
+  /*
   val intp = new ScalaInterpreter(options.tail, Console.out)
   //val intp = new ScalaInterpreter(options.tail, Console.out)
   intp.start()
@@ -88,6 +87,14 @@ object SparkKernel extends App {
       case _ => println("Something went wrong: " + output.trim)
     }
   }
+  val ex: Option[AnyRef] = intp.sparkIMain.valueOfTerm("lastException")
+  ex match {
+    case Some(e) =>
+      println(e.asInstanceOf[Throwable])
+      println(e.asInstanceOf[Throwable].getStackTrace.mkString("\n"))
+    case _ => println("Unable to load: " + "lastException")
+  }
+
   {
     val (result, output) = intp.interpret( """System.out.println("System.out.println")""")
     result match {
@@ -110,4 +117,5 @@ object SparkKernel extends App {
 
   Console.println("Ctrl-C to terminate this kernel!")
   while (true) Thread.sleep(1000)
+  */
 }
