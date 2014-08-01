@@ -1,10 +1,9 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import akka.actor.{ActorLogging, Actor}
-import com.ibm.spark.kernel.protocol.v5.{SparkKernelInfo, Header, KernelMessage}
-import com.ibm.spark.kernel.protocol.v5.content.{KernelInfoReply, KernelInfoRequest}
-import play.api.libs.json.Json
+import akka.actor.{Actor, ActorLogging}
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.content.KernelInfoReply
+import play.api.libs.json.Json
 
 /**
  * Receives a KernelInfoRequest KernelMessage and returns a KernelInfoReply
@@ -25,7 +24,7 @@ class KernelInfoRequestHandler extends Actor with ActorLogging {
         kernelInfo.banner
       )
 
-      val responseHeader = Header(
+      val replyHeader = Header(
         java.util.UUID.randomUUID.toString,
         "",
         java.util.UUID.randomUUID.toString,
@@ -36,7 +35,7 @@ class KernelInfoRequestHandler extends Actor with ActorLogging {
       val kernelResponseMessage = new KernelMessage(
         Seq[String](),
         "",
-        responseHeader,
+        replyHeader,
         message.header,
         Metadata(),
         Json.toJson(kernelInfoReply).toString
