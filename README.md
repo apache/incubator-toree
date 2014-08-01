@@ -58,6 +58,9 @@ There are three levels of test in this project:
 
 3. System - tests that demonstrate correctness across the entire system
 
+4. Scratch - tests isolated in a local branch, used for quick sanity checks,
+   not for actual inclusion into testing solution
+
 To execute specific tests, run sbt with the following:
 
 1. Unit - `sbt unit:test`
@@ -66,17 +69,24 @@ To execute specific tests, run sbt with the following:
 
 3. System - `sbt system:test`
 
+4. Scratch - `sbt scratch:test`
+
 To run all tests, use `sbt test`!
 
 The naming convention for tests is as follows:
 
 1. Unit - test classes end with _Spec_
    e.g. CompleteRequestSpec
+    * Placed under _com.ibm.spark_
 
 2. Integration - test classes end with _SpecForIntegration_
    e.g. InterpreterWithActorSpecForIntegration
+    * Placed under _integration_
 
 3. System - test classes end with _SpecForSystem_
    e.g. InputToAddJarForSystem
+    * Placed under _system_
 
+4. Scratch
+    * Placed under _scratch_
 
