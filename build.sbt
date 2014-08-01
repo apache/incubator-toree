@@ -80,12 +80,6 @@ libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.1" // Apache v2
 libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.6" // MIT
 
 //
-// HELPER DEPENDENCIES
-//
-
-//libraryDependencies += "commons-io" % "commons-io" % "2.4"
-
-//
 // TEST DEPENDENCIES
 //
 
