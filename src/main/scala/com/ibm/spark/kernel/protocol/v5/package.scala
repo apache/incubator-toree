@@ -4,7 +4,6 @@ import akka.util.ByteString
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.content._
 import play.api.libs.json.Json
-
 import scala.collection.immutable.Seq
 
 //
@@ -166,4 +165,14 @@ package object v5 {
     val Status          = Value("status")
     val Stream          = Value("stream")
   }
+  object SocketType extends Enumeration {
+    type SocketType = Value
+
+    val Shell       = Value("shell")
+    val IOPub       = Value("io_pub")
+    val StdIn       = Value("std_in")
+    val Control     = Value("control")
+    val Heartbeat   = Value("heartbeat")
+  }
+
 }

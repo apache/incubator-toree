@@ -29,7 +29,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val actorLoader : ActorLoader = mock[ActorLoader]
         val probe : TestProbe = TestProbe()
         val mockSelection: ActorSelection = system.actorSelection(probe.ref.path.toString)
-        when(actorLoader.load(any[MessageType])).thenReturn(mockSelection)
+        when(actorLoader.loadMessageActor(any[MessageType])).thenReturn(mockSelection)
         val relay : ActorRef = system.actorOf(Props(classOf[Relay], actorLoader))
         relay ! kernelMessage
         probe.expectMsg(kernelMessage)
@@ -39,7 +39,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val actorLoader : ActorLoader = mock[ActorLoader]
         val probe : TestProbe = TestProbe()
         val mockSelection: ActorSelection = system.actorSelection(probe.ref.path.toString)
-        when(actorLoader.load(any[MessageType])).thenReturn(mockSelection)
+        when(actorLoader.loadMessageActor(any[MessageType])).thenReturn(mockSelection)
         val relay : ActorRef = system.actorOf(Props(classOf[Relay], actorLoader))
         relay ! zmqMessage
         probe.expectMsg(kernelMessage)

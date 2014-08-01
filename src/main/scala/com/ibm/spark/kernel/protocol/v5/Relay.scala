@@ -15,7 +15,7 @@ case class Relay(actorLoader: ActorLoader) extends Actor {
    */
   private def relay(kernelMessage: KernelMessage){
     val messageType: MessageType = MessageType.withName(kernelMessage.header.msg_type)
-    actorLoader.load(messageType) ! kernelMessage
+    actorLoader.loadMessageActor(messageType) ! kernelMessage
   }
 
   /**
