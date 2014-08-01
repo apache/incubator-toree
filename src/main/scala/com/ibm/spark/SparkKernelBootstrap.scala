@@ -5,6 +5,7 @@ import com.ibm.spark.interpreter.{ScalaInterpreter, Interpreter}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.handler.{ExecuteRequestHandler, KernelInfoRequestHandler}
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
+import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
 import com.ibm.spark.kernel.protocol.v5.socket._
 import org.apache.spark.{SparkContext, SparkConf}
 import org.slf4j.LoggerFactory
@@ -156,7 +157,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
 
     logger.info("Creating interpreter actor")
     interpreterActor = actorSystem.actorOf(
-      Props(classOf[InterpreterActor], interpreter),
+      Props(classOf[InterpreterActor], new InterpreterTaskFactory(interpreter)),
       name = SystemActorType.Interpreter.toString
     )
 
@@ -177,7 +178,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
     logger.info("Creating execute request handler")
     actorSystem.actorOf(
       Props(classOf[ExecuteRequestHandler], actorLoader),
-      name = MessageType.KernelInfoRequest.toString
+      name = MessageType.ExecuteRequest.toString
     )
   }
 
