@@ -175,4 +175,11 @@ package object v5 {
     val Heartbeat   = Value("heartbeat")
   }
 
+  object SystemActorType extends Enumeration {
+    type SystemActorType = Value
+
+    val Relay         = Value("relay")
+    val Interpreter   = Value("interpreter")
+  }
+
 }

@@ -31,8 +31,6 @@ trait ActorLoader {
 
 case class SimpleActorLoader(actorRefFactory : ActorRefFactory) extends ActorLoader {
   private val messageTypeActors: String = "/user/%s"
-  private val interpreterActorPath: String = "/user/interpreter"
-  private val relayActorPath: String = "/user/relay"
 
   override def loadMessageActor(messageType: MessageType.MessageType): ActorSelection = {
     actorRefFactory.actorSelection(messageTypeActors.format(messageType.toString))
@@ -43,10 +41,10 @@ case class SimpleActorLoader(actorRefFactory : ActorRefFactory) extends ActorLoa
   }
 
   override def loadInterpreterActor(): ActorSelection = {
-    actorRefFactory.actorSelection(interpreterActorPath)
+    actorRefFactory.actorSelection(messageTypeActors.format(SystemActorType.Interpreter.toString))
   }
 
   override def loadRelayActor(): ActorSelection = {
-    actorRefFactory.actorSelection(relayActorPath)
+    actorRefFactory.actorSelection(messageTypeActors.format(SystemActorType.Relay.toString))
   }
 }

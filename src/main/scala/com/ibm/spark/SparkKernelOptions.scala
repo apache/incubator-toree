@@ -5,7 +5,7 @@ import java.util
 import joptsimple.OptionParser
 import joptsimple.OptionSpec
 
-class SparkKernelOptions(args: Seq[String]) {
+case class SparkKernelOptions(args: Seq[String]) {
   private val DefaultMasterArg = "local[*]"
   private val parser = new OptionParser()
 
