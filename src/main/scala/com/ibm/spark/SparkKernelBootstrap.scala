@@ -2,8 +2,10 @@ package com.ibm.spark
 
 import akka.actor._
 import com.ibm.spark.interpreter.{ScalaInterpreter, Interpreter}
+import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
+import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.handler.{ExecuteRequestHandler, KernelInfoRequestHandler}
+import com.ibm.spark.kernel.protocol.v5.handler._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
 import com.ibm.spark.kernel.protocol.v5.socket._
@@ -185,18 +187,31 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
     )
   }
 
-  private def initializeKernelHandlers(): Unit = {
-    logger.info("Creating kernel info request handler")
+  private def initializeRequestHandler[T](clazz: Class[T], messageType: MessageType){
+    logger.info("Creating %s handler".format(messageType.toString))
     actorSystem.actorOf(
-      Props(classOf[KernelInfoRequestHandler]),
-      name = MessageType.KernelInfoRequest.toString
+      Props(clazz, actorLoader),
+      name = messageType.toString
     )
+  }
 
-    logger.info("Creating execute request handler")
+  private def initializeSocketHandler(socketType: SocketType, messageType: MessageType): Unit = {
+    logger.info("Creating %s to %s socket handler ".format(messageType.toString ,socketType.toString))
     actorSystem.actorOf(
-      Props(classOf[ExecuteRequestHandler], actorLoader),
-      name = MessageType.ExecuteRequest.toString
+      Props(classOf[GenericSocketMessageHandler], actorLoader, socketType),
+      name = messageType.toString
     )
+  }
+
+  private def initializeKernelHandlers(): Unit = {
+    //  These are the handlers for messages coming into the
+    initializeRequestHandler(classOf[ExecuteRequestHandler], MessageType.ExecuteRequest )
+    initializeRequestHandler(classOf[KernelInfoRequestHandler], MessageType.KernelInfoRequest )
+
+    //  These are handlers for messages leaving the kernel through the sockets
+    initializeSocketHandler(SocketType.Shell, MessageType.KernelInfoReply)
+    initializeSocketHandler(SocketType.Shell, MessageType.ExecuteReply)
+    initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteResult)
   }
 
 }

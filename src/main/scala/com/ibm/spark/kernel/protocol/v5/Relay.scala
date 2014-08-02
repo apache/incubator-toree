@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel.protocol.v5
 
-import akka.actor.Actor
+import akka.actor.{Actor, ActorLogging}
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 
@@ -8,13 +8,14 @@ import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
  * This class is meant to be a relay for send KernelMessages through kernel system.
  * @param actorLoader The ActorLoader used by this class for finding actors for relaying messages
  */
-case class Relay(actorLoader: ActorLoader) extends Actor {
+case class Relay(actorLoader: ActorLoader) extends Actor with ActorLogging {
   /**
    * Relays a KernelMessage to a specific actor to handle that message
    * @param kernelMessage The message to relay
    */
   private def relay(kernelMessage: KernelMessage){
     val messageType: MessageType = MessageType.withName(kernelMessage.header.msg_type)
+    log.info("Relaying message of type " + kernelMessage.header.msg_type )
     actorLoader.loadMessageActor(messageType) ! kernelMessage
   }
 
@@ -29,7 +30,5 @@ case class Relay(actorLoader: ActorLoader) extends Actor {
       relay(zmqMessage)
     case kernelMessage: KernelMessage =>
       relay(kernelMessage)
-    case unknown =>
-      //  TODO handle the unknown case
   }
 }
