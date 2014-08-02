@@ -34,19 +34,21 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
   /**
    * Initializes all kernel systems.
    */
-  def initialize(): Unit = {
+  def initialize() = {
     initializeInterpreter()
     initializeSparkContext()
     initializeSystemActors()
     initializeKernelHandlers()
     createSockets()
     registerShutdownHook()
+
+    this
   }
 
   /**
    * Shuts down all kernel systems.
    */
-  def shutdown(): Unit = {
+  def shutdown() = {
     logger.info("Shutting down Spark Context")
     sparkContext.stop()
 
@@ -55,6 +57,17 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
 
     logger.info("Shutting down actor system")
     actorSystem.shutdown()
+
+    this
+  }
+
+  /**
+   * Waits for the main actor system to terminate.
+   */
+  def waitForTermination() = {
+    actorSystem.awaitTermination()
+
+    this
   }
 
   private def createSockets(): Unit = {
@@ -66,19 +79,22 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
     logger.debug("Constructing SocketFactory")
     socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
 
-    logger.debug("Initializing Heartbeat")
+    logger.debug("Initializing Heartbeat on port " +
+      socketConfigReader.getSocketConfig.hb_port)
     heartbeatActor = actorSystem.actorOf(
       Props(classOf[Heartbeat], socketFactory),
       name = SocketType.Heartbeat.toString
     )
 
-    logger.debug("Initializing Shell")
+    logger.debug("Initializing Shell on port " +
+      socketConfigReader.getSocketConfig.shell_port)
     shellActor = actorSystem.actorOf(
       Props(classOf[Shell], socketFactory),
       name = SocketType.Shell.toString
     )
 
-    logger.debug("Initializing IOPub")
+    logger.debug("Initializing IOPub on port " +
+      socketConfigReader.getSocketConfig.iopub_port)
     ioPubActor = actorSystem.actorOf(
       Props(classOf[IOPub], socketFactory),
       name = SocketType.IOPub.toString

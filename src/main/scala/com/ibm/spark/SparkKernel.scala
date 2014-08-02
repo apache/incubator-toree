@@ -6,9 +6,9 @@ object SparkKernel extends App {
   if (options.help) {
     options.printHelpOn(System.out)
   } else {
-    SparkKernelBootstrap(options).initialize()
-
-    Console.println("Ctrl-C to terminate this kernel!")
-    while (true) Thread.sleep(1000)
+    SparkKernelBootstrap(options)
+      .initialize()
+      .waitForTermination()
+      .shutdown()
   }
 }
