@@ -9,7 +9,7 @@ import play.api.libs.json.Json
  * Receives a KernelInfoRequest KernelMessage and returns a KernelInfoReply
  * KernelMessage.
  */
-class KernelInfoRequestHandler extends Actor with ActorLogging {
+class KernelInfoRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLogging {
   override def receive: Receive = {
     case message: KernelMessage =>
       log.debug("Sending kernel info reply message")
@@ -28,18 +28,19 @@ class KernelInfoRequestHandler extends Actor with ActorLogging {
         java.util.UUID.randomUUID.toString,
         "",
         java.util.UUID.randomUUID.toString,
-        "kernel_info_reply",
+        MessageType.KernelInfoReply.toString,
         kernelInfo.protocol_version
       )
 
       val kernelResponseMessage = new KernelMessage(
-        Seq[String](),
+        message.ids,
         "",
         replyHeader,
         message.header,
         Metadata(),
         Json.toJson(kernelInfoReply).toString
       )
-      sender ! kernelResponseMessage
+
+      actorLoader.loadRelayActor() ! kernelResponseMessage
   }
 }
