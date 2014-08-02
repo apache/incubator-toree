@@ -117,7 +117,7 @@ package object v5 {
         (byteString : ByteString) =>  { new String(byteString.toArray) }
       )
     val header = Json.parse(message.frames(delimiterIndex + 2)).as[Header]
-    val parentHeader =
+    val parentHeader = // TODO: This can be an empty json object of {}
       Json.parse(message.frames(delimiterIndex + 3)).as[ParentHeader]
     val metadata = Json.parse(message.frames(delimiterIndex + 4)).as[Metadata]
 
