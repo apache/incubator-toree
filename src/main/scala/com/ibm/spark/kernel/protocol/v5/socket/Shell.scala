@@ -12,6 +12,7 @@ class Shell(socketFactory: SocketFactory) extends Actor with ActorLogging {
   override def receive: Receive = {
     case message =>
       log.debug("Sending shell message")
+      println("SHELL SENDING: " + message)
       socket ! message
   }
 }

@@ -12,6 +12,7 @@ class IOPub(socketFactory: SocketFactory) extends Actor with ActorLogging {
   override def receive: Receive = {
     case message =>
       log.debug("Sending IOPub message")
+      println("IOPUB SENDING: " + message)
       socket ! message
   }
 }

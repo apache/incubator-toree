@@ -1,6 +1,6 @@
 package com.ibm.spark
 
-import akka.actor.{ActorRef, Props, ActorSystem, ActorRefFactory}
+import akka.actor._
 import com.ibm.spark.interpreter.{ScalaInterpreter, Interpreter}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.handler.{ExecuteRequestHandler, KernelInfoRequestHandler}
@@ -65,6 +65,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
    * Waits for the main actor system to terminate.
    */
   def waitForTermination() = {
+    logger.debug("Waiting for actor system to terminate")
     actorSystem.awaitTermination()
 
     this
@@ -199,3 +200,4 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
   }
 
 }
+

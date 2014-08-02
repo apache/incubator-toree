@@ -41,8 +41,7 @@ class InterpreterActor(
    */
   override def preStart = {
     executeRequestTask =
-      interpreterTaskFactor.ExecuteRequestTask(context, "executeCode")
-    println("NEW ACTOR: " + executeRequestTask.path.toString)
+      interpreterTaskFactor.ExecuteRequestTask(context, "code")
   }
   
   override def receive: Receive = {

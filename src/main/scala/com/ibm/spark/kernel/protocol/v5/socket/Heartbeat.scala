@@ -9,9 +9,11 @@ import akka.actor.{ActorLogging, Actor}
 class Heartbeat(socketFactory : SocketFactory) extends Actor with ActorLogging {
   log.debug("Created new Heartbeat actor")
   val socket = socketFactory.Heartbeat(context.system, self)
+
   override def receive: Receive = {
     case message =>
       log.debug("Sending heartbeat message")
+      println("HEARTBEAT SENDING: " + message)
       socket ! message
   }
 }
