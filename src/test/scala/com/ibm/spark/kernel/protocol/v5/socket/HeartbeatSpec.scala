@@ -32,11 +32,6 @@ class HeartbeatSpec extends TestKit(ActorSystem("HeartbeatActorSpec", ConfigFact
 
 
     describe("#receive") {
-      it("should reply with the same string") {
-        heartbeat ! SomeMessage
-        probe.expectMsg(SomeMessage)
-      }
-
       it("should reply with the same ZMQMessage") {
         heartbeat ! SomeZMQMessage
         probe.expectMsg(SomeZMQMessage)

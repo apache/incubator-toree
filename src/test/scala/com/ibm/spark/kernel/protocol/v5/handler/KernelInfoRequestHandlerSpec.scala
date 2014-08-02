@@ -1,10 +1,12 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import akka.actor.{ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit}
+import akka.actor.{ActorSelection, ActorSystem, Props}
+import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import com.ibm.spark.kernel.protocol.v5.content.KernelInfoReply
-import com.ibm.spark.kernel.protocol.v5.{Header, KernelMessage}
+import com.ibm.spark.kernel.protocol.v5.{ActorLoader, Header, KernelMessage}
 import com.typesafe.config.ConfigFactory
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 import play.api.libs.json.Json
 
@@ -20,9 +22,13 @@ object KernelInfoRequestHandlerSpec {
 class KernelInfoRequestHandlerSpec extends TestKit(
   ActorSystem("KernelInfoRequestHandlerSpec",
     ConfigFactory.parseString(KernelInfoRequestHandlerSpec.config))
-) with ImplicitSender with FunSpecLike with Matchers {
+) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+  val actorLoader: ActorLoader =  mock[ActorLoader]
+  val actor = system.actorOf(Props(classOf[KernelInfoRequestHandler], actorLoader))
 
-  val actor = system.actorOf(Props(classOf[KernelInfoRequestHandler]))
+  val relayProbe : TestProbe = TestProbe()
+  val relaySelection : ActorSelection = system.actorSelection(relayProbe.ref.path)
+  when(actorLoader.loadRelayActor()).thenReturn(relaySelection)
 
   val header = Header("","","","","")
   val kernelMessage = new KernelMessage(
@@ -32,7 +38,7 @@ class KernelInfoRequestHandlerSpec extends TestKit(
   describe("Kernel Info Request Handler") {
     it("should return a KernelMessage containing kernel info response") {
       actor ! kernelMessage
-      val reply = receiveOne(10.seconds).asInstanceOf[KernelMessage]
+      val reply = relayProbe.receiveOne(1.seconds).asInstanceOf[KernelMessage]
       val kernelInfo = Json.parse(reply.contentString).as[KernelInfoReply]
       kernelInfo.implementation should be ("spark")
     }

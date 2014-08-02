@@ -92,7 +92,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
     logger.debug("Initializing Shell on port " +
       socketConfigReader.getSocketConfig.shell_port)
     shellActor = actorSystem.actorOf(
-      Props(classOf[Shell], socketFactory),
+      Props(classOf[Shell], socketFactory, actorLoader),
       name = SocketType.Shell.toString
     )
 

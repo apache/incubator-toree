@@ -2,6 +2,7 @@ package com.ibm.spark.kernel.protocol.v5.socket
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import com.ibm.spark.kernel.protocol.v5Test._
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -18,9 +19,6 @@ object IOPubSpec {
 class IOPubSpec extends TestKit(ActorSystem("IOPubActorSpec", ConfigFactory.parseString(IOPubSpec.config)))
 with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
-  // TODO replace with actual kernel message
-  val KernelMessage: String = "some kernel message"
-
   describe("IOPubActor") {
     val socketFactory = mock[SocketFactory]
     val probe : TestProbe = TestProbe()
@@ -31,8 +29,8 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     // TODO test that the response type changed
     describe("#receive") {
       it("should reply with a ZMQMessage") {
-        socket ! KernelMessage
-        probe.expectMsg(KernelMessage)
+        socket ! MockKernelMessage
+        probe.expectMsg(MockZMQMessage)
       }
     }
   }
