@@ -3,8 +3,8 @@ package com.ibm.spark.kernel.protocol
 import akka.util.ByteString
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.content._
-import play.api.libs.json.Json
-import scala.collection.immutable.Seq
+import play.api.data.validation.ValidationError
+import play.api.libs.json.{JsPath, Json}
 
 //
 // NOTE: This is brought in to remove feature warnings regarding the use of
@@ -22,6 +22,9 @@ package object v5 {
   // Provide a ParentHeader type and object representing a Header
   type ParentHeader = Header
   val ParentHeader = Header
+
+  val EmptyHeader: Header             = Header(null,null,null,null,null)
+  val EmptyParentHeader: ParentHeader = EmptyHeader
 
   // Provide a Metadata type and object representing a map
   type Metadata = Map[String, String]
@@ -117,8 +120,10 @@ package object v5 {
         (byteString : ByteString) =>  { new String(byteString.toArray) }
       )
     val header = Json.parse(message.frames(delimiterIndex + 2)).as[Header]
-    val parentHeader = // TODO: This can be an empty json object of {}
-      Json.parse(message.frames(delimiterIndex + 3)).as[ParentHeader]
+    val parentHeader = Json.parse(message.frames(delimiterIndex + 3)).validate[ParentHeader].fold[ParentHeader](
+          (invalid: Seq[(JsPath, Seq[ValidationError])]) => EmptyParentHeader,
+          (valid: ParentHeader) => valid
+        )
     val metadata = Json.parse(message.frames(delimiterIndex + 4)).as[Metadata]
 
     new KernelMessage(ids,message.frame(delimiterIndex + 1),
