@@ -6,9 +6,8 @@ import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.{ExecuteReply, ExecuteRequest, ExecuteResult}
 import play.api.libs.json.Json
-import scala.concurrent.{ExecutionContext, Future}
-import ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
@@ -39,7 +38,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
             java.util.UUID.randomUUID.toString,
             "",
             java.util.UUID.randomUUID.toString,
-            "execute_reply",
+            MessageType.ExecuteReply.toString,
             kernelInfo.protocol_version
           )
 
@@ -47,12 +46,12 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
             java.util.UUID.randomUUID.toString,
             "",
             java.util.UUID.randomUUID.toString,
-            "execute_result",
+            MessageType.ExecuteResult.toString,
             kernelInfo.protocol_version
           )
 
           val kernelReplyMessage = new KernelMessage(
-            Seq[String](),
+            message.ids,
             "",
             replyHeader,
             message.header,
@@ -61,7 +60,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
           )
 
           val kernelResultMessage = new KernelMessage(
-            Seq[String](),
+            message.ids,
             "",
             resultHeader,
             message.header,
