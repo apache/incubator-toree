@@ -145,15 +145,9 @@ case class ScalaInterpreter(
 
   // NOTE: Convention is to force parentheses if a side effect occurs.
   override def stop() = {
-    require(sparkIMain != null)
-
     logger.info("Shutting down interpreter")
-    /*sparkIMain.beQuietDuring {
-      context.stop()
-      //sparkIMain.interpret("""sc.stop""")
-    }*/
 
-    sparkIMain.close()
+    if (sparkIMain != null) sparkIMain.close()
 
     sparkIMain = null
 
