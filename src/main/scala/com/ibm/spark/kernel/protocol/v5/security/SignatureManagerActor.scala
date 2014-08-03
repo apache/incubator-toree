@@ -48,6 +48,7 @@ class SignatureManagerActor(
       val kernelMessage: KernelMessage = message
       (signatureChecker ? kernelMessage) pipeTo sender
     case message: KernelMessage =>
+      // TODO: Proper error handling for possible exception from mapTo
       (signatureProducer ? message).mapTo[String].map(
         result => message.copy(signature = result)
       ) pipeTo sender
