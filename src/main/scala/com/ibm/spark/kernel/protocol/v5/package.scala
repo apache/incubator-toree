@@ -183,8 +183,21 @@ package object v5 {
   object SystemActorType extends Enumeration {
     type SystemActorType = Value
 
-    val Relay         = Value("relay")
-    val Interpreter   = Value("interpreter")
+    val Relay             = Value("relay")
+    val Interpreter       = Value("interpreter")
+    val SignatureManager  = Value("signature_manager")
   }
 
+  object SignatureManagerChildActorType extends Enumeration {
+    type SignatureManagerChildActorType = Value
+
+    val SignatureChecker  = Value("signature_checker")
+    val SignatureProducer = Value("signature_producer")
+  }
+
+  object InterpreterChildActorType extends Enumeration {
+    type InterpreterChildActorType = Value
+
+    val ExecuteRequestTask = Value("execute_request_task")
+  }
 }

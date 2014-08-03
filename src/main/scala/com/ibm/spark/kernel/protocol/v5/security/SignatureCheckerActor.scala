@@ -7,16 +7,11 @@ import play.api.libs.json.Json
 
 /**
  * Verifies whether or not a kernel message has a valid signature.
- * @param key The key to use for signature validation
- * @param scheme The scheme to use for signature validation
+ * @param hmac The HMAC to use for signature validation
  */
 class SignatureCheckerActor(
-  key: String, scheme: String
+  private val hmac: Hmac
 ) extends Actor with ActorLogging {
-  private val hmac = Hmac(key, HmacAlgorithm(scheme))
-
-  def this(key: String) = this(key, HmacAlgorithm.SHA256.toString)
-
   override def receive: Receive = {
     case message: KernelMessage =>
       val isValidSignature = hmac(

@@ -27,8 +27,10 @@ case class Relay(actorLoader: ActorLoader) extends Actor with ActorLogging {
     //  We need to have these cases explicitly because the implicit to convert is only
     //  done when we call the method. Hence, the two cases
     case zmqMessage: ZMQMessage =>
+      // TODO: Check if ZMQ Message is valid
       relay(zmqMessage)
     case kernelMessage: KernelMessage =>
+      // TODO: Funnel message through SignatureManager
       relay(kernelMessage)
   }
 }

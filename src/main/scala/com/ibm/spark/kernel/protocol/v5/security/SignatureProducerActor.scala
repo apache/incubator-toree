@@ -7,16 +7,11 @@ import play.api.libs.json.Json
 
 /**
  * Constructs a signature from any kernel message received.
- * @param key The key to use for signature construction
- * @param scheme The scheme to use for signature construction
+ * @param hmac The HMAC to use for signature construction
  */
 class SignatureProducerActor(
-  key: String, scheme: String
+  private val hmac: Hmac
 ) extends Actor with ActorLogging {
-  private val hmac = Hmac(key, HmacAlgorithm(scheme))
-
-  def this(key: String) = this(key, HmacAlgorithm.SHA256.toString)
-
   override def receive: Receive = {
     case message: KernelMessage =>
       val signature = hmac(

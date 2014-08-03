@@ -4,6 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.security.SignatureCheckerActor
+import com.ibm.spark.security.Hmac
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 
@@ -45,8 +46,9 @@ class SignatureCheckerActorSpec extends TestKit(
   private var signatureChecker: ActorRef = _
 
   before {
+    val hmac = Hmac(sigKey)
     signatureChecker =
-      system.actorOf(Props(classOf[SignatureCheckerActor], sigKey))
+      system.actorOf(Props(classOf[SignatureCheckerActor], hmac))
 
   }
 

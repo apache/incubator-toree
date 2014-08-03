@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.{ask, pipe}
 import akka.util.Timeout
 import com.ibm.spark.interpreter.Interpreter
+import com.ibm.spark.kernel.protocol.v5.InterpreterChildActorType
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks._
 import com.ibm.spark.kernel.protocol.v5.content._
 
@@ -23,7 +24,7 @@ object InterpreterActor {
 // Does this mean that the interpreter instance is not gc and is passed in?
 //
 class InterpreterActor(
-  interpreterTaskFactor: InterpreterTaskFactory
+  interpreterTaskFactory: InterpreterTaskFactory
 ) extends Actor {
   // NOTE: Required to provide the execution context for futures with akka
   import context._
@@ -40,10 +41,10 @@ class InterpreterActor(
    * Initializes all child actors performing tasks for the interpreter.
    */
   override def preStart = {
-    executeRequestTask =
-      interpreterTaskFactor.ExecuteRequestTask(context, "code")
+    executeRequestTask = interpreterTaskFactory.ExecuteRequestTask(
+      context, InterpreterChildActorType.ExecuteRequestTask.toString)
   }
-  
+
   override def receive: Receive = {
     // TODO: Get output from running code (need to clear output stream each
     // TODO: time interpreter is run)

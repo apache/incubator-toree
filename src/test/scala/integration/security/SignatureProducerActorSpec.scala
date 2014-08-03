@@ -4,6 +4,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.security.SignatureProducerActor
+import com.ibm.spark.security.Hmac
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpecLike}
 
@@ -27,8 +28,9 @@ class SignatureProducerActorSpec extends TestKit(
   private var signatureProducer: ActorRef = _
 
   before {
+    val hmac = Hmac(sigKey)
     signatureProducer =
-      system.actorOf(Props(classOf[SignatureProducerActor], sigKey))
+      system.actorOf(Props(classOf[SignatureProducerActor], hmac))
 
   }
 
