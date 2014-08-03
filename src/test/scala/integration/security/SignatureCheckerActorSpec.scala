@@ -1,22 +1,11 @@
 package integration.security
 
-import java.io.ByteArrayOutputStream
-
-import akka.actor.Status.Success
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.ibm.spark.interpreter.ScalaInterpreter
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
 import com.ibm.spark.kernel.protocol.v5.security.SignatureCheckerActor
 import com.typesafe.config.ConfigFactory
-import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
-import org.slf4j.Logger
-
-import akka.pattern.ask
-import scala.concurrent.duration._
 
 object SignatureCheckerActorSpec {
   val config = """
@@ -35,7 +24,7 @@ class SignatureCheckerActorSpec extends TestKit(
 
   private val sigKey = "12345"
   private val signature =
-    "36ddda9343b2510338a3210f1c14e95977a1e5a77cd9188476575fcb381760b9"
+    "1c4859a7606fd93eb5f73c3d9642f9bc860453ba42063961a00d02ed820147b5"
   private val goodMessage =
     KernelMessage(
       null, signature,

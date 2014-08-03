@@ -6,11 +6,11 @@ import com.ibm.spark.security.{HmacAlgorithm, Hmac}
 import play.api.libs.json.Json
 
 /**
- * Verifies whether or not a kernel message has a valid signature.
- * @param key The key to use for signature validation
- * @param scheme The scheme to use for signature validation
+ * Constructs a signature from any kernel message received.
+ * @param key The key to use for signature construction
+ * @param scheme The scheme to use for signature construction
  */
-class SignatureCheckerActor(
+class SignatureProducerActor(
   key: String, scheme: String
 ) extends Actor with ActorLogging {
   private val hmac = Hmac(key, HmacAlgorithm(scheme))
@@ -19,12 +19,12 @@ class SignatureCheckerActor(
 
   override def receive: Receive = {
     case message: KernelMessage =>
-      val isValidSignature = hmac(
+      val signature = hmac(
         Json.toJson(message.header).toString,
         Json.toJson(message.parentHeader).toString,
         Json.toJson(message.metadata).toString,
         message.contentString
-      ) == message.signature
-      sender ! isValidSignature
+      )
+      sender ! signature
   }
 }
