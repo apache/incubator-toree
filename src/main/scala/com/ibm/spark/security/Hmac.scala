@@ -39,7 +39,7 @@ class Hmac(
     mac.init(secretKeySpec)
   }
 
-  def apply(items: Seq[String]): String = digest(items)
+  def apply(items: String*): String = digest(items)
 
   def digest(items: Seq[String]): String = if (key.nonEmpty) {
     items.map(_.getBytes).foreach(mac.update)
