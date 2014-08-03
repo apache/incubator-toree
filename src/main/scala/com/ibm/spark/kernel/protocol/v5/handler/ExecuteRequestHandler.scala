@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.{ExecuteInput, ExecuteReply, ExecuteRequest, ExecuteResult}
+import com.ibm.spark.kernel.protocol.v5.content._
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,8 +25,20 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
       log.debug("Forwarding execute request")
       val executeRequest = Json.parse(message.contentString).as[ExecuteRequest]
 
-      val inputHeader = message.header.copy(msg_type = MessageType.ExecuteInput.toString)
+      val busyHeader = message.header.copy(msg_type = MessageType.Status.toString)
+      //  Alert the clients the kernel is busy
+      val busyMessage = new KernelMessage(
+        Seq(MessageType.Status.toString),
+        "",
+        busyHeader,
+        message.header,
+        Metadata(),
+        Json.toJson(new KernelStatus("busy")).toString
+      )
+      actorLoader.loadRelayActor() ! busyMessage
 
+      //  Send a message to the clients saying we are executing something
+      val inputHeader = message.header.copy(msg_type = MessageType.ExecuteInput.toString)
       val executeInputMessage = new KernelMessage(
         message.ids,
         "",
@@ -35,10 +47,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
         Metadata(),
         Json.toJson(new ExecuteInput(executeRequest.code,1)).toString
       )
-
       actorLoader.loadRelayActor() ! executeInputMessage
-
-
 
       // use future to keep message header in scope
       val future: Future[(ExecuteReply, ExecuteResult)] =
@@ -72,6 +81,18 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
           val relayActor = actorLoader.loadRelayActor()
           relayActor ! kernelReplyMessage
           relayActor ! kernelResultMessage
+
+          val idleHeader = message.header.copy(msg_type = MessageType.Status.toString)
+          //  Alert the clients the kernel is busy
+          val idleMessage = new KernelMessage(
+            Seq(MessageType.Status.toString),
+            "",
+            idleHeader,
+            message.header,
+            Metadata(),
+            Json.toJson(new KernelStatus("idle")).toString
+          )
+          actorLoader.loadRelayActor() ! idleMessage
 
         case Failure(_) =>
           // todo send error message to relay

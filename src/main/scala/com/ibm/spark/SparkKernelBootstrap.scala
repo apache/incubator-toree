@@ -213,6 +213,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
     initializeSocketHandler(SocketType.Shell, MessageType.ExecuteReply)
     initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteResult)
     initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteInput)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Status)
   }
 
 }

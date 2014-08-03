@@ -63,6 +63,11 @@ class ExecuteRequestHandlerSpec extends TestKit(
       // Send message to the handler
       handlerActor ! kernelMessage
 
+      //  KernelStatus = busy
+      val kernelBusyReply = probe.receiveOne(10.seconds).asInstanceOf[KernelMessage]
+      val busyStatus = Json.parse(kernelBusyReply.contentString).as[KernelStatus]
+      busyStatus.execution_state should be ("busy")
+
       //  ExecuteInput
       val kernelExecuteInputReply = probe.receiveOne(10.seconds).asInstanceOf[KernelMessage]
       val input = Json.parse(kernelExecuteInputReply.contentString).as[ExecuteInput]
@@ -76,6 +81,11 @@ class ExecuteRequestHandlerSpec extends TestKit(
       val kernelExecuteResult = probe.receiveOne(10.seconds).asInstanceOf[KernelMessage]
       val result = Json.parse(kernelExecuteResult.contentString).as[ExecuteResult]
       result.execution_count should be (2)
+
+      //  KernelStatus = idle
+      val kernelIdleReply = probe.receiveOne(10.seconds).asInstanceOf[KernelMessage]
+      val idleStatus = Json.parse(kernelIdleReply.contentString).as[KernelStatus]
+      idleStatus.execution_state should be ("idle")
     }
   }
 }
