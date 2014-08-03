@@ -4,7 +4,7 @@ import akka.actor.{Actor, ActorLogging}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.{ExecuteReply, ExecuteRequest, ExecuteResult}
+import com.ibm.spark.kernel.protocol.v5.content.{ExecuteInput, ExecuteReply, ExecuteRequest, ExecuteResult}
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,6 +25,21 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
       log.debug("Forwarding execute request")
       val executeRequest = Json.parse(message.contentString).as[ExecuteRequest]
 
+      val inputHeader = message.header.copy(msg_type = MessageType.ExecuteInput.toString)
+
+      val executeInputMessage = new KernelMessage(
+        message.ids,
+        "",
+        inputHeader,
+        message.header,
+        Metadata(),
+        Json.toJson(new ExecuteInput(executeRequest.code,1)).toString
+      )
+
+      actorLoader.loadRelayActor() ! executeInputMessage
+
+
+
       // use future to keep message header in scope
       val future: Future[(ExecuteReply, ExecuteResult)] =
         ask(actorLoader.loadInterpreterActor(), executeRequest).mapTo[(ExecuteReply, ExecuteResult)]
@@ -33,22 +48,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
         case Success(tuple) =>
           log.debug("Sending Kernel messages to router")
 
-          val kernelInfo = SparkKernelInfo
-          val replyHeader = Header(
-            java.util.UUID.randomUUID.toString,
-            "",
-            java.util.UUID.randomUUID.toString,
-            MessageType.ExecuteReply.toString,
-            kernelInfo.protocol_version
-          )
-
-          val resultHeader = Header(
-            java.util.UUID.randomUUID.toString,
-            "",
-            java.util.UUID.randomUUID.toString,
-            MessageType.ExecuteResult.toString,
-            kernelInfo.protocol_version
-          )
+          val replyHeader = message.header.copy(msg_type = MessageType.ExecuteReply.toString)
 
           val kernelReplyMessage = new KernelMessage(
             message.ids,
@@ -59,8 +59,9 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
             Json.toJson(tuple._1).toString
           )
 
+          val resultHeader = message.header.copy(msg_type = MessageType.ExecuteResult.toString)
           val kernelResultMessage = new KernelMessage(
-            message.ids,
+            Seq(MessageType.ExecuteResult.toString),
             "",
             resultHeader,
             message.header,

@@ -1,14 +1,14 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
 import akka.actor.{Actor, ActorSelection, ActorSystem, Props}
-import akka.testkit.{TestActorRef, ImplicitSender, TestKit, TestProbe}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 import play.api.libs.json.Json
-import com.ibm.spark.kernel.protocol.v5._
 
 import scala.concurrent.duration._
 
@@ -62,6 +62,11 @@ class ExecuteRequestHandlerSpec extends TestKit(
     it("should return execute reply and result") {
       // Send message to the handler
       handlerActor ! kernelMessage
+
+      //  ExecuteInput
+      val kernelExecuteInputReply = probe.receiveOne(10.seconds).asInstanceOf[KernelMessage]
+      val input = Json.parse(kernelExecuteInputReply.contentString).as[ExecuteInput]
+      input.code should be ("spark code")
 
       // Interpreter should respond with tuple
       val kernelExecuteReply = probe.receiveOne(10.seconds).asInstanceOf[KernelMessage]
