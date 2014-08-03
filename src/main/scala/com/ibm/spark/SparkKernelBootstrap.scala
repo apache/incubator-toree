@@ -8,7 +8,9 @@ import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.handler._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
+import com.ibm.spark.kernel.protocol.v5.security.SignatureManagerActor
 import com.ibm.spark.kernel.protocol.v5.socket._
+import com.ibm.spark.security.{HmacAlgorithm, Hmac}
 import org.apache.spark.{SparkContext, SparkConf}
 import org.slf4j.LoggerFactory
 
@@ -32,11 +34,13 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
   private var actorLoader: ActorLoader                = _
   private var interpreterActor: ActorRef              = _
   private var relayActor: ActorRef                    = _
+  private var signatureManagerActor: ActorRef         = _
 
   /**
    * Initializes all kernel systems.
    */
   def initialize() = {
+    loadConfiguration()
     initializeInterpreter()
     initializeSparkContext()
     initializeSystemActors()
@@ -73,11 +77,14 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
     this
   }
 
-  private def createSockets(): Unit = {
-    logger.info("Creating sockets")
-
+  private def loadConfiguration(): Unit = {
+    // TODO: This configuration is not just for sockets!
     logger.debug("Constructing SocketConfigReader")
     socketConfigReader = new SocketConfigReader(sparkKernelOptions.profile)
+  }
+
+  private def createSockets(): Unit = {
+    logger.info("Creating sockets")
 
     logger.debug("Constructing SocketFactory")
     socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
@@ -184,6 +191,16 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
     relayActor = actorSystem.actorOf(
       Props(classOf[Relay], actorLoader),
       name = SystemActorType.Relay.toString
+    )
+
+    logger.info("Creating signature manager actor")
+    val sigKey = socketConfigReader.getSocketConfig.key
+    val sigScheme = socketConfigReader.getSocketConfig.signature_scheme
+    logger.info("Key = " + sigKey)
+    logger.info("Scheme = " + sigScheme)
+    signatureManagerActor = actorSystem.actorOf(
+      Props(classOf[SignatureManagerActor], sigKey, sigScheme.replace("-", "")),
+      name = SystemActorType.SignatureManager.toString
     )
   }
 

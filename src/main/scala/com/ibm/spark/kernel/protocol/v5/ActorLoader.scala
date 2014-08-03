@@ -27,24 +27,39 @@ trait ActorLoader {
   def loadSocketActor(socketType: SocketType.SocketType) : ActorSelection
   def loadInterpreterActor() : ActorSelection
   def loadRelayActor() : ActorSelection
+  def loadSignatureManagerActor() : ActorSelection
 }
 
 case class SimpleActorLoader(actorRefFactory : ActorRefFactory) extends ActorLoader {
   private val messageTypeActors: String = "/user/%s"
 
   override def loadMessageActor(messageType: MessageType.MessageType): ActorSelection = {
-    actorRefFactory.actorSelection(messageTypeActors.format(messageType.toString))
+    actorRefFactory.actorSelection(
+      messageTypeActors.format(messageType.toString)
+    )
   }
 
   override def loadSocketActor(socketType: SocketType): ActorSelection = {
-    actorRefFactory.actorSelection(messageTypeActors.format(socketType.toString))
+    actorRefFactory.actorSelection(
+      messageTypeActors.format(socketType.toString)
+    )
   }
 
   override def loadInterpreterActor(): ActorSelection = {
-    actorRefFactory.actorSelection(messageTypeActors.format(SystemActorType.Interpreter.toString))
+    actorRefFactory.actorSelection(
+      messageTypeActors.format(SystemActorType.Interpreter.toString)
+    )
   }
 
   override def loadRelayActor(): ActorSelection = {
-    actorRefFactory.actorSelection(messageTypeActors.format(SystemActorType.Relay.toString))
+    actorRefFactory.actorSelection(
+      messageTypeActors.format(SystemActorType.Relay.toString)
+    )
+  }
+
+  override def loadSignatureManagerActor(): ActorSelection = {
+    actorRefFactory.actorSelection(
+      messageTypeActors.format(SystemActorType.SignatureManager.toString)
+    )
   }
 }
