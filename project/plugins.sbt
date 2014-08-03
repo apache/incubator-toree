@@ -14,3 +14,7 @@ addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 
 // Provides ability to view code coverage via `sbt scoverage:test`
 addSbtPlugin("org.scoverage" %% "sbt-scoverage" % "0.99.5.1")
+
+// Provides ability to create a pack containg all jars and a script to run them
+// using `sbt pack` or `sbt pack-archive` to generate a *.tar.gz file
+addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.6.1")

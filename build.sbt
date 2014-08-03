@@ -102,3 +102,7 @@ net.virtualvoid.sbt.graph.Plugin.graphSettings
 instrumentSettings
 
 ScoverageKeys.highlighting := true
+
+packSettings
+
+packMain := Map("sparkkernel" -> "com.ibm.spark.SparkKernel")
