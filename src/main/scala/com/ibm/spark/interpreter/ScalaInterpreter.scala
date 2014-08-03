@@ -70,18 +70,28 @@ case class ScalaInterpreter(
       case IR.Success => (result, Left(output))
       case IR.Incomplete => (result, Left(output))
       case IR.Error =>
-        var executionError: ExecuteError = null
-        sparkIMain.valueOfTerm(ExecutionExceptionName) match {
+        val x = sparkIMain.valueOfTerm(ExecutionExceptionName)
+        (result, Right(sparkIMain.valueOfTerm(ExecutionExceptionName) match {
+          // Runtime error
           case Some(e) =>
             val ex = e.asInstanceOf[Throwable]
-            executionError = ExecuteError(
+            ExecuteError(
               ex.getClass.getName,
               ex.getLocalizedMessage,
               ex.getStackTrace.map(_.toString).toList
             )
+          // Compile time error, need to check internal reporter
           case _ =>
-        }
-        (result, Right(executionError))
+            if (sparkIMain.reporter.hasErrors)
+              // TODO: This wrapper is not needed when just getting compile
+              // error that we are not parsing... maybe have it be purely
+              // output and have the error check this?
+              ExecuteError(
+                "Compile Error", output, List()
+              )
+            else
+              ExecuteError("Unknown", "Unable to retrieve error!", List())
+        }))
     }
   }
 
@@ -104,7 +114,10 @@ case class ScalaInterpreter(
   override def start() = {
     require(sparkIMain == null)
 
-    sparkIMain = new SparkIMain(settings, new JPrintWriter(out, true))
+    sparkIMain = new SparkIMain(
+      settings,
+      new JPrintWriter(multiOutputStream, true)
+    )
 
     logger.info("Initializing interpreter")
     sparkIMain.initializeSynchronous()
