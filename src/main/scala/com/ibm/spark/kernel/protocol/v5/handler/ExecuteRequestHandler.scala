@@ -5,12 +5,14 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
+import com.ibm.spark.utils.ExecutionCounter
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
+import scala.collection.mutable.Map
 
 /**
  * Receives an ExecuteRequest KernelMessage and forwards the ExecuteRequest
@@ -19,11 +21,15 @@ import scala.util.{Failure, Success}
 class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLogging {
   implicit val timeout = Timeout(5.seconds)
 
+  //val executionCounts: Map[UUID, Int] = Map()
   override def receive: Receive = {
     // sends execute request to interpreter
     case message: KernelMessage =>
       log.debug("Forwarding execute request")
       val executeRequest = Json.parse(message.contentString).as[ExecuteRequest]
+
+      //executionCounts += (message.header.session -> (executionCounts.getOrElse(message.header.session, 0) + 1))
+      val executionCount = ExecutionCounter.incr(message.header.session)
 
       val busyHeader = message.header.copy(msg_type = MessageType.Status.toString)
       //  Alert the clients the kernel is busy
@@ -45,7 +51,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
         inputHeader,
         message.header,
         Metadata(),
-        Json.toJson(new ExecuteInput(executeRequest.code,1)).toString
+        Json.toJson(new ExecuteInput(executeRequest.code, executionCount)).toString
       )
       actorLoader.loadRelayActor() ! executeInputMessage
 
@@ -65,7 +71,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
             replyHeader,
             message.header,
             Metadata(),
-            Json.toJson(tuple._1).toString
+            Json.toJson(tuple._1.copy(execution_count = executionCount)).toString
           )
 
           val resultHeader = message.header.copy(msg_type = MessageType.ExecuteResult.toString)
@@ -75,7 +81,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
             resultHeader,
             message.header,
             Metadata(),
-            Json.toJson(tuple._2).toString
+            Json.toJson(tuple._2.copy(execution_count = executionCount)).toString
           )
 
           val relayActor = actorLoader.loadRelayActor()
