@@ -24,25 +24,27 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
   val zmqMessage : ZMQMessage = kernelMessage
 
   describe("Relay"){
-    describe("#receive"){
-    	it("should relay KernelMessage"){
-        val actorLoader : ActorLoader = mock[ActorLoader]
-        val probe : TestProbe = TestProbe()
-        val mockSelection: ActorSelection = system.actorSelection(probe.ref.path.toString)
-        when(actorLoader.loadMessageActor(any[MessageType])).thenReturn(mockSelection)
-        val relay : ActorRef = system.actorOf(Props(classOf[Relay], actorLoader))
-        relay ! kernelMessage
-        probe.expectMsg(kernelMessage)
-    	}
+    describe("when not using signature manager") {
+      describe("#receive") {
+        it("should relay KernelMessage") {
+          val actorLoader: ActorLoader = mock[ActorLoader]
+          val probe: TestProbe = TestProbe()
+          val mockSelection: ActorSelection = system.actorSelection(probe.ref.path.toString)
+          when(actorLoader.loadMessageActor(any[MessageType])).thenReturn(mockSelection)
+          val relay: ActorRef = system.actorOf(Props(classOf[Relay], actorLoader, false))
+          relay ! kernelMessage
+          probe.expectMsg(kernelMessage)
+        }
 
-      it("should relay ZMQMessage as KernelMessage"){
-        val actorLoader : ActorLoader = mock[ActorLoader]
-        val probe : TestProbe = TestProbe()
-        val mockSelection: ActorSelection = system.actorSelection(probe.ref.path.toString)
-        when(actorLoader.loadMessageActor(any[MessageType])).thenReturn(mockSelection)
-        val relay : ActorRef = system.actorOf(Props(classOf[Relay], actorLoader))
-        relay ! zmqMessage
-        probe.expectMsg(kernelMessage)
+        it("should relay ZMQMessage as KernelMessage") {
+          val actorLoader: ActorLoader = mock[ActorLoader]
+          val probe: TestProbe = TestProbe()
+          val mockSelection: ActorSelection = system.actorSelection(probe.ref.path.toString)
+          when(actorLoader.loadMessageActor(any[MessageType])).thenReturn(mockSelection)
+          val relay: ActorRef = system.actorOf(Props(classOf[Relay], actorLoader, false))
+          relay ! zmqMessage
+          probe.expectMsg(kernelMessage)
+        }
       }
     }
   }

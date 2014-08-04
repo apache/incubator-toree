@@ -12,12 +12,16 @@ import akka.pattern.ask
  * This class is meant to be a relay for send KernelMessages through kernel system.
  * @param actorLoader The ActorLoader used by this class for finding actors for relaying messages
  */
-case class Relay(actorLoader: ActorLoader) extends Actor with ActorLogging {
+case class Relay(
+  actorLoader: ActorLoader, useSignatureManager: Boolean
+) extends Actor with ActorLogging {
   // NOTE: Required to provide the execution context for futures with akka
   import context._
 
   // NOTE: Required for ask (?) to function... maybe can define elsewhere?
   implicit val timeout = Timeout(5.seconds)
+
+  def this(actorLoader: ActorLoader) = this(actorLoader, true)
 
   /**
    * Relays a KernelMessage to a specific actor to handle that message
@@ -37,27 +41,37 @@ case class Relay(actorLoader: ActorLoader) extends Actor with ActorLogging {
     //  We need to have these cases explicitly because the implicit to convert is only
     //  done when we call the method. Hence, the two cases
     case zmqMessage: ZMQMessage =>
-      val signatureManager = actorLoader.loadSignatureManagerActor()
-      val signatureVerificationFuture = signatureManager ? zmqMessage
+      // TODO: This case is untested!
+      if (useSignatureManager) {
+        val signatureManager = actorLoader.loadSignatureManagerActor()
+        val signatureVerificationFuture = signatureManager ? zmqMessage
 
-      // TODO: Handle error case for mapTo and non-present onFailure
-      signatureVerificationFuture.mapTo[Boolean] onSuccess {
-        // Verification successful, so continue relay
-        case true => relay(zmqMessage)
+        // TODO: Handle error case for mapTo and non-present onFailure
+        signatureVerificationFuture.mapTo[Boolean] onSuccess {
+          // Verification successful, so continue relay
+          case true => relay(zmqMessage)
 
-        // TODO: Figure out what the failure message structure should be!
-        // NOTE: Currently untested!
-        // Verification failed, so report back a failure
-        case false => // sender ! SOME MESSAGE
+          // TODO: Figure out what the failure message structure should be!
+          // NOTE: Currently untested!
+          // Verification failed, so report back a failure
+          case false => // sender ! SOME MESSAGE
+        }
+      } else {
+        relay(zmqMessage)
       }
 
     case kernelMessage: KernelMessage =>
-      val signatureManager = actorLoader.loadSignatureManagerActor()
-      val signatureInsertFuture = signatureManager ? kernelMessage
+      // TODO: This case is untested!
+      if (useSignatureManager) {
+        val signatureManager = actorLoader.loadSignatureManagerActor()
+        val signatureInsertFuture = signatureManager ? kernelMessage
 
-      // TODO: Handle error case for mapTo and non-present onFailure
-      signatureInsertFuture.mapTo[KernelMessage] onSuccess {
-        case message => relay(message)
+        // TODO: Handle error case for mapTo and non-present onFailure
+        signatureInsertFuture.mapTo[KernelMessage] onSuccess {
+          case message => relay(message)
+        }
+      } else {
+        relay(kernelMessage)
       }
   }
 }
