@@ -3,4 +3,4 @@ target/
 .idea/
 .idea_modules/
 .DS_Store
-
+.vagrant
