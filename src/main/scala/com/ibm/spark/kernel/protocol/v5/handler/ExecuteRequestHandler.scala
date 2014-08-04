@@ -12,7 +12,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
-import scala.collection.mutable.Map
 
 /**
  * Receives an ExecuteRequest KernelMessage and forwards the ExecuteRequest
@@ -21,14 +20,12 @@ import scala.collection.mutable.Map
 class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLogging {
   implicit val timeout = Timeout(5.seconds)
 
-  //val executionCounts: Map[UUID, Int] = Map()
   override def receive: Receive = {
     // sends execute request to interpreter
     case message: KernelMessage =>
       log.debug("Forwarding execute request")
       val executeRequest = Json.parse(message.contentString).as[ExecuteRequest]
 
-      //executionCounts += (message.header.session -> (executionCounts.getOrElse(message.header.session, 0) + 1))
       val executionCount = ExecutionCounter.incr(message.header.session)
 
       val busyHeader = message.header.copy(msg_type = MessageType.Status.toString)

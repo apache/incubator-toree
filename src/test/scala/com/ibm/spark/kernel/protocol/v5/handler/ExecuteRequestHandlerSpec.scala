@@ -35,7 +35,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
     override def receive: Receive = {
       case message: ExecuteRequest =>
         val executeReply = new ExecuteReply("ok", 1, None, None, None, None, None)
-        val executeResult = new ExecuteResult(2, Data(), Metadata())
+        val executeResult = new ExecuteResult(1, Data(), Metadata())
         sender ! (executeReply, executeResult)
     }
   }
@@ -80,7 +80,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
       val kernelExecuteResult = probe.receiveOne(10.seconds).asInstanceOf[KernelMessage]
       val result = Json.parse(kernelExecuteResult.contentString).as[ExecuteResult]
-      result.execution_count should be (2)
+      result.execution_count should be (1)
 
       //  KernelStatus = idle
       val kernelIdleReply = probe.receiveOne(10.seconds).asInstanceOf[KernelMessage]
