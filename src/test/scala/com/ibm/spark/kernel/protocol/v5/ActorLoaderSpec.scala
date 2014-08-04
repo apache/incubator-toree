@@ -5,6 +5,7 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 import test.utils.TestProbeProxyActor
+import scala.concurrent.duration._
 
 class ActorLoaderSpec extends TestKit(ActorSystem("ActorLoaderSpecSystem"))
 with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
@@ -22,10 +23,10 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
         actorLoader.loadMessageActor(MessageType.CompleteReply) ! "<Test Message>"
-        testProbe.expectNoMsg()
+        testProbe.expectNoMsg(500.millis)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), MessageType.CompleteReply.toString)
-        testProbe.expectNoMsg()
+        testProbe.expectNoMsg(500.millis)
       }
     }
     describe("#load( SocketType )"){
@@ -41,10 +42,10 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
         actorLoader.loadSocketActor(SocketType.IOPub) ! "<Test Message>"
-        testProbe.expectNoMsg()
+        testProbe.expectNoMsg(500.millis)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), SocketType.IOPub.toString)
-        testProbe.expectNoMsg()
+        testProbe.expectNoMsg(500.millis)
       }
 
     }
