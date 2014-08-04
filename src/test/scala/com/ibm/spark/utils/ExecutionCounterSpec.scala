@@ -9,7 +9,8 @@ class ExecutionCounterSpec extends FunSpec with Matchers {
         ExecutionCounter incr "foo" should be(1)
       }
       it("should increment value for key when it is present"){
-        ExecutionCounter incr "foo" should be(2)
+        ExecutionCounter incr "bar" should be(1)
+        ExecutionCounter incr "bar" should be(2)
       }
 
     }
