@@ -4,8 +4,6 @@ version := "0.1.0"
 
 fork := true // http://www.scala-sbt.org/0.13/docs/Running-Project-Code.html#Deserialization+and+class+loading
 
-javaOptions in run += "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
-
 //exportJars := true
 
 scalaVersion := "2.10.4"
