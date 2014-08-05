@@ -11,6 +11,17 @@ scalaVersion := "2.10.4"
 sbtVersion := "0.13.5"
 
 //
+// CUSTOM TASKS
+//
+
+lazy val kill = taskKey[Unit]("Executing the shell script.")
+
+kill := {
+  "sh terminate_spark_kernels.sh" !
+}
+
+
+//
 // ADDITIONAL REPOSITORIES
 //
 
