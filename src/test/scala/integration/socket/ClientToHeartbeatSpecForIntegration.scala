@@ -1,36 +1,43 @@
 package integration.socket
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.util.{ByteString, Timeout}
-import akka.zeromq._
-import com.ibm.spark.kernel.protocol.v5.socket.{Heartbeat, SocketConfig, SocketFactory}
-import org.scalatest.{FunSpec, Matchers}
-import test.utils.{BlockingStack, StackActor}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.zeromq.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.socket.{Heartbeat, HeartbeatClient, HeartbeatMessage, SocketFactory}
+import com.typesafe.config.ConfigFactory
+import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.{FunSpecLike, Matchers}
 
-import scala.concurrent.duration._
+object ClientToHeartbeatSpecForIntegration {
+  val config = """
+    akka {
+      loglevel = "WARNING"
+    }"""
+}
 
-class ClientToHeartbeatSpecForIntegration extends FunSpec with Matchers{
-  implicit val timeout = Timeout(5.seconds)
+class ClientToHeartbeatSpecForIntegration
+  extends TestKit(ActorSystem("HeartbeatActorSpec", ConfigFactory.parseString(ClientToHeartbeatSpecForIntegration.config)))
+  with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
-  val system = ActorSystem("HeartbeatClient")
-  val socketConfig = SocketConfig(-1,-1, 8000, -1, -1, "127.0.0.1", "tcp","hmac-sha256","")
-  val socketFactory : SocketFactory = SocketFactory(socketConfig)
-  val heartbeat = system.actorOf(Props(classOf[Heartbeat], socketFactory), "Heartbeat")
-  val stack =  new BlockingStack()
-  val clientSocket : ActorRef = socketFactory.HeartbeatClient(system,
-    system.actorOf(Props(classOf[StackActor], stack), "HeartbeatQueue"))
+  describe("HeartbeatActor") {
+    val socketFactory = mock[SocketFactory]
+    val probe : TestProbe = TestProbe()
+    val probeClient : TestProbe = TestProbe()
+    when(socketFactory.Heartbeat(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probe.ref)
+    when(socketFactory.HeartbeatClient(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probeClient.ref)
 
-  describe("Client-Heartbeat Integration"){
-    describe("Client"){
-      it("should connect to Heartbeat Socket"){
-          stack.pop() should be (Connecting)
-    	}
+    val heartbeat = system.actorOf(Props(classOf[Heartbeat], socketFactory))
+    val heartbeatClient = system.actorOf(Props(classOf[HeartbeatClient], socketFactory))
 
-      it("should send message and receive echoed message"){
-        clientSocket ! ZMQMessage(ByteString("<STRING>".getBytes()))
-        val zMQMessage :  ZMQMessage = stack.pop().asInstanceOf[ZMQMessage]
-        val messageText = new String(zMQMessage.frame(0).toArray)
-         messageText should be ("<STRING>")
+    describe("send heartbeat") {
+      it("should send and receive same ZMQMessage") {
+        heartbeatClient ! HeartbeatMessage
+        probeClient.expectMsgClass(classOf[ZMQMessage])
+        probeClient.forward(heartbeat)
+        probe.expectMsgClass(classOf[ZMQMessage])
+        probe.forward(heartbeatClient)
       }
     }
   }

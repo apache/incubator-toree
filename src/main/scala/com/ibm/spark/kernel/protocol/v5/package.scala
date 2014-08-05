@@ -118,6 +118,11 @@ package object v5 {
     val StdIn       = Value("std_in")
     val Control     = Value("control")
     val Heartbeat   = Value("heartbeat")
+    val ShellClient       = Value("shell_client")
+    val IOPubClient       = Value("io_pub_client")
+    val StdInClient       = Value("std_in_client")
+    val ControlClient     = Value("control_client")
+    val HeartbeatClient   = Value("heartbeat_client")
   }
 
   object SystemActorType extends Enumeration {
