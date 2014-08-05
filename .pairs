@@ -13,6 +13,8 @@ pairs:
   df: David Fallside; fallside
   gc: Guillermo Cabrera; gcabrera
   je: Jacob Eisinger;jeising
+  # Other ET
+  zcm: Zack Morris; zmorris
 email:
   prefix: pair
   domain: us.ibm.com
