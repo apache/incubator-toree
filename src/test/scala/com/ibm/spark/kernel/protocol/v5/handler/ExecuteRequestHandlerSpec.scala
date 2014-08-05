@@ -27,7 +27,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
   val actorLoader : ActorLoader = mock[ActorLoader]
   val probe : TestProbe = TestProbe()
   val mockSelection: ActorSelection = system.actorSelection(probe.ref.path.toString)
-  when(actorLoader.loadRelayActor()).thenReturn(mockSelection)
+  when(actorLoader.load(SystemActorType.Relay)).thenReturn(mockSelection)
 
   // Mocked interpreter that responds to an ExecuteRequest with an
   // ExecuteReply ExecuteResult tuple
@@ -43,7 +43,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
   // Add our handler and mock interpreter to the actor system
   val handlerActor = system.actorOf(Props(classOf[ExecuteRequestHandler], actorLoader))
   val fakeInterpreterActor = system.actorOf(Props(classOf[MockInterpreterActor], this))
-  when(actorLoader.loadInterpreterActor()).thenReturn(system.actorSelection(fakeInterpreterActor.path.toString))
+  when(actorLoader.load(SystemActorType.Interpreter)).thenReturn(system.actorSelection(fakeInterpreterActor.path.toString))
 
   // Construct a execute request kernel message for the handler
   val header = Header("","","","","")

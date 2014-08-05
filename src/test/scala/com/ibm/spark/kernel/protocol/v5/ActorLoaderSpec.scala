@@ -15,14 +15,14 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val testProbe: TestProbe = TestProbe()
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), MessageType.ClearOutput.toString)
         val actorLoader: ActorLoader = SimpleActorLoader(system)
-        actorLoader.loadMessageActor(MessageType.ClearOutput) ! "<Test Message>"
+        actorLoader.load(MessageType.ClearOutput) ! "<Test Message>"
         testProbe.expectMsg("<Test Message>")
       }
 
       it("should expect no message when there is no actor"){
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
-        actorLoader.loadMessageActor(MessageType.CompleteReply) ! "<Test Message>"
+        actorLoader.load(MessageType.CompleteReply) ! "<Test Message>"
         testProbe.expectNoMsg(500.millis)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), MessageType.CompleteReply.toString)
@@ -34,14 +34,14 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val testProbe: TestProbe = TestProbe()
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), SocketType.Shell.toString)
         val actorLoader: ActorLoader = SimpleActorLoader(system)
-        actorLoader.loadSocketActor(SocketType.Shell) ! "<Test Message>"
+        actorLoader.load(SocketType.Shell) ! "<Test Message>"
         testProbe.expectMsg("<Test Message>")
       }
 
       it("should expect no message when there is no actor"){
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
-        actorLoader.loadSocketActor(SocketType.IOPub) ! "<Test Message>"
+        actorLoader.load(SocketType.IOPub) ! "<Test Message>"
         testProbe.expectNoMsg(500.millis)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), SocketType.IOPub.toString)

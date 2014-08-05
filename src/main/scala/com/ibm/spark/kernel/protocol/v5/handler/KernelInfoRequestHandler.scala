@@ -41,6 +41,6 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader) extends Actor with Acto
         Json.toJson(kernelInfoReply).toString
       )
 
-      actorLoader.loadRelayActor() ! kernelResponseMessage
+      actorLoader.load(SystemActorType.Relay) ! kernelResponseMessage
   }
 }

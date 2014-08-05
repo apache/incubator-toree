@@ -2,7 +2,7 @@ package com.ibm.spark.kernel.protocol.v5.socket
 
 import akka.actor.{ActorSelection, ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import com.ibm.spark.kernel.protocol.v5.ActorLoader
+import com.ibm.spark.kernel.protocol.v5.{SystemActorType, ActorLoader}
 import com.ibm.spark.kernel.protocol.v5Test._
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
@@ -28,7 +28,7 @@ class ShellSpec extends TestKit(ActorSystem("ShellActorSpec", ConfigFactory.pars
 
     val relayProbe : TestProbe = TestProbe()
     val relaySelection : ActorSelection = system.actorSelection(relayProbe.ref.path)
-    when(actorLoader.loadRelayActor()).thenReturn(relaySelection)
+    when(actorLoader.load(SystemActorType.Relay)).thenReturn(relaySelection)
 
     val shell = system.actorOf(Props(classOf[Shell], socketFactory, actorLoader))
 

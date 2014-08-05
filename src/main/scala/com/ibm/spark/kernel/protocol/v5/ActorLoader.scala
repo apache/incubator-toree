@@ -1,7 +1,6 @@
 package com.ibm.spark.kernel.protocol.v5
 
 import akka.actor._
-import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 
 /**
  * This trait defines the interface for loading actors based on some vale (enum, attribute, etc...)
@@ -9,57 +8,22 @@ import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
  * spread of the logic about the Actors, ActorSystem, and other similar concepts.
  */
 trait ActorLoader {
-  //  TODO Unfortunately, the typdef for the enum values are the same value so we cannot overload a function definition
-  //  If the signature has the original Value class as the argument there is a type error in the invocation to the
-  //  method. We should try and find a better solution rather than having varying names for the method
   /**
-   * This method is meant to find an actor who can properly handle a specific KernelMessage
-   * based on the value of the kernels MessageType
-   * @param messageType The message type for which to find an actor
+   * This method is meant to find an actor associated with an enum value. This enum value can map to an actor
+   * associated with handling a specific kernel message, a socket type, or other functionality.
+   * @param actorEnum The enum value used to load the actor
    * @return An ActorSelection to pass messages to
    */
-  def loadMessageActor(messageType: MessageType.MessageType) : ActorSelection
-  /**
-   * This method will load an actor used to communicate on one of the IPython Kernel sockets.
-   * @param socketType The type of socket you want to load
-   * @return An ActorSelection to pass messages to
-   */
-  def loadSocketActor(socketType: SocketType.SocketType) : ActorSelection
-  def loadInterpreterActor() : ActorSelection
-  def loadRelayActor() : ActorSelection
-  def loadSignatureManagerActor() : ActorSelection
+  def load(actorEnum: Enumeration#Value) : ActorSelection
 }
 
 case class SimpleActorLoader(actorRefFactory : ActorRefFactory) extends ActorLoader {
-  private val messageTypeActors: String = "/user/%s"
+  private val userActorDirectory: String = "/user/%s"
 
-  override def loadMessageActor(messageType: MessageType.MessageType): ActorSelection = {
+  override def load(actorEnum: Enumeration#Value): ActorSelection = {
     actorRefFactory.actorSelection(
-      messageTypeActors.format(messageType.toString)
+      userActorDirectory.format(actorEnum.toString)
     )
   }
 
-  override def loadSocketActor(socketType: SocketType): ActorSelection = {
-    actorRefFactory.actorSelection(
-      messageTypeActors.format(socketType.toString)
-    )
-  }
-
-  override def loadInterpreterActor(): ActorSelection = {
-    actorRefFactory.actorSelection(
-      messageTypeActors.format(SystemActorType.Interpreter.toString)
-    )
-  }
-
-  override def loadRelayActor(): ActorSelection = {
-    actorRefFactory.actorSelection(
-      messageTypeActors.format(SystemActorType.Relay.toString)
-    )
-  }
-
-  override def loadSignatureManagerActor(): ActorSelection = {
-    actorRefFactory.actorSelection(
-      messageTypeActors.format(SystemActorType.SignatureManager.toString)
-    )
-  }
 }

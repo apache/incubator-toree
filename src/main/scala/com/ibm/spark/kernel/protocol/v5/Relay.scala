@@ -30,7 +30,7 @@ case class Relay(
   private def relay(kernelMessage: KernelMessage){
     val messageType: MessageType = MessageType.withName(kernelMessage.header.msg_type)
     log.info("Relaying message of type " + kernelMessage.header.msg_type )
-    actorLoader.loadMessageActor(messageType) ! kernelMessage
+    actorLoader.load(messageType) ! kernelMessage
   }
 
   /**
@@ -43,7 +43,7 @@ case class Relay(
     case zmqMessage: ZMQMessage =>
       // TODO: This case is untested!
       if (useSignatureManager) {
-        val signatureManager = actorLoader.loadSignatureManagerActor()
+        val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureVerificationFuture = signatureManager ? zmqMessage
 
         // TODO: Handle error case for mapTo and non-present onFailure
@@ -63,7 +63,7 @@ case class Relay(
     case kernelMessage: KernelMessage =>
       // TODO: This case is untested!
       if (useSignatureManager) {
-        val signatureManager = actorLoader.loadSignatureManagerActor()
+        val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureInsertFuture = signatureManager ? kernelMessage
 
         // TODO: Handle error case for mapTo and non-present onFailure

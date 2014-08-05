@@ -25,8 +25,8 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
     case message: KernelMessage =>
       log.debug("Forwarding execute request")
       val executeRequest = Json.parse(message.contentString).as[ExecuteRequest]
-
       val executionCount = ExecutionCounter.incr(message.header.session)
+      val relayActor = actorLoader.load(SystemActorType.Relay)
 
       val busyHeader = message.header.copy(msg_type = MessageType.Status.toString)
       //  Alert the clients the kernel is busy
@@ -38,7 +38,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
         Metadata(),
         Json.toJson(new KernelStatus("busy")).toString
       )
-      actorLoader.loadRelayActor() ! busyMessage
+      relayActor ! busyMessage
 
       //  Send a message to the clients saying we are executing something
       val inputHeader = message.header.copy(msg_type = MessageType.ExecuteInput.toString)
@@ -50,11 +50,11 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
         Metadata(),
         Json.toJson(new ExecuteInput(executeRequest.code, executionCount)).toString
       )
-      actorLoader.loadRelayActor() ! executeInputMessage
+      relayActor ! executeInputMessage
 
       // use future to keep message header in scope
       val future: Future[(ExecuteReply, ExecuteResult)] =
-        ask(actorLoader.loadInterpreterActor(), executeRequest).mapTo[(ExecuteReply, ExecuteResult)]
+        ask(actorLoader.load(SystemActorType.Interpreter), executeRequest).mapTo[(ExecuteReply, ExecuteResult)]
 
       future.onComplete {
         case Success(tuple) =>
@@ -81,7 +81,6 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
             Json.toJson(tuple._2.copy(execution_count = executionCount)).toString
           )
 
-          val relayActor = actorLoader.loadRelayActor()
           relayActor ! kernelReplyMessage
           relayActor ! kernelResultMessage
 
@@ -95,7 +94,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
             Metadata(),
             Json.toJson(new KernelStatus("idle")).toString
           )
-          actorLoader.loadRelayActor() ! idleMessage
+          relayActor ! idleMessage
 
         case Failure(_) =>
           // todo send error message to relay

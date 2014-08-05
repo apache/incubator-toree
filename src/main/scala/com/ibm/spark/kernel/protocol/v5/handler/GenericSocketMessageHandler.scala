@@ -8,7 +8,7 @@ class GenericSocketMessageHandler(actorLoader: ActorLoader, socketType: SocketTy
   override def receive: Receive = {
     case message: KernelMessage =>
       log.debug("Sending " + message.header.msg_id + "message to " + socketType.toString + "socket")
-      actorLoader.loadSocketActor(socketType) ! message
+      actorLoader.load(socketType) ! message
   }
 
 }
