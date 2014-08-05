@@ -127,10 +127,4 @@ package object v5 {
     val Interpreter       = Value("interpreter")
     val SignatureManager  = Value("signature_manager")
   }
-
-  object InterpreterChildActorType extends Enumeration {
-    type InterpreterChildActorType = Value
-
-    val ExecuteRequestTask = Value("execute_request_task")
-  }
 }

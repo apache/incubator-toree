@@ -4,7 +4,6 @@ import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.{ask, pipe}
 import akka.util.Timeout
 import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.kernel.protocol.v5.InterpreterChildActorType
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks._
 import com.ibm.spark.kernel.protocol.v5.content._
 
