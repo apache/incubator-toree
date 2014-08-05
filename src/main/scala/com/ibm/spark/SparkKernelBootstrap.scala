@@ -158,19 +158,20 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
 
     // TODO: Move SparkIMain to private and insert in a different way
     logger.warn("Locked to Scala interpreter with SparkIMain until decoupled!")
-    val sparkIMain = interpreter.asInstanceOf[ScalaInterpreter].sparkIMain
 
-    sparkIMain.beQuietDuring {
+
+    interpreter.doQuietly {
       // TODO: Construct class server outside of SparkIMain
       logger.warn("Unable to control initialization of REPL class server!")
-      logger.info("REPL Class Server Uri: " + sparkIMain.classServer.uri)
-      conf.set("spark.repl.class.uri", sparkIMain.classServer.uri)
+      logger.info("REPL Class Server Uri: " + interpreter.classServerURI())
+      conf.set("spark.repl.class.uri", interpreter.classServerURI())
 
       logger.info("Constructing new Spark Context")
       sparkContext = new SparkContext(conf)
-      sparkIMain.bind(
+      interpreter.bind(
         "sc", "org.apache.spark.SparkContext",
         sparkContext, List( """@transient"""))
+
     }
   }
 

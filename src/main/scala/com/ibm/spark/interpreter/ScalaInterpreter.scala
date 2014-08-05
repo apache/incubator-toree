@@ -36,12 +36,9 @@ case class ScalaInterpreter(
       classpath.distinct.mkString(java.io.File.pathSeparator)
   }
 
-  /**
-   * TODO: Refactor this such that SparkIMain is not exposed publicly!
-   */
-  var sparkIMain: SparkIMain = _
   private val lastResultOut = new ByteArrayOutputStream()
   private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
+  private var sparkIMain: SparkIMain = _
 
   override def interpret(code: String, silent: Boolean = false):
     (IR.Result, Either[ExecuteOutput, ExecuteError]) =
@@ -153,5 +150,16 @@ case class ScalaInterpreter(
 
     this
   }
-}
 
+  def classServerURI() = {
+    sparkIMain.classServer.uri
+  }
+
+  override def doQuietly[T](body: => T): T = {
+    sparkIMain.beQuietDuring[T](body)
+  }
+
+  override def bind(variableName: String, typeName: String, value: Any, modifiers: List[String]): Unit = {
+    sparkIMain.bind(variableName,typeName,value,modifiers)
+  }
+}

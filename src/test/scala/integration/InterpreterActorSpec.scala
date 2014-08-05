@@ -44,19 +44,18 @@ class InterpreterActorSpec extends TestKit(
     output.reset()
     interpreter.start()
 
-    val intp = interpreter.sparkIMain
 
-    intp.beQuietDuring {
-      conf.set("spark.repl.class.uri", intp.classServer.uri)
+    interpreter.doQuietly({
+      conf.set("spark.repl.class.uri", interpreter.classServerURI())
       //context = new SparkContext(conf) with NoSparkLogging
       context = new SparkContext(conf) {
         override protected def log: Logger =
           org.slf4j.helpers.NOPLogger.NOP_LOGGER
       }
-      intp.bind(
+      interpreter.bind(
         "sc", "org.apache.spark.SparkContext",
         context, List( """@transient"""))
-    }
+    })
   }
 
   after {
