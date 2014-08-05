@@ -128,13 +128,6 @@ package object v5 {
     val SignatureManager  = Value("signature_manager")
   }
 
-  object SignatureManagerChildActorType extends Enumeration {
-    type SignatureManagerChildActorType = Value
-
-    val SignatureChecker  = Value("signature_checker")
-    val SignatureProducer = Value("signature_producer")
-  }
-
   object InterpreterChildActorType extends Enumeration {
     type InterpreterChildActorType = Value
 

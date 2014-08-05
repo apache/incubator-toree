@@ -3,7 +3,7 @@ package com.ibm.spark.kernel.protocol.v5.security
 import akka.actor.{Props, ActorRef, ActorLogging, Actor}
 import akka.util.Timeout
 import akka.zeromq.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.{SignatureManagerChildActorType, KernelMessage}
+import com.ibm.spark.kernel.protocol.v5.{KernelMessage}
 import com.ibm.spark.security.{HmacAlgorithm, Hmac}
 
 import scala.concurrent.duration._
