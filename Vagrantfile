@@ -55,6 +55,7 @@ Vagrant.configure("2") do |config|
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "trusty_ubuntu"
   config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+  config.vm.hostname = "host-box"
 
   # Lets ubuntu reach the intranet when using vpn
   config.vm.provider "virtualbox" do |vb|
