@@ -19,5 +19,12 @@ case class ExecuteReply(
 object ExecuteReply {
   implicit val executeReplyOkReads = Json.reads[ExecuteReply]
   implicit val executeReplyOkWrites = Json.writes[ExecuteReply]
+
+  implicit def ExecuteReplyToString(executeReply: ExecuteReply): String ={
+      Json.toJson(executeReply).toString
+  }
 }
+
+
+
 

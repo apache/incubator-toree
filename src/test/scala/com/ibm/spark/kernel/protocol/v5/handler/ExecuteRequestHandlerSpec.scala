@@ -45,8 +45,6 @@ class ExecuteRequestHandlerSpec extends TestKit(
     "traceback":[]}"""
   )
 
-
-
   describe("ExecuteRequestHandler( ActorLoader )") {
     val actorLoader : ActorLoader = mock[ActorLoader]
 

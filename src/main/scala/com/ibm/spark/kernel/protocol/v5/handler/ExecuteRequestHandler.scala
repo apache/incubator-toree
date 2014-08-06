@@ -23,30 +23,30 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
       val executeRequest = Json.parse(message.contentString).as[ExecuteRequest]
       val executionCount = ExecutionCounter.incr(message.header.session)
       val relayActor = actorLoader.load(SystemActorType.Relay)
+      //  This is a collection of common pieces that will be sent back in all reply message, use with .copy
+      val messageReplySkeleton =  new KernelMessage( message.ids, "", null, message.header, Metadata(), null)
 
-      val busyHeader = message.header.copy(msg_type = MessageType.Status.toString)
       //  Alert the clients the kernel is busy
-      val busyMessage = new KernelMessage(
-        Seq(MessageType.Status.toString),
-        "",
-        busyHeader,
-        message.header,
-        Metadata(),
-        Json.toJson(new KernelStatus("busy")).toString
+      val busyMessage = messageReplySkeleton.copy(
+        ids = Seq(MessageType.Status.toString),
+        header = message.header.copy(msg_type = MessageType.Status.toString),
+        contentString = KernelStatusBusy.toString
       )
       relayActor ! busyMessage
 
       //  Send a message to the clients saying we are executing something
-      val inputHeader = message.header.copy(msg_type = MessageType.ExecuteInput.toString)
-      val executeInputMessage = new KernelMessage(
-        message.ids,
-        "",
-        inputHeader,
-        message.header,
-        Metadata(),
-        Json.toJson(new ExecuteInput(executeRequest.code, executionCount)).toString
+      val executeInputMessage = messageReplySkeleton.copy(
+        header = message.header.copy(msg_type = MessageType.ExecuteInput.toString),
+        contentString = Json.toJson(new ExecuteInput(executeRequest.code, executionCount)).toString
       )
       relayActor ! executeInputMessage
+
+      //  Alert the clients the kernel is busy
+      val idleMessage = messageReplySkeleton.copy(
+        ids = Seq(MessageType.Status.toString),
+        header = message.header.copy(msg_type = MessageType.Status.toString),
+        contentString = KernelStatusIdle.toString
+      )
 
       // use future to keep message header in scope
       val future: Future[(ExecuteReply, ExecuteResult)] =
@@ -56,72 +56,38 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
         case Success(tuple) =>
           log.debug("Sending Kernel messages to router")
 
-          val replyHeader = message.header.copy(msg_type = MessageType.ExecuteReply.toString)
-
-          val kernelReplyMessage = new KernelMessage(
-            message.ids,
-            "",
-            replyHeader,
-            message.header,
-            Metadata(),
-            Json.toJson(tuple._1.copy(execution_count = executionCount)).toString
+          //  Send the reply message to the client
+          val kernelReplyMessage = messageReplySkeleton.copy(
+            header = message.header.copy(msg_type = MessageType.ExecuteReply.toString),
+            contentString = Json.toJson(tuple._1.copy(execution_count = executionCount)).toString
           )
-
-          val resultHeader = message.header.copy(msg_type = MessageType.ExecuteResult.toString)
-          val kernelResultMessage = new KernelMessage(
-            Seq(MessageType.ExecuteResult.toString),
-            "",
-            resultHeader,
-            message.header,
-            Metadata(),
-            Json.toJson(tuple._2.copy(execution_count = executionCount)).toString
-          )
-
           relayActor ! kernelReplyMessage
+
+          //  Send the result of the code execution
+          val kernelResultMessage = messageReplySkeleton.copy(
+            ids = Seq(MessageType.ExecuteResult.toString),
+            header = message.header.copy(msg_type = MessageType.ExecuteResult.toString),
+            contentString = Json.toJson(tuple._2.copy(execution_count = executionCount)).toString
+          )
           relayActor ! kernelResultMessage
 
-          val idleHeader = message.header.copy(msg_type = MessageType.Status.toString)
-          //  Alert the clients the kernel is busy
-          val idleMessage = new KernelMessage(
-            Seq(MessageType.Status.toString),
-            "",
-            idleHeader,
-            message.header,
-            Metadata(),
-            Json.toJson(new KernelStatus("idle")).toString
-          )
+          //  Send the idle message
           relayActor ! idleMessage
 
         case Failure(error: Throwable) =>
-          val replyErrorHeader = message.header.copy(msg_type = MessageType.ExecuteReply.toString)
-
+          //  The reply error we will send back to the client
           val replyError: ExecuteReply = ExecuteReplyError(
             executionCount, Option(error.getClass.getCanonicalName), Option(error.getMessage),
             Option(error.getStackTrace.map(_.toString).toList)
           )
-          val errorMessage = new KernelMessage(
-            message.ids,
-            "",
-            replyErrorHeader,
-            message.header,
-            Metadata(),
-            Json.toJson(replyError).toString
-          )
 
-          relayActor ! errorMessage
-
-          val idleHeader = message.header.copy(msg_type = MessageType.Status.toString)
-          //  Alert the clients the kernel is busy
-          val idleMessage = new KernelMessage(
-            Seq(MessageType.Status.toString),
-            "",
-            idleHeader,
-            message.header,
-            Metadata(),
-            Json.toJson(new KernelStatus("idle")).toString
+          //  Send the error to the client
+          relayActor ! messageReplySkeleton.copy(
+            header = message.header.copy(msg_type = MessageType.ExecuteReply.toString),
+            contentString = replyError
           )
+          //  Send idle status to client
           relayActor ! idleMessage
-          //  Send status idle to client
       }
   }
 }
