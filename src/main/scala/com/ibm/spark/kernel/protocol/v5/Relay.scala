@@ -41,7 +41,6 @@ case class Relay(
     //  We need to have these cases explicitly because the implicit to convert is only
     //  done when we call the method. Hence, the two cases
     case zmqMessage: ZMQMessage =>
-      // TODO: This case is untested!
       if (useSignatureManager) {
         val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureVerificationFuture = signatureManager ? zmqMessage
@@ -52,7 +51,6 @@ case class Relay(
           case true => relay(zmqMessage)
 
           // TODO: Figure out what the failure message structure should be!
-          // NOTE: Currently untested!
           // Verification failed, so report back a failure
           case false => // sender ! SOME MESSAGE
         }
@@ -61,7 +59,6 @@ case class Relay(
       }
 
     case kernelMessage: KernelMessage =>
-      // TODO: This case is untested!
       if (useSignatureManager) {
         val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureInsertFuture = signatureManager ? kernelMessage
@@ -72,6 +69,7 @@ case class Relay(
         }
       } else {
         relay(kernelMessage)
+
       }
   }
 }
