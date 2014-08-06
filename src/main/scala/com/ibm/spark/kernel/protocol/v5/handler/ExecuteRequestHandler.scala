@@ -2,7 +2,6 @@ package com.ibm.spark.kernel.protocol.v5.handler
 
 import akka.actor.{Actor, ActorLogging}
 import akka.pattern.ask
-import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.utils.ExecutionCounter
@@ -10,7 +9,6 @@ import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
 /**
@@ -18,8 +16,6 @@ import scala.util.{Failure, Success}
  * to the interpreter actor.
  */
 class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLogging {
-  implicit val timeout = Timeout(5.seconds)
-
   override def receive: Receive = {
     // sends execute request to interpreter
     case message: KernelMessage =>
@@ -96,8 +92,36 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
           )
           relayActor ! idleMessage
 
-        case Failure(_) =>
-          // todo send error message to relay
+        case Failure(error: Throwable) =>
+          val replyErrorHeader = message.header.copy(msg_type = MessageType.ExecuteReply.toString)
+
+          val replyError: ExecuteReply = ExecuteReplyError(
+            executionCount, Option(error.getClass.getCanonicalName), Option(error.getMessage),
+            Option(error.getStackTrace.map(_.toString).toList)
+          )
+          val errorMessage = new KernelMessage(
+            message.ids,
+            "",
+            replyErrorHeader,
+            message.header,
+            Metadata(),
+            Json.toJson(replyError).toString
+          )
+
+          relayActor ! errorMessage
+
+          val idleHeader = message.header.copy(msg_type = MessageType.Status.toString)
+          //  Alert the clients the kernel is busy
+          val idleMessage = new KernelMessage(
+            Seq(MessageType.Status.toString),
+            "",
+            idleHeader,
+            message.header,
+            Metadata(),
+            Json.toJson(new KernelStatus("idle")).toString
+          )
+          relayActor ! idleMessage
+          //  Send status idle to client
       }
   }
 }

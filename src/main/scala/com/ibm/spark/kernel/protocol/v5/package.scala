@@ -1,8 +1,9 @@
 package com.ibm.spark.kernel.protocol
 
-import akka.util.ByteString
+import akka.util.{Timeout, ByteString}
 import akka.zeromq.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.content._
+import akka.util.Timeout
+import scala.concurrent.duration._
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, Json}
 
@@ -42,6 +43,10 @@ package object v5 {
   type Payloads = List[Map[String, String]]
   val Payloads = List
 
+  /**
+   * This timeout needs to be defined for the Akka asks to timeout
+   */
+  implicit val timeout = Timeout(1.seconds)
 
   implicit def ByteStringToString(byteString : ByteString) : String = {
     new String(byteString.toArray)
