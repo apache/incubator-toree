@@ -83,8 +83,6 @@ libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.1" // Apache v2
 
 libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.6" // MIT
 
-libraryDependencies += "org.apache.mesos" % "mesos" % "0.18.1" // Apache v2
-
 //
 // TEST DEPENDENCIES
 //
