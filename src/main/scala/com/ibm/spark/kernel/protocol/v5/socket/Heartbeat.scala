@@ -14,10 +14,7 @@ class Heartbeat(socketFactory : SocketFactory) extends Actor with ActorLogging {
 
   override def receive: Receive = {
     case message: ZMQMessage =>
-      log.debug("Sending heartbeat message")
-      println("HEARTBEAT RECEIVING: " +
-        message.frames.map((byteString: ByteString) => new String(byteString.toArray)).mkString("\n"))
-      println("HEARTBEAT SENDING: " +
+      log.debug("HEARTBEAT RECEIVING: " +
         message.frames.map((byteString: ByteString) => new String(byteString.toArray)).mkString("\n"))
       socket ! message
   }
