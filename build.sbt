@@ -27,8 +27,7 @@ kill := {
 
 resolvers += "Akka Repository" at "http://repo.akka.io/releases/"
 
-resolvers +=
-  "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
 
 //
 // SCALA INTERPRETER DEPENDENCIES
@@ -58,13 +57,10 @@ libraryDependencies ++= Seq(
 // TODO: Spark versions? E.g. Spark 1.0.0 and Spark 1.0.1
 //
 
-// Apache v2
-libraryDependencies +=
-  ("org.apache.spark" %% "spark-core" % "1.0.1")
-
-// Apache v2
-libraryDependencies +=
-  ("org.apache.spark" %% "spark-repl" % "1.0.1")
+libraryDependencies ++= Seq(
+  "org.apache.spark" %% "spark-core" % "1.0.0", // Apache v2
+  "org.apache.spark" %% "spark-repl" % "1.0.0" // Apache v2
+)
 
 //
 // AKKA DEPENDENCIES (from Spark project)
@@ -73,9 +69,6 @@ libraryDependencies +=
 //       akka-actor, akka-zeromq, and play-json included.
 // NOTE: The above run also works with local[*].
 //
-
-libraryDependencies += "org.spark-project.akka" %% "akka-actor" % "2.2.3-shaded-protobuf" // Apache v2
-
 libraryDependencies += "org.spark-project.akka" %% "akka-zeromq" % "2.2.3-shaded-protobuf" // Apache v2
 
 //
@@ -90,19 +83,17 @@ libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.1" // Apache v2
 
 libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.6" // MIT
 
+libraryDependencies += "org.apache.mesos" % "mesos" % "0.18.1" // Apache v2
+
 //
 // TEST DEPENDENCIES
 //
-
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.0" % "test" // Apache v2
-
-libraryDependencies += "org.scalactic" %% "scalactic" % "2.2.0" % "test" // Apache v2
-
-libraryDependencies += "org.mockito" % "mockito-core" % "1.9.5" // MIT
-
-libraryDependencies +=
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "2.2.0" % "test", // Apache v2
+  "org.scalactic" %% "scalactic" % "2.2.0" % "test", // Apache v2
+  "org.mockito" % "mockito-core" % "1.9.5" % "test",// MIT
   "org.spark-project.akka" %% "akka-testkit" % "2.2.3-shaded-protobuf" % "test" // MIT
-
+)
 
 //
 // PLUGIN TASK UPDATES
