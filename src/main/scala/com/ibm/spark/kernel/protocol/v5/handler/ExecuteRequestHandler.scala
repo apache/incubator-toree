@@ -96,19 +96,31 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
               relayActor ! idleMessage
 
             case Failure(error: Throwable) =>
-              //  The reply error we will send back to the client
+              //  Send the error to the client on the Shell socket
               val replyError: ExecuteReply = ExecuteReplyError(
                 executionCount, Option(error.getClass.getCanonicalName), Option(error.getMessage),
                 Option(error.getStackTrace.map(_.toString).toList)
               )
-
-              //  Send the error to the client
               relayActor ! messageReplySkeleton.copy(
                 header = message.header.copy(msg_type = MessageType.ExecuteReply.toString),
                 contentString = replyError
               )
+
+              //  Send the error to the client on the IOPub socket
+              val errorContent: ErrorContent =  ErrorContent(
+                error.getClass.getCanonicalName,
+                error.getMessage,
+                error.getStackTrace.map(_.toString).toList
+              )
+
+              relayActor ! messageReplySkeleton.copy(
+                header = message.header.copy(msg_type = MessageType.Error.toString),
+                contentString = errorContent
+              )
+
               //  Send idle status to client
               relayActor ! idleMessage
+
           }
         }
       )

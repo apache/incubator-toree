@@ -11,4 +11,8 @@ case class ErrorContent(
 object ErrorContent {
   implicit val errorContentReads = Json.reads[ErrorContent]
   implicit val errorContentWrites = Json.writes[ErrorContent]
+
+  implicit def ErrorContentToString(errorContent: ErrorContent): String ={
+    Json.toJson(errorContent).toString
+  }
 }

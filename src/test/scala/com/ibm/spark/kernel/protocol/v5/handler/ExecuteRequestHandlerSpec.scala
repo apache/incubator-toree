@@ -141,6 +141,10 @@ class ExecuteRequestHandlerSpec extends TestKit(
         interpreterProbe.expectMsg(executeRequest)
       }
 
+
+      var executeReplyErrorName: String = null
+      var executeReplyErrorValue: String = null
+      var executeReplyErrorTraceback: List[String] = null
       it("interpreter should not reply, and future times out") {
         //  We need a little longer timeout here because the future itself has a timeout
         val executeReplyMessage: KernelMessage = relayProbe.receiveOne(3.seconds).asInstanceOf[KernelMessage]
@@ -149,6 +153,21 @@ class ExecuteRequestHandlerSpec extends TestKit(
         executeReplyMessage.header.msg_type should be (MessageType.ExecuteReply.toString)
         //  Make sure it is an error
         replyContent.status should be("error")
+
+        //  Get the values to compare with the error message below
+        executeReplyErrorName = replyContent.ename.get
+        executeReplyErrorValue = replyContent.evalue.get
+        executeReplyErrorTraceback = replyContent.traceback.get
+      }
+
+      it("should send error message to relay") {
+        val errorContentMessage = relayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
+        val errorContent = Json.parse(errorContentMessage.contentString).as[ErrorContent]
+        errorContent.ename should not be(null)
+        //  Check the error messages are the same
+        executeReplyErrorName should be(errorContent.ename)
+        executeReplyErrorValue should be(errorContent.evalue)
+        executeReplyErrorTraceback should be(errorContent.traceback)
       }
 
       it("should send idle status to relay") {
