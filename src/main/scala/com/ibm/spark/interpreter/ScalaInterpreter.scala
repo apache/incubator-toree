@@ -1,24 +1,17 @@
 package com.ibm.spark.interpreter
 
-import java.io.{ByteArrayOutputStream, PrintStream, PrintWriter, StringWriter}
+import java.io.ByteArrayOutputStream
 import java.nio.charset.Charset
-
-import com.ibm.spark.interpreter.imports.printers.{WrapperSystem, WrapperConsole}
-import com.ibm.spark.utils.MultiOutputStream
-import org.apache.commons.io.output.WriterOutputStream
+import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
+import com.ibm.spark.utils.{LogLike, MultiOutputStream}
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain}
-import org.slf4j.LoggerFactory
-
-import scala.tools.nsc.interpreter.OutputStream
-import scala.tools.nsc.interpreter._
 import scala.tools.nsc.Settings
-import scala.tools.nsc.interpreter.JPrintWriter
+import scala.tools.nsc.interpreter._
 
 case class ScalaInterpreter(
   args: List[String],
   out: OutputStream
-) extends Interpreter {
-  private val logger = LoggerFactory.getLogger(classOf[ScalaInterpreter])
+) extends Interpreter with LogLike {
   private val ExecutionExceptionName = "lastException"
   val settings: Settings = new SparkCommandLine(args).settings
 

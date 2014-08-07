@@ -2,8 +2,6 @@ package com.ibm.spark.utils
 
 import org.slf4j.LoggerFactory
 
-import scala.reflect.ClassTag
-
 /**
  * A trait for mixing in logging. This trait
  * exposes a {@link org.slf4j.Logger}

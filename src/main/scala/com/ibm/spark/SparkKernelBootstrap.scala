@@ -11,11 +11,11 @@ import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
 import com.ibm.spark.kernel.protocol.v5.security.SignatureManagerActor
 import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.security.{HmacAlgorithm, Hmac}
+import com.ibm.spark.utils.LogLike
 import org.apache.spark.{SparkContext, SparkConf}
 import org.slf4j.LoggerFactory
 
-case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) {
-  private val logger = LoggerFactory.getLogger(classOf[SparkKernelBootstrap])
+case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends LogLike {
 
   private val DefaultSparkMaster                      = sparkKernelOptions.master.getOrElse("local[*]")
   private val DefaultAppName                          = SparkKernelInfo.banner

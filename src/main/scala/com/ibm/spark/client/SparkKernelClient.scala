@@ -4,18 +4,16 @@ import java.io.File
 
 import akka.actor.{Props, ActorSystem}
 import com.ibm.spark.kernel.protocol.v5.MessageType._
-import com.ibm.spark.kernel.protocol.v5.{SocketType, MessageType, SimpleActorLoader}
+import com.ibm.spark.kernel.protocol.v5.{SocketType, SimpleActorLoader}
 import com.ibm.spark.kernel.protocol.v5.SocketType._
-import com.ibm.spark.kernel.protocol.v5.handler.{KernelInfoRequestHandler, ExecuteRequestHandler, GenericSocketMessageHandler}
+import com.ibm.spark.kernel.protocol.v5.handler.GenericSocketMessageHandler
 import com.ibm.spark.kernel.protocol.v5.socket.{HeartbeatClient, SocketFactory, SocketConfigReader}
-import org.slf4j.LoggerFactory
+import com.ibm.spark.utils.LogLike
 
 /**
  * Created by dalogsdon on 8/5/14.
  */
-class SparkKernelClient {
-  private val logger = LoggerFactory.getLogger(classOf[SparkKernelClient])
-
+class SparkKernelClient extends LogLike {
   val actorSystem = ActorSystem("spark-client-actor-system")
   val actorLoader = SimpleActorLoader(actorSystem)
 
