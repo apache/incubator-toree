@@ -26,7 +26,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     when(actorLoader.load(SystemActorType.Relay)).thenReturn(system.actorSelection(probe.ref.path.toString))
 
     val shell = system.actorOf(Props(classOf[Shell], socketFactory, actorLoader))
-    val shellClient = system.actorOf(Props(classOf[ShellClient], socketFactory, actorLoader))
+    val shellClient = system.actorOf(Props(classOf[ShellClient], socketFactory))
 
     val request = ExecuteRequest("""val x = "foo"""", false, true, UserExpressions(), true)
     val header = Header(UUID.randomUUID().toString, "spark", UUID.randomUUID().toString, MessageType.ExecuteRequest.toString, "5.0")
