@@ -1,8 +1,9 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.Actor
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5.{ActorLoader, KernelMessage}
+import com.ibm.spark.utils.LogLike
 
 /**
  * All KernelMessage leaving the kernel for the client will exit the relay in a similar pattern. This class is meant
@@ -21,10 +22,11 @@ import com.ibm.spark.kernel.protocol.v5.{ActorLoader, KernelMessage}
  * @param actorLoader The ActorLoader used to load the socket actors
  * @param socketType The type of socket, mapping to an Actor for this class to pass messages along to
  */
-class GenericSocketMessageHandler(actorLoader: ActorLoader, socketType: SocketType) extends Actor with ActorLogging {
+class GenericSocketMessageHandler(actorLoader: ActorLoader, socketType: SocketType)
+  extends Actor with LogLike {
   override def receive: Receive = {
     case message: KernelMessage =>
-      log.debug("Sending " + message.header.msg_id + "message to " + socketType.toString + "socket")
+      logger.debug("Sending " + message.header.msg_id + "message to " + socketType.toString + "socket")
       actorLoader.load(socketType) ! message
   }
 }

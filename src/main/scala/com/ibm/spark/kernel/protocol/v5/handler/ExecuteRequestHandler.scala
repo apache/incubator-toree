@@ -1,10 +1,10 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import akka.actor.{ActorSelection, Actor, ActorLogging}
+import akka.actor.{ActorSelection, Actor}
 import akka.pattern.ask
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.utils.ExecutionCounter
+import com.ibm.spark.utils.{LogLike, ExecutionCounter}
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, Json}
 
@@ -16,11 +16,11 @@ import scala.util.{Failure, Success}
  * Receives an ExecuteRequest KernelMessage and forwards the ExecuteRequest
  * to the interpreter actor.
  */
-class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLogging {
+class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike {
   override def receive: Receive = {
     // sends execute request to interpreter
     case message: KernelMessage =>
-      log.debug("Forwarding execute request")
+      logger.debug("Forwarding execute request")
       val executionCount = ExecutionCounter.incr(message.header.session)
       val relayActor = actorLoader.load(SystemActorType.Relay)
       //  This is a collection of common pieces that will be sent back in all reply message, use with .copy
@@ -69,7 +69,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
 
           future.onComplete {
             case Success(tuple) =>
-              log.debug("Sending Kernel messages to router")
+              logger.debug("Sending Kernel messages to router")
 
               //  Send the reply message to the client
               val kernelReplyMessage = messageReplySkeleton.copy(

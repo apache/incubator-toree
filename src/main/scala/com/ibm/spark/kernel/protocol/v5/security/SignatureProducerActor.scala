@@ -1,8 +1,9 @@
 package com.ibm.spark.kernel.protocol.v5.security
 
-import akka.actor.{ActorLogging, Actor}
+import akka.actor.Actor
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
 import com.ibm.spark.security.{HmacAlgorithm, Hmac}
+import com.ibm.spark.utils.LogLike
 import play.api.libs.json.Json
 
 /**
@@ -11,7 +12,7 @@ import play.api.libs.json.Json
  */
 class SignatureProducerActor(
   private val hmac: Hmac
-) extends Actor with ActorLogging {
+) extends Actor with LogLike {
   override def receive: Receive = {
     case message: KernelMessage =>
       val signature = hmac(

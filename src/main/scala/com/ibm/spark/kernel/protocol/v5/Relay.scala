@@ -1,9 +1,10 @@
 package com.ibm.spark.kernel.protocol.v5
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.Actor
 import akka.util.Timeout
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
+import com.ibm.spark.utils.LogLike
 
 import scala.concurrent.duration._
 import akka.pattern.ask
@@ -14,7 +15,7 @@ import akka.pattern.ask
  */
 case class Relay(
   actorLoader: ActorLoader, useSignatureManager: Boolean
-) extends Actor with ActorLogging {
+) extends Actor with LogLike {
   // NOTE: Required to provide the execution context for futures with akka
   import context._
 
@@ -29,7 +30,7 @@ case class Relay(
    */
   private def relay(kernelMessage: KernelMessage){
     val messageType: MessageType = MessageType.withName(kernelMessage.header.msg_type)
-    log.info("Relaying message of type " + kernelMessage.header.msg_type )
+    logger.info("Relaying message of type " + kernelMessage.header.msg_type )
     actorLoader.load(messageType) ! kernelMessage
   }
 

@@ -1,10 +1,11 @@
 package com.ibm.spark.kernel.protocol.v5.security
 
-import akka.actor.{Props, ActorRef, ActorLogging, Actor}
+import akka.actor.{Props, ActorRef, Actor}
 import akka.util.Timeout
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage}
 import com.ibm.spark.security.{HmacAlgorithm, Hmac}
+import com.ibm.spark.utils.LogLike
 
 import scala.concurrent.duration._
 import akka.pattern.ask
@@ -12,7 +13,7 @@ import akka.pattern.pipe
 
 class SignatureManagerActor(
   key: String, scheme: String
-) extends Actor with ActorLogging {
+) extends Actor with LogLike {
   private val hmac = Hmac(key, HmacAlgorithm(scheme))
 
   def this(key: String) = this(key, HmacAlgorithm.SHA256.toString)
