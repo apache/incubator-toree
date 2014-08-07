@@ -197,11 +197,36 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
     handlerActor ! kernelMessageWithBadExecuteRequest
     describe("#receive( KernelMessage with bad JSON content )"){
-      it("should respond with an error reply")    {
+      var executeReplyErrorName: String = null
+      var executeReplyErrorValue: String = null
+      var executeReplyErrorTraceback: List[String] = null
+      it("should respond with an execute_reply with status error")    {
         val badExecuteReplyMessage: KernelMessage = relayProbe.receiveOne(1.seconds).asInstanceOf[KernelMessage]
         val badReplyContent = Json.parse(badExecuteReplyMessage.contentString).as[ExecuteReply]
         badExecuteReplyMessage.header.msg_type should be (MessageType.ExecuteReply.toString)
         badReplyContent.status should be("error")
+
+        //  Get the values to compare with the error message below
+        executeReplyErrorName = badReplyContent.ename.get
+        executeReplyErrorValue = badReplyContent.evalue.get
+        executeReplyErrorTraceback = badReplyContent.traceback.get
+      }
+
+      it("should send error message to relay") {
+        val errorContentMessage = relayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
+        val errorContent = Json.parse(errorContentMessage.contentString).as[ErrorContent]
+        errorContent.ename should not be(null)
+
+        //  Check the error messages are the same
+        executeReplyErrorName should be(errorContent.ename)
+        executeReplyErrorValue should be(errorContent.evalue)
+        executeReplyErrorTraceback should be(errorContent.traceback)
+      }
+
+      it("should send idle message to relay") {
+        val kernelBusyReply = relayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
+        val busyStatus = Json.parse(kernelBusyReply.contentString).as[KernelStatus]
+        busyStatus.execution_state should be("idle")
       }
     }
   }

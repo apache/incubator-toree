@@ -25,6 +25,12 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
       val relayActor = actorLoader.load(SystemActorType.Relay)
       //  This is a collection of common pieces that will be sent back in all reply message, use with .copy
       val messageReplySkeleton =  new KernelMessage( message.ids, "", null, message.header, Metadata(), null)
+      //  All code paths in this function will need to send the idle status
+      val idleMessage = messageReplySkeleton.copy(
+        ids = Seq(MessageType.Status.toString),
+        header = message.header.copy(msg_type = MessageType.Status.toString),
+        contentString = KernelStatusIdle.toString
+      )
 
       Json.parse(message.contentString).validate[ExecuteRequest].fold(
         (invalid: Seq[(JsPath, Seq[ValidationError])]) => {
@@ -45,6 +51,21 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
             header = message.header.copy(msg_type = MessageType.ExecuteReply.toString),
             contentString = replyError
           )
+
+          //  Send the error to the client on the IOPub socket
+          val errorContent: ErrorContent =  ErrorContent(
+            replyError.ename.get,
+            replyError.evalue.get,
+            replyError.traceback.get
+          )
+
+          relayActor ! messageReplySkeleton.copy(
+            header = message.header.copy(msg_type = MessageType.Error.toString),
+            contentString = errorContent
+          )
+
+          //  Send idle status to client
+          relayActor ! idleMessage
         },
         (executeRequest: ExecuteRequest) => {
           //  Alert the clients the kernel is busy
@@ -61,13 +82,6 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
             contentString = Json.toJson(new ExecuteInput(executeRequest.code, executionCount)).toString
           )
           relayActor ! executeInputMessage
-
-          //  Alert the clients the kernel is busy
-          val idleMessage = messageReplySkeleton.copy(
-            ids = Seq(MessageType.Status.toString),
-            header = message.header.copy(msg_type = MessageType.Status.toString),
-            contentString = KernelStatusIdle.toString
-          )
 
           // use future to keep message header in scope
           val future: Future[(ExecuteReply, ExecuteResult)] =
