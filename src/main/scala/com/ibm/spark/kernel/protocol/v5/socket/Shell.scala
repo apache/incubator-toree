@@ -15,14 +15,13 @@ class Shell(socketFactory: SocketFactory, actorLoader: ActorLoader) extends Acto
   val socket = socketFactory.Shell(context.system, self)
   override def receive: Receive = {
     case zmqMessage: ZMQMessage =>
-      println("SHELL RECEIVING: " +
+      logger.debug("SHELL RECEIVING: " +
         zmqMessage.frames.map((byteString: ByteString) => new String(byteString.toArray)).mkString("\n"))
       val message: KernelMessage = zmqMessage
       actorLoader.load(SystemActorType.Relay) ! message
     case message: KernelMessage =>
       val zmqMessage: ZMQMessage = message
-      logger.debug("Sending shell message")
-      println("SHELL SENDING: " +
+      logger.debug("SHELL SENDING: " +
         zmqMessage.frames.map((byteString: ByteString) => new String(byteString.toArray)).mkString("\n"))
       socket ! zmqMessage
   }

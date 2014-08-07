@@ -16,7 +16,7 @@ class IOPub(socketFactory: SocketFactory) extends Actor with LogLike {
   override def receive: Receive = {
     case message: KernelMessage =>
       val zmqMessage: ZMQMessage = message
-      println("IOPUB SENDING: " +
+      logger.debug("IOPUB SENDING: " +
         zmqMessage.frames.map((byteString: ByteString) => new String(byteString.toArray)).mkString("\n"))
       socket ! zmqMessage
   }

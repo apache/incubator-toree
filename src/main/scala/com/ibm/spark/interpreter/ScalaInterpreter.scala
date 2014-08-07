@@ -37,7 +37,7 @@ case class ScalaInterpreter(
     (IR.Result, Either[ExecuteOutput, ExecuteError]) =
   {
     require(sparkIMain != null)
-    println(code)
+    logger.debug(s"Interpreting code: $code")
 
     var result: IR.Result = null
     var output: ExecuteOutput = ""

@@ -34,16 +34,15 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
 
       Json.parse(message.contentString).validate[ExecuteRequest].fold(
         (invalid: Seq[(JsPath, Seq[ValidationError])]) => {
-          println("Validation errors when parsing ExecuteRequest")
-          //  Determine what to do here
-          val output: List[String] = List()
+          val validationErrors: List[String] = List()
           for (path <- invalid) {
-            output :+ s"JSPath ${path._1} has error: ${path._2(0).toString}"
+            validationErrors :+ s"JSPath ${path._1} has error: ${path._2(0).toString}"
           }
-
+          logger.error("Validation errors when parsing ExecuteRequest:")
+          logger.error(s"$validationErrors")
           val replyError: ExecuteReply = ExecuteReplyError(
             executionCount, Option("JsonParseException"), Option("Error parsing fields"),
-            Option(output)
+            Option(validationErrors)
           )
           relayErrorMessages(relayActor, replyError, message.header, messageReplySkeleton, idleMessage)
         },

@@ -15,7 +15,7 @@ class HeartbeatClient(socketFactory : SocketFactory) extends Actor with LogLike 
   val socket = socketFactory.HeartbeatClient(context.system, self)
 
   override def receive: Receive = {
-    case message: ZMQMessage => println(message.toString)
+    case message: ZMQMessage => logger.trace(message.toString)
     case HeartbeatMessage => socket ! ZMQMessage(ByteString("ping".getBytes))
   }
 }
