@@ -80,6 +80,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :virtualbox do |vb|
     # Expand the memory.
-    vb.customize ["modifyvm", :id, "--memory", "4096"]
+    vb.customize ["modifyvm", :id, "--memory", "2048"]
   end
 end
