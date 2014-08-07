@@ -14,9 +14,9 @@ class StreamContentSpec extends FunSpec with Matchers {
 
   val stream = StreamContent("<STRING>", "<STRING>")
 
-  describe("HistoryRequest") {
+  describe("StreamContent") {
     describe("implicit conversions") {
-      it("should implicitly convert from valid json to a HistoryRequest instance") {
+      it("should implicitly convert from valid json to a StreamContent instance") {
         // This is the least safe way to convert as an error is thrown if it fails
         streamJson.as[StreamContent] should be (stream)
       }
@@ -39,7 +39,7 @@ class StreamContentSpec extends FunSpec with Matchers {
         ) should be (stream)
       }
 
-      it("should implicitly convert from a HistoryRequest instance to valid json") {
+      it("should implicitly convert from a StreamContent instance to valid json") {
         Json.toJson(stream) should be (streamJson)
       }
     }
