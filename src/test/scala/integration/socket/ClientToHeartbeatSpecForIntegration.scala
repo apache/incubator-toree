@@ -1,27 +1,23 @@
 package integration.socket
 
 import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.pattern.ask
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.util.Timeout
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.socket.{Heartbeat, HeartbeatClient, HeartbeatMessage, SocketFactory}
-import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
+import scala.concurrent.duration._
 
-object ClientToHeartbeatSpecForIntegration {
-  val config = """
-    akka {
-      loglevel = "WARNING"
-    }"""
-}
 
-class ClientToHeartbeatSpecForIntegration
-  extends TestKit(ActorSystem("HeartbeatActorSpec", ConfigFactory.parseString(ClientToHeartbeatSpecForIntegration.config)))
+class ClientToHeartbeatSpecForIntegration extends TestKit(ActorSystem("HeartbeatActorSpec"))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
   describe("HeartbeatActor") {
+    implicit val timeout = Timeout(1.minute)
     val socketFactory = mock[SocketFactory]
     val probe : TestProbe = TestProbe()
     val probeClient : TestProbe = TestProbe()
@@ -33,7 +29,7 @@ class ClientToHeartbeatSpecForIntegration
 
     describe("send heartbeat") {
       it("should send and receive same ZMQMessage") {
-        heartbeatClient ! HeartbeatMessage
+        heartbeatClient ? HeartbeatMessage
         probeClient.expectMsgClass(classOf[ZMQMessage])
         probeClient.forward(heartbeat)
         probe.expectMsgClass(classOf[ZMQMessage])

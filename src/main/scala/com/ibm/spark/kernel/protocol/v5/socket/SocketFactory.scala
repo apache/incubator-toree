@@ -1,7 +1,9 @@
 package com.ibm.spark.kernel.protocol.v5.socket
 
+import java.util.UUID
+
 import akka.actor.{ActorRef, ActorSystem}
-import akka.zeromq.{Bind, Connect, Listener, ZeroMQExtension}
+import akka.zeromq._
 
 object SocketFactory {
   def apply(socketConfig: SocketConfig) = {
@@ -49,13 +51,16 @@ class  SocketFactory(socketConfig: SocketConfig) {
   }
 
   /**
-   * Creates a ZeroMQ request socket representing the client endpoint for shell messages
+   * Creates a ZeroMQ request socket representing the client endpoint for shell messages.
+   * Generates an id for <a href="http://api.zeromq.org/2-1:zmq-setsockopt#toc6">
+   * Router/Dealer message routing</a>.
    * @param system The actor system the socket actor will belong
    * @param listener The actor who will receive
    * @return The ActorRef created for the socket connection
    */
   def ShellClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
-    ZeroMQExtension(system).newDealerSocket(Array(Listener(listener), Connect(ShellConnection.toString)))
+    ZeroMQExtension(system).newDealerSocket(Array(Listener(listener), Connect(ShellConnection.toString),
+      Identity(UUID.randomUUID().toString.getBytes)))
   }
 
   /**

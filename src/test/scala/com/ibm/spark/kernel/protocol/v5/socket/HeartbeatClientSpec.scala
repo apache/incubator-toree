@@ -3,21 +3,13 @@ package com.ibm.spark.kernel.protocol.v5.socket
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.zeromq.ZMQMessage
-import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 
-object HeartbeatClientSpec {
-  val config = """
-    akka {
-      loglevel = "WARNING"
-    }"""
-}
-
-class HeartbeatClientSpec extends TestKit(ActorSystem("HeartbeatActorSpec", ConfigFactory.parseString(HeartbeatSpec.config)))
-with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+class HeartbeatClientSpec extends TestKit(ActorSystem("HeartbeatActorSpec"))
+  with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
   describe("HeartbeatClientActor") {
     val socketFactory = mock[SocketFactory]

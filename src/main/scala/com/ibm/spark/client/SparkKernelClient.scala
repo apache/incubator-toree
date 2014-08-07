@@ -2,18 +2,25 @@ package com.ibm.spark.client
 
 import java.io.File
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ActorSystem, Props}
+import akka.pattern.ask
+import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5.MessageType._
-import com.ibm.spark.kernel.protocol.v5.{SocketType, SimpleActorLoader}
-import com.ibm.spark.kernel.protocol.v5.SocketType._
-import com.ibm.spark.kernel.protocol.v5.handler.GenericSocketMessageHandler
-import com.ibm.spark.kernel.protocol.v5.socket.{HeartbeatClient, SocketFactory, SocketConfigReader}
+import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
+import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.utils.LogLike
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.util.{Failure, Success}
+
 /**
- * Created by dalogsdon on 8/5/14.
+ * Client
  */
-class SparkKernelClient extends LogLike {
+class SparkKernelClient extends LogLike { // todo instantiate with signature
+  implicit val timeout = Timeout(1.minute)
+
   val actorSystem = ActorSystem("spark-client-actor-system")
   val actorLoader = SimpleActorLoader(actorSystem)
 
@@ -22,9 +29,30 @@ class SparkKernelClient extends LogLike {
 
   val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
 
-  // test with a heartbeat client
+  // create socket clients
   val heartbeatClientActor = actorSystem.actorOf(Props(classOf[HeartbeatClient], socketFactory),
     name = SocketType.HeartbeatClient.toString)
+  val socketClientActor = actorSystem.actorOf(Props(classOf[ShellClient], socketFactory, actorLoader),
+    name = SocketType.ShellClient.toString)
+
+  // user should provide success/failure lambdas that act on
+  // status of the ExecuteReply returned from the ask
+  def execute(code: String): Unit = {
+    val request = ExecuteRequest(code, false, true, UserExpressions(), true)
+    actorLoader.load(MessageType.ExecuteRequest) ? request
+  }
+
+  def heartbeat(success: () => Unit, failure: () => Unit): Unit = {
+    val future = heartbeatClientActor ? HeartbeatMessage
+    future.onComplete {
+      case Success(_) =>
+        success()
+        logger.info("client resolving heartbeat")
+      case Failure(_) =>
+        failure()
+        logger.info("something bad happened")
+    }
+  }
 
   private def initializeRequestHandler[T](clazz: Class[T], messageType: MessageType) {
     logger.info("Creating %s handler".format(messageType.toString))
@@ -34,24 +62,8 @@ class SparkKernelClient extends LogLike {
     )
   }
 
-  private def initializeSocketHandler(socketType: SocketType, messageType: MessageType): Unit = {
-    logger.info("Creating %s to %s socket handler ".format(messageType.toString, socketType.toString))
-    actorSystem.actorOf(
-      Props(classOf[GenericSocketMessageHandler], actorLoader, socketType),
-      name = messageType.toString
-    )
+  private def initializeKernelHandlers(): Unit = {
+    initializeRequestHandler(classOf[ExecuteHandler], MessageType.ExecuteRequest)
   }
-
-  //  private def initializeKernelHandlers(): Unit = {
-  //    //  These are the handlers for messages coming into the
-  //    initializeRequestHandler(classOf[ExecuteRequestHandler], MessageType.ExecuteRequest )
-  //    initializeRequestHandler(classOf[KernelInfoRequestHandler], MessageType.KernelInfoRequest )
-  //
-  //    //  These are handlers for messages leaving the kernel through the sockets
-  //    initializeSocketHandler(SocketType.Shell, MessageType.KernelInfoReply)
-  //    initializeSocketHandler(SocketType.Shell, MessageType.ExecuteReply)
-  //    initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteResult)
-  //    initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteInput)
-  //    initializeSocketHandler(SocketType.IOPub, MessageType.Status)
-  //  }
+  initializeKernelHandlers()
 }

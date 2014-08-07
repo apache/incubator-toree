@@ -1,32 +1,45 @@
 package integration.socket
 
-import akka.actor.{ActorRef, Props, ActorSystem}
-import akka.util.Timeout
+import java.util.UUID
+
+import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.zeromq._
-import com.ibm.spark.kernel.protocol.v5.socket.{Heartbeat, SocketFactory, SocketConfig, Shell}
-import org.scalatest.{FunSpec, Matchers}
-import test.utils.{StackActor, BlockingStack}
+import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
+import com.ibm.spark.kernel.protocol.v5.socket._
+import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.{FunSpecLike, Matchers}
+import play.api.libs.json.Json
 
-import scala.concurrent.duration._
+class ClientToShellSpecForIntegration extends TestKit(ActorSystem("ShellActorSpec"))
+with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+  describe("ShellActor") {
+    val socketFactory = mock[SocketFactory]
+    val actorLoader = mock[ActorLoader]
+    val probe : TestProbe = TestProbe()
+    val probeClient : TestProbe = TestProbe()
+    when(socketFactory.Shell(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probe.ref)
+    when(socketFactory.ShellClient(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probeClient.ref)
+    when(actorLoader.load(SystemActorType.Relay)).thenReturn(system.actorSelection(probe.ref.path.toString))
 
-class ClientToShellSpecForIntegration extends FunSpec with Matchers {
-  implicit val timeout = Timeout(5.seconds)
+    val shell = system.actorOf(Props(classOf[Shell], socketFactory, actorLoader))
+    val shellClient = system.actorOf(Props(classOf[ShellClient], socketFactory, actorLoader))
 
-  val system = ActorSystem("ShellClient")
-  val socketConfig = SocketConfig(-1,-1, -1, 8001, -1, "127.0.0.1", "tcp","hmac-sha256","")
-  val socketFactory : SocketFactory = SocketFactory(socketConfig)
-  val shell = system.actorOf(Props(classOf[Heartbeat], socketFactory), "Shell")
-  val stack =  new BlockingStack()
-  val clientSocket : ActorRef = socketFactory.HeartbeatClient(system,
-    system.actorOf(Props(classOf[StackActor], stack), "ShellQueue"))
+    val request = ExecuteRequest("""val x = "foo"""", false, true, UserExpressions(), true)
+    val header = Header(UUID.randomUUID().toString, "spark", UUID.randomUUID().toString, MessageType.ExecuteRequest.toString, "5.0")
+    val kernelMessage = KernelMessage(Seq[String](), "", header, EmptyHeader, Metadata(), Json.toJson(request).toString)
 
-  describe("Client-Shell Integration"){
-    describe("Client"){
-      it("should connect to Shell Socket"){
-          stack.pop() should be (Connecting)
-    	}
-
-      // todo: some meaningful test
+    describe("send execute request") {
+      it("should send execute request") {
+        shellClient ! kernelMessage
+        probeClient.expectMsgClass(classOf[ZMQMessage])
+        probeClient.forward(shell)
+        probe.expectMsgClass(classOf[KernelMessage])
+        probe.forward(shellClient)
+      }
     }
   }
 }

@@ -3,7 +3,7 @@ package com.ibm.spark.kernel.protocol.v5.socket
 import akka.actor.Actor
 import akka.util.ByteString
 import akka.zeromq.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.{SystemActorType, ActorLoader, KernelMessage}
+import com.ibm.spark.kernel.protocol.v5.{ActorLoader, KernelMessage, SystemActorType}
 import com.ibm.spark.utils.LogLike
 
 /**
@@ -19,6 +19,7 @@ class Shell(socketFactory: SocketFactory, actorLoader: ActorLoader) extends Acto
         zmqMessage.frames.map((byteString: ByteString) => new String(byteString.toArray)).mkString("\n"))
       val message: KernelMessage = zmqMessage
       actorLoader.load(SystemActorType.Relay) ! message
+
     case message: KernelMessage =>
       val zmqMessage: ZMQMessage = message
       logger.debug("SHELL SENDING: " +
@@ -26,4 +27,3 @@ class Shell(socketFactory: SocketFactory, actorLoader: ActorLoader) extends Acto
       socket ! zmqMessage
   }
 }
-
