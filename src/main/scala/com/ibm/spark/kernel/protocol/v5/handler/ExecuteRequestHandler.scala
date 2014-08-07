@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import akka.actor.{Actor, ActorLogging}
+import akka.actor.{ActorSelection, Actor, ActorLogging}
 import akka.pattern.ask
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
@@ -24,7 +24,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
       val executionCount = ExecutionCounter.incr(message.header.session)
       val relayActor = actorLoader.load(SystemActorType.Relay)
       //  This is a collection of common pieces that will be sent back in all reply message, use with .copy
-      val messageReplySkeleton =  new KernelMessage( message.ids, "", null, message.header, Metadata(), null)
+      val messageReplySkeleton =  new KernelMessage( message.ids, "", null,  message.header, Metadata(), null)
       //  All code paths in this function will need to send the idle status
       val idleMessage = messageReplySkeleton.copy(
         ids = Seq(MessageType.Status.toString),
@@ -45,27 +45,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
             executionCount, Option("JsonParseException"), Option("Error parsing fields"),
             Option(output)
           )
-
-          //  Send the error to the client
-          relayActor ! messageReplySkeleton.copy(
-            header = message.header.copy(msg_type = MessageType.ExecuteReply.toString),
-            contentString = replyError
-          )
-
-          //  Send the error to the client on the IOPub socket
-          val errorContent: ErrorContent =  ErrorContent(
-            replyError.ename.get,
-            replyError.evalue.get,
-            replyError.traceback.get
-          )
-
-          relayActor ! messageReplySkeleton.copy(
-            header = message.header.copy(msg_type = MessageType.Error.toString),
-            contentString = errorContent
-          )
-
-          //  Send idle status to client
-          relayActor ! idleMessage
+          relayErrorMessages(relayActor, replyError, message.header, messageReplySkeleton, idleMessage)
         },
         (executeRequest: ExecuteRequest) => {
           //  Alert the clients the kernel is busy
@@ -115,28 +95,37 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with ActorLo
                 executionCount, Option(error.getClass.getCanonicalName), Option(error.getMessage),
                 Option(error.getStackTrace.map(_.toString).toList)
               )
-              relayActor ! messageReplySkeleton.copy(
-                header = message.header.copy(msg_type = MessageType.ExecuteReply.toString),
-                contentString = replyError
-              )
-
-              //  Send the error to the client on the IOPub socket
-              val errorContent: ErrorContent =  ErrorContent(
-                error.getClass.getCanonicalName,
-                error.getMessage,
-                error.getStackTrace.map(_.toString).toList
-              )
-
-              relayActor ! messageReplySkeleton.copy(
-                header = message.header.copy(msg_type = MessageType.Error.toString),
-                contentString = errorContent
-              )
-
-              //  Send idle status to client
-              relayActor ! idleMessage
-
+              relayErrorMessages(relayActor, replyError, message.header, messageReplySkeleton, idleMessage)
           }
         }
       )
+  }
+
+  /**
+   * Create a common method to relay errors based on a ExecuteReplyError
+   * @param relayActor The relay to send messages through
+   * @param replyError The reply error to build the error messages from
+   * @param headerSkeleton A skeleton for the reply headers (Everything should be filled in except msg_type)
+   * @param messageReplySkeleton A skeleton to build messages from (Everything should be filled in except header, contentString)
+   * @param idleMessage A generic idle message for a particular ExecuteRequest
+   */
+  def relayErrorMessages(relayActor: ActorSelection, replyError: ExecuteReply, headerSkeleton: Header,
+                         messageReplySkeleton: KernelMessage, idleMessage: KernelMessage) {
+    relayActor ! messageReplySkeleton.copy(
+      header = headerSkeleton.copy(msg_type = MessageType.ExecuteReply.toString),
+      contentString = replyError
+    )
+
+    //  Send the error to the client on the IOPub socket
+    val errorContent: ErrorContent =  ErrorContent(
+      replyError.ename.get, replyError.evalue.get, replyError.traceback.get
+    )
+
+    relayActor ! messageReplySkeleton.copy(
+      header = headerSkeleton.copy(msg_type = MessageType.Error.toString), contentString = errorContent
+    )
+
+    //  Send idle status to client
+    relayActor ! idleMessage
   }
 }
