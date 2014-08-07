@@ -4,7 +4,6 @@ import akka.actor.{Actor, ActorSelection, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
-import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
@@ -33,6 +32,12 @@ class ExecuteRequestHandlerSpec extends TestKit(
   val executeRequest: ExecuteRequest = ExecuteRequest("spark code", false, true, Map(), false)
   val kernelMessage = new KernelMessage(
     Seq[String](), "test message", header, header, Map[String, String](), Json.toJson(executeRequest).toString
+  )
+  val kernelMessageWithBadExecuteRequest = new KernelMessage(
+    Seq[String](), "test message", header, header, Map[String, String](),
+      """
+        {"code" : 124 }
+      """
   )
 
   val executeReply = new KernelMessage(
@@ -153,4 +158,33 @@ class ExecuteRequestHandlerSpec extends TestKit(
       }
     }
   }
+
+  //  Testing error timeout for interpreter future
+  describe("ExecuteRequestHandler( ActorLoader )") {
+    val actorLoader: ActorLoader = mock[ActorLoader]
+
+    // Add our handler and mock interpreter to the actor system
+    val handlerActor = system.actorOf(Props(classOf[ExecuteRequestHandler], actorLoader))
+
+    val relayProbe: TestProbe = new TestProbe(system)
+    val mockSelection: ActorSelection = system.actorSelection(relayProbe.ref.path.toString)
+    when(actorLoader.load(SystemActorType.Relay)).thenReturn(mockSelection)
+
+    //  Mock the interpreter actor
+    val interpreterProbe: TestProbe = TestProbe()
+    val interpreterSelection: ActorSelection = system.actorSelection(interpreterProbe.ref.path.toString)
+    when(actorLoader.load(SystemActorType.Interpreter)).thenReturn(interpreterSelection)
+
+
+    handlerActor ! kernelMessageWithBadExecuteRequest
+    describe("#receive( KernelMessage with bad JSON content )"){
+      it("should respond with an error reply")    {
+        val badExecuteReplyMessage: KernelMessage = relayProbe.receiveOne(1.seconds).asInstanceOf[KernelMessage]
+        val badReplyContent = Json.parse(badExecuteReplyMessage.contentString).as[ExecuteReply]
+        badExecuteReplyMessage.header.msg_type should be (MessageType.ExecuteReply.toString)
+        badReplyContent.status should be("error")
+      }
+    }
+  }
+
 }
