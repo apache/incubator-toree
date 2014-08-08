@@ -1,3 +1,5 @@
+import de.johoop.testngplugin.TestNGPlugin._
+
 name := "SparkKernel"
 
 version := "0.1.0"
@@ -90,8 +92,19 @@ libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.6" // MIT
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.0" % "test", // Apache v2
   "org.scalactic" %% "scalactic" % "2.2.0" % "test", // Apache v2
-  "org.mockito" % "mockito-core" % "1.9.5" % "test",// MIT
+  "org.mockito" % "mockito-all" % "1.9.5" % "test",// MIT
   "org.spark-project.akka" %% "akka-testkit" % "2.2.3-shaded-protobuf" % "test" // MIT
+)
+
+
+//  Java Test Dependencies
+libraryDependencies ++= Seq(
+  "org.testng" % "testng" % "6.8.5" % "test",
+  "org.mockito" %"mockito-all" % "1.9.5" % "test",
+  "org.easytesting" % "fest-assert" % "1.4" % "test",
+  "org.fluentlenium" % "fluentlenium-testng" % "0.9.0" % "test",
+  "org.fluentlenium" % "fluentlenium-festassert" % "0.9.0" % "test",
+  "org.fluentlenium" % "fluentlenium-core" % "0.9.0" % "test"
 )
 
 //
@@ -107,3 +120,5 @@ ScoverageKeys.highlighting := true
 packSettings
 
 packMain := Map("sparkkernel" -> "com.ibm.spark.SparkKernel")
+
+testNGSettings

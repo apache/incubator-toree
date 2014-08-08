@@ -1,0 +1,8 @@
+name: SparkKernelJavaTests
+threadCount: 4
+parameters: { }
+
+tests:
+  - name: KernelClientTests
+    packages:
+      - "com.ibm.spark.kernel.client.*"
