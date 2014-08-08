@@ -1,12 +1,16 @@
 package com.ibm.spark.interpreter
 
 import java.io.ByteArrayOutputStream
+import java.net.{URLClassLoader, URL}
 import java.nio.charset.Charset
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
 import com.ibm.spark.utils.{LogLike, MultiOutputStream}
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain}
-import scala.tools.nsc.Settings
+import scala.tools.nsc.backend.{JavaPlatform, MSILPlatform}
+import scala.tools.nsc._
 import scala.tools.nsc.interpreter._
+import scala.tools.nsc.reporters.Reporter
+import scala.tools.nsc.util.{ClassPath, JavaClassPath, MergedClassPath}
 
 case class ScalaInterpreter(
   args: List[String],
@@ -15,10 +19,14 @@ case class ScalaInterpreter(
   private val ExecutionExceptionName = "lastException"
   val settings: Settings = new SparkCommandLine(args).settings
 
-  /* Add scala.runtime libraries to interpreter classpath */ {
-    val cl = this.getClass.getClassLoader
+  private val thisClassLoader = this.getClass.getClassLoader
+  private val internalClassloader =
+    new URLClassLoader(Array(), thisClassLoader) {
+      def addJar(url: URL) = this.addURL(url)
+    }
 
-    val urls = cl match {
+  /* Add scala.runtime libraries to interpreter classpath */ {
+    val urls = thisClassLoader match {
       case cl: java.net.URLClassLoader => cl.getURLs.toList
       case a => // TODO: Should we really be using sys.error here?
         sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
@@ -27,11 +35,54 @@ case class ScalaInterpreter(
 
     settings.classpath.value =
       classpath.distinct.mkString(java.io.File.pathSeparator)
+    settings.embeddedDefaults(internalClassloader)
   }
 
   private val lastResultOut = new ByteArrayOutputStream()
   private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
   private var sparkIMain: SparkIMain = _
+
+  override def addJars(jars: URL*): Unit = {
+    require(!sparkIMain.global.forMSIL) // Only support JavaPlatform
+
+    // Update runtime classpath
+    jars.foreach(internalClassloader.addJar)
+
+    // Update compile time classpath
+    val platform = sparkIMain.global.platform.asInstanceOf[JavaPlatform]
+
+    val allClassPaths = (
+        internalClassloader.getURLs.map(url =>
+          platform.classPath.context.newClassPath(io.AbstractFile.getURL(url))
+        ) ++
+        platform.classPath
+          .asInstanceOf[MergedClassPath[platform.BinaryRepr]].entries
+      ).distinct
+
+    val newClassPath = new MergedClassPath(
+      allClassPaths,
+      platform.classPath.context
+    )
+
+    // TODO: Investigate better way to set this... one thought it to provide
+    //       a classpath in the currentClassPath (which is merged) that can be
+    //       replaced using updateClasspath, but would that work more than once?
+    val fieldSetter = platform.getClass.getMethods
+      .find(_.getName.endsWith("currentClassPath_$eq")).get
+    //val before = sparkIMain.global.platform.classPath.asInstanceOf[MergedClassPath[_]].entries
+    fieldSetter.invoke(platform, Some(newClassPath))
+
+    // Reset the classloader inside the interpreter
+    //sparkIMain.reset()
+
+    // http://stackoverflow.com/questions/16772820/changing-the-compilers-classpath-from-a-scala-macro
+    //sparkIMain.global.invalidateClassPathEntries
+
+    //val after = sparkIMain.global.platform.classPath.asInstanceOf[MergedClassPath[_]].entries
+
+    //println("Unique classpaths:")
+    //(before.diff(after) ++ after.diff(before)).foreach(println)
+  }
 
   override def interpret(code: String, silent: Boolean = false):
     (IR.Result, Either[ExecuteOutput, ExecuteError]) =
@@ -104,10 +155,8 @@ case class ScalaInterpreter(
   override def start() = {
     require(sparkIMain == null)
 
-    sparkIMain = new SparkIMain(
-      settings,
-      new JPrintWriter(multiOutputStream, true)
-    )
+    sparkIMain =
+      new SparkIMain(settings, new JPrintWriter(multiOutputStream, true))
 
     logger.info("Initializing interpreter")
     sparkIMain.initializeSynchronous()
@@ -155,4 +204,8 @@ case class ScalaInterpreter(
   override def bind(variableName: String, typeName: String, value: Any, modifiers: List[String]): Unit = {
     sparkIMain.bind(variableName,typeName,value,modifiers)
   }
+}
+
+trait ClasspathAppendSupport {
+  def appendToClasspath(urls: URL*) = null
 }

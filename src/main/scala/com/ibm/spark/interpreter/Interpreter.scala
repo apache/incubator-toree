@@ -1,5 +1,7 @@
 package com.ibm.spark.interpreter
 
+import java.net.URL
+
 import scala.tools.nsc.interpreter._
 
 trait Interpreter {
@@ -14,6 +16,12 @@ trait Interpreter {
    * @return A reference to the interpreter
    */
   def stop: Interpreter
+
+  /**
+   * Adds external jars to the internal classpaths of the interpreter.
+   * @param jars The list of jar locations
+   */
+  def addJars(jars: URL*): Unit
 
   /**
    * Executes the provided code with the option to silence output.
