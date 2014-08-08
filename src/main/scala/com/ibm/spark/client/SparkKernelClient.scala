@@ -16,7 +16,10 @@ import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
 /**
- * Client
+ * Client API for Spark Kernel.
+ *
+ * Note: This takes a moment to initialize an actor system, so take appropriate action
+ * if an API is to be used immediately after initialization.
  */
 class SparkKernelClient extends LogLike { // todo instantiate with signature
   implicit val timeout = Timeout(1.minute)
@@ -32,14 +35,22 @@ class SparkKernelClient extends LogLike { // todo instantiate with signature
   // create socket clients
   val heartbeatClientActor = actorSystem.actorOf(Props(classOf[HeartbeatClient], socketFactory),
     name = SocketType.HeartbeatClient.toString)
-  val socketClientActor = actorSystem.actorOf(Props(classOf[ShellClient], socketFactory, actorLoader),
+  val socketClientActor = actorSystem.actorOf(Props(classOf[ShellClient], socketFactory),
     name = SocketType.ShellClient.toString)
 
   // user should provide success/failure lambdas that act on
   // status of the ExecuteReply returned from the ask
-  def execute(code: String): Unit = {
+  def execute(code: String, success: () => Unit, failure: () => Unit, result: () => Unit): Unit = {
     val request = ExecuteRequest(code, false, true, UserExpressions(), true)
-    actorLoader.load(MessageType.ExecuteRequest) ? request
+    val future = actorLoader.load(MessageType.ExecuteRequest) ? request
+    future.onComplete {
+      case Success(_) =>
+        success()
+        logger.info("client resolving execute")
+      case Failure(_) =>
+        failure()
+        logger.info("execute: something bad happened")
+    }
   }
 
   def heartbeat(success: () => Unit, failure: () => Unit): Unit = {
@@ -50,7 +61,7 @@ class SparkKernelClient extends LogLike { // todo instantiate with signature
         logger.info("client resolving heartbeat")
       case Failure(_) =>
         failure()
-        logger.info("something bad happened")
+        logger.info("heartbeat: something bad happened")
     }
   }
 
