@@ -206,6 +206,3 @@ case class ScalaInterpreter(
   }
 }
 
-trait ClasspathAppendSupport {
-  def appendToClasspath(urls: URL*) = null
-}
