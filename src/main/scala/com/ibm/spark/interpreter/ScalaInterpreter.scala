@@ -11,6 +11,8 @@ import scala.tools.nsc._
 import scala.tools.nsc.interpreter._
 import scala.tools.nsc.reporters.Reporter
 import scala.tools.nsc.util.{ClassPath, JavaClassPath, MergedClassPath}
+import scala.tools.reflect.StdTags
+import scala.tools.util.PathResolver
 
 case class ScalaInterpreter(
   args: List[String],
@@ -31,7 +33,7 @@ case class ScalaInterpreter(
       case a => // TODO: Should we really be using sys.error here?
         sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
     }
-    val classpath = urls map { _.toString }
+    val classpath = urls.map(_.toString)
 
     settings.classpath.value =
       classpath.distinct.mkString(java.io.File.pathSeparator)
@@ -45,20 +47,27 @@ case class ScalaInterpreter(
   override def addJars(jars: URL*): Unit = {
     require(!sparkIMain.global.forMSIL) // Only support JavaPlatform
 
+    //
     // Update runtime classpath
+    //
     jars.foreach(internalClassloader.addJar)
 
+    //
     // Update compile time classpath
+    //
     val platform = sparkIMain.global.platform.asInstanceOf[JavaPlatform]
 
+    // Collect our new jars and add them to the existing set of classpaths
     val allClassPaths = (
-        internalClassloader.getURLs.map(url =>
-          platform.classPath.context.newClassPath(io.AbstractFile.getURL(url))
-        ) ++
-        platform.classPath
-          .asInstanceOf[MergedClassPath[platform.BinaryRepr]].entries
-      ).distinct
+      internalClassloader.getURLs.map(url =>
+        platform.classPath.context.newClassPath(
+          io.AbstractFile.getFile(url.getPath))
+      ) ++
+      platform.classPath
+        .asInstanceOf[MergedClassPath[platform.BinaryRepr]].entries
+    ).distinct
 
+    // Combine all of our classpaths (old and new) into one merged classpath
     val newClassPath = new MergedClassPath(
       allClassPaths,
       platform.classPath.context
@@ -69,19 +78,10 @@ case class ScalaInterpreter(
     //       replaced using updateClasspath, but would that work more than once?
     val fieldSetter = platform.getClass.getMethods
       .find(_.getName.endsWith("currentClassPath_$eq")).get
-    //val before = sparkIMain.global.platform.classPath.asInstanceOf[MergedClassPath[_]].entries
     fieldSetter.invoke(platform, Some(newClassPath))
 
-    // Reset the classloader inside the interpreter
-    //sparkIMain.reset()
-
-    // http://stackoverflow.com/questions/16772820/changing-the-compilers-classpath-from-a-scala-macro
-    //sparkIMain.global.invalidateClassPathEntries
-
-    //val after = sparkIMain.global.platform.classPath.asInstanceOf[MergedClassPath[_]].entries
-
-    //println("Unique classpaths:")
-    //(before.diff(after) ++ after.diff(before)).foreach(println)
+    // Reload all jars specified into our compiler
+    sparkIMain.global.invalidateClassPathEntries(jars.map(_.getPath): _*)
   }
 
   override def interpret(code: String, silent: Boolean = false):
