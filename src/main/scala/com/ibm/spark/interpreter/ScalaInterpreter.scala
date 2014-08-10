@@ -44,6 +44,11 @@ case class ScalaInterpreter(
   private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
   private var sparkIMain: SparkIMain = _
 
+  /**
+   * Adds jars to the runtime and compile time classpaths. Does not work with
+   * directories or expanding star in a path.
+   * @param jars The list of jar locations
+   */
   override def addJars(jars: URL*): Unit = {
     require(!sparkIMain.global.forMSIL) // Only support JavaPlatform
 

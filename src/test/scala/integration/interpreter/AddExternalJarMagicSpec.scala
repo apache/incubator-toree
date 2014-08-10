@@ -13,9 +13,8 @@ class AddExternalJarMagicSpec extends FunSpec with Matchers with MockitoSugar {
     describe("#addJars") {
       it("should be able to load an external jar") {
         val testJarUrl = this.getClass.getClassLoader.getResource("TestJar.jar")
-        //val testJarUrl = new URL("file:/tmp/jgoodies-common-1.8.0.jar")
-        val interpreter = new ScalaInterpreter(List(), Console.out)
-        //val interpreter = new ScalaInterpreter(List(), mock[OutputStream])
+        //val interpreter = new ScalaInterpreter(List(), Console.out)
+        val interpreter = new ScalaInterpreter(List(), mock[OutputStream])
         interpreter.start()
 
         //
@@ -35,8 +34,41 @@ class AddExternalJarMagicSpec extends FunSpec with Matchers with MockitoSugar {
           "import com.ibm.testjar.TestClass")._1 should be (IR.Success)
 
         // Should now run
-        interpreter.interpret("""new TestClass().sayHello("Chip")""") should be
-          (IR.Success, "Hello, Chip")
+        interpreter.interpret(
+          """println(new TestClass().sayHello("Chip"))"""
+        ) should be (IR.Success, Left("Hello, Chip"))
+      }
+
+      it("should be able to add multiple jars at once") {
+        val testJar1Url =
+          this.getClass.getClassLoader.getResource("TestJar.jar")
+        val testJar2Url =
+          this.getClass.getClassLoader.getResource("TestJar2.jar")
+        val interpreter = new ScalaInterpreter(List(), mock[OutputStream])
+        interpreter.start()
+
+        // Should fail since jars were not added to paths
+        interpreter.interpret(
+          "import com.ibm.testjar.TestClass")._1 should be (IR.Error)
+        interpreter.interpret(
+          "import com.ibm.testjar2.TestClass")._1 should be (IR.Error)
+
+        // Add jars to paths
+        interpreter.addJars(testJar1Url, testJar2Url)
+
+        // Should now succeed
+        interpreter.interpret(
+          "import com.ibm.testjar.TestClass")._1 should be (IR.Success)
+        interpreter.interpret(
+          "import com.ibm.testjar2.TestClass")._1 should be (IR.Success)
+
+        // Should now run
+        interpreter.interpret(
+          """println(new com.ibm.testjar.TestClass().sayHello("Chip"))"""
+        ) should be (IR.Success, Left("Hello, Chip"))
+        interpreter.interpret(
+          """println(new com.ibm.testjar2.TestClass().CallMe())"""
+        ) should be (IR.Success, Left("3"))
       }
     }
   }
