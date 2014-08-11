@@ -70,6 +70,39 @@ class AddExternalJarMagicSpec extends FunSpec with Matchers with MockitoSugar {
           """println(new com.ibm.testjar2.TestClass().CallMe())"""
         ) should be (IR.Success, Left("3"))
       }
+
+      it("should be able to add multiple jars in consecutive calls to addjar") {
+        val testJar1Url =
+          this.getClass.getClassLoader.getResource("TestJar.jar")
+        val testJar2Url =
+          this.getClass.getClassLoader.getResource("TestJar2.jar")
+        val interpreter = new ScalaInterpreter(List(), mock[OutputStream])
+        interpreter.start()
+
+        // Should fail since jars were not added to paths
+        interpreter.interpret(
+          "import com.ibm.testjar.TestClass")._1 should be (IR.Error)
+        interpreter.interpret(
+          "import com.ibm.testjar2.TestClass")._1 should be (IR.Error)
+
+        // Add jars to paths
+        interpreter.addJars(testJar1Url)
+        interpreter.addJars(testJar2Url)
+
+        // Should now succeed
+        interpreter.interpret(
+          "import com.ibm.testjar.TestClass")._1 should be (IR.Success)
+        interpreter.interpret(
+          "import com.ibm.testjar2.TestClass")._1 should be (IR.Success)
+
+        // Should now run
+        interpreter.interpret(
+          """println(new com.ibm.testjar.TestClass().sayHello("Chip"))"""
+        ) should be (IR.Success, Left("Hello, Chip"))
+        interpreter.interpret(
+          """println(new com.ibm.testjar2.TestClass().CallMe())"""
+        ) should be (IR.Success, Left("3"))
+      }
     }
   }
 }

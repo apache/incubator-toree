@@ -64,12 +64,13 @@ case class ScalaInterpreter(
 
     // Collect our new jars and add them to the existing set of classpaths
     val allClassPaths = (
+      platform.classPath
+        .asInstanceOf[MergedClassPath[platform.BinaryRepr]].entries
+      ++
       internalClassloader.getURLs.map(url =>
         platform.classPath.context.newClassPath(
           io.AbstractFile.getFile(url.getPath))
-      ) ++
-      platform.classPath
-        .asInstanceOf[MergedClassPath[platform.BinaryRepr]].entries
+      )
     ).distinct
 
     // Combine all of our classpaths (old and new) into one merged classpath
