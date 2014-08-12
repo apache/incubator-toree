@@ -8,9 +8,11 @@ import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.handler._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
-import com.ibm.spark.kernel.protocol.v5.relay.KernelMessageRelay
+import com.ibm.spark.kernel.protocol.v5.magic.MagicManager
+import com.ibm.spark.kernel.protocol.v5.relay.{ExecuteRequestRelay, KernelMessageRelay}
 import com.ibm.spark.kernel.protocol.v5.security.SignatureManagerActor
 import com.ibm.spark.kernel.protocol.v5.socket._
+import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.security.{HmacAlgorithm, Hmac}
 import com.ibm.spark.utils.LogLike
 import org.apache.spark.{SparkContext, SparkConf}
@@ -34,8 +36,10 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
   private var actorSystem: ActorSystem                = _
   private var actorLoader: ActorLoader                = _
   private var interpreterActor: ActorRef              = _
-  private var relayActor: ActorRef                    = _
+  private var kernelMessageRelayActor: ActorRef       = _
+  private var executeRequestRelayActor: ActorRef      = _
   private var signatureManagerActor: ActorRef         = _
+  private var magicManagerActor: ActorRef             = _
 
   /**
    * Initializes all kernel systems.
@@ -189,10 +193,16 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
       name = SystemActorType.Interpreter.toString
     )
 
-    logger.info("Creating relay actor")
-    relayActor = actorSystem.actorOf(
+    logger.info("Creating kernel message relay actor")
+    kernelMessageRelayActor = actorSystem.actorOf(
       Props(classOf[KernelMessageRelay], actorLoader),
-      name = SystemActorType.Relay.toString
+      name = SystemActorType.KernelMessageRelay.toString
+    )
+
+    logger.info("Creating execute request relay actor")
+    executeRequestRelayActor = actorSystem.actorOf(
+      Props(classOf[ExecuteRequestRelay], actorLoader),
+      name = SystemActorType.ExecuteRequestRelay.toString
     )
 
     logger.info("Creating signature manager actor")
@@ -203,6 +213,13 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
     signatureManagerActor = actorSystem.actorOf(
       Props(classOf[SignatureManagerActor], sigKey, sigScheme.replace("-", "")),
       name = SystemActorType.SignatureManager.toString
+    )
+
+    logger.info("Creating magic manager actor")
+    logger.warn("MagicManager has a MagicLoader that is empty!")
+    magicManagerActor = actorSystem.actorOf(
+      Props(classOf[MagicManager], new MagicLoader()),
+      name = SystemActorType.MagicManager.toString
     )
   }
 

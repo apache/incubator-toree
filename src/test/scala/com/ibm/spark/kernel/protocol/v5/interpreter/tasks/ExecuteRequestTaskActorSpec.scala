@@ -52,11 +52,12 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
         executeRequestTask ! executeRequest
 
-        // TODO: Convert to tuple of (ExecuteReplyOk, ExecuteResult)
-        val response =
-          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, ExecuteResult]]
-        response._1 shouldBe an [ExecuteReplyOk]
-        response._2 shouldBe an [ExecuteResult]
+        val result =
+          receiveOne(5.seconds)
+            .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
+
+        result.isLeft should be (true)
+        result.left.get shouldBe an [ExecuteOutput]
       }
 
       it("should return an ExecuteReplyError if the interpreter returns error") {
@@ -77,11 +78,12 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
         executeRequestTask ! executeRequest
 
-        // TODO: Convert to tuple of (ExecuteReplyError, ExecuteResult)
-        val response =
-          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, ExecuteResult]]
-        response._1 shouldBe an [ExecuteReplyError]
-        response._2 shouldBe an [ExecuteResult]
+        val result =
+          receiveOne(5.seconds)
+            .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
+
+        result.isRight should be (true)
+        result.right.get shouldBe an [ExecuteError]
       }
 
       it("should return an ExecuteReplyError if the interpreter returns incomplete") {
@@ -102,24 +104,12 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
         executeRequestTask ! executeRequest
 
-        // TODO: Convert to tuple of (ExecuteReplyError, ExecuteResult)
-        val response =
-          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, ExecuteResult]]
-        response._1 shouldBe an [ExecuteReplyError]
-        response._2 shouldBe an [ExecuteResult]
-      }
+        val result =
+          receiveOne(5.seconds)
+            .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
 
-      it("should return a failure message if an unknown message was sent") {
-        val mockInterpreter = mock[Interpreter]
-        val executeRequestTask =
-          system.actorOf(Props(
-            classOf[ExecuteRequestTaskActor],
-            mockInterpreter
-          ))
-
-        executeRequestTask ! "???" // TODO: Provide a better unknown message?
-
-        expectMsg("Unknown message") // TODO: Replace with real type
+        result.isRight should be (true)
+        result.right.get shouldBe an [ExecuteError]
       }
     }
   }

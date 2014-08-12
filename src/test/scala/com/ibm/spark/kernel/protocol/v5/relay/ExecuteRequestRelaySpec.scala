@@ -2,117 +2,158 @@ package com.ibm.spark.kernel.protocol.v5.relay
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import akka.zeromq.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.interpreter.ExecuteError
+import com.ibm.spark.kernel.protocol.v5.content.{ExecuteResult, ExecuteRequest}
+import com.ibm.spark.kernel.protocol.v5.magic.{ValidateMagicMessage, ExecuteMagicMessage}
+import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 
-import scala.concurrent.duration._
+import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.content._
 
-class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
-with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
-  //  The header for the message
-  val header: Header = Header("<UUID>", "<USER>", "<SESSION>",
-    MessageType.ClearOutput.toString, "<VERSION>")
-  //  The parent header for the message
-  val parentHeader: Header = Header("<PARENT-UUID>", "<PARENT-USER>", "<PARENT-SESSION>",
-    MessageType.ClearOutput.toString, "<PARENT-VERSION>")
-  //  The actual kernel message
-  val kernelMessage: KernelMessage = KernelMessage(Seq("<ID>"), "<SIGNATURE>", header,
-    parentHeader, Metadata(), "<CONTENT>")
-  //  Use the implicit to convert the KernelMessage to ZMQMessage
-  val zmqMessage: ZMQMessage = kernelMessage
+object ExecuteRequestRelaySpec {
+  val config = """
+    akka {
+      loglevel = "WARNING"
+    }"""
+}
 
-  describe("Relay( ActorLoader, false )") {
-    //  Create a mock ActorLoader for the Relay we are going to test
-    val actorLoader: ActorLoader = mock[ActorLoader]
+class ExecuteRequestRelaySpec extends TestKit(
+  ActorSystem(
+    "ExecuteRequestRelayActorSystem",
+    ConfigFactory.parseString(ExecuteRequestRelaySpec.config)
+  )
+) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfter
+{
+  var mockActorLoader: ActorLoader      = _
 
-    //  Create a probe for the signature manager and mock the ActorLoader to return the associated ActorSelection
-    val signatureProbe: TestProbe = TestProbe()
-    val signatureSelection: ActorSelection = system.actorSelection(signatureProbe.ref.path.toString)
-    when(actorLoader.load(SystemActorType.SignatureManager)).thenReturn(signatureSelection)
+  var magicManagerProbe: TestProbe      = _
+  var interpreterActorProbe: TestProbe  = _
 
-    //  Create a probe for the handler and mock the ActorLoader to return the associated ActorSelection
-    val handlerProbe: TestProbe = TestProbe()
-    val handlerSelection: ActorSelection = system.actorSelection(handlerProbe.ref.path.toString)
-    when(actorLoader.load(MessageType.ClearOutput)).thenReturn(handlerSelection)
+  before {
+    mockActorLoader = mock[ActorLoader]
 
-    //  The relay we will test against
-    val relay: ActorRef = system.actorOf(Props(classOf[KernelMessageRelay], actorLoader, false))
+    magicManagerProbe = new TestProbe(system)
+    val mockMagicManagerSelection =
+      system.actorSelection(magicManagerProbe.ref.path.toString)
+    doReturn(mockMagicManagerSelection).when(mockActorLoader)
+      .load(SystemActorType.MagicManager)
 
-    describe("#receive( KernelMessage )") {
-      relay ! kernelMessage
-      it("should not send anything to SecurityManager ") {
-        signatureProbe.expectNoMsg(500.millis)
-      }
-      it("should relay KernelMessage") {
-        handlerProbe.expectMsg(kernelMessage)
-      }
-    }
-    describe("#receive( ZMQMessage )") {
-      relay ! zmqMessage
-      it("should relay ZMQMessage as KernelMessage") {
-        handlerProbe.expectMsg(kernelMessage)
-      }
-    }
+    interpreterActorProbe = new TestProbe(system)
+    val mockInterpreterActorSelection =
+      system.actorSelection(interpreterActorProbe.ref.path.toString)
+    doReturn(mockInterpreterActorSelection).when(mockActorLoader)
+      .load(SystemActorType.Interpreter)
   }
 
-  describe("Relay( ActorLoader, true )"){
-    //  Create a mock ActorLoader for the Relay we are going to test
-    val actorLoader: ActorLoader = mock[ActorLoader]
+  describe("ExecuteRequestRelay") {
+    describe("#receive(KernelMessage)") {
+      describe("when the code is magic") {
+        it("should handle an error returned by the MagicManager") {
+          val executeRequest =
+            ExecuteRequest("%myMagic", false, true, UserExpressions(), true)
+          val executeRequestRelay =
+            system.actorOf(Props(classOf[ExecuteRequestRelay], mockActorLoader))
 
-    //  Create a probe for the signature manager and mock the ActorLoader to return the associated ActorSelection
-    val signatureProbe: TestProbe = TestProbe()
-    val signatureSelection: ActorSelection = system.actorSelection(signatureProbe.ref.path.toString)
-    when(actorLoader.load(SystemActorType.SignatureManager)).thenReturn(signatureSelection)
+          executeRequestRelay ! executeRequest
 
-    //  Create a probe for the handler and mock the ActorLoader to return the associated ActorSelection
-    val handlerProbe: TestProbe = TestProbe()
-    val handlerSelection: ActorSelection = system.actorSelection(handlerProbe.ref.path.toString)
-    when(actorLoader.load(MessageType.ClearOutput)).thenReturn(handlerSelection)
+          // First, asks the MagicManager if the message is a magic
+          // In this case, we say yes
+          magicManagerProbe.expectMsgClass(classOf[ValidateMagicMessage])
+          magicManagerProbe.reply(true)
 
-    //  The Relay we are going to be testing against
-    val relay: ActorRef = system.actorOf(Props(classOf[KernelMessageRelay], actorLoader, true))
+          // Expected does not actually match real return of magic, which
+          // is a tuple of ExecuteReply and ExecuteResult
+          val expected = ExecuteError("NAME", "MESSAGE", List())
+          magicManagerProbe.expectMsgClass(classOf[ExecuteMagicMessage])
+          magicManagerProbe.reply(Right(expected))
 
-    describe("#receive( KernelMessage )") {
-      relay ! kernelMessage
-
-      it("should send KernelMessage to security manager") {
-        signatureProbe.expectMsg(kernelMessage)
-        signatureProbe.reply(kernelMessage)
-
-      }
-
-      it("should send KernelMessage to handler"){
-        handlerProbe.expectMsg(kernelMessage)
-      }
-    }
-
-    describe("#receive( ZMQMessage )") {
-      describe("when SecurityManager#( ZMQMessage ) returns true") {
-        relay ! zmqMessage
-
-        it("should send ZMQMessage to security manager") {
-          signatureProbe.expectMsg(zmqMessage)
-          signatureProbe.reply(true)
+          expectMsg((
+            ExecuteReplyError(1, Some(expected.name), Some(expected.value),
+              Some(expected.stackTrace.map(_.toString).toList)),
+            ExecuteResult(1, Data("text/plain" -> expected.toString), Metadata())
+          ))
         }
 
-        it("should send KernelMessage to handler"){
-          handlerProbe.expectMsg(kernelMessage)
+        it("should ask the MagicManager for the result") {
+          val executeRequest =
+            ExecuteRequest("%myMagic", false, true, UserExpressions(), true)
+          val executeRequestRelay =
+            system.actorOf(Props(classOf[ExecuteRequestRelay], mockActorLoader))
+
+          executeRequestRelay ! executeRequest
+
+          // First, asks the MagicManager if the message is a magic
+          // In this case, we say yes
+          magicManagerProbe.expectMsgClass(classOf[ValidateMagicMessage])
+          magicManagerProbe.reply(true)
+
+          // Expected does not actually match real return of magic, which
+          // is a tuple of ExecuteReply and ExecuteResult
+          val expected = "SOME VALUE"
+          magicManagerProbe.expectMsgClass(classOf[ExecuteMagicMessage])
+          magicManagerProbe.reply(Left(expected))
+
+          expectMsg((
+            ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
+            ExecuteResult(1, Data("text/plain" -> expected), Metadata())
+          ))
         }
       }
 
-      describe("when SecurityManager#( ZMQMessage ) returns false") {
-        relay ! zmqMessage
+      describe("when the code is not magic") {
+        it("should handle an error returned by the InterpreterActor") {
+          val executeRequest =
+            ExecuteRequest("%myMagic", false, true, UserExpressions(), true)
+          val executeRequestRelay =
+            system.actorOf(Props(classOf[ExecuteRequestRelay], mockActorLoader))
 
-        it("should send ZMQMessage to security manager") {
-          signatureProbe.expectMsg(zmqMessage)
-          signatureProbe.reply(false)
+          executeRequestRelay ! executeRequest
+
+          // First, asks the MagicManager if the message is a magic
+          // In this case, we say no
+          magicManagerProbe.expectMsgClass(classOf[ValidateMagicMessage])
+          magicManagerProbe.reply(false)
+
+          // Expected does not actually match real return of magic, which
+          // is a tuple of ExecuteReply and ExecuteResult
+          val expected = ExecuteError("NAME", "MESSAGE", List())
+          interpreterActorProbe.expectMsgClass(classOf[ExecuteRequest])
+          interpreterActorProbe.reply(Right(expected))
+
+          expectMsg((
+            ExecuteReplyError(1, Some(expected.name), Some(expected.value),
+              Some(expected.stackTrace.map(_.toString).toList)),
+            ExecuteResult(1, Data("text/plain" -> expected.toString), Metadata())
+          ))
         }
 
-        it("should not send KernelMessage to handler"){
-          handlerProbe.expectNoMsg(500.millis)
+        it("should ask the ExecuteRequestHandler for the result") {
+          val executeRequest =
+            ExecuteRequest("notAMagic", false, true, UserExpressions(), true)
+          val executeRequestRelay =
+            system.actorOf(Props(classOf[ExecuteRequestRelay], mockActorLoader))
+
+          executeRequestRelay ! executeRequest
+
+          // First, asks the MagicManager if the message is a magic
+          // In this case, we say no
+          magicManagerProbe.expectMsgClass(classOf[ValidateMagicMessage])
+          magicManagerProbe.reply(false)
+
+          // Expected does not actually match real return of interpreter, which
+          // is a tuple of ExecuteReply and ExecuteResult
+          val expected = "SOME OTHER VALUE"
+          interpreterActorProbe.expectMsgClass(classOf[ExecuteRequest])
+          interpreterActorProbe.reply(Left(expected))
+
+          expectMsg((
+            ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
+            ExecuteResult(1, Data("text/plain" -> expected), Metadata())
+          ))
         }
       }
     }

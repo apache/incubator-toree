@@ -24,7 +24,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
     case message: KernelMessage =>
       logger.debug("Forwarding execute request")
       val executionCount = ExecutionCounter.incr(message.header.session)
-      val relayActor = actorLoader.load(SystemActorType.Relay)
+      val relayActor = actorLoader.load(SystemActorType.KernelMessageRelay)
       //  This is a collection of common pieces that will be sent back in all reply message, use with .copy
       val messageReplySkeleton =  new KernelMessage( message.ids, "", null,  message.header, Metadata(), null)
       //  All code paths in this function will need to send the idle status
@@ -65,7 +65,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
           relayActor ! executeInputMessage
 
           val executeFuture = ask(
-            actorLoader.load(SystemActorType.Interpreter),
+            actorLoader.load(SystemActorType.ExecuteRequestRelay),
             executeRequest
           ).mapTo[(ExecuteReply, ExecuteResult)]
 

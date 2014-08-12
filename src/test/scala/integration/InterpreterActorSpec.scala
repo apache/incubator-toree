@@ -5,7 +5,7 @@ import java.io.{StringWriter, ByteArrayOutputStream}
 import akka.actor.{Props, ActorSystem}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
-import com.ibm.spark.interpreter.ScalaInterpreter
+import com.ibm.spark.interpreter.{ExecuteError, ExecuteOutput, ScalaInterpreter}
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkContext, SparkConf}
@@ -79,10 +79,12 @@ class InterpreterActorSpec extends TestKit(
 
         interpreterActor ! executeRequest
 
-        val response =
-          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, ExecuteResult]]
-        response._1 shouldBe an [ExecuteReplyOk]
-        response._2 shouldBe an [ExecuteResult]
+        val result =
+          receiveOne(5.seconds)
+            .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
+
+        result.isLeft should be (true)
+        result.left.get shouldBe an [ExecuteOutput]
       }
 
       it("should return error if the execute request fails") {
@@ -99,10 +101,12 @@ class InterpreterActorSpec extends TestKit(
 
         interpreterActor ! executeRequest
 
-        val response =
-          receiveOne(5.seconds).asInstanceOf[Tuple2[ExecuteReply, ExecuteResult]]
-        response._1 shouldBe an [ExecuteReplyError]
-        response._2 shouldBe an [ExecuteResult]
+        val result =
+          receiveOne(5.seconds)
+            .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
+
+        result.isRight should be (true)
+        result.right.get shouldBe an [ExecuteError]
       }
     }
   }

@@ -42,6 +42,6 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader) extends Actor with LogL
         Json.toJson(kernelInfoReply).toString
       )
 
-      actorLoader.load(SystemActorType.Relay) ! kernelResponseMessage
+      actorLoader.load(SystemActorType.KernelMessageRelay) ! kernelResponseMessage
   }
 }

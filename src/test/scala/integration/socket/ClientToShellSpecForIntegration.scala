@@ -23,7 +23,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     val probeClient : TestProbe = TestProbe()
     when(socketFactory.Shell(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probe.ref)
     when(socketFactory.ShellClient(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probeClient.ref)
-    when(actorLoader.load(SystemActorType.Relay)).thenReturn(system.actorSelection(probe.ref.path.toString))
+    when(actorLoader.load(SystemActorType.KernelMessageRelay)).thenReturn(system.actorSelection(probe.ref.path.toString))
 
     val shell = system.actorOf(Props(classOf[Shell], socketFactory, actorLoader))
     val shellClient = system.actorOf(Props(classOf[ShellClient], socketFactory))

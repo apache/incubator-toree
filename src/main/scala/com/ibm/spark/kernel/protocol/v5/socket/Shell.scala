@@ -18,7 +18,7 @@ class Shell(socketFactory: SocketFactory, actorLoader: ActorLoader) extends Acto
       logger.debug("SHELL RECEIVING: " +
         zmqMessage.frames.map((byteString: ByteString) => new String(byteString.toArray)).mkString("\n"))
       val message: KernelMessage = zmqMessage
-      actorLoader.load(SystemActorType.Relay) ! message
+      actorLoader.load(SystemActorType.KernelMessageRelay) ! message
 
     case message: KernelMessage =>
       val zmqMessage: ZMQMessage = message

@@ -58,15 +58,27 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
     val probe : TestProbe = TestProbe()
     val mockSelection: ActorSelection = system.actorSelection(probe.ref.path.toString)
-    when(actorLoader.load(SystemActorType.Relay)).thenReturn(mockSelection)
+    when(actorLoader.load(SystemActorType.KernelMessageRelay)).thenReturn(mockSelection)
 
-    //  Mock the interpreter actor
-    val fakeInterpreterActor = system.actorOf(Props(classOf[MockInterpreterActor], this))
-    when(actorLoader.load(SystemActorType.Interpreter)).thenReturn(system.actorSelection(fakeInterpreterActor.path.toString))
+    val executeRequestRelayProbe: TestProbe = new TestProbe(system)
+    val mockExecuteRequestRelaySelection: ActorSelection = system.actorSelection(executeRequestRelayProbe.ref.path.toString)
+    when(actorLoader.load(SystemActorType.ExecuteRequestRelay)).thenReturn(mockExecuteRequestRelaySelection)
 
+    // NOTE: This is a bad test design because it depends on the messages being
+    //       sent back in a specific order from the ExecuteRequestHandler as
+    //       well as the tests below being run in sequential order.
+    //
+    // TODO: Refactor tests such that you send a message within each it { ... }
+    //       and check for a specific message to be returned in the batch of
+    //       returned messages
     describe("#receive( KernelMessage )") {
       // Send message to the handler
       handlerActor ! kernelMessage
+      executeRequestRelayProbe.expectMsgClass(classOf[ExecuteRequest])
+      executeRequestRelayProbe.reply((
+        ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
+        ExecuteResult(1, Data("text/plain" -> ""), Metadata())
+      ))
 
       it("should send a busy status message to the relay") {
         //  KernelStatus = busy
@@ -111,34 +123,33 @@ class ExecuteRequestHandlerSpec extends TestKit(
     // Add our handler and mock interpreter to the actor system
     val handlerActor = system.actorOf(Props(classOf[ExecuteRequestHandler], actorLoader))
 
-    val relayProbe: TestProbe = new TestProbe(system)
-    val mockSelection: ActorSelection = system.actorSelection(relayProbe.ref.path.toString)
-    when(actorLoader.load(SystemActorType.Relay)).thenReturn(mockSelection)
+    val kernelMessageRelayProbe: TestProbe = new TestProbe(system)
+    val mockSelection: ActorSelection = system.actorSelection(kernelMessageRelayProbe.ref.path.toString)
+    when(actorLoader.load(SystemActorType.KernelMessageRelay)).thenReturn(mockSelection)
 
-    //  Mock the interpreter actor
-    val interpreterProbe: TestProbe = TestProbe()
-    val interpreterSelection: ActorSelection = system.actorSelection(interpreterProbe.ref.path.toString)
-    when(actorLoader.load(SystemActorType.Interpreter)).thenReturn(interpreterSelection)
+    val executeRequestRelayProbe: TestProbe = new TestProbe(system)
+    val mockExecuteRequestRelaySelection: ActorSelection = system.actorSelection(executeRequestRelayProbe.ref.path.toString)
+    when(actorLoader.load(SystemActorType.ExecuteRequestRelay)).thenReturn(mockExecuteRequestRelaySelection)
 
     // Send message to the handler
     handlerActor ! kernelMessage
     describe("#receive( KernelMessage )") {
       it("should send a busy status message to the ") {
         //  KernelStatus = busy
-        val kernelBusyReply = relayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
+        val kernelBusyReply = kernelMessageRelayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
         val busyStatus = Json.parse(kernelBusyReply.contentString).as[KernelStatus]
         busyStatus.execution_state should be("busy")
       }
 
       it("should send execute_input message to the ") {
         //  ExecuteInput
-        val kernelExecuteInputReply = relayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
+        val kernelExecuteInputReply = kernelMessageRelayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
         val input = Json.parse(kernelExecuteInputReply.contentString).as[ExecuteInput]
         input.code should be("spark code")
       }
 
-      it("should send KernelMessage to interpreter") {
-        interpreterProbe.expectMsg(executeRequest)
+      it("should send an ExecuteRequest to ExecuteRequestRelay") {
+        executeRequestRelayProbe.expectMsg(executeRequest)
       }
 
 
@@ -147,7 +158,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       var executeReplyErrorTraceback: List[String] = null
       it("interpreter should not reply, and future times out") {
         //  We need a little longer timeout here because the future itself has a timeout
-        val executeReplyMessage: KernelMessage = relayProbe.receiveOne(3.seconds).asInstanceOf[KernelMessage]
+        val executeReplyMessage: KernelMessage = kernelMessageRelayProbe.receiveOne(3.seconds).asInstanceOf[KernelMessage]
         val replyContent = Json.parse(executeReplyMessage.contentString).as[ExecuteReply]
         //  Make sure we have the correct message type
         executeReplyMessage.header.msg_type should be (MessageType.ExecuteReply.toString)
@@ -161,7 +172,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       }
 
       it("should send error message to relay") {
-        val errorContentMessage = relayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
+        val errorContentMessage = kernelMessageRelayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
         val errorContent = Json.parse(errorContentMessage.contentString).as[ErrorContent]
         errorContent.ename should not be(null)
         //  Check the error messages are the same
@@ -171,7 +182,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       }
 
       it("should send idle status to relay") {
-        val kernelBusyReply = relayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
+        val kernelBusyReply = kernelMessageRelayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
         val busyStatus = Json.parse(kernelBusyReply.contentString).as[KernelStatus]
         busyStatus.execution_state should be("idle")
       }
@@ -185,15 +196,9 @@ class ExecuteRequestHandlerSpec extends TestKit(
     // Add our handler and mock interpreter to the actor system
     val handlerActor = system.actorOf(Props(classOf[ExecuteRequestHandler], actorLoader))
 
-    val relayProbe: TestProbe = new TestProbe(system)
-    val mockSelection: ActorSelection = system.actorSelection(relayProbe.ref.path.toString)
-    when(actorLoader.load(SystemActorType.Relay)).thenReturn(mockSelection)
-
-    //  Mock the interpreter actor
-    val interpreterProbe: TestProbe = TestProbe()
-    val interpreterSelection: ActorSelection = system.actorSelection(interpreterProbe.ref.path.toString)
-    when(actorLoader.load(SystemActorType.Interpreter)).thenReturn(interpreterSelection)
-
+    val kernelMessageRelayProbe: TestProbe = new TestProbe(system)
+    val mockSelection: ActorSelection = system.actorSelection(kernelMessageRelayProbe.ref.path.toString)
+    when(actorLoader.load(SystemActorType.KernelMessageRelay)).thenReturn(mockSelection)
 
     handlerActor ! kernelMessageWithBadExecuteRequest
     describe("#receive( KernelMessage with bad JSON content )"){
@@ -201,7 +206,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       var executeReplyErrorValue: String = null
       var executeReplyErrorTraceback: List[String] = null
       it("should respond with an execute_reply with status error")    {
-        val badExecuteReplyMessage: KernelMessage = relayProbe.receiveOne(1.seconds).asInstanceOf[KernelMessage]
+        val badExecuteReplyMessage: KernelMessage = kernelMessageRelayProbe.receiveOne(1.seconds).asInstanceOf[KernelMessage]
         val badReplyContent = Json.parse(badExecuteReplyMessage.contentString).as[ExecuteReply]
         badExecuteReplyMessage.header.msg_type should be (MessageType.ExecuteReply.toString)
         badReplyContent.status should be("error")
@@ -213,7 +218,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       }
 
       it("should send error message to relay") {
-        val errorContentMessage = relayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
+        val errorContentMessage = kernelMessageRelayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
         val errorContent = Json.parse(errorContentMessage.contentString).as[ErrorContent]
         errorContent.ename should not be(null)
 
@@ -224,7 +229,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       }
 
       it("should send idle message to relay") {
-        val kernelBusyReply = relayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
+        val kernelBusyReply = kernelMessageRelayProbe.receiveOne(1.second).asInstanceOf[KernelMessage]
         val busyStatus = Json.parse(kernelBusyReply.contentString).as[KernelStatus]
         busyStatus.execution_state should be("idle")
       }

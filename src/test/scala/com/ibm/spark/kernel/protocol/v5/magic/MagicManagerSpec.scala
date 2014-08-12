@@ -2,12 +2,15 @@ package com.ibm.spark.kernel.protocol.v5.magic
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
+import com.ibm.spark.interpreter.{ExecuteOutput, ExecuteError}
 import com.ibm.spark.magic.MagicLoader
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
+
+import scala.concurrent.duration._
 
 object MagicManagerSpec {
   val config = """
@@ -18,6 +21,11 @@ object MagicManagerSpec {
 
 class FakeClass {
   def execute(code: String, isCell: Boolean) = "MY TEST VALUE"
+}
+
+class BadFakeClass {
+  def execute(code: String, isCell: Boolean) =
+    throw new Throwable("EXPLOSION")
 }
 
 class MagicManagerSpec extends TestKit(
@@ -71,10 +79,32 @@ class MagicManagerSpec extends TestKit(
           magicManager ! ExecuteMagicMessage("%%" + fakeMagicName)
 
           // Expect magic to not exist
-          expectMsg(s"Magic $fakeMagicName does not exist!")
+          expectMsg(Right(ExecuteError(
+            "Missing Magic",
+            s"Magic $fakeMagicName does not exist!",
+            List()
+          )))
         }
 
-        it("should evaluate the magic if it exists") {
+        it("should evaluate the magic if it exists and return the error if it fails") {
+          val fakeMagicName = "myBadMagic"
+          val myMagicLoader = new MagicLoader() {
+            override def findClass(name: String): Class[_] =
+              new BadFakeClass().getClass
+          }
+          val magicManager =
+            system.actorOf(Props(classOf[MagicManager], myMagicLoader))
+
+          magicManager ! ExecuteMagicMessage("%%" + fakeMagicName)
+
+          val result =
+            receiveOne(5.seconds)
+              .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
+
+          result.right.get shouldBe an [ExecuteError]
+        }
+
+        it("should evaluate the magic if it exists and return the output if it succeeds") {
           val fakeMagicName = "myMagic"
           val myMagicLoader = new MagicLoader() {
             override def findClass(name: String): Class[_] =
@@ -85,7 +115,7 @@ class MagicManagerSpec extends TestKit(
 
           magicManager ! ExecuteMagicMessage("%%" + fakeMagicName)
 
-          expectMsg("MY TEST VALUE")
+          expectMsg(Left("MY TEST VALUE"))
         }
       }
     }

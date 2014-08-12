@@ -28,7 +28,7 @@ class ShellSpec extends TestKit(ActorSystem("ShellActorSpec", ConfigFactory.pars
 
     val relayProbe : TestProbe = TestProbe()
     val relaySelection : ActorSelection = system.actorSelection(relayProbe.ref.path)
-    when(actorLoader.load(SystemActorType.Relay)).thenReturn(relaySelection)
+    when(actorLoader.load(SystemActorType.KernelMessageRelay)).thenReturn(relaySelection)
 
     val shell = system.actorOf(Props(classOf[Shell], socketFactory, actorLoader))
 

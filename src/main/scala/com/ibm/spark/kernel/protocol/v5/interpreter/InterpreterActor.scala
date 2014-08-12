@@ -6,6 +6,7 @@ import akka.util.Timeout
 import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks._
 import com.ibm.spark.kernel.protocol.v5.content._
+import com.ibm.spark.interpreter._
 
 import scala.concurrent.duration._
 
@@ -45,13 +46,14 @@ class InterpreterActor(
   }
 
   override def receive: Receive = {
-    // TODO: Get output from running code (need to clear output stream each
-    // TODO: time interpreter is run)
     case executeRequest: ExecuteRequest =>
       (executeRequestTask ? executeRequest) recover {
-        case ex: Exception => // TODO: Provide failure message type to be passed around?
+        case ex: Throwable =>
+          Right(ExecuteError(
+            ex.getClass.getName,
+            ex.getLocalizedMessage,
+            ex.getStackTrace.map(_.toString).toList)
+          )
       } pipeTo sender
-    case _ =>
-      sender ! "Unknown message" // TODO: Provide a failure message type to be passed around?
   }
 }

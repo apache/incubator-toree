@@ -28,7 +28,7 @@ class KernelInfoRequestHandlerSpec extends TestKit(
 
   val relayProbe : TestProbe = TestProbe()
   val relaySelection : ActorSelection = system.actorSelection(relayProbe.ref.path)
-  when(actorLoader.load(SystemActorType.Relay)).thenReturn(relaySelection)
+  when(actorLoader.load(SystemActorType.KernelMessageRelay)).thenReturn(relaySelection)
 
   val header = Header("","","","","")
   val kernelMessage = new KernelMessage(

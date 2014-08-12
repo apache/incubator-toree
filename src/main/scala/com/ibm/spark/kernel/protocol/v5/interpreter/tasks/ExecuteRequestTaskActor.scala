@@ -1,7 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.interpreter.tasks
 
 import akka.actor.{Props, Actor}
-import com.ibm.spark.interpreter.Interpreter
+import com.ibm.spark.interpreter.{ExecuteError, Interpreter}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 
@@ -21,28 +21,13 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor {
       success match {
         case IR.Success =>
           val output = result.left.get
-          sender ! (
-            ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
-            ExecuteResult(1, Data("text/plain" -> output), Metadata())
-          )
+          sender ! Left(output)
         case IR.Error =>
           val error = result.right.get
-          sender ! (
-            ExecuteReplyError(
-              1, Some(error.name), Some(error.value), Some(error.stackTrace)
-            ),
-            // TODO: Investigate what should be returned on an error
-            // NOTE: Have not found anyone supporting v5.0 protocol
-            // NOTE: Should follow someone that has implemented v5.0
-            ExecuteResult(1, Data("text/plain" -> error.toString), Metadata())
-          )
+          sender ! Right(error)
         case _ =>
-          sender ! (
-            ExecuteReplyError(
-              1, Some("Incomplete"), Some("More input needed!"), Some(List())
-            ),
-            ExecuteResult(1, Data("text/plain" -> ""), Metadata())
-          )
+          sender ! Right(
+            ExecuteError("Unknown Error", "Unable to identify error!", List()))
       }
     case _ =>
       sender ! "Unknown message" // TODO: Provide a failure message type to be passed around?

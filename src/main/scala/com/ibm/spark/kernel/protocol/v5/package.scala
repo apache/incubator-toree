@@ -130,12 +130,19 @@ package object v5 {
     val HeartbeatClient   = Value("heartbeat_client")
   }
 
+  object HandlerType extends Enumeration {
+    type HandlerType = Value
+
+    val ExecuteRequestHandler = Value("execute_request_handler")
+  }
+
   object SystemActorType extends Enumeration {
     type SystemActorType = Value
 
-    val Relay             = Value("relay")
-    val Interpreter       = Value("interpreter")
-    val SignatureManager  = Value("signature_manager")
-    val MagicManager      = Value("magic_manager")
+    val KernelMessageRelay  = Value("kernel_message_relay")
+    val ExecuteRequestRelay = Value("execute_request_relay")
+    val Interpreter         = Value("interpreter")
+    val SignatureManager    = Value("signature_manager")
+    val MagicManager        = Value("magic_manager")
   }
 }
