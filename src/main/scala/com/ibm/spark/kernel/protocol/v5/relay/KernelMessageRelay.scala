@@ -1,19 +1,20 @@
-package com.ibm.spark.kernel.protocol.v5
+package com.ibm.spark.kernel.protocol.v5.relay
 
 import akka.actor.Actor
+import akka.pattern.ask
 import akka.util.Timeout
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
+import com.ibm.spark.kernel.protocol.v5.{ActorLoader, KernelMessage, MessageType, SystemActorType}
 import com.ibm.spark.utils.LogLike
 
 import scala.concurrent.duration._
-import akka.pattern.ask
 
 /**
  * This class is meant to be a relay for send KernelMessages through kernel system.
  * @param actorLoader The ActorLoader used by this class for finding actors for relaying messages
  */
-case class Relay(
+case class KernelMessageRelay(
   actorLoader: ActorLoader, useSignatureManager: Boolean
 ) extends Actor with LogLike {
   // NOTE: Required to provide the execution context for futures with akka

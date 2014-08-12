@@ -8,6 +8,7 @@ import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.handler._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
+import com.ibm.spark.kernel.protocol.v5.relay.KernelMessageRelay
 import com.ibm.spark.kernel.protocol.v5.security.SignatureManagerActor
 import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.security.{HmacAlgorithm, Hmac}
@@ -190,7 +191,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
 
     logger.info("Creating relay actor")
     relayActor = actorSystem.actorOf(
-      Props(classOf[Relay], actorLoader),
+      Props(classOf[KernelMessageRelay], actorLoader),
       name = SystemActorType.Relay.toString
     )
 

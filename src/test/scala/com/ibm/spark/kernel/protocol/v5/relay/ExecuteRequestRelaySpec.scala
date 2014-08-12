@@ -1,19 +1,16 @@
-package com.ibm.spark.kernel.protocol.v5
+package com.ibm.spark.kernel.protocol.v5.relay
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import akka.util.Timeout
 import akka.zeromq.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
-import org.mockito.Matchers._
+import com.ibm.spark.kernel.protocol.v5._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
-import scala.concurrent.Future
-import scala.concurrent.duration._
-import akka.pattern.ask
 
-class RelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
+import scala.concurrent.duration._
+
+class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
 with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
   //  The header for the message
   val header: Header = Header("<UUID>", "<USER>", "<SESSION>",
@@ -42,7 +39,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     when(actorLoader.load(MessageType.ClearOutput)).thenReturn(handlerSelection)
 
     //  The relay we will test against
-    val relay: ActorRef = system.actorOf(Props(classOf[Relay], actorLoader, false))
+    val relay: ActorRef = system.actorOf(Props(classOf[KernelMessageRelay], actorLoader, false))
 
     describe("#receive( KernelMessage )") {
       relay ! kernelMessage
@@ -76,7 +73,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     when(actorLoader.load(MessageType.ClearOutput)).thenReturn(handlerSelection)
 
     //  The Relay we are going to be testing against
-    val relay: ActorRef = system.actorOf(Props(classOf[Relay], actorLoader, true))
+    val relay: ActorRef = system.actorOf(Props(classOf[KernelMessageRelay], actorLoader, true))
 
     describe("#receive( KernelMessage )") {
       relay ! kernelMessage

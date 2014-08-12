@@ -64,30 +64,10 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
           )
           relayActor ! executeInputMessage
 
-          val validateMagicMessage = ValidateMagicMessage(executeRequest.code)
-          val isMagic = ask(
-            actorLoader.load(SystemActorType.MagicManager),
-            validateMagicMessage
-          )
-
-          var executeFuture: Future[(ExecuteReply, ExecuteResult)] = null
-          isMagic.onSuccess {
-            case true => // Handle as magic
-              val executeMagicMessage = ExecuteMagicMessage(executeRequest.code)
-              executeFuture = ask(
-                actorLoader.load(SystemActorType.MagicManager),
-                executeMagicMessage
-              ).mapTo[(ExecuteReply, ExecuteResult)]
-            case false => // Handle as interpreter
-              executeFuture = ask(
-                actorLoader.load(SystemActorType.Interpreter),
-                executeRequest
-              ).mapTo[(ExecuteReply, ExecuteResult)]
-          }
-
-          isMagic.onFailure {
-            case ex => // TODO: Handle error (actor blew up)
-          }
+          val executeFuture = ask(
+            actorLoader.load(SystemActorType.Interpreter),
+            executeRequest
+          ).mapTo[(ExecuteReply, ExecuteResult)]
 
           executeFuture.onComplete {
             case Success(tuple) =>
