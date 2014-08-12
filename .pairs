@@ -14,6 +14,7 @@ pairs:
   gc: Guillermo Cabrera; gcabrera
   je: Jacob Eisinger;jeising
   # Other ET
+  sw: Sean Welleck; swelleck
   zcm: Zack Morris; zmorris
 email:
   prefix: pair

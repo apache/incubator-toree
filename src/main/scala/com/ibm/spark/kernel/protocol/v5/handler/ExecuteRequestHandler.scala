@@ -17,6 +17,8 @@ import scala.util.{Failure, Success}
  * to the interpreter actor.
  */
 class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike {
+  import com.ibm.spark.kernel.protocol.v5.magic._
+
   override def receive: Receive = {
     // sends execute request to interpreter
     case message: KernelMessage =>
@@ -62,11 +64,32 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
           )
           relayActor ! executeInputMessage
 
-          // use future to keep message header in scope
-          val future: Future[(ExecuteReply, ExecuteResult)] =
-            ask(actorLoader.load(SystemActorType.Interpreter), executeRequest).mapTo[(ExecuteReply, ExecuteResult)]
+          val validateMagicMessage = ValidateMagicMessage(executeRequest.code)
+          val isMagic = ask(
+            actorLoader.load(SystemActorType.MagicManager),
+            validateMagicMessage
+          )
 
-          future.onComplete {
+          var executeFuture: Future[(ExecuteReply, ExecuteResult)] = null
+          isMagic.onSuccess {
+            case true => // Handle as magic
+              val executeMagicMessage = ExecuteMagicMessage(executeRequest.code)
+              executeFuture = ask(
+                actorLoader.load(SystemActorType.MagicManager),
+                executeMagicMessage
+              ).mapTo[(ExecuteReply, ExecuteResult)]
+            case false => // Handle as interpreter
+              executeFuture = ask(
+                actorLoader.load(SystemActorType.Interpreter),
+                executeRequest
+              ).mapTo[(ExecuteReply, ExecuteResult)]
+          }
+
+          isMagic.onFailure {
+            case ex => // TODO: Handle error (actor blew up)
+          }
+
+          executeFuture.onComplete {
             case Success(tuple) =>
               logger.debug("Sending Kernel messages to router")
 

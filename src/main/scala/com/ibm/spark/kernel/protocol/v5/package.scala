@@ -136,5 +136,6 @@ package object v5 {
     val Relay             = Value("relay")
     val Interpreter       = Value("interpreter")
     val SignatureManager  = Value("signature_manager")
+    val MagicManager      = Value("magic_manager")
   }
 }
