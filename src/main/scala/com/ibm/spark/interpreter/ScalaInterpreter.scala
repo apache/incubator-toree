@@ -200,9 +200,7 @@ case class ScalaInterpreter(
     this
   }
 
-  def classServerURI() = {
-    sparkIMain.classServer.uri
-  }
+  def classServerURI = sparkIMain.classServer.uri
 
   override def doQuietly[T](body: => T): T = {
     sparkIMain.beQuietDuring[T](body)

@@ -9,13 +9,13 @@ trait Interpreter {
    * Starts the interpreter, initializing any internal state.
    * @return A reference to the interpreter
    */
-  def start: Interpreter
+  def start(): Interpreter
 
   /**
    * Stops the interpreter, removing any previous internal state.
    * @return A reference to the interpreter
    */
-  def stop: Interpreter
+  def stop(): Interpreter
 
   /**
    * Adds external jars to the internal classpaths of the interpreter.
@@ -36,7 +36,7 @@ trait Interpreter {
   /**
    * @return Returns a string to reference the URI of where the interpreted class files are created
    */
-  def classServerURI(): String
+  def classServerURI: String
 
   /**
    * Executes body and will not print anything to the console during the execution
