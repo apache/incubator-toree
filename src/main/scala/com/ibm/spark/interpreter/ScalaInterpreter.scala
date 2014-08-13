@@ -1,18 +1,18 @@
 package com.ibm.spark.interpreter
 
 import java.io.ByteArrayOutputStream
-import java.net.{URLClassLoader, URL}
+import java.net.{URL, URLClassLoader}
 import java.nio.charset.Charset
+
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
 import com.ibm.spark.utils.{LogLike, MultiOutputStream}
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain}
-import scala.tools.nsc.backend.{JavaPlatform, MSILPlatform}
+
 import scala.tools.nsc._
+import scala.tools.nsc.backend.JavaPlatform
 import scala.tools.nsc.interpreter._
-import scala.tools.nsc.reporters.Reporter
-import scala.tools.nsc.util.{ClassPath, JavaClassPath, MergedClassPath}
-import scala.tools.reflect.StdTags
-import scala.tools.util.PathResolver
+import scala.tools.nsc.io._
+import scala.tools.nsc.util.MergedClassPath
 
 case class ScalaInterpreter(
   args: List[String],
@@ -22,7 +22,7 @@ case class ScalaInterpreter(
   val settings: Settings = new SparkCommandLine(args).settings
 
   private val thisClassLoader = this.getClass.getClassLoader
-  private val internalClassloader =
+  private val runtimeClassloader =
     new URLClassLoader(Array(), thisClassLoader) {
       def addJar(url: URL) = this.addURL(url)
     }
@@ -37,12 +37,12 @@ case class ScalaInterpreter(
 
     settings.classpath.value =
       classpath.distinct.mkString(java.io.File.pathSeparator)
-    settings.embeddedDefaults(internalClassloader)
+    settings.embeddedDefaults(runtimeClassloader)
   }
 
   private val lastResultOut = new ByteArrayOutputStream()
   private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
-  private var sparkIMain: SparkIMain = _
+  protected var sparkIMain: SparkIMain = _
 
   /**
    * Adds jars to the runtime and compile time classpaths. Does not work with
@@ -50,36 +50,18 @@ case class ScalaInterpreter(
    * @param jars The list of jar locations
    */
   override def addJars(jars: URL*): Unit = {
+    jars.foreach(runtimeClassloader.addJar)
+    updateCompilerClassPath(jars : _*)
+  }
+
+  protected def updateCompilerClassPath( jars: URL*): Unit = {
     require(!sparkIMain.global.forMSIL) // Only support JavaPlatform
 
-    //
-    // Update runtime classpath
-    //
-    jars.foreach(internalClassloader.addJar)
-
-    //
-    // Update compile time classpath
-    //
     val platform = sparkIMain.global.platform.asInstanceOf[JavaPlatform]
 
-    // Collect our new jars and add them to the existing set of classpaths
-    val allClassPaths = (
-      platform.classPath
-        .asInstanceOf[MergedClassPath[platform.BinaryRepr]].entries
-      ++
-      internalClassloader.getURLs.map(url =>
-        platform.classPath.context.newClassPath(
-          io.AbstractFile.getFile(url.getPath))
-      )
-    ).distinct
+    val newClassPath = mergeJarsIntoClassPath(platform, jars:_*)
 
-    // Combine all of our classpaths (old and new) into one merged classpath
-    val newClassPath = new MergedClassPath(
-      allClassPaths,
-      platform.classPath.context
-    )
-
-    // TODO: Investigate better way to set this... one thought it to provide
+    // TODO: Investigate better way to set this... one thought is to provide
     //       a classpath in the currentClassPath (which is merged) that can be
     //       replaced using updateClasspath, but would that work more than once?
     val fieldSetter = platform.getClass.getMethods
@@ -88,6 +70,25 @@ case class ScalaInterpreter(
 
     // Reload all jars specified into our compiler
     sparkIMain.global.invalidateClassPathEntries(jars.map(_.getPath): _*)
+  }
+
+  protected def mergeJarsIntoClassPath(platform: JavaPlatform, jars: URL*): MergedClassPath[AbstractFile] = {
+    // Collect our new jars and add them to the existing set of classpaths
+    val allClassPaths = (
+      platform.classPath
+        .asInstanceOf[MergedClassPath[AbstractFile]].entries
+        ++
+        jars.map(url =>
+          platform.classPath.context.newClassPath(
+            io.AbstractFile.getFile(url.getPath))
+        )
+      ).distinct
+
+    // Combine all of our classpaths (old and new) into one merged classpath
+    new MergedClassPath(
+      allClassPaths,
+      platform.classPath.context
+    )
   }
 
   override def interpret(code: String, silent: Boolean = false):
