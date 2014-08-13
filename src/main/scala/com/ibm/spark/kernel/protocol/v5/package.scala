@@ -1,12 +1,10 @@
 package com.ibm.spark.kernel.protocol
 
-import akka.util.{Timeout, ByteString}
+import akka.util.{ByteString, Timeout}
 import akka.zeromq.ZMQMessage
-import akka.util.Timeout
-import scala.concurrent.duration._
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, Json}
-
+import scala.concurrent.duration._
 //
 // NOTE: This is brought in to remove feature warnings regarding the use of
 //       implicit conversions regarding the following:
@@ -144,5 +142,15 @@ package object v5 {
     val Interpreter         = Value("interpreter")
     val SignatureManager    = Value("signature_manager")
     val MagicManager        = Value("magic_manager")
+    val Relay             = Value("relay")
+    val StatusDispatch    = Value("status_dispatch")
+  }
+
+  object KernelStatusType extends Enumeration {
+    type KernelStatusType = Value
+
+    val Starting  = Value("starting")
+    val Busy      = Value("busy")
+    val Idle      = Value("idle")
   }
 }
