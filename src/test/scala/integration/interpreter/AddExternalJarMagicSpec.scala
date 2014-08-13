@@ -36,7 +36,7 @@ class AddExternalJarMagicSpec extends FunSpec with Matchers with MockitoSugar {
         // Should now run
         interpreter.interpret(
           """println(new TestClass().sayHello("Chip"))"""
-        ) should be (IR.Success, Left("Hello, Chip"))
+        ) should be ((IR.Success, Left("Hello, Chip")))
       }
 
       it("should be able to add multiple jars at once") {
@@ -65,10 +65,10 @@ class AddExternalJarMagicSpec extends FunSpec with Matchers with MockitoSugar {
         // Should now run
         interpreter.interpret(
           """println(new com.ibm.testjar.TestClass().sayHello("Chip"))"""
-        ) should be (IR.Success, Left("Hello, Chip"))
+        ) should be ((IR.Success, Left("Hello, Chip")))
         interpreter.interpret(
           """println(new com.ibm.testjar2.TestClass().CallMe())"""
-        ) should be (IR.Success, Left("3"))
+        ) should be ((IR.Success, Left("3")))
       }
 
       it("should be able to add multiple jars in consecutive calls to addjar") {
@@ -98,10 +98,10 @@ class AddExternalJarMagicSpec extends FunSpec with Matchers with MockitoSugar {
         // Should now run
         interpreter.interpret(
           """println(new com.ibm.testjar.TestClass().sayHello("Chip"))"""
-        ) should be (IR.Success, Left("Hello, Chip"))
+        ) should be ((IR.Success, Left("Hello, Chip")))
         interpreter.interpret(
           """println(new com.ibm.testjar2.TestClass().CallMe())"""
-        ) should be (IR.Success, Left("3"))
+        ) should be ((IR.Success, Left("3")))
       }
     }
   }

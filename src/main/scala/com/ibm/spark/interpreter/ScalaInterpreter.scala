@@ -14,6 +14,8 @@ import scala.tools.nsc.interpreter._
 import scala.tools.nsc.io._
 import scala.tools.nsc.util.MergedClassPath
 
+import scala.language.reflectiveCalls
+
 case class ScalaInterpreter(
   args: List[String],
   out: OutputStream
