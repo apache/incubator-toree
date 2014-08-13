@@ -27,12 +27,6 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
       val relayActor = actorLoader.load(SystemActorType.KernelMessageRelay)
       //  This is a collection of common pieces that will be sent back in all reply message, use with .copy
       val messageReplySkeleton =  new KernelMessage( message.ids, "", null,  message.header, Metadata(), null)
-      //  All code paths in this function will need to send the idle status
-      val idleMessage = messageReplySkeleton.copy(
-        ids = Seq(MessageType.Status.toString),
-        header = message.header.copy(msg_type = MessageType.Status.toString),
-        contentString = KernelStatusIdle.toString
-      )
 
       Json.parse(message.contentString).validate[ExecuteRequest].fold(
         (invalid: Seq[(JsPath, Seq[ValidationError])]) => {
@@ -46,16 +40,11 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
             executionCount, Option("JsonParseException"), Option("Error parsing fields"),
             Option(validationErrors)
           )
-          relayErrorMessages(relayActor, replyError, message.header, messageReplySkeleton, idleMessage)
+          relayErrorMessages(relayActor, replyError, message.header, messageReplySkeleton)
         },
         (executeRequest: ExecuteRequest) => {
           //  Alert the clients the kernel is busy
-          val busyMessage = messageReplySkeleton.copy(
-            ids = Seq(MessageType.Status.toString),
-            header = message.header.copy(msg_type = MessageType.Status.toString),
-            contentString = KernelStatusBusy.toString
-          )
-          relayActor ! busyMessage
+          actorLoader.load(SystemActorType.StatusDispatch) ! KernelStatusType.Busy
 
           //  Send a message to the clients saying we are executing something
           val executeInputMessage = messageReplySkeleton.copy(
@@ -89,7 +78,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
               relayActor ! kernelResultMessage
 
               //  Send the idle message
-              relayActor ! idleMessage
+              actorLoader.load(SystemActorType.StatusDispatch) ! KernelStatusType.Idle
 
             case Failure(error: Throwable) =>
               //  Send the error to the client on the Shell socket
@@ -97,7 +86,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
                 executionCount, Option(error.getClass.getCanonicalName), Option(error.getMessage),
                 Option(error.getStackTrace.map(_.toString).toList)
               )
-              relayErrorMessages(relayActor, replyError, message.header, messageReplySkeleton, idleMessage)
+              relayErrorMessages(relayActor, replyError, message.header, messageReplySkeleton)
           }
         }
       )
@@ -109,10 +98,9 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
    * @param replyError The reply error to build the error messages from
    * @param headerSkeleton A skeleton for the reply headers (Everything should be filled in except msg_type)
    * @param messageReplySkeleton A skeleton to build messages from (Everything should be filled in except header, contentString)
-   * @param idleMessage A generic idle message for a particular ExecuteRequest
    */
   def relayErrorMessages(relayActor: ActorSelection, replyError: ExecuteReply, headerSkeleton: Header,
-                         messageReplySkeleton: KernelMessage, idleMessage: KernelMessage) {
+                         messageReplySkeleton: KernelMessage) {
     relayActor ! messageReplySkeleton.copy(
       header = headerSkeleton.copy(msg_type = MessageType.ExecuteReply.toString),
       contentString = replyError
@@ -128,6 +116,6 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
     )
 
     //  Send idle status to client
-    relayActor ! idleMessage
+    actorLoader.load(SystemActorType.StatusDispatch) ! KernelStatusType.Idle
   }
 }

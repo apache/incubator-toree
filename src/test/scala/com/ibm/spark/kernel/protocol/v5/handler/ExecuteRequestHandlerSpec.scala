@@ -20,6 +20,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
   var handlerActor: ActorRef = _
   var kernelMessageRelayProbe: TestProbe = _
   var executeRequestRelayProbe: TestProbe = _
+  var statusDispatchProbe: TestProbe = _
 
   before {
     actorLoader = mock[ActorLoader]
@@ -34,6 +35,10 @@ class ExecuteRequestHandlerSpec extends TestKit(
     executeRequestRelayProbe = new TestProbe(system)
     when(actorLoader.load(SystemActorType.ExecuteRequestRelay))
       .thenReturn(system.actorSelection(executeRequestRelayProbe.ref.path.toString))
+
+    statusDispatchProbe = new TestProbe(system)
+    when(actorLoader.load(SystemActorType.StatusDispatch))
+      .thenReturn(system.actorSelection(statusDispatchProbe.ref.path.toString))
   }
 
   /**
@@ -50,7 +55,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
   }
 
   describe("ExecuteRequestHandler( ActorLoader )") {
-    describe("#receive( KernelMessage )") {
+    describe("#receive( KernelMessage ) when interpreter replies") {
 
       it("should send an execute result message") {
         handlerActor ! MockExecuteRequestKernelMessage
@@ -86,13 +91,19 @@ class ExecuteRequestHandlerSpec extends TestKit(
         }
         executeInputMessage should not be(null)
       }
+
+      it("should send a status busy and idle message") {
+        handlerActor ! MockExecuteRequestKernelMessage
+        replyToHandler()
+        statusDispatchProbe.expectMsgAllOf(KernelStatusType.Busy, KernelStatusType.Idle)
+      }
     }
   }
 
   //  Testing error timeout for interpreter future
   describe("ExecuteRequestHandler( ActorLoader )") {
-    describe("#receive( KernelMessage )") {
-      it("should send execute_input message to the ") {
+    describe("#receive( KernelMessage ) when interpreter does not reply") {
+      it("should send execute_input message to the relay") {
         //  ExecuteInput
         handlerActor ! MockExecuteRequestKernelMessage
         var executeInputMessage: KernelMessage = null
@@ -109,7 +120,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         executeRequestRelayProbe.expectMsg(MockExecuteRequest)
       }
 
-      it("interpreter does not reply and relay should receive an execute reply of type error") {
+      it("relay should receive an execute reply of type error") {
         handlerActor ! MockExecuteRequestKernelMessage
         var executeReplyMessage: KernelMessage = null
         kernelMessageRelayProbe.receiveWhile(1500.millis) {
@@ -126,7 +137,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         replyContent.status should be("error")
       }
 
-      it("interpreter does not reply and relay should receive an error message") {
+      it("relay should receive an error message") {
         handlerActor ! MockExecuteRequestKernelMessage
         var errorContentMessage: KernelMessage = null
         kernelMessageRelayProbe.receiveWhile(1500.millis) {
@@ -138,6 +149,11 @@ class ExecuteRequestHandlerSpec extends TestKit(
         val errorContent =
           Json.parse(errorContentMessage.contentString).as[ErrorContent]
         errorContent should not be(null)
+      }
+
+      it("should send a status busy and idle message") {
+        handlerActor ! MockExecuteRequestKernelMessage
+        statusDispatchProbe.expectMsgAllOf(KernelStatusType.Busy, KernelStatusType.Idle)
       }
     }
   }
@@ -174,6 +190,11 @@ class ExecuteRequestHandlerSpec extends TestKit(
         val errorContent =
           Json.parse(errorContentMessage.contentString).as[ErrorContent]
         errorContent should not be(null)
+      }
+
+      it("should send a status idle message") {
+        handlerActor ! MockKernelMessageWithBadExecuteRequest
+        statusDispatchProbe.expectMsgAllOf(KernelStatusType.Idle)
       }
     }
   }

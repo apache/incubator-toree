@@ -5,6 +5,7 @@ import com.ibm.spark.interpreter.{ScalaInterpreter, Interpreter}
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.dispatch.StatusDispatch
 import com.ibm.spark.kernel.protocol.v5.handler._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
@@ -40,6 +41,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
   private var executeRequestRelayActor: ActorRef      = _
   private var signatureManagerActor: ActorRef         = _
   private var magicManagerActor: ActorRef             = _
+  private var statusDispatch: ActorRef                = _
 
   /**
    * Initializes all kernel systems.
@@ -220,6 +222,12 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
     magicManagerActor = actorSystem.actorOf(
       Props(classOf[MagicManager], new MagicLoader()),
       name = SystemActorType.MagicManager.toString
+    )
+
+    logger.info("Creating status dispatch actor")
+    statusDispatch = actorSystem.actorOf(
+      Props(classOf[StatusDispatch], actorLoader),
+      name = SystemActorType.StatusDispatch.toString
     )
   }
 
