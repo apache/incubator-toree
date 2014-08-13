@@ -46,7 +46,7 @@ class InterpreterActorSpec extends TestKit(
 
 
     interpreter.doQuietly({
-      conf.set("spark.repl.class.uri", interpreter.classServerURI())
+      conf.set("spark.repl.class.uri", interpreter.classServerURI)
       //context = new SparkContext(conf) with NoSparkLogging
       context = new SparkContext(conf) {
         override protected def log: Logger =

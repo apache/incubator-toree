@@ -23,7 +23,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       case message: ExecuteRequest =>
         val executeReply = new ExecuteReply("ok", 1, None, None, None, None, None)
         val executeResult = new ExecuteResult(1, Data(), Metadata())
-        sender !(executeReply, executeResult)
+        sender ! ((executeReply, executeResult))
     }
   }
 

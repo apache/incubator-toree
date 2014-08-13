@@ -168,8 +168,8 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
     interpreter.doQuietly {
       // TODO: Construct class server outside of SparkIMain
       logger.warn("Unable to control initialization of REPL class server!")
-      logger.info("REPL Class Server Uri: " + interpreter.classServerURI())
-      conf.set("spark.repl.class.uri", interpreter.classServerURI())
+      logger.info("REPL Class Server Uri: " + interpreter.classServerURI)
+      conf.set("spark.repl.class.uri", interpreter.classServerURI)
 
       logger.info("Constructing new Spark Context")
       sparkContext = new SparkContext(conf)

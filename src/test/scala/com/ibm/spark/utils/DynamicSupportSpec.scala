@@ -72,7 +72,7 @@ class DynamicSupportSpec
 
           val dynamicSupport = DynamicSupport(x.getClass, x)
 
-          dynamicSupport.test(5, "test me") should be (5, "test me")
+          dynamicSupport.test(5, "test me") should be ((5, "test me"))
         }
 
         it("should throw an error if the method does not exist") {
@@ -145,7 +145,7 @@ class DynamicSupportSpec
           val dynamicSupport =
             DynamicSupport(MyTestObject.getClass, MyTestObject)
 
-          dynamicSupport.test(5, "test me") should be (5, "test me")
+          dynamicSupport.test(5, "test me") should be ((5, "test me"))
 
         }
 

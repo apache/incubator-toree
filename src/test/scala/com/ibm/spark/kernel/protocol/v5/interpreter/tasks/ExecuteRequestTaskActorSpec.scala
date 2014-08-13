@@ -36,7 +36,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
     describe("#receive") {
       it("should return an ExecuteReplyOk if the interpreter returns success") {
         val mockInterpreter = mock[Interpreter]
-        doReturn(IR.Success, Left(new ExecuteOutput)).when(mockInterpreter)
+        doReturn((IR.Success, Left(new ExecuteOutput))).when(mockInterpreter)
           .interpret(anyString(), anyBoolean())
 
         val executeRequestTask =
@@ -62,7 +62,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
       it("should return an ExecuteReplyError if the interpreter returns error") {
         val mockInterpreter = mock[Interpreter]
-        doReturn(IR.Error, Right(mock[ExecuteError])).when(mockInterpreter)
+        doReturn((IR.Error, Right(mock[ExecuteError]))).when(mockInterpreter)
           .interpret(anyString(), anyBoolean())
 
         val executeRequestTask =
@@ -88,7 +88,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
       it("should return an ExecuteReplyError if the interpreter returns incomplete") {
         val mockInterpreter = mock[Interpreter]
-        doReturn(IR.Incomplete, Right("")).when(mockInterpreter)
+        doReturn((IR.Incomplete, Right(""))).when(mockInterpreter)
           .interpret(anyString(), anyBoolean())
 
         val executeRequestTask =
