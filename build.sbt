@@ -12,7 +12,12 @@ scalaVersion := "2.10.4"
 
 sbtVersion := "0.13.5"
 
-scalacOptions ++= Seq( "-deprecation", "-unchecked", "-feature", "-Xlint" )
+scalacOptions ++= Seq(
+  "-deprecation", "-unchecked", "-feature",
+  //"-Xlint", // Scala 2.11.x only
+  "-Xfatal-warnings",
+  "-Ywarn-all"
+)
 
 //
 // CUSTOM TASKS
