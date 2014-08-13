@@ -6,6 +6,8 @@ import play.api.libs.json._
 // Internal libraries
 import com.ibm.spark.kernel.protocol.v5._
 
+import scala.language.implicitConversions
+
 case class ExecuteReply(
   status: String,
   execution_count: Int,

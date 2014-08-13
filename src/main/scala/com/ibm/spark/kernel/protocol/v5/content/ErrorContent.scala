@@ -2,6 +2,8 @@ package com.ibm.spark.kernel.protocol.v5.content
 
 import play.api.libs.json.Json
 
+import scala.language.implicitConversions
+
 case class ErrorContent(
   ename: String,
   evalue: String,
