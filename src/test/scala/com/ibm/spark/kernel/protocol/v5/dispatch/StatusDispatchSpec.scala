@@ -8,6 +8,7 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 import play.api.libs.json.Json
+
 import scala.concurrent.duration._
 
 class StatusDispatchSpec extends TestKit(ActorSystem("StatusDispatchSystem"))
