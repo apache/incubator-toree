@@ -79,6 +79,6 @@ class  SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def IOPubClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
-    ZeroMQExtension(system).newSubSocket(Array(Listener(listener), Connect(IOPubConnection.toString)))
+    ZeroMQExtension(system).newSubSocket(Array(Listener(listener), Connect(IOPubConnection.toString), SubscribeAll))
   }
 }

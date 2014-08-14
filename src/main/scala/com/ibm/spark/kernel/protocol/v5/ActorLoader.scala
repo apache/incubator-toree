@@ -14,7 +14,7 @@ trait ActorLoader {
    * @param actorEnum The enum value used to load the actor
    * @return An ActorSelection to pass messages to
    */
-  def load(actorEnum: Enumeration#Value) : ActorSelection
+  def load(actorEnum: Enumeration#Value): ActorSelection
 }
 
 case class SimpleActorLoader(actorRefFactory : ActorRefFactory) extends ActorLoader {

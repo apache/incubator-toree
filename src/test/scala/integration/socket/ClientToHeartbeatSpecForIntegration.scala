@@ -1,11 +1,14 @@
 package integration.socket
 
+import java.io.File
+
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.util.Timeout
 import akka.zeromq.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.socket.{Heartbeat, HeartbeatClient, HeartbeatMessage, SocketFactory}
+import com.ibm.spark.kernel.protocol.v5.SocketType
+import com.ibm.spark.kernel.protocol.v5.socket._
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
@@ -19,8 +22,8 @@ class ClientToHeartbeatSpecForIntegration extends TestKit(ActorSystem("Heartbeat
   describe("HeartbeatActor") {
     implicit val timeout = Timeout(1.minute)
     val socketFactory = mock[SocketFactory]
-    val probe : TestProbe = TestProbe()
-    val probeClient : TestProbe = TestProbe()
+    val probe: TestProbe = TestProbe()
+    val probeClient: TestProbe = TestProbe()
     when(socketFactory.Heartbeat(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probe.ref)
     when(socketFactory.HeartbeatClient(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probeClient.ref)
 
@@ -34,6 +37,16 @@ class ClientToHeartbeatSpecForIntegration extends TestKit(ActorSystem("Heartbeat
         probeClient.forward(heartbeat)
         probe.expectMsgClass(classOf[ZMQMessage])
         probe.forward(heartbeatClient)
+      }
+    }
+
+    describe("send heartbeat") {
+      it("should work with real actorsystem and no probes") {
+        val system = ActorSystem("iopubtest")
+        val profile = Option(new File("src/main/resources/profile.json"))
+        val socketConfigReader = new SocketConfigReader(profile)
+        val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
+        val ioPUB = system.actorOf(Props(classOf[IOPub], socketFactory), name = SocketType.IOPub.toString)
       }
     }
   }

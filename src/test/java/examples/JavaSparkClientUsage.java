@@ -1,9 +1,12 @@
 package examples;
+
+import com.ibm.spark.SparkKernelClientBootstrap;
+import com.ibm.spark.client.exception.ShellException;
+import com.ibm.spark.kernel.client.java.EmptyFunction;
+import com.ibm.spark.kernel.client.java.Function;
 import com.ibm.spark.kernel.client.java.SparkKernelClient;
+import com.ibm.spark.kernel.protocol.v5.content.ExecuteReply;
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteResult;
-import scala.collection.immutable.Map;
-import scala.runtime.AbstractFunction0;
-import scala.runtime.BoxedUnit;
 
 /**
  * This main class demonstrates how to use the spark client in java.
@@ -12,43 +15,36 @@ import scala.runtime.BoxedUnit;
 public class JavaSparkClientUsage {
 
     public static void main(String[] args) throws Exception {
-        com.ibm.spark.client.SparkKernelClient scalaClient = new com.ibm.spark.client.SparkKernelClient();
-        SparkKernelClient client = new SparkKernelClient(scalaClient);
+        SparkKernelClient client = new SparkKernelClient(SparkKernelClientBootstrap.createClient());
 
         Thread.sleep(100); // actor system takes a moment to initialize
 
         client.heartbeat(
-            new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("java hb success");
-                }
-            },
-            new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("java hb error");
-                }
-            });
+                new EmptyFunction() {
+                    @Override
+                    public void invoke() {
+                        System.out.println("java hb error");
+                    }
+                });
 
         client.execute(
             "val y = 9",
-            new Runnable() {
+            new Function<ExecuteReply>() {
                 @Override
-                public void run() {
-                    System.out.println("java exec success");
+                public void invoke(ExecuteReply param) {
+                    System.out.println("java reply callback called");
                 }
             },
-            new Runnable() {
+            new Function<ExecuteResult>() {
                 @Override
-                public void run() {
-                    System.out.println("java exec error");
+                public void invoke(ExecuteResult param) {
+                    System.out.println("java result callback called");
                 }
             },
-            new Runnable() {
+            new Function<ShellException>() {
                 @Override
-                public void run() {
-                    System.out.println("java exec result");
+                public void invoke(ShellException param) {
+                    System.out.println("java error callback called");
                 }
             });
     }

@@ -4,3 +4,4 @@ target/
 .idea_modules/
 .DS_Store
 .vagrant
+*.iml
