@@ -1,6 +1,8 @@
 package integration.interpreter
 
 import java.io.OutputStream
+import org.apache.spark.{SparkContext, SparkConf}
+
 import scala.tools.nsc.interpreter._
 import java.net.{URL, URLClassLoader}
 

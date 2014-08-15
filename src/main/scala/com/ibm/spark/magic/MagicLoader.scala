@@ -2,30 +2,55 @@ package com.ibm.spark.magic
 
 import java.net.{URL, URLClassLoader}
 
-class MagicLoader(urls: Array[URL] = Array(), parentLoader: ClassLoader = null)
-  extends URLClassLoader(urls, parentLoader)
-{
-  private val MagicExecuteMethodName = "execute"
+import com.ibm.spark.magic.dependencies.DependencyMap
 
+import scala.reflect.runtime.{universe => runtimeUniverse}
+
+import com.ibm.spark.magic.builtin.{AddJar, MagicTemplate}
+
+class MagicLoader(
+  dependencyMap: DependencyMap = new DependencyMap(),
+  urls: Array[URL] = Array(),
+  parentLoader: ClassLoader = null
+) extends URLClassLoader(urls, parentLoader)
+{
   def hasMagic(name: String): Boolean =
     try {
-      this.findClass(name)
+      this.loadClass(name) // Checks parent loadClass first
       true
     } catch {
       case _: Throwable => false
     }
 
-  def executeMagic(name: String, code: String, isCell: Boolean): String = {
-    val klass: Class[_] = findClass(name)
-    val method = klass.getDeclaredMethod(
-      MagicExecuteMethodName, classOf[String], classOf[Boolean]
+  protected def createMagicInstance(name: String) = {
+    val magicClass = loadClass(name) // Checks parent loadClass first
+
+    val runtimeMirror = runtimeUniverse.runtimeMirror(magicClass.getClassLoader)
+
+    val classSymbol = runtimeMirror.staticClass(magicClass.getCanonicalName)
+    val classMirror = runtimeMirror.reflectClass(classSymbol)
+    val selfType = classSymbol.selfType
+
+    val classConstructorSymbol = selfType.declaration(runtimeUniverse.nme.CONSTRUCTOR).asMethod
+    val classConstructorMethod = classMirror.reflectConstructor(classConstructorSymbol)
+
+    val magicInstance = classConstructorMethod()
+
+    // Add all of our dependencies to the new instance
+    dependencyMap.internalMap.filter(selfType <:< _._1).values.foreach(
+      f => f(magicInstance.asInstanceOf[MagicTemplate])
     )
 
-    val results = method.invoke(
-      klass.newInstance(),
-      Seq(code, isCell).map(_.asInstanceOf[AnyRef]): _*
-    )
-    results.asInstanceOf[String]
+    magicInstance
   }
 
+  def executeMagic(name: String, code: String, isCell: Boolean): String = {
+    val magicInstance = createMagicInstance(name).asInstanceOf[MagicTemplate]
+
+    if (isCell) {
+      magicInstance.executeCell(code.split("\n"))
+    } else {
+      magicInstance.executeLine(code)
+    }
+  }
 }

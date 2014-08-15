@@ -14,6 +14,8 @@ import com.ibm.spark.kernel.protocol.v5.relay.{ExecuteRequestRelay, KernelMessag
 import com.ibm.spark.kernel.protocol.v5.security.SignatureManagerActor
 import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.magic.MagicLoader
+import com.ibm.spark.magic.builtin.BuiltinLoader
+import com.ibm.spark.magic.dependencies.DependencyMap
 import com.ibm.spark.security.{HmacAlgorithm, Hmac}
 import com.ibm.spark.utils.LogLike
 import org.apache.spark.{SparkContext, SparkConf}
@@ -33,6 +35,9 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
 
   private var interpreter: Interpreter                = _
   private var sparkContext: SparkContext              = _
+  private var dependencyMap: DependencyMap            = _
+  private var builtinLoader: BuiltinLoader            = _
+  private var magicLoader: MagicLoader                = _
 
   private var actorSystem: ActorSystem                = _
   private var actorLoader: ActorLoader                = _
@@ -50,6 +55,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
     loadConfiguration()
     initializeInterpreter()
     initializeSparkContext()
+    initializeMagicLoader()
     initializeSystemActors()
     initializeKernelHandlers()
     createSockets()
@@ -220,7 +226,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
     logger.info("Creating magic manager actor")
     logger.warn("MagicManager has a MagicLoader that is empty!")
     magicManagerActor = actorSystem.actorOf(
-      Props(classOf[MagicManager], new MagicLoader()),
+      Props(classOf[MagicManager], magicLoader),
       name = SystemActorType.MagicManager.toString
     )
 
@@ -228,6 +234,24 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
     statusDispatch = actorSystem.actorOf(
       Props(classOf[StatusDispatch], actorLoader),
       name = SystemActorType.StatusDispatch.toString
+    )
+  }
+
+  private def initializeMagicLoader(): Unit = {
+    logger.info("Constructing magic loader")
+
+    logger.debug("Building dependency map")
+    dependencyMap = new DependencyMap()
+      .setInterpreter(interpreter)
+      .setSparkContext(sparkContext)
+
+    logger.debug("Creating BuiltinLoader")
+    builtinLoader = new BuiltinLoader()
+
+    logger.debug("Creating MagicLoader")
+    magicLoader = new MagicLoader(
+      dependencyMap = dependencyMap,
+      parentLoader = builtinLoader
     )
   }
 
