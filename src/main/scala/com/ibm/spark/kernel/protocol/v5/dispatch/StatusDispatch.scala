@@ -12,7 +12,7 @@ import play.api.libs.json.Json
 class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {
   private def sendStatusMessage(kernelStatus: KernelStatusType) {
     //  Create the status message and send it to the relay
-    actorLoader.load(SystemActorType.Relay) ! KernelMessage(
+    actorLoader.load(SystemActorType.KernelMessageRelay) ! KernelMessage(
       Seq(MessageType.Status.toString),
       "",
       Header(UUID.randomUUID().toString, "","", MessageType.Status.toString,""),

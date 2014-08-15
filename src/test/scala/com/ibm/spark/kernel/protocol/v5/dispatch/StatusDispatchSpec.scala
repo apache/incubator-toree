@@ -19,7 +19,7 @@ with FunSpecLike with Matchers with MockitoSugar {
     val relayProbe = TestProbe()
     //  Mock the ActorLoader
     val mockActorLoader: ActorLoader = mock[ActorLoader]
-    when(mockActorLoader.load(SystemActorType.Relay))
+    when(mockActorLoader.load(SystemActorType.KernelMessageRelay))
       .thenReturn(system.actorSelection(relayProbe.ref.path.toString))
 
     val statusDispatchRef: ActorRef = system.actorOf(Props(classOf[StatusDispatch],mockActorLoader))
