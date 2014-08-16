@@ -1,26 +1,20 @@
 package com.ibm.spark
 
-import java.io.File
-
-import akka.actor.{ActorRef, Props, ActorSystem}
-import com.ibm.spark.client.SparkKernelClient
+import akka.actor.{ActorRef, ActorSystem, Props}
 import com.ibm.spark.client.handler.ExecuteHandler
+import com.ibm.spark.client.{SparkKernelClient, SparkKernelClientOptions}
 import com.ibm.spark.kernel.protocol.v5.MessageType._
-import com.ibm.spark.kernel.protocol.v5.{MessageType, SocketType, SimpleActorLoader}
 import com.ibm.spark.kernel.protocol.v5.socket._
+import com.ibm.spark.kernel.protocol.v5.{MessageType, SimpleActorLoader, SocketType}
 import com.ibm.spark.utils.LogLike
 
-/**
- * Created by Chris on 8/12/14.
- */
-object SparkKernelClientBootstrap extends LogLike {
+class SparkKernelClientBootstrap(options: SparkKernelClientOptions) extends LogLike {
 
   // set up our actor system and configure the socket factory
   private val actorSystem = ActorSystem("spark-client-actor-system")
   private val actorLoader = SimpleActorLoader(actorSystem)
 
-  private val profile = Option(new File("src/main/resources/profile.json"))
-  private val socketConfigReader = new SocketConfigReader(profile)
+  private val socketConfigReader = new SocketConfigReader(options.profile)
 
   private val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
 

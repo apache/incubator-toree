@@ -1,6 +1,7 @@
 package examples;
 
 import com.ibm.spark.SparkKernelClientBootstrap;
+import com.ibm.spark.client.SparkKernelClientOptions;
 import com.ibm.spark.client.exception.ShellException;
 import com.ibm.spark.kernel.client.java.EmptyFunction;
 import com.ibm.spark.kernel.client.java.Function;
@@ -15,7 +16,9 @@ import com.ibm.spark.kernel.protocol.v5.content.ExecuteResult;
 public class JavaSparkClientUsage {
 
     public static void main(String[] args) throws Exception {
-        SparkKernelClient client = new SparkKernelClient(SparkKernelClientBootstrap.createClient());
+        SparkKernelClient client = new SparkKernelClient(
+                new SparkKernelClientBootstrap(
+                        new SparkKernelClientOptions(args)).createClient());
 
         Thread.sleep(100); // actor system takes a moment to initialize
 

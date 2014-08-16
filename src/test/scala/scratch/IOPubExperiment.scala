@@ -1,6 +1,7 @@
 package scratch
 
 import com.ibm.spark.SparkKernelClientBootstrap
+import com.ibm.spark.client.SparkKernelClientOptions
 import com.ibm.spark.client.exception.ShellException
 import com.ibm.spark.kernel.protocol.v5.content.{ExecuteReply, ExecuteResult}
 import com.ibm.spark.utils.LogLike
@@ -13,7 +14,7 @@ import play.api.libs.json.Json
 class IOPubExperiment extends FunSpec with Matchers with LogLike {
   describe("iopub") {
     it("should work") {
-      val client = SparkKernelClientBootstrap.createClient
+      val client = new SparkKernelClientBootstrap(new SparkKernelClientOptions(Seq())).createClient
       Thread.sleep(1000)
       val replyCallback = (message: ExecuteReply) =>   println("REPLY: " + Json.parse(message).toString())
       val resultCallback = (message: ExecuteResult) => println("RESULT: " + message.data.toString())
