@@ -1,15 +1,14 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import akka.actor.{ActorSelection, Actor}
+import akka.actor.{Actor, ActorSelection}
 import akka.pattern.ask
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.utils.{LogLike, ExecutionCounter}
+import com.ibm.spark.utils.{ExecutionCounter, LogLike}
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, Json}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 /**
@@ -17,7 +16,6 @@ import scala.util.{Failure, Success}
  * to the interpreter actor.
  */
 class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike {
-  import com.ibm.spark.kernel.protocol.v5.magic._
 
   override def receive: Receive = {
     // sends execute request to interpreter
@@ -44,7 +42,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
         },
         (executeRequest: ExecuteRequest) => {
           //  Alert the clients the kernel is busy
-          actorLoader.load(SystemActorType.StatusDispatch) ! KernelStatusType.Busy
+          actorLoader.load(SystemActorType.StatusDispatch) ! Tuple2(KernelStatusType.Busy, message.header)
 
           //  Send a message to the clients saying we are executing something
           val executeInputMessage = messageReplySkeleton.copy(
@@ -78,7 +76,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
               relayActor ! kernelResultMessage
 
               //  Send the idle message
-              actorLoader.load(SystemActorType.StatusDispatch) ! KernelStatusType.Idle
+              actorLoader.load(SystemActorType.StatusDispatch) ! Tuple2(KernelStatusType.Idle, message.header)
 
             case Failure(error: Throwable) =>
               //  Send the error to the client on the Shell socket
@@ -116,6 +114,6 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
     )
 
     //  Send idle status to client
-    actorLoader.load(SystemActorType.StatusDispatch) ! KernelStatusType.Idle
+    actorLoader.load(SystemActorType.StatusDispatch) ! Tuple2(KernelStatusType.Idle, headerSkeleton)
   }
 }

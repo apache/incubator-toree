@@ -27,7 +27,7 @@ class ShellClientSpec extends TestKit(ActorSystem("ShellActorSpec"))
       it("should send execute request") {
         val request = ExecuteRequest("foo", false, true, UserExpressions(), true)
         val header = Header(UUID.randomUUID().toString, "spark", UUID.randomUUID().toString, MessageType.ExecuteRequest.toString, "5.0")
-        val kernelMessage = KernelMessage(Seq[String](), "", header, EmptyHeader, Metadata(), Json.toJson(request).toString)
+        val kernelMessage = KernelMessage(Seq[String](), "", header, DefaultHeader, Metadata(), Json.toJson(request).toString)
         shellClient ! kernelMessage
         probe.expectMsgClass(classOf[ZMQMessage])
       }

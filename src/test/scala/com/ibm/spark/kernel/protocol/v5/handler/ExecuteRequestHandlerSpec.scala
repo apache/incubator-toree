@@ -2,13 +2,15 @@ package com.ibm.spark.kernel.protocol.v5.handler
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import com.ibm.spark.kernel.protocol.v5.KernelStatusType.KernelStatusType
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5Test._
 import com.ibm.spark.kernel.protocol.v5.content._
+import com.ibm.spark.kernel.protocol.v5Test._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import play.api.libs.json.Json
+
 import scala.concurrent.duration._
 
 class ExecuteRequestHandlerSpec extends TestKit(
@@ -95,7 +97,19 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should send a status busy and idle message") {
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandler()
-        statusDispatchProbe.expectMsgAllOf(KernelStatusType.Busy, KernelStatusType.Idle)
+        var busy = false
+        var idle = false
+
+        statusDispatchProbe.receiveWhile(1.second) {
+          case Tuple2(status: KernelStatusType, header: Header)=>
+            if(status == KernelStatusType.Busy)
+              busy = true
+            if(status == KernelStatusType.Idle)
+              idle = true
+        }
+
+        idle should be (true)
+        busy should be (true)
       }
     }
   }
@@ -153,7 +167,19 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
       it("should send a status busy and idle message") {
         handlerActor ! MockExecuteRequestKernelMessage
-        statusDispatchProbe.expectMsgAllOf(KernelStatusType.Busy, KernelStatusType.Idle)
+        var busy = false
+        var idle = false
+
+        statusDispatchProbe.receiveWhile(1500.milliseconds) {
+          case Tuple2(status: KernelStatusType, header: Header)=>
+            if(status == KernelStatusType.Busy)
+              busy = true
+            if(status == KernelStatusType.Idle)
+              idle = true
+        }
+
+        idle should be (true)
+        busy should be (true)
       }
     }
   }
@@ -194,7 +220,19 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
       it("should send a status idle message") {
         handlerActor ! MockKernelMessageWithBadExecuteRequest
-        statusDispatchProbe.expectMsgAllOf(KernelStatusType.Idle)
+        var busy = false
+        var idle = false
+
+        statusDispatchProbe.receiveWhile(1.second) {
+          case Tuple2(status: KernelStatusType, header: Header)=>
+            if(status == KernelStatusType.Busy)
+              busy = true
+            if(status == KernelStatusType.Idle)
+              idle = true
+        }
+
+        idle should be (true)
+        busy should be (false)
       }
     }
   }

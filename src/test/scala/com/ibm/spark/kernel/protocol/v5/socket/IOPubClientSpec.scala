@@ -38,7 +38,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
       //  Construct the kernel message
       val result = ExecuteResult(1, Data(), Metadata())
       val header = Header(id, "spark", UUID.randomUUID().toString, MessageType.ExecuteResult.toString, "5.0")
-      val kernelMessage = new KernelMessage(Seq[String](), "", header, EmptyHeader, Metadata(), Json.toJson(result).toString())
+      val kernelMessage = new KernelMessage(Seq[String](), "", header, DefaultHeader, Metadata(), Json.toJson(result).toString())
 
       //  Setup the callback in the callback map
       var executeResult: Option[ExecuteResult] = None

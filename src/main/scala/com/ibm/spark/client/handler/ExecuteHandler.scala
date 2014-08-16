@@ -48,7 +48,7 @@ class ExecuteHandler(actorLoader: ActorLoader) extends Actor with LogLike {
     case message: ExecuteRequestTuple =>
       // construct the message to send
       val header = Header(UUID.randomUUID().toString, "spark", sessionId, MessageType.ExecuteRequest.toString, "5.0")
-      val kernelMessage = KernelMessage(Seq[String](), "", header, EmptyHeader, Metadata(), Json.toJson(message.request).toString)
+      val kernelMessage = KernelMessage(Seq[String](), "", header, DefaultHeader, Metadata(), Json.toJson(message.request).toString)
 
       // put callbacks to invoke on response from ShellClient and IOPubClient
       CallbackMap.put(header.msg_id, message.resultCallback)

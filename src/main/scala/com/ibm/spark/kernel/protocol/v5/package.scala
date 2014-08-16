@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.protocol
 
+import java.util.UUID
+
 import akka.util.{ByteString, Timeout}
 import akka.zeromq.ZMQMessage
 import play.api.data.validation.ValidationError
@@ -17,13 +19,14 @@ import scala.language.implicitConversions
 package object v5 {
   // Provide a UUID type representing a string (there is no object)
   type UUID = String
+  val KernelVersion = "5.0"
 
   // Provide a ParentHeader type and object representing a Header
   type ParentHeader = Header
   val ParentHeader = Header
 
-  val EmptyHeader: Header             = Header(null,null,null,null,null)
-  val EmptyParentHeader: ParentHeader = EmptyHeader
+  def DefaultHeader       = Header( UUID.randomUUID().toString ,"","","",KernelVersion)
+  def DefaultParentHeader = DefaultHeader
 
   // Provide a Metadata type and object representing a map
   type Metadata = Map[String, String]
@@ -64,7 +67,7 @@ package object v5 {
       )
     val header = Json.parse(message.frames(delimiterIndex + 2)).as[Header]
     val parentHeader = Json.parse(message.frames(delimiterIndex + 3)).validate[ParentHeader].fold[ParentHeader](
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => EmptyParentHeader,
+          (invalid: Seq[(JsPath, Seq[ValidationError])]) => DefaultParentHeader,
           (valid: ParentHeader) => valid
         )
     val metadata = Json.parse(message.frames(delimiterIndex + 4)).as[Metadata]

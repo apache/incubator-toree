@@ -39,7 +39,7 @@ class ClientToIOPubSpecForIntegration extends FunSpec with Matchers {
         // construct the message and send it
         val result = ExecuteResult(1, Data(), Metadata())
         val header = Header(id, "spark", UUID.randomUUID().toString, MessageType.ExecuteResult.toString, "5.0")
-        val kernelMessage = new KernelMessage(Seq[String](), "", header, EmptyHeader, Metadata(), Json.toJson(result).toString())
+        val kernelMessage = new KernelMessage(Seq[String](), "", header, DefaultHeader, Metadata(), Json.toJson(result).toString())
 
         //  Send the message on the IOPub server socket
         ioPub ! kernelMessage

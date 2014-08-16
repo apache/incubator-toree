@@ -30,7 +30,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
     val request = ExecuteRequest("""val x = "foo"""", false, true, UserExpressions(), true)
     val header = Header(UUID.randomUUID().toString, "spark", UUID.randomUUID().toString, MessageType.ExecuteRequest.toString, "5.0")
-    val kernelMessage = KernelMessage(Seq[String](), "", header, EmptyHeader, Metadata(), Json.toJson(request).toString)
+    val kernelMessage = KernelMessage(Seq[String](), "", header, DefaultHeader, Metadata(), Json.toJson(request).toString)
 
     describe("send execute request") {
       it("should send execute request") {
