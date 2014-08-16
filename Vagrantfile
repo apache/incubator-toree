@@ -20,13 +20,6 @@ echo "vagrant:vagrant"|chpasswd
 #	Install java and maven
 sudo apt-get -y install openjdk-7-jdk maven wget build-essential uuid-dev
 
-#	Install ZeroMQ
-mkdir /zermoq
-cd /zermoq
-wget http://download.zeromq.org/zeromq-2.2.0.tar.gz
-tar xzf zeromq-2.2.0.tar.gz
-./configure && make && make install
-ldconfig
 
 #	Install scala and sbt
 cd /tmp
@@ -37,14 +30,15 @@ wget http://dl.bintray.com/sbt/debian/sbt-0.13.5.deb
 sudo dpkg -i sbt-0.13.5.deb
 rm sbt-0.13.5.deb
 
-# Install IPython
+# Install IPython and ZeroMQ
 sudo apt-get -f -y install 
-sudo apt-get -y install python-pip python-dev
+sudo apt-get -y install python-pip python-dev libzmq-dev
 cd /ETSparkProjects
 git clone --recursive https://github.com/ipython/ipython.git
 cd ipython
 sudo python setup.py install
 sudo pip install -e ".[notebook]" --user
+sudo pip install pyzmq==2.1.11
 
 SCRIPT
 
