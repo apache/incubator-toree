@@ -4,6 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.ibm.spark.interpreter.{ExecuteOutput, ExecuteError}
 import com.ibm.spark.magic.MagicLoader
+import com.ibm.spark.magic.builtin.MagicTemplate
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._
@@ -17,15 +18,6 @@ object MagicManagerSpec {
     akka {
       loglevel = "WARNING"
     }"""
-}
-
-class FakeClass {
-  def execute(code: String, isCell: Boolean) = "MY TEST VALUE"
-}
-
-class BadFakeClass {
-  def execute(code: String, isCell: Boolean) =
-    throw new Throwable("EXPLOSION")
 }
 
 class MagicManagerSpec extends TestKit(
@@ -88,9 +80,13 @@ class MagicManagerSpec extends TestKit(
 
         it("should evaluate the magic if it exists and return the error if it fails") {
           val fakeMagicName = "myBadMagic"
+          val fakeMagicReturn = new RuntimeException("EXPLOSION")
+
+          val mockMagic = mock[MagicTemplate]
+          doThrow(fakeMagicReturn).when(mockMagic).executeCell(any[Seq[String]])
           val myMagicLoader = new MagicLoader() {
-            override def findClass(name: String): Class[_] =
-              new BadFakeClass().getClass
+            override protected def createMagicInstance(name: String) =
+              mockMagic
           }
           val magicManager =
             system.actorOf(Props(classOf[MagicManager], myMagicLoader))
@@ -106,16 +102,24 @@ class MagicManagerSpec extends TestKit(
 
         it("should evaluate the magic if it exists and return the output if it succeeds") {
           val fakeMagicName = "myMagic"
+          val fakeMagicReturn = "MY RETURN VALUE"
+
+          val mockMagic = mock[MagicTemplate]
+          doReturn(fakeMagicReturn).when(mockMagic).executeCell(any[Seq[String]])
+
           val myMagicLoader = new MagicLoader() {
-            override def findClass(name: String): Class[_] =
-              new FakeClass().getClass
+            override def hasMagic(name: String): Boolean = true
+
+            override protected def createMagicInstance(name: String) =
+              mockMagic
           }
+
           val magicManager =
             system.actorOf(Props(classOf[MagicManager], myMagicLoader))
 
           magicManager ! ExecuteMagicMessage("%%" + fakeMagicName)
 
-          expectMsg(Left("MY TEST VALUE"))
+          expectMsg(Left(fakeMagicReturn))
         }
       }
     }

@@ -1,9 +1,8 @@
-package magic
+package com.ibm.spark.magic
 
 import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.{BuiltinLoader, MagicTemplate}
-import com.ibm.spark.magic.dependencies.{DependencyMap, IncludeSparkContext, IncludeInterpreter}
+import com.ibm.spark.magic.dependencies.{DependencyMap}
 import org.apache.spark.SparkContext
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpec}
@@ -89,7 +88,10 @@ class MagicLoaderSpec extends FunSpec with Matchers with MockitoSugar {
           .setInterpreter(mockInterpreter)
           .setSparkContext(mockSparkContext)
 
-        val magicLoader = new MagicLoader(dependencyMap = dependencyMap, parentLoader = new BuiltinLoader)
+        val magicLoader = new MagicLoader(
+          dependencyMap = dependencyMap,
+          parentLoader = new BuiltinLoader
+        )
 
         magicLoader.executeMagic("AddJar", "", false)
         verify(mockInterpreter).addJars(any[URL])
