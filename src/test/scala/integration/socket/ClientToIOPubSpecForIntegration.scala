@@ -4,6 +4,7 @@ import java.io.File
 import java.util.UUID
 
 import akka.actor.{ActorSystem, Props}
+import akka.testkit.TestProbe
 import com.ibm.spark.client.CallbackMap
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteResult
@@ -17,7 +18,7 @@ class ClientToIOPubSpecForIntegration extends FunSpec with Matchers {
       it("should connect to IOPub Socket"){
         // setup
         val system = ActorSystem("iopubtest")
-        val profile = Option(new File("src/main/resources/profile.json"))
+        val profile = Option(new File("src/test/resources/kernel-profiles/IOPubIntegrationProfile.json"))
         val socketConfigReader = new SocketConfigReader(profile)
         val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
         //  Server and client sockets
@@ -32,8 +33,8 @@ class ClientToIOPubSpecForIntegration extends FunSpec with Matchers {
 
         // register a callback to call so we can assert against the message
         val id = UUID.randomUUID().toString
-        var executeResult: Option[ExecuteResult] = None
-        CallbackMap.put(id, (x: ExecuteResult) => executeResult = Option(x))
+        val executeResultProbe: TestProbe = new TestProbe(system)
+        CallbackMap.put(id, (x: ExecuteResult) => executeResultProbe.ref.tell(x, executeResultProbe.ref))
 
         // construct the message and send it
         val result = ExecuteResult(1, Data(), Metadata())
@@ -44,17 +45,8 @@ class ClientToIOPubSpecForIntegration extends FunSpec with Matchers {
         ioPub ! kernelMessage
 
         //  Wait for the message to bubble back
-        Thread.sleep(1000)
+        executeResultProbe.expectMsg(result)
 
-        // ioPubClient should have received the message
-        executeResult match {
-          case None =>
-            fail("Expected result to be set in callback.")
-          case Some(value: ExecuteResult) =>
-            value shouldBe result
-          case Some(_) =>
-            fail("Expected result to be ExecuteResult but was something else.")
-        }
         system.shutdown()
       }
     }
