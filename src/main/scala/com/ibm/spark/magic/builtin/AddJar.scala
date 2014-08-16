@@ -34,6 +34,9 @@ class AddJar
    */
   override def executeLine(code: String): String = {
     val jarRemoteLocation = code.trim
+    if (jarRemoteLocation.isEmpty)
+      return s"%AddJar '$jarRemoteLocation' is invalid!"
+
     val HtmlJarRegex(jarName) = jarRemoteLocation
     val downloadLocation = JarStorageLocation + "/" + jarName
 
