@@ -93,7 +93,7 @@ class MagicLoaderSpec extends FunSpec with Matchers with MockitoSugar {
           parentLoader = new BuiltinLoader
         )
 
-        magicLoader.executeMagic("AddJar", "", false)
+        magicLoader.executeMagic("AddJar", "http://www.example.com", false)
         verify(mockInterpreter).addJars(any[URL])
         verify(mockSparkContext).addJar(anyString())
       }

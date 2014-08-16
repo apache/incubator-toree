@@ -31,8 +31,10 @@ class MagicLoader(
     val classMirror = runtimeMirror.reflectClass(classSymbol)
     val selfType = classSymbol.selfType
 
-    val classConstructorSymbol = selfType.declaration(runtimeUniverse.nme.CONSTRUCTOR).asMethod
-    val classConstructorMethod = classMirror.reflectConstructor(classConstructorSymbol)
+    val classConstructorSymbol =
+      selfType.declaration(runtimeUniverse.nme.CONSTRUCTOR).asMethod
+    val classConstructorMethod =
+      classMirror.reflectConstructor(classConstructorSymbol)
 
     val magicInstance = classConstructorMethod()
 

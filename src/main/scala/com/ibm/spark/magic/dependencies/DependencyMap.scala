@@ -12,7 +12,8 @@ import com.ibm.spark.magic.builtin.MagicTemplate
  * TODO: Explore Scala macros to avoid duplicate code.
  */
 class DependencyMap {
-  val internalMap = scala.collection.mutable.Map[Type, PartialFunction[MagicTemplate, Unit]]()
+  val internalMap =
+    scala.collection.mutable.Map[Type, PartialFunction[MagicTemplate, Unit]]()
 
   /**
    * Sets the Interpreter for this map.

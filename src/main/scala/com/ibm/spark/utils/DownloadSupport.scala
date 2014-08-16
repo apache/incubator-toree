@@ -7,8 +7,7 @@ import java.io.FileOutputStream
 /**
  * A utility for downloading the contents of a file to a specified location.
  */
-class FileDownloadUtil {
-
+trait DownloadSupport {
   /**
    * Download a file located at the given URL to the specified destination file.
    * The file type of the downloadDestination should match the file type
@@ -16,21 +15,27 @@ class FileDownloadUtil {
    * fileUrl or downloadDestination are invalid.
    *
    * @param fileUrl A URL for the file to be downloaded
-   * @param downloadDestination Location to download the file to (e.g. /tmp/file.txt)
+   * @param destinationUrl Location to download the file to (e.g. /tmp/file.txt)
+   *
+   * @return The URL representing the location of the downloaded file
    */
-  def download(fileUrl: URL, downloadDestination: String): Unit = {
+  def downloadFile(fileUrl: URL, destinationUrl: URL): URL = {
     val rbc = Channels.newChannel(fileUrl.openStream())
-    val fos = new FileOutputStream(downloadDestination)
+    val fos = new FileOutputStream(destinationUrl.getPath)
     fos.getChannel().transferFrom(rbc, 0, Long.MaxValue)
+
+    destinationUrl
   }
 
   /**
    * Download a file given a URL string to the specified downloadDestination.
+   *
    * @param fileToDownload A URL in string format (e.g. file:///tmp/foo, http://ibm.com)
-   * @param downloadDestination Location to download the file to (e.g. /tmp/file.txt)
+   * @param destination Location to download the file to (e.g. /tmp/file.txt)
+   *
+   * @return The URL representing the location of the downloaded file
    */
-  def download(fileToDownload: String, downloadDestination: String): Unit = {
-    download(new URL(fileToDownload), downloadDestination)
+  def downloadFile(fileToDownload: String, destination: String): URL = {
+    downloadFile(new URL(fileToDownload), new URL(destination))
   }
-
 }

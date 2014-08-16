@@ -11,9 +11,6 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 
 class AddJarTest extends FunSpec with Matchers with MockitoSugar {
-
-  val PATH_TO_JAR: String = "/path/to/some/jar/somejar.jar"
-
   describe("AddJar"){
     describe("#executeCell") {
       it("should call addJar on the provided SparkContext and addJars on the provided interpreter") {
@@ -24,6 +21,8 @@ class AddJarTest extends FunSpec with Matchers with MockitoSugar {
         val addJarMagic = new AddJar with IncludeSparkContext with IncludeInterpreter {
           override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
+          override def downloadFile(fileUrl: URL, destinationUrl: URL): URL =
+            new URL("file://someFile") // Cannot mock URL
         }
 
         addJarMagic.executeCell(Seq(
@@ -46,6 +45,8 @@ class AddJarTest extends FunSpec with Matchers with MockitoSugar {
         val addJarMagic = new AddJar with IncludeSparkContext with IncludeInterpreter {
           override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
+          override def downloadFile(fileUrl: URL, destinationUrl: URL): URL =
+            new URL("file://someFile") // Cannot mock URL
         }
 
         addJarMagic.executeLine("""http://www.example.com/someJar.jar""")
