@@ -30,25 +30,6 @@ public class JavaSparkClientUsage {
                     }
                 });
 
-        client.execute(
-            "val y = 9",
-            new Function<ExecuteReply>() {
-                @Override
-                public void invoke(ExecuteReply param) {
-                    System.out.println("java reply callback called");
-                }
-            },
-            new Function<ExecuteResult>() {
-                @Override
-                public void invoke(ExecuteResult param) {
-                    System.out.println("java result callback called");
-                }
-            },
-            new Function<ShellException>() {
-                @Override
-                public void invoke(ShellException param) {
-                    System.out.println("java error callback called");
-                }
-            });
+        client.submit("val y = 9");
     }
 }

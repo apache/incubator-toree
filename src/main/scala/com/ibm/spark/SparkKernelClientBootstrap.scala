@@ -13,9 +13,7 @@ class SparkKernelClientBootstrap(options: SparkKernelClientOptions) extends LogL
   // set up our actor system and configure the socket factory
   private val actorSystem = ActorSystem("spark-client-actor-system")
   private val actorLoader = SimpleActorLoader(actorSystem)
-
   private val socketConfigReader = new SocketConfigReader(options.profile)
-
   private val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
 
   private var heartbeatClientActor: Option[ActorRef] = None
@@ -31,8 +29,8 @@ class SparkKernelClientBootstrap(options: SparkKernelClientOptions) extends LogL
    * Initializes all kernel systems.
    */
   def initialize(): Unit = {
-    initializeSystemActors
-    initializeMessageHandlers
+    initializeSystemActors()
+    initializeMessageHandlers()
   }
 
   /**

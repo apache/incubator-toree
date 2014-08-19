@@ -1,53 +1,56 @@
 package integration.socket
 
-import java.io.File
 import java.util.UUID
 
 import akka.actor.{ActorSystem, Props}
-import akka.testkit.TestProbe
-import com.ibm.spark.client.CallbackMap
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteResult
 import com.ibm.spark.kernel.protocol.v5.socket._
-import org.scalatest.{FunSpec, Matchers}
+import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.{FunSpecLike, Matchers}
 import play.api.libs.json.Json
 
-class ClientToIOPubSpecForIntegration extends FunSpec with Matchers {
+import scala.concurrent.duration._
+
+class ClientToIOPubSpecForIntegration extends TestKit(ActorSystem("IOPubSystem"))
+with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
   describe("Client-IOPub Integration"){
     describe("Client"){
       it("should connect to IOPub Socket"){
         // setup
-        val system = ActorSystem("iopubtest")
-        val profile = Option(new File("src/test/resources/kernel-profiles/IOPubIntegrationProfile.json"))
-        val socketConfigReader = new SocketConfigReader(profile)
-        val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
-        //  Server and client sockets
-        val ioPub = system.actorOf(Props(classOf[IOPub], socketFactory),
+        val mockSocketFactory = mock[SocketFactory]
+        val iopubProbe = TestProbe()
+        when(mockSocketFactory.IOPub(any[ActorSystem])).thenReturn(iopubProbe.ref)
+
+        // Server and client sockets
+        val ioPub = system.actorOf(Props(classOf[IOPub], mockSocketFactory),
           name = SocketType.IOPub.toString)
 
-        val ioPubClient = system.actorOf(Props(classOf[IOPubClient], socketFactory),
+        val ioPubClient = system.actorOf(Props(classOf[IOPubClient], mockSocketFactory),
             name = SocketType.IOPubClient.toString)
 
-        //  Give some buffer for the server socket to be bound
+        // Give some buffer for the server socket to be bound
         Thread.sleep(500)
 
-        // register a callback to call so we can assert against the message
+        // Register ourselves as sender in IOPubClient's sender map
         val id = UUID.randomUUID().toString
-        val executeResultProbe: TestProbe = new TestProbe(system)
-        CallbackMap.put(id, (x: ExecuteResult) => executeResultProbe.ref.tell(x, executeResultProbe.ref))
+        ioPubClient ! id
 
         // construct the message and send it
         val result = ExecuteResult(1, Data(), Metadata())
         val header = Header(id, "spark", UUID.randomUUID().toString, MessageType.ExecuteResult.toString, "5.0")
         val kernelMessage = new KernelMessage(Seq[String](), "", header, DefaultHeader, Metadata(), Json.toJson(result).toString())
 
-        //  Send the message on the IOPub server socket
+        // Send the message on the IOPub server socket
         ioPub ! kernelMessage
+        val message = iopubProbe.receiveOne(2000.seconds)
+        iopubProbe.forward(ioPubClient, message)
 
-        //  Wait for the message to bubble back
-        executeResultProbe.expectMsg(result)
-
-        system.shutdown()
+        // ioPubClient should have received the message
+        expectMsg(result)
       }
     }
   }
