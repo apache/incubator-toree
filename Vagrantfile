@@ -39,7 +39,10 @@ cd ipython
 sudo python setup.py install
 sudo pip install -e ".[notebook]" --user
 sudo pip install pyzmq==2.1.11
-
+sudo pip install jinja2
+sudo pip install tornado
+sudo pip install jsonschema
+sudo pip install runipy
 SCRIPT
 
 Vagrant.configure("2") do |config|
