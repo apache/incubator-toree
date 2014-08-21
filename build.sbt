@@ -1,6 +1,8 @@
 import de.johoop.testngplugin.TestNGPlugin._
 
-name := "SparkKernel"
+organization := "com.ibm"
+
+name := "spark-kernel"
 
 version := "0.1.0"
 
@@ -128,5 +130,7 @@ ScoverageKeys.highlighting := true
 packSettings
 
 packMain := Map("sparkkernel" -> "com.ibm.spark.SparkKernel")
+
+publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
 testNGSettings
