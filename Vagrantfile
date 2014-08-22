@@ -43,6 +43,16 @@ sudo pip install jinja2
 sudo pip install tornado
 sudo pip install jsonschema
 sudo pip install runipy
+
+# Install Kafka
+if [ ! -d "/opt/kafka" ]; then
+    wget http://apache.petsads.us/kafka/0.8.1.1/kafka_2.10-0.8.1.1.tgz
+    tar -zxf kafka_2.10-0.8.1.1.tgz
+    mv kafka_2.10-0.8.1.1/ /opt/kafka
+    rm kafka_2.10-0.8.1.1.tgz
+    echo 'export PATH=$PATH:/opt/kafka/bin' >> $HOME/.bashrc
+fi
+
 SCRIPT
 
 Vagrant.configure("2") do |config|
