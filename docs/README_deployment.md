@@ -12,14 +12,12 @@ To install the kernel using the _pack_ plugin for _sbt_, execute the following:
 1. Move into the root of the Spark Kernel directory
 
 2. Execute `sbt pack` - generates a _pack_ directory inside `target/`
-
     * The _pack_ directory contains `README`, `Makefile`, `bin/`, and `lib/`
 
 3. Move into `target/pack/`
 
 4. Execute `make install` - generates a local bin directory with a script
    representing the Spark Kernel (currently labelled as `sparkkernel`)
-
     * This path is usually something like `$HOME/local/bin/sparkkernel`
 
 Adding the configuration for a kernel to IPython
