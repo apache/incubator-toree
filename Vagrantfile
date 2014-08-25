@@ -23,10 +23,10 @@ sudo apt-get -y install openjdk-7-jdk maven wget build-essential uuid-dev
 
 #	Install scala and sbt
 cd /tmp
-wget http://www.scala-lang.org/files/archive/scala-2.10.4.deb
+wget --progress=bar:force http://www.scala-lang.org/files/archive/scala-2.10.4.deb
 sudo dpkg -i scala-2.10.4.deb
 rm scala-2.10.4.deb
-wget http://dl.bintray.com/sbt/debian/sbt-0.13.5.deb
+wget --progress=bar:force http://dl.bintray.com/sbt/debian/sbt-0.13.5.deb
 sudo dpkg -i sbt-0.13.5.deb
 rm sbt-0.13.5.deb
 
@@ -46,12 +46,29 @@ sudo pip install runipy
 
 # Install Kafka
 if [ ! -d "/opt/kafka" ]; then
-    wget http://apache.petsads.us/kafka/0.8.1.1/kafka_2.10-0.8.1.1.tgz
+    echo "Adding kafka"
+    wget --progress=bar:force http://apache.petsads.us/kafka/0.8.1.1/kafka_2.10-0.8.1.1.tgz
     tar -zxf kafka_2.10-0.8.1.1.tgz
     mv kafka_2.10-0.8.1.1/ /opt/kafka
     rm kafka_2.10-0.8.1.1.tgz
-    echo 'export PATH=$PATH:/opt/kafka/bin' >> $HOME/.bashrc
+    echo 'export PATH=$PATH:/opt/kafka/bin' >> /home/vagrant/.bashrc
 fi
+
+# Add Spark Kernel json to IPython configuration
+echo "Adding kernel.json"
+mkdir -p /home/vagrant/.ipython/kernels/spark
+cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
+{
+    "display_name": "Spark 1.0.1 (Scala 2.10.4)",
+    "language": "scala",
+    "argv": [
+        "/home/vagrant/local/bin/sparkkernel",
+        "--profile",
+        "{connection_file}"
+    ],
+    "codemirror_mode": "scala"
+}
+EOF
 
 SCRIPT
 
