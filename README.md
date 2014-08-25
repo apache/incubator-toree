@@ -90,3 +90,8 @@ The naming convention for tests is as follows:
 4. Scratch
     * Placed under _scratch_
 
+Migrating Remote Repos
+----------------------
+In the ignitio project run the following commands.
+`git remote remove origin`
+`git remote add origin git@github.rtp.raleigh.ibm.com:ignitio/sparkkernel.git`
