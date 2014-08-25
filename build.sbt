@@ -69,18 +69,25 @@ libraryDependencies ++= Seq(
 //
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "1.0.0", // Apache v2
-  "org.apache.spark" %% "spark-streaming" % "1.0.0", // Apache v2
-  "org.apache.spark" %% "spark-streaming-kafka" % "1.0.0", // Apache v2
-  "org.apache.spark" %% "spark-repl" % "1.0.0" // Apache v2
+  "org.apache.spark" %% "spark-core" % "1.0.2" excludeAll   // Apache v2
+    ExclusionRule(organization = "org.apache.hadoop"),
+  "org.apache.spark" %% "spark-streaming" % "1.0.2",        // Apache v2
+  "org.apache.spark" %% "spark-streaming-kafka" % "1.0.2",  // Apache v2
+  "org.apache.spark" %% "spark-repl" % "1.0.2" excludeAll   // Apache v2
+    ExclusionRule(organization = "org.apache.hadoop")
+)
+
+//
+// HADOOP DEPENDENCIES
+//
+
+libraryDependencies ++= Seq(
+  "org.apache.hadoop" % "hadoop-client" % "2.3.0",
+  "org.apache.hadoop" % "hadoop-hdfs" % "2.3.0"
 )
 
 //
 // AKKA DEPENDENCIES (from Spark project)
-//
-// NOTE: Able to run `sbt clean compile run` against standalone cluster with
-//       akka-actor, akka-zeromq, and play-json included.
-// NOTE: The above run also works with local[*].
 //
 libraryDependencies += "org.spark-project.akka" %% "akka-zeromq" % "2.2.3-shaded-protobuf" // Apache v2
 
