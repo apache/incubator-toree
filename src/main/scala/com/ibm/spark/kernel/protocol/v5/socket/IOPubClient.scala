@@ -39,6 +39,9 @@ class IOPubClient(socketFactory: SocketFactory) extends Actor with LogLike {
             case None =>
               logger.debug("IOPubClient: actorRef was none")
           }
+
+        case any =>
+          logger.debug(s"Received unhandled MessageType ${any}")
       }
 
     case message: UUID =>

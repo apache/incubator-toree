@@ -25,7 +25,7 @@ public class SparkKernelClientTest {
         // Mock the callbacks
         EmptyFunction mockFailure = mock(EmptyFunction.class);
 
-        //sparkKernelClient.heartbeat(mockFailure);
+        sparkKernelClient.heartbeat(mockFailure);
 
         // Create an ArgumentCaptor to catch the AbstractFunction created in the class
         ArgumentCaptor<AbstractFunction0> failureCaptor = ArgumentCaptor.forClass(AbstractFunction0.class);

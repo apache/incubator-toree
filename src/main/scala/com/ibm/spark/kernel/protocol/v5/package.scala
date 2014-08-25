@@ -47,7 +47,7 @@ package object v5 {
   /**
    * This timeout needs to be defined for the Akka asks to timeout
    */
-  implicit val timeout = Timeout(1.seconds)
+  implicit val timeout = Timeout(100000.days)
 
   implicit def ByteStringToString(byteString : ByteString) : String = {
     new String(byteString.toArray)

@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
-
+import akka.util.Timeout
 /**
  * Client API for Spark Kernel.
  *
@@ -19,7 +19,7 @@ import scala.util.{Failure, Success}
  * if an API is to be used immediately after initialization.
  */
 class SparkKernelClient(actorLoader: ActorLoader) extends LogLike {
-  implicit val timeout = Timeout(1.minutes)
+  implicit val timeout = Timeout(100000.days)
 
   def submit(code: String): Future[Any] = {
     val request = ExecuteRequest(code, false, true, UserExpressions(), true)

@@ -24,7 +24,7 @@ object ShellClient {
  */
 class ShellClient(socketFactory: SocketFactory) extends Actor with LogLike {
   logger.debug("Created shell client actor")
-  implicit val timeout = Timeout(1.minutes)
+  implicit val timeout = Timeout(100000.days)
 
   val socket = socketFactory.ShellClient(context.system, self)
 

@@ -17,7 +17,7 @@ case class ExecuteRequestRelay(actorLoader: ActorLoader)
   extends Actor with LogLike
 {
   import context._
-  implicit val timeout = Timeout(5.seconds)
+  implicit val timeout = Timeout(100000.days)
 
   /**
    * Packages the response into an ExecuteReply,ExecuteResult tuple.
