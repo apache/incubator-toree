@@ -62,7 +62,7 @@ case class ExecuteRequestRelay(actorLoader: ActorLoader)
             (magicManager ? magicMessage)
               .mapTo[Either[ExecuteOutput, ExecuteError]]
 
-         packageFutureResponse(future) pipeTo oldSender
+          packageFutureResponse(future) pipeTo oldSender
         case false =>
           val interpreterActor = actorLoader.load(SystemActorType.Interpreter)
           val future =
