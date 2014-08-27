@@ -280,6 +280,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
     initializeSocketHandler(SocketType.Shell, MessageType.KernelInfoReply)
     initializeSocketHandler(SocketType.Shell, MessageType.ExecuteReply)
     initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteResult)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Stream)
     initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteInput)
     initializeSocketHandler(SocketType.IOPub, MessageType.Status)
     initializeSocketHandler(SocketType.IOPub, MessageType.Error)

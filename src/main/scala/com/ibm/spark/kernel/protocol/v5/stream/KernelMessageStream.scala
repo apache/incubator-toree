@@ -2,9 +2,10 @@ package com.ibm.spark.kernel.protocol.v5.stream
 
 import java.io.{OutputStream}
 import java.nio.charset.Charset
+import java.util.UUID
 
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteResult
+import com.ibm.spark.kernel.protocol.v5.content.{StreamContent, ExecuteResult}
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, ActorLoader}
 import play.api.libs.json.Json
 
@@ -24,19 +25,18 @@ class KernelMessageStream(
    */
   override def flush(): Unit = {
     val contents = new String(internalBytes.toArray, EncodingType)
-    val executeResult = ExecuteResult(
-      executionCount,
-      Data("text/plain" -> contents),
-      Metadata()
+    val streamContent = StreamContent(
+      "stdout", contents
     )
 
     // Build our kernel message with the current byte array contents
     val kernelMessage = skeletonKernelMessage.copy(
-      ids = Seq(MessageType.ExecuteResult.toString),
+      ids = Seq(MessageType.Stream.toString),
       header = skeletonKernelMessage.parentHeader.copy(
-        msg_type = MessageType.ExecuteResult.toString
+        msg_type = MessageType.Stream.toString,
+        msg_id = UUID.randomUUID().toString
       ),
-      contentString = Json.toJson(executeResult).toString
+      contentString = Json.toJson(streamContent).toString
     )
 
     actorLoader.load(SystemActorType.KernelMessageRelay) ! kernelMessage

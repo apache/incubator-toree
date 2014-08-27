@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.relay
 
+import java.util.UUID
+
 import akka.actor.Actor
 import akka.pattern.ask
 import akka.util.Timeout
@@ -60,7 +62,12 @@ case class KernelMessageRelay(
         relay(zmqMessage)
       }
 
-    case kernelMessage: KernelMessage =>
+    case baseKernelMessage: KernelMessage =>
+      val kernelMessage = baseKernelMessage/*.copy(
+        header = baseKernelMessage.header.copy(
+          msg_id =  UUID.randomUUID().toString
+        )
+      )*/
       if (useSignatureManager) {
         val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureInsertFuture = signatureManager ? kernelMessage
