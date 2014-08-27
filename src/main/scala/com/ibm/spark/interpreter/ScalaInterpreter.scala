@@ -52,6 +52,11 @@ case class ScalaInterpreter(
    * @param jars The list of jar locations
    */
   override def addJars(jars: URL*): Unit = {
+    // Enable Scala class support
+    val global = sparkIMain.global
+    import global._
+    new Run // Initializes something needed for Scala classes
+
     jars.foreach(runtimeClassloader.addJar)
     updateCompilerClassPath(jars : _*)
   }
