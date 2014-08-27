@@ -29,6 +29,9 @@ class MagicManager(magicLoader: MagicLoader)
     case message: ValidateMagicMessage =>
       sender ! magicRegex.findFirstIn(message.toString).nonEmpty
 
+    // TODO: Support using the provided output stream, which sends messages
+    //       dynamically to the KernelMessageRelay, to output magic-related
+    //       print messages
     case (message: ExecuteMagicMessage, outputStream: OutputStream) =>
       val matchData =
         magicRegex.findFirstMatchIn(message.toString).get

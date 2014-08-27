@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.magic
 
+import java.io.OutputStream
+
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.ibm.spark.interpreter.{ExecuteOutput, ExecuteError}
@@ -60,7 +62,7 @@ class MagicManagerSpec extends TestKit(
         }
       }
 
-      describe("with message type ExecuteMagicMessage") {
+      describe("with message type (ExecuteMagicMessage, OutputStream)") {
         it("should return an error if the magic requested is not defined") {
           val fakeMagicName = "myMagic"
           val mockMagicLoader = mock[MagicLoader]
@@ -68,7 +70,10 @@ class MagicManagerSpec extends TestKit(
           val magicManager =
             system.actorOf(Props(classOf[MagicManager], mockMagicLoader))
 
-          magicManager ! ExecuteMagicMessage("%%" + fakeMagicName)
+          magicManager ! ((
+            ExecuteMagicMessage("%%" + fakeMagicName),
+            mock[OutputStream]
+          ))
 
           // Expect magic to not exist
           expectMsg(Right(ExecuteError(
@@ -91,7 +96,10 @@ class MagicManagerSpec extends TestKit(
           val magicManager =
             system.actorOf(Props(classOf[MagicManager], myMagicLoader))
 
-          magicManager ! ExecuteMagicMessage("%%" + fakeMagicName)
+          magicManager ! ((
+            ExecuteMagicMessage("%%" + fakeMagicName),
+            mock[OutputStream]
+          ))
 
           val result =
             receiveOne(5.seconds)
@@ -105,7 +113,8 @@ class MagicManagerSpec extends TestKit(
           val fakeMagicReturn = "MY RETURN VALUE"
 
           val mockMagic = mock[MagicTemplate]
-          doReturn(fakeMagicReturn).when(mockMagic).executeCell(any[Seq[String]])
+          doReturn(fakeMagicReturn)
+            .when(mockMagic).executeCell(any[Seq[String]])
 
           val myMagicLoader = new MagicLoader() {
             override def hasMagic(name: String): Boolean = true
@@ -117,7 +126,10 @@ class MagicManagerSpec extends TestKit(
           val magicManager =
             system.actorOf(Props(classOf[MagicManager], myMagicLoader))
 
-          magicManager ! ExecuteMagicMessage("%%" + fakeMagicName)
+          magicManager ! ((
+            ExecuteMagicMessage("%%" + fakeMagicName),
+            mock[OutputStream]
+          ))
 
           expectMsg(Left(fakeMagicReturn))
         }

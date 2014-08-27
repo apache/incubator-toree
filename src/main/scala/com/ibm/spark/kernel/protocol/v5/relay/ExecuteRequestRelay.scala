@@ -46,9 +46,6 @@ case class ExecuteRequestRelay(actorLoader: ActorLoader)
   }
 
   override def receive: Receive = {
-    // TODO: Support using the provided output stream, which sends messages
-    //       dynamically to the KernelMessageRelay, to output magic-related
-    //       print messages
     case (executeRequest: ExecuteRequest, outputStream: OutputStream) =>
       val magicManager = actorLoader.load(SystemActorType.MagicManager)
       val futureIsMagic =
