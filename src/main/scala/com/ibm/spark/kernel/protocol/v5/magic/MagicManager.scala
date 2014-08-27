@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.magic
 
+import java.io.OutputStream
+
 import akka.actor.Actor
 import com.ibm.spark.interpreter.{ExecuteOutput, ExecuteError}
 import com.ibm.spark.magic.MagicLoader
@@ -24,14 +26,14 @@ class MagicManager(magicLoader: MagicLoader)
   private val magicRegex = """^[%]{1,2}(\w+)""".r
 
   override def receive: Receive = {
-    case validateMagicMessage: ValidateMagicMessage =>
-      sender ! !magicRegex.findFirstIn(validateMagicMessage.toString).isEmpty
+    case message: ValidateMagicMessage =>
+      sender ! magicRegex.findFirstIn(message.toString).nonEmpty
 
-    case executeMagicMessage: ExecuteMagicMessage =>
+    case (message: ExecuteMagicMessage, outputStream: OutputStream) =>
       val matchData =
-        magicRegex.findFirstMatchIn(executeMagicMessage.toString).get
+        magicRegex.findFirstMatchIn(message.toString).get
       val (magicName, code) =  (matchData.group(1), matchData.after(1).toString)
-      val isCell = executeMagicMessage.toString.startsWith("%%")
+      val isCell = message.toString.startsWith("%%")
 
       var result: Either[ExecuteOutput, ExecuteError] = null
 

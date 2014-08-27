@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.relay
 
+import java.io.OutputStream
+
 import akka.actor.Actor
 import akka.actor.Actor.Receive
 import akka.util.Timeout
@@ -44,7 +46,10 @@ case class ExecuteRequestRelay(actorLoader: ActorLoader)
   }
 
   override def receive: Receive = {
-    case executeRequest: ExecuteRequest =>
+    // TODO: Support using the provided output stream, which sends messages
+    //       dynamically to the KernelMessageRelay, to output magic-related
+    //       print messages
+    case (executeRequest: ExecuteRequest, outputStream: OutputStream) =>
       val magicManager = actorLoader.load(SystemActorType.MagicManager)
       val futureIsMagic =
         magicManager ? ValidateMagicMessage(executeRequest.code)
@@ -59,14 +64,14 @@ case class ExecuteRequestRelay(actorLoader: ActorLoader)
         case true =>
           val magicMessage = ExecuteMagicMessage(executeRequest.code)
           val future  =
-            (magicManager ? magicMessage)
+            (magicManager ? ((magicMessage, outputStream)))
               .mapTo[Either[ExecuteOutput, ExecuteError]]
 
           packageFutureResponse(future) pipeTo oldSender
         case false =>
           val interpreterActor = actorLoader.load(SystemActorType.Interpreter)
           val future =
-            (interpreterActor ? executeRequest)
+            (interpreterActor ? ((executeRequest, outputStream)))
               .mapTo[Either[ExecuteOutput, ExecuteError]]
 
           packageFutureResponse(future) pipeTo oldSender

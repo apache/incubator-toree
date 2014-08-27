@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.interpreter
 
+import java.io.OutputStream
+
 import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.{ask, pipe}
 import akka.util.Timeout
@@ -46,8 +48,9 @@ class InterpreterActor(
   }
 
   override def receive: Receive = {
-    case executeRequest: ExecuteRequest =>
-      (executeRequestTask ? executeRequest) recover {
+    case (executeRequest: ExecuteRequest, outputStream: OutputStream) =>
+      val data = (executeRequest, outputStream)
+      (executeRequestTask ? data) recover {
         case ex: Throwable =>
           Right(ExecuteError(
             ex.getClass.getName,

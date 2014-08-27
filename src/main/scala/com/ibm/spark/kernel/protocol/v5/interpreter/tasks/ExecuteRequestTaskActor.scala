@@ -16,7 +16,8 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor {
   require(interpreter != null)
 
   override def receive: Receive = {
-    case executeRequest: ExecuteRequest =>
+    case (executeRequest: ExecuteRequest, outputStream: OutputStream) =>
+      interpreter.updatePrintStreams(System.in, outputStream, outputStream)
       val (success, result) = interpreter.interpret(executeRequest.code)
       success match {
         case IR.Success =>

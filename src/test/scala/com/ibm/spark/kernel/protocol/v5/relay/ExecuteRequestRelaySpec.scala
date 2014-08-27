@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.relay
 
+import java.io.OutputStream
+
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.ibm.spark.interpreter.ExecuteError
@@ -58,7 +60,7 @@ class ExecuteRequestRelaySpec extends TestKit(
           val executeRequestRelay =
             system.actorOf(Props(classOf[ExecuteRequestRelay], mockActorLoader))
 
-          executeRequestRelay ! executeRequest
+          executeRequestRelay ! ((executeRequest, mock[OutputStream]))
 
           // First, asks the MagicManager if the message is a magic
           // In this case, we say yes
@@ -68,7 +70,9 @@ class ExecuteRequestRelaySpec extends TestKit(
           // Expected does not actually match real return of magic, which
           // is a tuple of ExecuteReply and ExecuteResult
           val expected = ExecuteError("NAME", "MESSAGE", List())
-          magicManagerProbe.expectMsgClass(classOf[ExecuteMagicMessage])
+          magicManagerProbe.expectMsgClass(
+            classOf[(ExecuteMagicMessage, OutputStream)]
+          )
           magicManagerProbe.reply(Right(expected))
 
           expectMsg((
@@ -84,7 +88,7 @@ class ExecuteRequestRelaySpec extends TestKit(
           val executeRequestRelay =
             system.actorOf(Props(classOf[ExecuteRequestRelay], mockActorLoader))
 
-          executeRequestRelay ! executeRequest
+          executeRequestRelay ! ((executeRequest, mock[OutputStream]))
 
           // First, asks the MagicManager if the message is a magic
           // In this case, we say yes
@@ -94,7 +98,9 @@ class ExecuteRequestRelaySpec extends TestKit(
           // Expected does not actually match real return of magic, which
           // is a tuple of ExecuteReply and ExecuteResult
           val expected = "SOME VALUE"
-          magicManagerProbe.expectMsgClass(classOf[ExecuteMagicMessage])
+          magicManagerProbe.expectMsgClass(
+            classOf[(ExecuteMagicMessage, OutputStream)]
+          )
           magicManagerProbe.reply(Left(expected))
 
           expectMsg((
@@ -111,7 +117,7 @@ class ExecuteRequestRelaySpec extends TestKit(
           val executeRequestRelay =
             system.actorOf(Props(classOf[ExecuteRequestRelay], mockActorLoader))
 
-          executeRequestRelay ! executeRequest
+          executeRequestRelay ! ((executeRequest, mock[OutputStream]))
 
           // First, asks the MagicManager if the message is a magic
           // In this case, we say no
@@ -121,7 +127,9 @@ class ExecuteRequestRelaySpec extends TestKit(
           // Expected does not actually match real return of magic, which
           // is a tuple of ExecuteReply and ExecuteResult
           val expected = ExecuteError("NAME", "MESSAGE", List())
-          interpreterActorProbe.expectMsgClass(classOf[ExecuteRequest])
+          interpreterActorProbe.expectMsgClass(
+            classOf[(ExecuteRequest, OutputStream)]
+          )
           interpreterActorProbe.reply(Right(expected))
 
           expectMsg((
@@ -137,7 +145,7 @@ class ExecuteRequestRelaySpec extends TestKit(
           val executeRequestRelay =
             system.actorOf(Props(classOf[ExecuteRequestRelay], mockActorLoader))
 
-          executeRequestRelay ! executeRequest
+          executeRequestRelay ! ((executeRequest, mock[OutputStream]))
 
           // First, asks the MagicManager if the message is a magic
           // In this case, we say no
@@ -147,7 +155,9 @@ class ExecuteRequestRelaySpec extends TestKit(
           // Expected does not actually match real return of interpreter, which
           // is a tuple of ExecuteReply and ExecuteResult
           val expected = "SOME OTHER VALUE"
-          interpreterActorProbe.expectMsgClass(classOf[ExecuteRequest])
+          interpreterActorProbe.expectMsgClass(
+            classOf[(ExecuteRequest, OutputStream)]
+          )
           interpreterActorProbe.reply(Left(expected))
 
           expectMsg((

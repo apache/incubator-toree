@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
+import java.io.OutputStream
+
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5.KernelStatusType.KernelStatusType
@@ -45,15 +47,30 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
   /**
    * This method simulates the interpreter passing back an
-   * execute result and reply
+   * execute result and reply.
    */
-  def replyToHandler(){
+  def replyToHandlerWithOk() = {
     //  This stubs the behaviour of the interpreter executing code
-    executeRequestRelayProbe.expectMsgClass(classOf[ExecuteRequest])
+    val expectedClass = classOf[(ExecuteRequest, OutputStream)]
+    executeRequestRelayProbe.expectMsgClass(expectedClass)
     executeRequestRelayProbe.reply((
       ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
       ExecuteResult(1, Data("text/plain" -> ""), Metadata())
-      ))
+    ))
+  }
+
+  /**
+   * This method simulates the interpreter passing back an
+   * execute result and reply
+   */
+  def replyToHandlerWithError() = {
+    //  This stubs the behaviour of the interpreter executing code
+    val expectedClass = classOf[(ExecuteRequest, OutputStream)]
+    executeRequestRelayProbe.expectMsgClass(expectedClass)
+    executeRequestRelayProbe.reply((
+      ExecuteReplyError(1, Some(""), Some(""), Some(Nil)),
+      ExecuteResult(1, Data("text/plain" -> ""), Metadata())
+    ))
   }
 
   describe("ExecuteRequestHandler( ActorLoader )") {
@@ -61,7 +78,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
       it("should send an execute result message") {
         handlerActor ! MockExecuteRequestKernelMessage
-        replyToHandler()
+        replyToHandlerWithOk()
         var executeResultMessage: KernelMessage = null
         kernelMessageRelayProbe.receiveWhile(1.second) {
           case message : KernelMessage =>
@@ -73,7 +90,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
       it("should send an execute reply message") {
         handlerActor ! MockExecuteRequestKernelMessage
-        replyToHandler()
+        replyToHandlerWithOk()
         var executeReplyMessage: KernelMessage = null
         kernelMessageRelayProbe.receiveWhile(1.second) {
           case message : KernelMessage =>
@@ -96,7 +113,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
       it("should send a status busy and idle message") {
         handlerActor ! MockExecuteRequestKernelMessage
-        replyToHandler()
+        replyToHandlerWithOk()
         var busy = false
         var idle = false
 
@@ -119,33 +136,39 @@ class ExecuteRequestHandlerSpec extends TestKit(
     describe("#receive( KernelMessage with bad JSON content )"){
       it("should respond with an execute_reply with status error")    {
         handlerActor ! MockKernelMessageWithBadExecuteRequest
-        var executeReplyMessage: KernelMessage = null
+        var executeReplyMessage: Option[KernelMessage] = None
         kernelMessageRelayProbe.receiveWhile(1500.millis) {
-          case message : KernelMessage =>
+          case message: KernelMessage =>
             if(message.header.msg_type == MessageType.ExecuteReply.toString)
-              executeReplyMessage = message
+              executeReplyMessage = Option(message)
         }
-        executeReplyMessage.header.msg_type should be(
-          MessageType.ExecuteReply.toString
-        )
 
-        val replyContent =
-          Json.parse(executeReplyMessage.contentString).as[ExecuteReply]
-        replyContent.status should be("error")
+        executeReplyMessage match {
+          case None =>
+            fail("Expected an ExecuteReply message from KernelMessageRelay")
+          case Some(message) =>
+            message.header.msg_type should be(MessageType.ExecuteReply.toString)
+            val reply = Json.parse(message.contentString).as[ExecuteReply]
+            reply.status should be("error")
+        }
       }
 
       it("should send error message to relay") {
         handlerActor ! MockKernelMessageWithBadExecuteRequest
-        var errorContentMessage: KernelMessage = null
+        var errorContentMessage: Option[KernelMessage] = None
+
         kernelMessageRelayProbe.receiveWhile(1500.millis) {
-          case message : KernelMessage =>
+          case message: KernelMessage =>
             if(message.header.msg_type == MessageType.Error.toString)
-              errorContentMessage = message
+              errorContentMessage = Option(message)
         }
 
-        val errorContent =
-          Json.parse(errorContentMessage.contentString).as[ErrorContent]
-        errorContent should not be(null)
+        errorContentMessage match {
+          case None =>
+            fail("Expected an ExecuteReply message from KernelMessageRelay")
+          case Some(err) =>
+            err.header.msg_type should be("error")
+        }
       }
 
       it("should send a status idle message") {

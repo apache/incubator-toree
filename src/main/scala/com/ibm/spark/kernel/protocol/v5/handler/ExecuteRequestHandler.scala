@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorSelection}
 import akka.pattern.ask
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
+import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
 import com.ibm.spark.utils.{ExecutionCounter, LogLike}
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, Json}
@@ -53,7 +54,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
 
           val executeFuture = ask(
             actorLoader.load(SystemActorType.ExecuteRequestRelay),
-            executeRequest
+            (executeRequest, new KernelMessageStream(actorLoader, messageReplySkeleton, executionCount))
           ).mapTo[(ExecuteReply, ExecuteResult)]
 
           executeFuture.onComplete {

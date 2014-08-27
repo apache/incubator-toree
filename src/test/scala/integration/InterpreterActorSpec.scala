@@ -1,20 +1,21 @@
 package integration
 
-import java.io.{StringWriter, ByteArrayOutputStream}
+import java.io.{ByteArrayOutputStream, OutputStream}
 
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
 import com.ibm.spark.interpreter.{ExecuteError, ExecuteOutput, ScalaInterpreter}
-import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
-import com.typesafe.config.ConfigFactory
-import org.apache.spark.{SparkContext, SparkConf}
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpecLike}
-
-import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5._
-import scala.concurrent.duration._
+import com.ibm.spark.kernel.protocol.v5.content._
+import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
+import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
+import com.typesafe.config.ConfigFactory
+import org.apache.spark.{SparkConf, SparkContext}
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import org.slf4j.Logger
+
+import scala.concurrent.duration._
 
 object InterpreterActorSpec {
   val config = """
@@ -29,6 +30,7 @@ class InterpreterActorSpec extends TestKit(
     ConfigFactory.parseString(InterpreterActorSpec.config)
   )
 ) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
+  with MockitoSugar
 {
 
   private val output = new ByteArrayOutputStream()
@@ -77,7 +79,7 @@ class InterpreterActorSpec extends TestKit(
           UserExpressions(), false
         )
 
-        interpreterActor ! executeRequest
+        interpreterActor ! ((executeRequest, mock[OutputStream]))
 
         val result =
           receiveOne(5.seconds)
@@ -99,7 +101,7 @@ class InterpreterActorSpec extends TestKit(
           UserExpressions(), false
         )
 
-        interpreterActor ! executeRequest
+        interpreterActor ! ((executeRequest, mock[OutputStream]))
 
         val result =
           receiveOne(5.seconds)

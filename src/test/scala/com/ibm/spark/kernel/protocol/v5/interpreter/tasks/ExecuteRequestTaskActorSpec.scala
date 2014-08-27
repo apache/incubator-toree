@@ -45,10 +45,10 @@ class ExecuteRequestTaskActorSpec extends TestKit(
             mockInterpreter
           ))
 
-        val executeRequest = ExecuteRequest(
+        val executeRequest = (ExecuteRequest(
           "val x = 3", false, false,
           UserExpressions(), false
-        )
+        ), mock[OutputStream])
 
         executeRequestTask ! executeRequest
 
@@ -71,10 +71,10 @@ class ExecuteRequestTaskActorSpec extends TestKit(
             mockInterpreter
           ))
 
-        val executeRequest = ExecuteRequest(
+        val executeRequest = (ExecuteRequest(
           "val x = 3", false, false,
           UserExpressions(), false
-        )
+        ), mock[OutputStream])
 
         executeRequestTask ! executeRequest
 
@@ -97,10 +97,10 @@ class ExecuteRequestTaskActorSpec extends TestKit(
             mockInterpreter
           ))
 
-        val executeRequest = ExecuteRequest(
+        val executeRequest = (ExecuteRequest(
           "val x = 3", false, false,
           UserExpressions(), false
-        )
+        ), mock[OutputStream])
 
         executeRequestTask ! executeRequest
 
