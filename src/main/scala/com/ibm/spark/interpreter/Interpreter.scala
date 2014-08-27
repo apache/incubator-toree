@@ -54,4 +54,14 @@ trait Interpreter {
    * @param modifiers Any annotation, scoping modifiers, etc on the variable
    */
   def bind(variableName: String, typeName: String, value: Any, modifiers: List[String])
+
+  /**
+   * Mask the Console and System objects with our wrapper implementations
+   * and dump the Console methods into the public namespace (similar to
+   * the Predef approach).
+   * @param in The new input stream
+   * @param out The new output stream
+   * @param err The new error stream
+   */
+  def updatePrintStreams(in: InputStream, out: OutputStream, err: OutputStream)
 }

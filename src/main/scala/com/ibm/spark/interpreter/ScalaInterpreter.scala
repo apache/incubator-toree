@@ -153,10 +153,10 @@ case class ScalaInterpreter(
   // int.withContext( "sc", conf, conf => new SparkContext(conf) )
   //
   // val sparkKernelContext = new (...)
-  // sparkKernelContext.toSparkConext <-- you lock the config
+  // sparkKernelContext.toSparkContext <-- you lock the config
   //
   // sparkKernelContext
-  // Interperter(sparkKernelContext)
+  // Interpreter(sparkKernelContext)
   //     sparkKernelContext.config.set(...) <-- update the uri
   //     bind("sc", sparkKernelContext.toSparkContext)
   //
@@ -172,15 +172,7 @@ case class ScalaInterpreter(
 
     sparkIMain.beQuietDuring {
       logger.info("Rerouting Console and System related input and output")
-
-      // Mask the Console and System objects with our wrapper implementations
-      // and dump the Console methods into the public namespace (similar to
-      // the Predef approach)
-      sparkIMain.bind("Console",
-        new WrapperConsole(System.in, multiOutputStream, multiOutputStream))
-      sparkIMain.bind("System",
-        new WrapperSystem(System.in, multiOutputStream, multiOutputStream))
-      sparkIMain.addImports("Console._")
+      updatePrintStreams(System.in, multiOutputStream, multiOutputStream)
 
       // TODO: Investigate using execution wrapper to catch errors
 
@@ -189,6 +181,16 @@ case class ScalaInterpreter(
     }
 
     this
+  }
+
+  override def updatePrintStreams(
+    in: InputStream, out: OutputStream, err: OutputStream
+  ): Unit = {
+    sparkIMain.beQuietDuring {
+      sparkIMain.bind("Console", new WrapperConsole(in, out, err))
+      sparkIMain.bind("System", new WrapperSystem(in, out, err))
+      sparkIMain.addImports("Console._")
+    }
   }
 
   // NOTE: Convention is to force parentheses if a side effect occurs.
@@ -208,7 +210,10 @@ case class ScalaInterpreter(
     sparkIMain.beQuietDuring[T](body)
   }
 
-  override def bind(variableName: String, typeName: String, value: Any, modifiers: List[String]): Unit = {
+  override def bind(
+    variableName: String, typeName: String,
+    value: Any, modifiers: List[String]
+  ): Unit = {
     sparkIMain.bind(variableName,typeName,value,modifiers)
   }
 }
