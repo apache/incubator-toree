@@ -54,7 +54,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
 
           val executeFuture = ask(
             actorLoader.load(SystemActorType.ExecuteRequestRelay),
-            (executeRequest, new KernelMessageStream(actorLoader, messageReplySkeleton, executionCount))
+            (executeRequest, new KernelMessageStream(actorLoader, messageReplySkeleton))
           ).mapTo[(ExecuteReply, ExecuteResult)]
 
           executeFuture.onComplete {

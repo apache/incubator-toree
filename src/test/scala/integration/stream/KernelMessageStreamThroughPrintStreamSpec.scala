@@ -5,7 +5,7 @@ import java.io.PrintStream
 import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteResult
+import com.ibm.spark.kernel.protocol.v5.content.StreamContent
 import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
 import org.mockito.Mockito._
 import org.scalatest._
@@ -45,7 +45,7 @@ class KernelMessageStreamThroughPrintStreamSpec
           Nil, "", null, Header("", "", "", "", "5.0"), Metadata(), ""
         )
         val kernelMessageStream = spy(new KernelMessageStream(
-          actorLoader, skeletonKernelMessage, executionCount
+          actorLoader, skeletonKernelMessage
         ))
         val printStream = new PrintStream(kernelMessageStream)
 
@@ -53,15 +53,15 @@ class KernelMessageStreamThroughPrintStreamSpec
         val expected = "some string\nadfnasdfklj\nasdf"
         printStream.println(expected)
 
-        Then("flush should have been called three")
+        Then("flush should have been called three times")
         verify(kernelMessageStream, times(3)).flush()
 
         And("three messages should have been sent making up the content")
         val messages = kernelMessageRelayProbe
           .receiveN(3).map(_.asInstanceOf[KernelMessage])
         messages.foldLeft("")( (result: String, message: KernelMessage) => {
-          val executeResult = Json.parse(message.contentString).as[ExecuteResult]
-          result + executeResult.data("text/plain")
+          val executeResult = Json.parse(message.contentString).as[StreamContent]
+          result + executeResult.data
         }) should be (expected + "\n")
       }
     }
@@ -73,7 +73,7 @@ class KernelMessageStreamThroughPrintStreamSpec
           Nil, "", null, Header("", "", "", "", "5.0"), Metadata(), ""
         )
         val kernelMessageStream = spy(new KernelMessageStream(
-          actorLoader, skeletonKernelMessage, executionCount
+          actorLoader, skeletonKernelMessage
         ))
         val printStream = new PrintStream(kernelMessageStream)
 
@@ -95,7 +95,7 @@ class KernelMessageStreamThroughPrintStreamSpec
           Nil, "", null, Header("", "", "", "", "5.0"), Metadata(), ""
         )
         val kernelMessageStream = spy(new KernelMessageStream(
-          actorLoader, skeletonKernelMessage, executionCount
+          actorLoader, skeletonKernelMessage
         ))
         val printStream = new PrintStream(kernelMessageStream)
 

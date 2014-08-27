@@ -62,12 +62,7 @@ case class KernelMessageRelay(
         relay(zmqMessage)
       }
 
-    case baseKernelMessage: KernelMessage =>
-      val kernelMessage = baseKernelMessage/*.copy(
-        header = baseKernelMessage.header.copy(
-          msg_id =  UUID.randomUUID().toString
-        )
-      )*/
+    case kernelMessage: KernelMessage =>
       if (useSignatureManager) {
         val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureInsertFuture = signatureManager ? kernelMessage

@@ -13,8 +13,7 @@ import scala.collection.mutable.ListBuffer
 
 class KernelMessageStream(
   actorLoader: ActorLoader,
-  skeletonKernelMessage: KernelMessage,
-  executionCount: Int
+  skeletonKernelMessage: KernelMessage
 ) extends OutputStream {
   private val EncodingType = Charset.forName("UTF-8")
   private var internalBytes: ListBuffer[Byte] = ListBuffer()
