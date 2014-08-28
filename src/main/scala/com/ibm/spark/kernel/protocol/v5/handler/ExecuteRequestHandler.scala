@@ -69,12 +69,14 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
               relayActor ! kernelReplyMessage
 
               //  Send the result of the code execution
-              val kernelResultMessage = messageReplySkeleton.copy(
-                ids = Seq(MessageType.ExecuteResult.toString),
-                header = message.header.copy(msg_type = MessageType.ExecuteResult.toString),
-                contentString = Json.toJson(tuple._2.copy(execution_count = executionCount)).toString
-              )
-              relayActor ! kernelResultMessage
+              if (tuple._2.hasContent) {
+                val kernelResultMessage = messageReplySkeleton.copy(
+                  ids = Seq(MessageType.ExecuteResult.toString),
+                  header = message.header.copy(msg_type = MessageType.ExecuteResult.toString),
+                  contentString = Json.toJson(tuple._2.copy(execution_count = executionCount)).toString
+                )
+                relayActor ! kernelResultMessage
+              }
 
               //  Send the idle message
               actorLoader.load(SystemActorType.StatusDispatch) ! Tuple2(KernelStatusType.Idle, message.header)
