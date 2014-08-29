@@ -17,13 +17,26 @@ executed on its own or as part of the launch process of an IPython notebook.
 
 The following command line options are available:
 
-* profile <file> - the file to load containing ZeroMQ port information
+* --profile <file> - the file to load containing ZeroMQ port information
+* --verbose - indicates that more detailed logging should be provided
+* --help - displays the help menu detailing usage instructions
+* --master - location of the Spark master (defaults to local[*])
 
-* create-context [yes|no] - whether or not to create a Spark context on startup
+Additionally, ZeroMQ ports can be passed as command line arguments
 
-* verbose - indicates that more detailed logging should be provided
+* --stdin-port <port>
+* --shell-port <port>
+* --iopub-port <port>
+* --control-port <port>
+* --heartbeat-port <port>
 
-* help - displays the help menu detailing usage instructions
+Ports can also be specified as Environment variables:
+
+* STDIN_PORT
+* SHELL_PORT
+* IOPUB_PORT
+* CONTROL_PORT
+* HB_PORT
 
 Development Instructions
 ------------------------

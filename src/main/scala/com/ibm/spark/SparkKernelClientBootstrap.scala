@@ -1,20 +1,20 @@
 package com.ibm.spark
 
 import akka.actor.{ActorRef, ActorSystem, Props}
+import com.ibm.spark.client.SparkKernelClient
 import com.ibm.spark.client.handler.ExecuteHandler
-import com.ibm.spark.client.{SparkKernelClient, SparkKernelClientOptions}
 import com.ibm.spark.kernel.protocol.v5.MessageType._
 import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.kernel.protocol.v5.{MessageType, SimpleActorLoader, SocketType}
 import com.ibm.spark.utils.LogLike
+import com.typesafe.config.Config
 
-class SparkKernelClientBootstrap(options: SparkKernelClientOptions) extends LogLike {
+class SparkKernelClientBootstrap(config: Config) extends LogLike {
 
   // set up our actor system and configure the socket factory
   private val actorSystem = ActorSystem("spark-client-actor-system")
   private val actorLoader = SimpleActorLoader(actorSystem)
-  private val socketConfigReader = new SocketConfigReader(options.profile)
-  private val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
+  private val socketFactory = new SocketFactory(SocketConfig.fromConfig(config))
 
   private var heartbeatClientActor: Option[ActorRef] = None
 

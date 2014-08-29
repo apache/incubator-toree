@@ -18,7 +18,7 @@ public class JavaSparkClientUsage {
     public static void main(String[] args) throws Exception {
         SparkKernelClient client = new SparkKernelClient(
                 new SparkKernelClientBootstrap(
-                        new SparkKernelClientOptions(args)).createClient());
+                        new SparkKernelClientOptions(args).toConfig()).createClient());
 
         Thread.sleep(100); // actor system takes a moment to initialize
 

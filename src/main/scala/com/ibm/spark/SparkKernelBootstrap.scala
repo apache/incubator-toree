@@ -1,7 +1,7 @@
 package com.ibm.spark
 
 import akka.actor._
-import com.ibm.spark.interpreter.{ScalaInterpreter, Interpreter}
+import com.ibm.spark.interpreter.{Interpreter, ScalaInterpreter}
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5._
@@ -16,18 +16,16 @@ import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
-import com.ibm.spark.security.{HmacAlgorithm, Hmac}
 import com.ibm.spark.utils.LogLike
-import org.apache.spark.{SparkContext, SparkConf}
-import org.slf4j.LoggerFactory
+import com.typesafe.config.Config
+import org.apache.spark.{SparkConf, SparkContext}
+import scala.collection.JavaConverters._
 
-case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends LogLike {
+case class SparkKernelBootstrap(config: Config) extends LogLike {
 
-  private val DefaultSparkMaster                      = sparkKernelOptions.master.getOrElse("local[*]")
   private val DefaultAppName                          = SparkKernelInfo.banner
   private val DefaultActorSystemName                  = "spark-kernel-actor-system"
 
-  private var socketConfigReader: SocketConfigReader  = _
   private var socketFactory: SocketFactory            = _
   private var heartbeatActor: ActorRef                = _
   private var shellActor: ActorRef                    = _
@@ -52,7 +50,6 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
    * Initializes all kernel systems.
    */
   def initialize() = {
-    loadConfiguration()
     initializeInterpreter()
     initializeSparkContext()
     initializeMagicLoader()
@@ -90,34 +87,29 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
     this
   }
 
-  private def loadConfiguration(): Unit = {
-    // TODO: This configuration is not just for sockets!
-    logger.debug("Constructing SocketConfigReader")
-    socketConfigReader = new SocketConfigReader(sparkKernelOptions.profile)
-  }
-
   private def createSockets(): Unit = {
     logger.info("Creating sockets")
 
+    val socketConfig: SocketConfig = SocketConfig.fromConfig(config)
     logger.debug("Constructing SocketFactory")
-    socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
+    socketFactory = new SocketFactory(socketConfig)
 
     logger.debug("Initializing Heartbeat on port " +
-      socketConfigReader.getSocketConfig.hb_port)
+      socketConfig.hb_port)
     heartbeatActor = actorSystem.actorOf(
       Props(classOf[Heartbeat], socketFactory),
       name = SocketType.Heartbeat.toString
     )
 
     logger.debug("Initializing Shell on port " +
-      socketConfigReader.getSocketConfig.shell_port)
+      socketConfig.shell_port)
     shellActor = actorSystem.actorOf(
       Props(classOf[Shell], socketFactory, actorLoader),
       name = SocketType.Shell.toString
     )
 
     logger.debug("Initializing IOPub on port " +
-      socketConfigReader.getSocketConfig.iopub_port)
+      socketConfig.iopub_port)
     ioPubActor = actorSystem.actorOf(
       Props(classOf[IOPub], socketFactory),
       name = SocketType.IOPub.toString
@@ -125,10 +117,10 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
   }
 
   private def initializeInterpreter(): Unit = {
-    val tailOptions = sparkKernelOptions.tail
+    val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
 
-    logger.info("Constructing interpreter with " + tailOptions.mkString(" "))
-    interpreter = new ScalaInterpreter(tailOptions, Console.out)
+    logger.info("Constructing interpreter with " + interpreterArgs.mkString(" "))
+    interpreter = new ScalaInterpreter(interpreterArgs, Console.out)
 
     logger.debug("Starting interpreter")
     interpreter.start
@@ -153,7 +145,7 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
     logger.debug("Creating Spark Configuration")
     val conf = new SparkConf()
 
-    val master = DefaultSparkMaster
+    val master = config.getString("master")
     logger.info("Using " + master + " as Spark Master")
     conf.setMaster(master)
 
@@ -214,8 +206,8 @@ case class SparkKernelBootstrap(sparkKernelOptions: SparkKernelOptions) extends 
     )
 
     logger.info("Creating signature manager actor")
-    val sigKey = socketConfigReader.getSocketConfig.key
-    val sigScheme = socketConfigReader.getSocketConfig.signature_scheme
+    val sigKey = config.getString("key")
+    val sigScheme = config.getString("signature_scheme")
     logger.info("Key = " + sigKey)
     logger.info("Scheme = " + sigScheme)
     signatureManagerActor = actorSystem.actorOf(

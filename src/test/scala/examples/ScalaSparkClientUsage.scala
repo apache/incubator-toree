@@ -9,7 +9,7 @@ import com.ibm.spark.client.SparkKernelClientOptions
  */
 object ScalaSparkClientUsage extends App {
   val options: SparkKernelClientOptions = new SparkKernelClientOptions(args)
-  val client = new SparkKernelClientBootstrap(options).createClient
+  val client = new SparkKernelClientBootstrap(options.toConfig).createClient
 
   Thread.sleep(100) // actor system takes a moment to initialize
   

@@ -9,6 +9,7 @@ import akka.util.Timeout
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.SocketType
 import com.ibm.spark.kernel.protocol.v5.socket._
+import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
@@ -43,9 +44,23 @@ class ClientToHeartbeatSpecForIntegration extends TestKit(ActorSystem("Heartbeat
     describe("send heartbeat") {
       it("should work with real actorsystem and no probes") {
         val system = ActorSystem("iopubtest")
-        val profile = Option(new File("src/main/resources/profile.json"))
-        val socketConfigReader = new SocketConfigReader(profile)
-        val socketFactory = new SocketFactory(socketConfigReader.getSocketConfig)
+
+        val socketConfig = SocketConfig.fromConfig(ConfigFactory.parseString(
+          """
+            {
+                "stdin_port": 8000,
+                "ip": "127.0.0.1",
+                "control_port": 8001,
+                "hb_port": 8002,
+                "signature_scheme": "hmac-sha256",
+                "key": "",
+                "shell_port": 8003,
+                "transport": "tcp",
+                "iopub_port": 8004
+            }
+          """.stripMargin)
+        )
+        val socketFactory = new SocketFactory(socketConfig)
         val ioPUB = system.actorOf(Props(classOf[IOPub], socketFactory), name = SocketType.IOPub.toString)
       }
     }
