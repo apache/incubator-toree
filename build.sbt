@@ -82,8 +82,8 @@ libraryDependencies ++= Seq(
 //
 
 libraryDependencies ++= Seq(
-  "org.apache.hadoop" % "hadoop-client" % "2.3.0",
-  "org.apache.hadoop" % "hadoop-hdfs" % "2.3.0"
+  "org.apache.hadoop" % "hadoop-client" % "2.3.0" excludeAll
+    ExclusionRule(organization = "javax.servlet")
 )
 
 //

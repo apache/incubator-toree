@@ -70,16 +70,6 @@ cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
 }
 EOF
 
-# Install Cassandra
-echo "deb http://debian.datastax.com/community stable main" | sudo tee -a /etc/apt/sources.list.d/cassandra.sources.list
-curl -L http://debian.datastax.com/debian/repo_key | sudo apt-key add -
-sudo apt-get -y update
-sudo apt-get -y install dsc20
-sudo service cassandra stop
-sudo rm -rf /var/lib/cassandra/data/system/*
-sudo chown -R vagrant /var/log/cassandra/
-sudo chown -R vagrant /var/lib/cassandra/
-
 SCRIPT
 
 Vagrant.configure("2") do |config|
