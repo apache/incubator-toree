@@ -48,17 +48,6 @@ wget --progress=bar:force http://dl.bintray.com/sbt/debian/sbt-0.13.5.deb
 sudo dpkg -i sbt-0.13.5.deb
 rm sbt-0.13.5.deb
 
-
-# Install Kafka
-if [ ! -d "/opt/kafka" ]; then
-    echo "Adding kafka"
-    wget --progress=bar:force http://apache.petsads.us/kafka/0.8.1.1/kafka_2.10-0.8.1.1.tgz
-    tar -zxf kafka_2.10-0.8.1.1.tgz
-    mv kafka_2.10-0.8.1.1/ /opt/kafka
-    rm kafka_2.10-0.8.1.1.tgz
-    echo 'export PATH=$PATH:/opt/kafka/bin' >> /home/vagrant/.bashrc
-fi
-
 # Add Spark Kernel json to IPython configuration
 echo "Adding kernel.json"
 mkdir -p /home/vagrant/.ipython/kernels/spark
@@ -75,6 +64,18 @@ cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
     "codemirror_mode": "scala"
 }
 EOF
+
+# Install Kafka & Zookeeper with Docker setup
+# See http://wurstmeister.github.io/kafka-docker/
+export START_SCRIPT=https://raw2.github.com/wurstmeister/kafka-docker/master/start-broker.sh
+curl -Ls $START_SCRIPT | bash /dev/stdin 1 49899 192.168.44.44
+
+# Install Cassandra with Docker setup
+cd /opt/
+git clone https://github.com/nicolasff/docker-cassandra.git
+cd docker-cassandra
+sudo cp install/bin/pipework /usr/bin
+make image VERSION=2.0.10
 
 SCRIPT
 
