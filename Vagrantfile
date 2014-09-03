@@ -2,8 +2,28 @@
 # vi: set ft=ruby :
 
 $script = <<-SCRIPT
+
+sudo apt-get update
+sudo apt-get -y install openjdk-7-jdk maven wget build-essential git uuid-dev
+
+
+# Install IPython and ZeroMQ
+sudo apt-get -f -y install
+sudo apt-get -y install python-pip python-dev libzmq-dev
+sudo pip install -e ".[notebook]" --user
+sudo pip install pyzmq==2.1.11
+sudo pip install jinja2
+sudo pip install tornado
+sudo pip install jsonschema
+sudo pip install runipy
+
+sudo apt-get -y install git
+cd /ETSparkProjects
+git clone --recursive https://github.com/ipython/ipython.git
+cd ipython
+sudo python setup.py install
+
 if [ -z `which docker` ]; then
-  sudo apt-get update
   sudo apt-get -y install docker.io
   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
   sudo update-alternatives --install /usr/bin/docker docker /usr/bin/docker.io 50
@@ -17,8 +37,6 @@ if [ -z `which docker` ]; then
 fi
 
 echo "vagrant:vagrant"|chpasswd
-#	Install java and maven
-sudo apt-get -y install openjdk-7-jdk maven wget build-essential uuid-dev
 
 
 #	Install scala and sbt
@@ -30,19 +48,6 @@ wget --progress=bar:force http://dl.bintray.com/sbt/debian/sbt-0.13.5.deb
 sudo dpkg -i sbt-0.13.5.deb
 rm sbt-0.13.5.deb
 
-# Install IPython and ZeroMQ
-sudo apt-get -f -y install 
-sudo apt-get -y install python-pip python-dev libzmq-dev
-cd /ETSparkProjects
-git clone --recursive https://github.com/ipython/ipython.git
-cd ipython
-sudo python setup.py install
-sudo pip install -e ".[notebook]" --user
-sudo pip install pyzmq==2.1.11
-sudo pip install jinja2
-sudo pip install tornado
-sudo pip install jsonschema
-sudo pip install runipy
 
 # Install Kafka
 if [ ! -d "/opt/kafka" ]; then
@@ -57,6 +62,7 @@ fi
 # Add Spark Kernel json to IPython configuration
 echo "Adding kernel.json"
 mkdir -p /home/vagrant/.ipython/kernels/spark
+chown -R vagrant.vagrant /home/vagrant/.ipython
 cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
 {
     "display_name": "Spark 1.0.1 (Scala 2.10.4)",
