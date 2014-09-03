@@ -2,6 +2,7 @@ package com.ibm.spark
 
 import akka.actor._
 import com.ibm.spark.interpreter.{Interpreter, ScalaInterpreter}
+import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5._
@@ -50,13 +51,16 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
    * Initializes all kernel systems.
    */
   def initialize() = {
+    setup()
+    createSockets()
+    initializeKernelHandlers()
+    publishStatus(KernelStatusType.Starting)
     initializeInterpreter()
     initializeSparkContext()
     initializeMagicLoader()
     initializeSystemActors()
-    initializeKernelHandlers()
-    createSockets()
     registerShutdownHook()
+    publishStatus(KernelStatusType.Idle)
 
     this
   }
@@ -85,6 +89,40 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     actorSystem.awaitTermination()
 
     this
+  }
+
+  /**
+   * Does minimal setup in order to send the "starting" status message over
+   * the IOPub socket
+   */
+  private def setup(): Unit = {
+    logger.info("Initializing internal actor system")
+    actorSystem = ActorSystem(DefaultActorSystemName)
+
+    logger.info("Creating Simple Actor Loader")
+    actorLoader = SimpleActorLoader(actorSystem)
+
+    logger.info("Creating kernel message relay actor")
+    kernelMessageRelayActor = actorSystem.actorOf(
+      Props(classOf[KernelMessageRelay], actorLoader),
+      name = SystemActorType.KernelMessageRelay.toString
+    )
+
+    logger.info("Creating signature manager actor")
+    val sigKey = config.getString("key")
+    val sigScheme = config.getString("signature_scheme")
+    logger.info("Key = " + sigKey)
+    logger.info("Scheme = " + sigScheme)
+    signatureManagerActor = actorSystem.actorOf(
+      Props(classOf[SignatureManagerActor], sigKey, sigScheme.replace("-", "")),
+      name = SystemActorType.SignatureManager.toString
+    )
+
+    logger.info("Creating status dispatch actor")
+    statusDispatch = actorSystem.actorOf(
+      Props(classOf[StatusDispatch], actorLoader),
+      name = SystemActorType.StatusDispatch.toString
+    )
   }
 
   private def createSockets(): Unit = {
@@ -181,23 +219,12 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   }
 
   private def initializeSystemActors(): Unit = {
-    logger.info("Initializing internal actor system")
-    actorSystem = ActorSystem(DefaultActorSystemName)
-
-    logger.info("Creating Simple Actor Loader")
-    actorLoader = SimpleActorLoader(actorSystem)
-
     logger.info("Creating interpreter actor")
     interpreterActor = actorSystem.actorOf(
       Props(classOf[InterpreterActor], new InterpreterTaskFactory(interpreter)),
       name = SystemActorType.Interpreter.toString
     )
 
-    logger.info("Creating kernel message relay actor")
-    kernelMessageRelayActor = actorSystem.actorOf(
-      Props(classOf[KernelMessageRelay], actorLoader),
-      name = SystemActorType.KernelMessageRelay.toString
-    )
 
     logger.info("Creating execute request relay actor")
     executeRequestRelayActor = actorSystem.actorOf(
@@ -205,27 +232,12 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
       name = SystemActorType.ExecuteRequestRelay.toString
     )
 
-    logger.info("Creating signature manager actor")
-    val sigKey = config.getString("key")
-    val sigScheme = config.getString("signature_scheme")
-    logger.info("Key = " + sigKey)
-    logger.info("Scheme = " + sigScheme)
-    signatureManagerActor = actorSystem.actorOf(
-      Props(classOf[SignatureManagerActor], sigKey, sigScheme.replace("-", "")),
-      name = SystemActorType.SignatureManager.toString
-    )
 
     logger.info("Creating magic manager actor")
     logger.warn("MagicManager has a MagicLoader that is empty!")
     magicManagerActor = actorSystem.actorOf(
       Props(classOf[MagicManager], magicLoader),
       name = SystemActorType.MagicManager.toString
-    )
-
-    logger.info("Creating status dispatch actor")
-    statusDispatch = actorSystem.actorOf(
-      Props(classOf[StatusDispatch], actorLoader),
-      name = SystemActorType.StatusDispatch.toString
     )
   }
 
@@ -278,5 +290,8 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     initializeSocketHandler(SocketType.IOPub, MessageType.Error)
   }
 
+  private def publishStatus(status: KernelStatusType): Unit = {
+    statusDispatch ! status
+  }
 }
 
