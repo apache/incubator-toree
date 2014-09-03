@@ -59,6 +59,14 @@ plugins:
     * See [this link](https://github.com/orfjackal/idea-sbt-plugin/wiki) for
       documentation regarding setting up the SBT plugin
 
+IMPORTANT:
+Take extra care when modifying dependencies in the build.sbt file. Always make sure that Kernel can be ran in all of
+the following ways:
+
+* Straight off target directory after doing _sbt pack_
+* Running _make install_ within the resulting pack in _target/pack_ and running from _/home/vagrant/local/bin/sparkkernel_
+* Start notebook server and create a notebook page using the spark kernel. (NEED INSTRUCTIONS TO THIS)
+
 Running Tests
 -------------
 
