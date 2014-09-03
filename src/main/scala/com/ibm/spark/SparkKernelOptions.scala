@@ -8,6 +8,7 @@ import joptsimple.OptionSpec
 
 case class SparkKernelOptions(args: Seq[String]) {
   private val parser = new OptionParser()
+  parser.allowsUnrecognizedOptions()
 
   /*
    * Options supported by our kernel.
