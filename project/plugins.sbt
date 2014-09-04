@@ -21,3 +21,6 @@ addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.6.1")
 
 //  Provides the ability to run java testng tests
 addSbtPlugin("de.johoop" % "sbt-testng-plugin" % "3.0.2")
+
+//  Provides the ability to package our project as a docker image
+addSbtPlugin("se.marcuslonnberg" % "sbt-docker" % "0.5.2")

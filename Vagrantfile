@@ -24,16 +24,11 @@ cd ipython
 sudo python setup.py install
 
 if [ -z `which docker` ]; then
-  sudo apt-get -y install docker.io
-  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
-  sudo update-alternatives --install /usr/bin/docker docker /usr/bin/docker.io 50
-  sudo cp -a /etc/bash_completion.d/docker{.io,}
-  sudo sed -i 's/\(docker\)\.io/\1/g' /etc/bash_completion.d/docker
-  sudo ln -s /usr/share/man/man1/docker{.io,}.1.gz
-  sudo usermod -a -G docker vagrant
-  sudo service docker.io stop
-  sudo sed -i /etc/init/docker.io.conf -e 's#DOCKER_OPTS=#DOCKER_OPTS="-H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock"#'
-  sudo service docker.io start
+  curl -sSL https://get.docker.io/ubuntu/ | sudo sh
+  sudo gpasswd -a vagrant docker
+  sudo service docker stop
+  sudo chown vagrant /var/run/docker.sock
+  sudo service docker start
 fi
 
 echo "vagrant:vagrant"|chpasswd
@@ -68,14 +63,18 @@ EOF
 # Install Kafka & Zookeeper with Docker setup
 # See http://wurstmeister.github.io/kafka-docker/
 export START_SCRIPT=https://raw2.github.com/wurstmeister/kafka-docker/master/start-broker.sh
-curl -Ls $START_SCRIPT | bash /dev/stdin 1 49899 192.168.44.44
+until curl -Ls $START_SCRIPT | bash /dev/stdin 1 49899 192.168.44.44; do
+    printf "Trying to install kafka and zookeeper docker container again...."
+done
 
 # Install Cassandra with Docker setup
 cd /opt/
 git clone https://github.com/nicolasff/docker-cassandra.git
 cd docker-cassandra
 sudo cp install/bin/pipework /usr/bin
-make image VERSION=2.0.10
+until make image VERSION=2.0.10; do
+    printf "Trying to install cassandra docker container again...."
+done
 
 SCRIPT
 
