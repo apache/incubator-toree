@@ -198,6 +198,34 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
         }
       }
     }
+
+    describe("when received --ip=<value>") {
+      it("should error if value is not set") {
+        try {
+          new SparkKernelOptions(Seq("--ip"))
+          fail("Expected a parse error.")
+        } catch {
+          case e: OptionException =>
+        }
+      }
+
+      describe("#toConfig") {
+        it("should set ip to specified value") {
+          val expected = "1.2.3.4"
+          val options = new SparkKernelOptions(s"--ip=${expected}" :: Nil)
+          val config: Config = options.toConfig
+
+          config.getString("ip") should be(expected)
+        }
+
+        it("should set master to local[*]") {
+          val options = new SparkKernelOptions(Nil)
+          val config: Config = options.toConfig
+
+          config.getString("ip") should be("127.0.0.1")
+        }
+      }
+    }
   }
 
 }

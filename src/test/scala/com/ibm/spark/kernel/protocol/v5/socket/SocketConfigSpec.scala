@@ -1,6 +1,5 @@
-package com.ibm.spark.kernel.protocol.v5
+package com.ibm.spark.kernel.protocol.v5.socket
 
-import com.ibm.spark.kernel.protocol.v5.socket.SocketConfig
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{FunSpec, Matchers}
 import play.api.data.validation.ValidationError
@@ -15,7 +14,7 @@ class SocketConfigSpec extends FunSpec with Matchers {
       "hb_port": 10002,
       "shell_port": 10003,
       "iopub_port": 10004,
-      "ip": "127.0.0.1",
+      "ip": "1.2.3.4",
       "transport": "tcp",
       "signature_scheme": "hmac-sha256",
       "key": ""
@@ -27,7 +26,7 @@ class SocketConfigSpec extends FunSpec with Matchers {
   val socketConfigFromConfig = SocketConfig.fromConfig(ConfigFactory.parseString(jsonString))
 
   val socketConfig = SocketConfig(
-    10000, 10001, 10002, 10003, 10004, "127.0.0.1", "tcp", "hmac-sha256", ""
+    10000, 10001, 10002, 10003, 10004, "1.2.3.4", "tcp", "hmac-sha256", ""
   )
 
   describe("SocketConfig") {

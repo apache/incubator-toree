@@ -24,6 +24,10 @@ case class SparkKernelOptions(args: Seq[String]) {
     parser.accepts("master", "location of master Spark node")
       .withRequiredArg().ofType(classOf[String])
 
+  private val _ip =
+    parser.accepts("ip", "ip used to bind sockets")
+      .withRequiredArg().ofType(classOf[String])
+
   private val _stdin_port = parser.accepts(
     "stdin-port", "port of the stdin socket"
   ).withRequiredArg().ofType(classOf[Int])
@@ -84,6 +88,7 @@ case class SparkKernelOptions(args: Seq[String]) {
         "iopub_port" -> get(_iopub_port),
         "control_port" -> get(_control_port),
         "heartbeat_port" -> get(_heartbeat_port),
+        "ip" -> get(_ip),
         "interpreter_args" -> interpreterArgs
     ).flatMap(removeEmptyOptions).asInstanceOf[Map[String, AnyRef]].asJava)
 

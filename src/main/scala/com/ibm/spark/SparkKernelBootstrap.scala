@@ -20,6 +20,7 @@ import com.ibm.spark.magic.dependencies.DependencyMap
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 import org.apache.spark.{SparkConf, SparkContext}
+import play.api.libs.json.Json
 import scala.collection.JavaConverters._
 
 case class SparkKernelBootstrap(config: Config) extends LogLike {
@@ -129,6 +130,8 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     logger.info("Creating sockets")
 
     val socketConfig: SocketConfig = SocketConfig.fromConfig(config)
+    logger.info("Connection Profile: " + Json.toJson(socketConfig))
+
     logger.debug("Constructing SocketFactory")
     socketFactory = new SocketFactory(socketConfig)
 
@@ -157,7 +160,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   private def initializeInterpreter(): Unit = {
     val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
 
-    logger.info("Constructing interpreter with " + interpreterArgs.mkString(" "))
+    logger.info("Constructing interpreter with arguments: " + interpreterArgs.mkString(" "))
     interpreter = new ScalaInterpreter(interpreterArgs, Console.out)
 
     logger.debug("Starting interpreter")
