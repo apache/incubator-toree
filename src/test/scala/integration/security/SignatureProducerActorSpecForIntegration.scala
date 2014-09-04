@@ -8,17 +8,17 @@ import com.ibm.spark.security.Hmac
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpecLike}
 
-object SignatureProducerActorSpec {
+object SignatureProducerActorSpecForIntegration {
   val config = """
     akka {
       loglevel = "WARNING"
     }"""
 }
 
-class SignatureProducerActorSpec extends TestKit(
+class SignatureProducerActorSpecForIntegration extends TestKit(
   ActorSystem(
     "SignatureProducerActorSpec",
-    ConfigFactory.parseString(SignatureProducerActorSpec.config)
+    ConfigFactory.parseString(SignatureProducerActorSpecForIntegration.config)
   )
 ) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
 {

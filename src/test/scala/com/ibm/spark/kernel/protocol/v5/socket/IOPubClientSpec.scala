@@ -45,7 +45,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val zmqMessage: ZMQMessage = kernelMessage
         ioPubClient ! zmqMessage
 
-        Thread.sleep(1000)
+        Thread.sleep(10)
         expectMsg(result)
       }
 
@@ -79,7 +79,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         ioPubClient ! zmqMessage
 
         // Verify callback was called
-        Thread.sleep(1000)
+        Thread.sleep(10)
         capturedArg shouldNot be(None)
       }
     }

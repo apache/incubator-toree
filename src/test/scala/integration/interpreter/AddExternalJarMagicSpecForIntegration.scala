@@ -1,16 +1,12 @@
 package integration.interpreter
 
-import java.io.OutputStream
-import org.apache.spark.{SparkContext, SparkConf}
-
-import scala.tools.nsc.interpreter._
-import java.net.{URL, URLClassLoader}
-
 import com.ibm.spark.interpreter.ScalaInterpreter
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.{FunSpec, Matchers}
 
-class AddExternalJarMagicSpec extends FunSpec with Matchers with MockitoSugar {
+import scala.tools.nsc.interpreter._
+
+class AddExternalJarMagicSpecForIntegration extends FunSpec with Matchers with MockitoSugar {
   describe("ScalaInterpreter") {
     describe("#addJars") {
       it("should be able to load an external jar") {

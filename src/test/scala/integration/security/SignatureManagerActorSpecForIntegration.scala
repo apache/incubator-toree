@@ -10,17 +10,17 @@ import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 
 import scala.concurrent.duration._
 
-object SignatureManagerActorSpec {
+object SignatureManagerActorSpecForIntegration {
   val config = """
     akka {
       loglevel = "WARNING"
     }"""
 }
 
-class SignatureManagerActorSpec extends TestKit(
+class SignatureManagerActorSpecForIntegration extends TestKit(
   ActorSystem(
     "SignatureManagerActorSpec",
-    ConfigFactory.parseString(SignatureManagerActorSpec.config)
+    ConfigFactory.parseString(SignatureManagerActorSpecForIntegration.config)
   )
 ) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
 {

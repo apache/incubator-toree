@@ -44,7 +44,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     describe("#receive( KernelMessage )") {
       relay ! kernelMessage
       it("should not send anything to SecurityManager ") {
-        signatureProbe.expectNoMsg(500.millis)
+        signatureProbe.expectNoMsg(25.millis)
       }
       it("should relay KernelMessage") {
         handlerProbe.expectMsg(kernelMessage)
@@ -112,7 +112,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         }
 
         it("should not send KernelMessage to handler"){
-          handlerProbe.expectNoMsg(500.millis)
+          handlerProbe.expectNoMsg(25.millis)
         }
       }
     }

@@ -23,10 +23,10 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
         actorLoader.load(MessageType.CompleteReply) ! "<Test Message>"
-        testProbe.expectNoMsg(500.millis)
+        testProbe.expectNoMsg(25.millis)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), MessageType.CompleteReply.toString)
-        testProbe.expectNoMsg(500.millis)
+        testProbe.expectNoMsg(25.millis)
       }
     }
     describe("#load( SocketType )"){
@@ -42,10 +42,10 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
         actorLoader.load(SocketType.IOPub) ! "<Test Message>"
-        testProbe.expectNoMsg(500.millis)
+        testProbe.expectNoMsg(25.millis)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), SocketType.IOPub.toString)
-        testProbe.expectNoMsg(500.millis)
+        testProbe.expectNoMsg(25.millis)
       }
 
     }

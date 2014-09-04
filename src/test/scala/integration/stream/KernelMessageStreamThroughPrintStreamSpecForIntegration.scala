@@ -14,7 +14,7 @@ import play.api.libs.json._
 
 import scala.concurrent.duration._
 
-class KernelMessageStreamThroughPrintStreamSpec
+class KernelMessageStreamThroughPrintStreamSpecForIntegration
   extends TestKit(ActorSystem("KernelMessageStreamThroughPrintStreamActorSystem"))
   with FunSpecLike with Matchers with GivenWhenThen with BeforeAndAfter
   with MockitoSugar

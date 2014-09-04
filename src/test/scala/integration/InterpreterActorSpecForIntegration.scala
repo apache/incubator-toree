@@ -17,17 +17,17 @@ import org.slf4j.Logger
 
 import scala.concurrent.duration._
 
-object InterpreterActorSpec {
+object InterpreterActorSpecForIntegration {
   val config = """
     akka {
       loglevel = "WARNING"
     }"""
 }
 
-class InterpreterActorSpec extends TestKit(
+class InterpreterActorSpecForIntegration extends TestKit(
   ActorSystem(
     "InterpreterActorSpec",
-    ConfigFactory.parseString(InterpreterActorSpec.config)
+    ConfigFactory.parseString(InterpreterActorSpecForIntegration.config)
   )
 ) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
   with MockitoSugar

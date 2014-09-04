@@ -33,7 +33,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
             name = SocketType.IOPubClient.toString)
 
         // Give some buffer for the server socket to be bound
-        Thread.sleep(500)
+        Thread.sleep(100)
 
         // Register ourselves as sender in IOPubClient's sender map
         val id = UUID.randomUUID().toString
