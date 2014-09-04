@@ -2,6 +2,7 @@ package com.ibm.spark.client
 
 import akka.pattern.ask
 import akka.util.Timeout
+import com.ibm.spark.client.message.StreamMessage
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
 import com.ibm.spark.kernel.protocol.v5.socket._
@@ -21,9 +22,24 @@ import akka.util.Timeout
 class SparkKernelClient(actorLoader: ActorLoader) extends LogLike {
   implicit val timeout = Timeout(100000.days)
 
+  /**
+   * Executed Scala code on the Spark Kernel.
+   * @param code Scala code to execute
+   * @return A Future containing the result of the execution.
+   */
   def submit(code: String): Future[Any] = {
     val request = ExecuteRequest(code, false, true, UserExpressions(), true)
     actorLoader.load(MessageType.ExecuteRequest) ? request
+  }
+
+  /**
+   * Execute streaming code on the Spark Kernel.
+   * @param code Streaming Scala code (prints to stdout)
+   * @param callback Function called when stream messages are received
+   */
+  def stream(code: String, callback: Any => Unit) = {
+    val request = ExecuteRequest(code, false, true, UserExpressions(), true)
+    actorLoader.load(MessageType.ExecuteRequest) ? ExecuteRequestTuple(request, callback)
   }
 
   // TODO: hide this? just heartbeat to see if kernel is reachable?

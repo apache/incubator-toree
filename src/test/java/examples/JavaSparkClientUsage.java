@@ -2,12 +2,11 @@ package examples;
 
 import com.ibm.spark.SparkKernelClientBootstrap;
 import com.ibm.spark.client.SparkKernelClientOptions;
-import com.ibm.spark.client.exception.ShellException;
 import com.ibm.spark.kernel.client.java.EmptyFunction;
-import com.ibm.spark.kernel.client.java.Function;
 import com.ibm.spark.kernel.client.java.SparkKernelClient;
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteReply;
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteResult;
+import scala.Function1;
+import scala.runtime.AbstractFunction1;
+import scala.runtime.BoxedUnit;
 
 /**
  * This main class demonstrates how to use the spark client in java.
@@ -31,5 +30,16 @@ public class JavaSparkClientUsage {
                 });
 
         client.submit("val y = 9");
+
+        String code = "val s = new Thread(new Runnable {def run() {while(true) {Thread.sleep(1000); println(\"bar\")}}}); s.start()";
+        Function1 func = new AbstractFunction1<Object, BoxedUnit>() {
+            @Override
+            public BoxedUnit apply(Object v1) {
+                System.out.println(v1);
+                return null;
+            }
+        };
+
+        client.stream(code, func);
     }
 }

@@ -2,16 +2,18 @@ package com.ibm.spark.kernel.protocol.v5.socket
 
 import akka.actor.{Actor, ActorRef}
 import akka.zeromq.ZMQMessage
+import com.ibm.spark.client.message.StreamMessage
 import com.ibm.spark.kernel.protocol.v5.MessageType._
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteResult
+import com.ibm.spark.kernel.protocol.v5.content.{StreamContent, ExecuteResult}
 import com.ibm.spark.utils.LogLike
 import play.api.libs.json.Json
 import com.ibm.spark.kernel.protocol.v5.socket.IOPubClient._
 import scala.collection.concurrent.{Map, TrieMap}
 
 object IOPubClient {
-  private val futureMap: Map[UUID, ActorRef] = TrieMap[UUID, ActorRef]()
+  private val senderMap: Map[UUID, ActorRef] = TrieMap[UUID, ActorRef]()
+  private val callbackMap: Map[UUID, Any => Unit] = TrieMap[UUID, Any => Unit]()
 }
 
 /**
@@ -31,13 +33,24 @@ class IOPubClient(socketFactory: SocketFactory) extends Actor with LogLike {
         case MessageType.ExecuteResult =>
           // look up callback in CallbackMap based on msg_id and invoke
           val id = kernelMessage.header.msg_id
-          val client = futureMap.get(id)
+          val client = senderMap.get(id)
           client match {
             case Some(actorRef) =>
               actorRef ! Json.parse(kernelMessage.contentString).as[ExecuteResult]
-              futureMap.remove(id)
+              senderMap.remove(id)
             case None =>
               logger.debug("IOPubClient: actorRef was none")
+          }
+
+        case MessageType.Stream =>
+          val id = kernelMessage.parentHeader.msg_id
+          val func = callbackMap.get(id)
+          func match {
+            case Some(f) =>
+              val streamContent = Json.parse(kernelMessage.contentString).as[StreamContent]
+              f(streamContent.data)
+            case None =>
+              logger.debug(s"IOPubClient: no function for id ${id}")
           }
 
         case any =>
@@ -45,6 +58,9 @@ class IOPubClient(socketFactory: SocketFactory) extends Actor with LogLike {
       }
 
     case message: UUID =>
-      futureMap.put(message, sender)
+      senderMap.put(message, sender)
+
+    case message: StreamMessage =>
+      callbackMap.put(message.id, message.callback)
   }
 }

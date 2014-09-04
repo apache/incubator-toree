@@ -24,5 +24,13 @@ class SparkKernelClientSpec extends TestKit(ActorSystem("RelayActorSystem"))
         probe.expectMsgClass(classOf[ExecuteRequest])
       }
     }
+
+    describe("#stream") {
+      it("should send an ExecuteRequest message") {
+        val func = (x: Any) => println(x)
+        client.stream("val foo = 2", func)
+        probe.expectMsgClass(classOf[ExecuteRequestTuple])
+      }
+    }
   }
 }

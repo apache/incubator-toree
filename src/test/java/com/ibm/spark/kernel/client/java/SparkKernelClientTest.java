@@ -3,8 +3,11 @@ package com.ibm.spark.kernel.client.java;
 import org.mockito.ArgumentCaptor;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import scala.Function1;
 import scala.concurrent.Future;
 import scala.runtime.AbstractFunction0;
+import scala.runtime.AbstractFunction1;
+import scala.runtime.BoxedUnit;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -39,9 +42,15 @@ public class SparkKernelClientTest {
     }
 
     @Test
-    public void execute_Success_CallsSuccessCallback() throws Exception {
-        Future<Object> future = sparkKernelClient.submit("foo code");
-
+    public void submit_calls_scalaClientSubmit() {
+        sparkKernelClient.submit("foo code");
         verify(mockScalaClient).submit(any(String.class));
+    }
+
+    @Test
+    public void stream_calls_scalaClientStream() {
+        Function1 func = mock(AbstractFunction1.class);
+        sparkKernelClient.stream("bar code", func);
+        verify(mockScalaClient).stream(any(String.class), any(Function1.class));
     }
 }

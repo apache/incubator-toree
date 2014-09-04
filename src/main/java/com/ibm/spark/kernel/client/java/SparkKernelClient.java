@@ -1,7 +1,9 @@
 package com.ibm.spark.kernel.client.java;
 
+import scala.Function1;
 import scala.concurrent.Future;
 import scala.runtime.AbstractFunction0;
+import scala.runtime.AbstractFunction1;
 import scala.runtime.BoxedUnit;
 
 /**
@@ -29,6 +31,15 @@ public class SparkKernelClient {
      */
     public Future<Object> submit(String code) {
         return this.client.submit(code);
+    }
+
+    /**
+     * Sends streaming code to the Spark Kernel for execution.
+     * @param code code to run
+     * @param func callback that gets called when the kernel prints a result.
+     */
+    public void stream(String code, Function1<Object, BoxedUnit> func) {
+        this.client.stream(code, func);
     }
 
     private AbstractFunction0<BoxedUnit> wrap(final EmptyFunction func) {

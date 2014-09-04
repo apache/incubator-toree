@@ -17,4 +17,21 @@ object ScalaSparkClientUsage extends App {
       println("hb bad")
   })
   client.submit("val z = 0")
+
+  val func = (x: Any) => println(x)
+  val code: String =
+    """
+      val s = new Thread(new Runnable {
+        def run() {
+          while(true) {
+            Thread.sleep(1000)
+            println("bar")
+          }
+        }
+      })
+      s.start()
+    """.stripMargin
+
+  client.stream(code, func)
+  Thread.sleep(100000)
 }
