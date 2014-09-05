@@ -74,6 +74,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % "1.0.2" excludeAll   // Apache v2
     ExclusionRule(organization = "org.apache.hadoop"),
   "org.apache.spark" %% "spark-streaming" % "1.0.2",        // Apache v2
+  "org.apache.spark" %% "spark-sql" % "1.0.2",              // Apache v2
   "org.apache.spark" %% "spark-streaming-kafka" % "1.0.2",  // Apache v2
   "org.apache.spark" %% "spark-repl" % "1.0.2" excludeAll   // Apache v2
     ExclusionRule(organization = "org.apache.hadoop")
