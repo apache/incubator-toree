@@ -152,29 +152,24 @@ docker <<= docker.dependsOn(Keys.`package`.in(Compile, packageBin))
 
 // Define a Dockerfile
 dockerfile in docker := {
-  val jarFile = artifactPath.in(Compile, packageBin).value
-  val classpath = (managedClasspath in Compile).value
-  val mainclass = mainClass.in(Compile, packageBin).value.getOrElse(sys.error("Expected exactly one main class"))
-  val jarTarget = s"/app/${jarFile.getName}"
-  // Make a colon separated classpath with the JAR file
-  val libs = "/app/libs"
-  val classpathString = s"${libs}/*:${jarTarget}"
   new Dockerfile {
     // Base image
     from("dockerfile/java")
     // Copy all dependencies to 'libs' in stage dir
-    classpath.files.foreach { depFile =>
-      val target = file(libs) / depFile.name
-      stageFile(depFile, target)
-    }
-    // Add the libs dir
-    add(libs, libs)
-    // Add the JAR file
-    add(jarFile, jarTarget)
     runShell("apt-get", "update")
     runShell("apt-get", "-y", "install", "libzmq-dev")
+    runShell("apt-get", "-y", "install", "build-essential")
+    //  Install the pack elements
+    stageFile(baseDirectory.value / "target" / "pack" / "Makefile", "/app/Makefile")
+    stageFile(baseDirectory.value / "target" / "pack" / "VERSION", "/app/VERSION")
+    stageFile(baseDirectory.value / "target" / "pack" / "lib", "/app/lib")
+    stageFile(baseDirectory.value / "target" / "pack" / "bin", "/app/bin")
+    add("/app", "/app")
+    workDir("/app")
+    run("make" , "install")
+    run("chmod" , "+x", "/root/local/bin/sparkkernel")
     // On launch run Java with the classpath and the main class
-    entryPoint("java", "-cp", classpathString, mainclass)
+    entryPoint("/root/local/bin/sparkkernel")
   }
 }
 
