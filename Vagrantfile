@@ -98,9 +98,6 @@ EOF
 echo "Appending to profile_default custom.js"
 (su vagrant
 ipython profile create
-ipython notebook --no-browser &
-PYTHON_NOTEBOOK_PID=$!
-kill -9 $PYTHON_NOTEBOOK_PID
 mkdir -p /home/vagrant/.ipython/profile_default/static/custom/
 cat << EOF >> /home/vagrant/.ipython/profile_default/static/custom/custom.js
 CodeMirror.requireMode('clike',function(){
