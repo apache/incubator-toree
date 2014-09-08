@@ -5,7 +5,7 @@ import java.net.{URL, URLClassLoader}
 import java.nio.charset.Charset
 
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
-import com.ibm.spark.utils.{LogLike, MultiOutputStream}
+import com.ibm.spark.utils.{TaskManager, LogLike, MultiOutputStream}
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain}
 
 import scala.tools.nsc._
@@ -44,6 +44,7 @@ case class ScalaInterpreter(
 
   private val lastResultOut = new ByteArrayOutputStream()
   private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
+  private var taskManager: TaskManager = _
   protected var sparkIMain: SparkIMain = _
 
   /**
@@ -98,10 +99,19 @@ case class ScalaInterpreter(
     )
   }
 
+  override def interrupt(): Interpreter = {
+    require(sparkIMain != null && taskManager != null)
+
+    // Force dumping of current task (begin processing new tasks)
+    taskManager.restart()
+
+    this
+  }
+
   override def interpret(code: String, silent: Boolean = false):
     (IR.Result, Either[ExecuteOutput, ExecuteError]) =
   {
-    require(sparkIMain != null)
+    require(sparkIMain != null && taskManager != null)
     logger.debug(s"Interpreting code: $code")
 
     var result: IR.Result = null
@@ -167,7 +177,12 @@ case class ScalaInterpreter(
   //
   // SparkScalaInterpreter.start.with( "sc", {} )
   override def start() = {
-    require(sparkIMain == null)
+    require(sparkIMain == null && taskManager == null)
+
+    taskManager = new TaskManager
+
+    logger.info("Initializing task manager")
+    taskManager.start()
 
     sparkIMain =
       new SparkIMain(settings, new JPrintWriter(multiOutputStream, true))
@@ -202,8 +217,12 @@ case class ScalaInterpreter(
   override def stop() = {
     logger.info("Shutting down interpreter")
 
-    if (sparkIMain != null) sparkIMain.close()
+    // Shut down the task manager (kills current execution
+    if (taskManager != null) taskManager.stop()
+    taskManager = null
 
+    // Close the entire interpreter (loses all state)
+    if (sparkIMain != null) sparkIMain.close()
     sparkIMain = null
 
     this

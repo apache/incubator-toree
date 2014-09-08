@@ -12,6 +12,12 @@ trait Interpreter {
   def start(): Interpreter
 
   /**
+   * Interrupts the current code being interpreted.
+   * @return A reference to the interpreter
+   */
+  def interrupt(): Interpreter
+
+  /**
    * Stops the interpreter, removing any previous internal state.
    * @return A reference to the interpreter
    */
