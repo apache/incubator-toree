@@ -4,7 +4,7 @@ import java.io.OutputStream
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import com.ibm.spark.interpreter.ExecuteError
+import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError}
 import com.ibm.spark.kernel.protocol.v5.content.{ExecuteResult, ExecuteRequest}
 import com.ibm.spark.kernel.protocol.v5.magic.{ValidateMagicMessage, ExecuteMagicMessage}
 import com.typesafe.config.ConfigFactory
@@ -111,6 +111,33 @@ class ExecuteRequestRelaySpec extends TestKit(
       }
 
       describe("when the code is not magic") {
+        it("should handle an abort returned by the InterpreterActor") {
+          val executeRequest =
+            ExecuteRequest("%myMagic", false, true, UserExpressions(), true)
+          val executeRequestRelay =
+            system.actorOf(Props(classOf[ExecuteRequestRelay], mockActorLoader))
+
+          executeRequestRelay ! ((executeRequest, mock[OutputStream]))
+
+          // First, asks the MagicManager if the message is a magic
+          // In this case, we say no
+          magicManagerProbe.expectMsgClass(classOf[ValidateMagicMessage])
+          magicManagerProbe.reply(false)
+
+          // Expected does not actually match real return of magic, which
+          // is a tuple of ExecuteReply and ExecuteResult
+          val expected = new ExecuteAborted()
+          interpreterActorProbe.expectMsgClass(
+            classOf[(ExecuteRequest, OutputStream)]
+          )
+          interpreterActorProbe.reply(Right(expected))
+
+          expectMsg((
+            ExecuteReplyAbort(1),
+            ExecuteResult(1, Data(), Metadata())
+            ))
+        }
+
         it("should handle an error returned by the InterpreterActor") {
           val executeRequest =
             ExecuteRequest("%myMagic", false, true, UserExpressions(), true)
