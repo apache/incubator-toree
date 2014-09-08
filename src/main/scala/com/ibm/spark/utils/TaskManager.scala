@@ -197,7 +197,7 @@ class TaskManager {
     // See https://issues.scala-lang.org/browse/SI-7934 for discussion
     object Thread {
       @deprecated("", "") class Killer {
-        def stop() = _taskThread.stop()
+        def stop() = try { _taskThread.stop() }
       }
 
       object Killer extends Killer

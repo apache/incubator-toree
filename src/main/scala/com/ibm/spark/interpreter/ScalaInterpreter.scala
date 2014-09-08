@@ -111,13 +111,11 @@ case class ScalaInterpreter(
   }
 
   override def interpret(code: String, silent: Boolean = false):
-    (Results.Result, Either[ExecuteOutput, ExecuteError]) =
+    (Results.Result, Either[ExecuteOutput, ExecuteFailure]) =
   {
     require(sparkIMain != null && taskManager != null)
     logger.debug(s"Interpreting code: $code")
     import scala.concurrent.ExecutionContext.Implicits.global
-
-    var output: ExecuteOutput = ""
 
     val futureResult = taskManager.add {
       if (silent) {
@@ -130,10 +128,6 @@ case class ScalaInterpreter(
     }
 
     // Map the old result types to our new types
-    futureResult recover {
-      case ex: ExecutionException =>
-    }
-
     val mappedFutureResult = futureResult.map {
       case IR.Success             => Results.Success
       case IR.Error               => Results.Error
@@ -142,27 +136,19 @@ case class ScalaInterpreter(
       case ex: ExecutionException => Results.Aborted
     }
 
-    // Block indefinitely until our result has arrived
-    import scala.concurrent.duration._
-    val result = Await.result(mappedFutureResult, Duration.Inf)
-
-    // Grab output if not silent
-    if (!silent) {
-      output =
-        lastResultOut.toString(Charset.defaultCharset().displayName()).trim
-
-      // Clear our output (per result)
-      lastResultOut.reset()
-    }
-
     // Determine whether to provide an error or output
-    result match {
-      case Results.Success    => (result, Left(output))
-      case Results.Incomplete => (result, Left(output))
-      case Results.Aborted    => (result, Right(null))
-      case Results.Error      =>
+    val finalResult = mappedFutureResult map {
+      result =>
+        val output = lastResultOut.toString(Charset.forName("UTF-8").name()).trim
+        lastResultOut.reset()
+        (result, output)
+    } map {
+      case (Results.Success, output)    => (Results.Success, Left(output))
+      case (Results.Incomplete, output) => (Results.Incomplete, Left(output))
+      case (Results.Aborted, output)    => (Results.Aborted, Right(null))
+      case (Results.Error, output)      =>
         val x = sparkIMain.valueOfTerm(ExecutionExceptionName)
-        (result, Right(sparkIMain.valueOfTerm(ExecutionExceptionName) match {
+        (Results.Error, Right(sparkIMain.valueOfTerm(ExecutionExceptionName) match {
           // Runtime error
           case Some(e) =>
             val ex = e.asInstanceOf[Throwable]
@@ -174,9 +160,9 @@ case class ScalaInterpreter(
           // Compile time error, need to check internal reporter
           case _ =>
             if (sparkIMain.reporter.hasErrors)
-              // TODO: This wrapper is not needed when just getting compile
-              // error that we are not parsing... maybe have it be purely
-              // output and have the error check this?
+            // TODO: This wrapper is not needed when just getting compile
+            // error that we are not parsing... maybe have it be purely
+            // output and have the error check this?
               ExecuteError(
                 "Compile Error", output, List()
               )
@@ -184,6 +170,10 @@ case class ScalaInterpreter(
               ExecuteError("Unknown", "Unable to retrieve error!", List())
         }))
     }
+
+    // Block indefinitely until our result has arrived
+    import scala.concurrent.duration._
+    Await.result(finalResult, Duration.Inf)
   }
 
   // NOTE: Convention is to force parentheses if a side effect occurs.

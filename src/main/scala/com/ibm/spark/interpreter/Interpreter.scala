@@ -34,10 +34,10 @@ trait Interpreter {
    * @param code The code to execute
    * @param silent Whether or not to execute the code silently (no output)
    * @return The success/failure of the interpretation and the output from the
-   *         execution
+   *         execution or the failure
    */
   def interpret(code: String, silent: Boolean = false):
-    (Results.Result, Either[ExecuteOutput, ExecuteError])
+    (Results.Result, Either[ExecuteOutput, ExecuteFailure])
 
   /**
    * @return Returns a string to reference the URI of where the interpreted class files are created
