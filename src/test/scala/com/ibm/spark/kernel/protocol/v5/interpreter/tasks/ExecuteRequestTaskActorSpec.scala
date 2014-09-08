@@ -61,6 +61,32 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         result.left.get shouldBe an [ExecuteOutput]
       }
 
+      it("should return an ExecuteReplyAbort if the interpreter returns aborted") {
+        val mockInterpreter = mock[Interpreter]
+        doReturn((Results.Aborted, Right(mock[ExecuteAborted]))).when(mockInterpreter)
+          .interpret(anyString(), anyBoolean())
+
+        val executeRequestTask =
+          system.actorOf(Props(
+            classOf[ExecuteRequestTaskActor],
+            mockInterpreter
+          ))
+
+        val executeRequest = (ExecuteRequest(
+          "val x = 3", false, false,
+          UserExpressions(), false
+        ), mock[OutputStream])
+
+        executeRequestTask ! executeRequest
+
+        val result =
+          receiveOne(5.seconds)
+            .asInstanceOf[Either[ExecuteOutput, ExecuteFailure]]
+
+        result.isRight should be (true)
+        result.right.get shouldBe an [ExecuteAborted]
+      }
+
       it("should return an ExecuteReplyError if the interpreter returns error") {
         val mockInterpreter = mock[Interpreter]
         doReturn((Results.Error, Right(mock[ExecuteError]))).when(mockInterpreter)
