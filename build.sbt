@@ -23,6 +23,11 @@ scalacOptions ++= Seq(
   "-Ywarn-all"
 )
 
+javacOptions ++= Seq(
+  "-Xlint", // Enable all Java-based warnings
+  "-Xlint:-path" // Suppress path warnings since we get tons of them
+)
+
 //
 // CUSTOM TASKS
 //
