@@ -1,5 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.interpreter.tasks
 
+import java.io.OutputStream
+
 import akka.actor.{Props, ActorSystem}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.ibm.spark.interpreter.Interpreter
@@ -14,7 +16,6 @@ import org.scalatest.{FunSpecLike, Matchers}
 
 import com.ibm.spark.interpreter._
 
-import scala.tools.nsc.interpreter._
 import scala.concurrent.duration._
 import scala.util.Either.LeftProjection
 
@@ -36,7 +37,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
     describe("#receive") {
       it("should return an ExecuteReplyOk if the interpreter returns success") {
         val mockInterpreter = mock[Interpreter]
-        doReturn((IR.Success, Left(new ExecuteOutput))).when(mockInterpreter)
+        doReturn((Results.Success, Left(new ExecuteOutput))).when(mockInterpreter)
           .interpret(anyString(), anyBoolean())
 
         val executeRequestTask =
@@ -62,7 +63,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
       it("should return an ExecuteReplyError if the interpreter returns error") {
         val mockInterpreter = mock[Interpreter]
-        doReturn((IR.Error, Right(mock[ExecuteError]))).when(mockInterpreter)
+        doReturn((Results.Error, Right(mock[ExecuteError]))).when(mockInterpreter)
           .interpret(anyString(), anyBoolean())
 
         val executeRequestTask =
@@ -88,7 +89,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
 
       it("should return an ExecuteReplyError if the interpreter returns incomplete") {
         val mockInterpreter = mock[Interpreter]
-        doReturn((IR.Incomplete, Right(""))).when(mockInterpreter)
+        doReturn((Results.Incomplete, Right(""))).when(mockInterpreter)
           .interpret(anyString(), anyBoolean())
 
         val executeRequestTask =

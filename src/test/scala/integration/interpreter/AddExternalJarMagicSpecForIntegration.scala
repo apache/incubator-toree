@@ -1,10 +1,10 @@
 package integration.interpreter
 
-import com.ibm.spark.interpreter.ScalaInterpreter
+import java.io.OutputStream
+
+import com.ibm.spark.interpreter.{Results, ScalaInterpreter}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpec, Matchers}
-
-import scala.tools.nsc.interpreter._
 
 class AddExternalJarMagicSpecForIntegration extends FunSpec with Matchers with MockitoSugar {
   describe("ScalaInterpreter") {
@@ -22,19 +22,19 @@ class AddExternalJarMagicSpecForIntegration extends FunSpec with Matchers with M
 
         // Should fail since jar was not added to paths
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (IR.Error)
+          "import com.ibm.testjar.TestClass")._1 should be (Results.Error)
 
         // Add jar to paths
         interpreter.addJars(testJarUrl)
 
         // Should now succeed
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (IR.Success)
+          "import com.ibm.testjar.TestClass")._1 should be (Results.Success)
 
         // Should now run
         interpreter.interpret(
           """println(new TestClass().sayHello("Chip"))"""
-        ) should be ((IR.Success, Left("Hello, Chip")))
+        ) should be ((Results.Success, Left("Hello, Chip")))
       }
 
       it("should be able to add multiple jars at once") {
@@ -47,26 +47,26 @@ class AddExternalJarMagicSpecForIntegration extends FunSpec with Matchers with M
 
         // Should fail since jars were not added to paths
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (IR.Error)
+          "import com.ibm.testjar.TestClass")._1 should be (Results.Error)
         interpreter.interpret(
-          "import com.ibm.testjar2.TestClass")._1 should be (IR.Error)
+          "import com.ibm.testjar2.TestClass")._1 should be (Results.Error)
 
         // Add jars to paths
         interpreter.addJars(testJar1Url, testJar2Url)
 
         // Should now succeed
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (IR.Success)
+          "import com.ibm.testjar.TestClass")._1 should be (Results.Success)
         interpreter.interpret(
-          "import com.ibm.testjar2.TestClass")._1 should be (IR.Success)
+          "import com.ibm.testjar2.TestClass")._1 should be (Results.Success)
 
         // Should now run
         interpreter.interpret(
           """println(new com.ibm.testjar.TestClass().sayHello("Chip"))"""
-        ) should be ((IR.Success, Left("Hello, Chip")))
+        ) should be ((Results.Success, Left("Hello, Chip")))
         interpreter.interpret(
           """println(new com.ibm.testjar2.TestClass().CallMe())"""
-        ) should be ((IR.Success, Left("3")))
+        ) should be ((Results.Success, Left("3")))
       }
 
       it("should be able to add multiple jars in consecutive calls to addjar") {
@@ -79,9 +79,9 @@ class AddExternalJarMagicSpecForIntegration extends FunSpec with Matchers with M
 
         // Should fail since jars were not added to paths
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (IR.Error)
+          "import com.ibm.testjar.TestClass")._1 should be (Results.Error)
         interpreter.interpret(
-          "import com.ibm.testjar2.TestClass")._1 should be (IR.Error)
+          "import com.ibm.testjar2.TestClass")._1 should be (Results.Error)
 
         // Add jars to paths
         interpreter.addJars(testJar1Url)
@@ -89,17 +89,17 @@ class AddExternalJarMagicSpecForIntegration extends FunSpec with Matchers with M
 
         // Should now succeed
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (IR.Success)
+          "import com.ibm.testjar.TestClass")._1 should be (Results.Success)
         interpreter.interpret(
-          "import com.ibm.testjar2.TestClass")._1 should be (IR.Success)
+          "import com.ibm.testjar2.TestClass")._1 should be (Results.Success)
 
         // Should now run
         interpreter.interpret(
           """println(new com.ibm.testjar.TestClass().sayHello("Chip"))"""
-        ) should be ((IR.Success, Left("Hello, Chip")))
+        ) should be ((Results.Success, Left("Hello, Chip")))
         interpreter.interpret(
           """println(new com.ibm.testjar2.TestClass().CallMe())"""
-        ) should be ((IR.Success, Left("3")))
+        ) should be ((Results.Success, Left("3")))
       }
     }
   }

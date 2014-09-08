@@ -3,11 +3,13 @@ package com.ibm.spark.interpreter
 import java.io.ByteArrayOutputStream
 import java.net.{URL, URLClassLoader}
 import java.nio.charset.Charset
+import java.util.concurrent.ExecutionException
 
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
 import com.ibm.spark.utils.{TaskManager, LogLike, MultiOutputStream}
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain}
 
+import scala.concurrent.{Await, Future}
 import scala.tools.nsc._
 import scala.tools.nsc.backend.JavaPlatform
 import scala.tools.nsc.interpreter._
@@ -109,32 +111,56 @@ case class ScalaInterpreter(
   }
 
   override def interpret(code: String, silent: Boolean = false):
-    (IR.Result, Either[ExecuteOutput, ExecuteError]) =
+    (Results.Result, Either[ExecuteOutput, ExecuteError]) =
   {
     require(sparkIMain != null && taskManager != null)
     logger.debug(s"Interpreting code: $code")
+    import scala.concurrent.ExecutionContext.Implicits.global
 
-    var result: IR.Result = null
     var output: ExecuteOutput = ""
 
-    if (silent) {
-      sparkIMain.beSilentDuring {
-        result = sparkIMain.interpret(code)
+    val futureResult = taskManager.add {
+      if (silent) {
+        sparkIMain.beSilentDuring {
+          sparkIMain.interpret(code)
+        }
+      } else {
+        sparkIMain.interpret(code)
       }
-    } else {
-      result = sparkIMain.interpret(code)
-      output =
-        lastResultOut.toString(Charset.defaultCharset().displayName()).trim
     }
 
-    // Clear our output (per result)
-    lastResultOut.reset()
+    // Map the old result types to our new types
+    futureResult recover {
+      case ex: ExecutionException =>
+    }
+
+    val mappedFutureResult = futureResult.map {
+      case IR.Success             => Results.Success
+      case IR.Error               => Results.Error
+      case IR.Incomplete          => Results.Incomplete
+    } recover {
+      case ex: ExecutionException => Results.Aborted
+    }
+
+    // Block indefinitely until our result has arrived
+    import scala.concurrent.duration._
+    val result = Await.result(mappedFutureResult, Duration.Inf)
+
+    // Grab output if not silent
+    if (!silent) {
+      output =
+        lastResultOut.toString(Charset.defaultCharset().displayName()).trim
+
+      // Clear our output (per result)
+      lastResultOut.reset()
+    }
 
     // Determine whether to provide an error or output
     result match {
-      case IR.Success => (result, Left(output))
-      case IR.Incomplete => (result, Left(output))
-      case IR.Error =>
+      case Results.Success    => (result, Left(output))
+      case Results.Incomplete => (result, Left(output))
+      case Results.Aborted    => (result, Right(null))
+      case Results.Error      =>
         val x = sparkIMain.valueOfTerm(ExecutionExceptionName)
         (result, Right(sparkIMain.valueOfTerm(ExecutionExceptionName) match {
           // Runtime error

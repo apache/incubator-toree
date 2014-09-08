@@ -37,7 +37,7 @@ trait Interpreter {
    *         execution
    */
   def interpret(code: String, silent: Boolean = false):
-    (IR.Result, Either[ExecuteOutput, ExecuteError])
+    (Results.Result, Either[ExecuteOutput, ExecuteError])
 
   /**
    * @return Returns a string to reference the URI of where the interpreted class files are created
