@@ -193,28 +193,34 @@ class TaskManager {
     killThread: Boolean = true,
     killTimeout: Int = InterruptTimeout
   ): Unit = {
-    import scala.deprecated
-    object Test { @deprecated("", "") class Coral { def fooForwarder() = _taskThread.stop() }; object Coral extends Coral }
-    while (_taskThread.isAlive) {
-      _taskThread.cancel()
-      _taskThread.interrupt()
+    // NOTE: Dirty hack to suppress deprecation warnings
+    // See https://issues.scala-lang.org/browse/SI-7934 for discussion
+    object Thread {
+      @deprecated("", "") class Killer {
+        def stop() = _taskThread.stop()
+      }
 
-      runIfTimeout(
-        killTimeout,
-        _taskThread.isAlive && killThread,
-        // Still available (JDK8 now calls stop0 directly)
-        //
-        // Used because of discussion on:
-        // https://issues.scala-lang.org/browse/SI-6302
-        {
-          //_taskThread.stop()
-          Test.Coral.fooForwarder()
-          val currentPromise = _currentPromise.get()
-          if (currentPromise != null)
-            currentPromise.tryFailure(new ThreadDeath())
-        }
-      )
+      object Killer extends Killer
     }
+
+    _taskThread.cancel()
+    _taskThread.interrupt()
+
+    runIfTimeout(
+      killTimeout,
+      _taskThread.isAlive && killThread,
+      // Still available (JDK8 now calls stop0 directly)
+      //
+      // Used because of discussion on:
+      // https://issues.scala-lang.org/browse/SI-6302
+      {
+        //_taskThread.stop()
+        Thread.Killer.stop()
+        val currentPromise = _currentPromise.get()
+        if (currentPromise != null)
+          currentPromise.tryFailure(new ThreadDeath())
+      }
+    )
 
     _taskThread = null
   }
