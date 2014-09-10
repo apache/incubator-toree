@@ -239,7 +239,7 @@ case class ScalaInterpreter(
     variableName: String, typeName: String,
     value: Any, modifiers: List[String]
   ): Unit = {
-    sparkIMain.bind(variableName,typeName,value,modifiers)
+    sparkIMain.bind(variableName, typeName, value, modifiers)
   }
 
   override def completion(code: String, pos: Int): (Int, List[String]) = {
