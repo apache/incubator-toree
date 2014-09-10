@@ -237,9 +237,13 @@ class ScalaInterpreter(
     this
   }
 
-  def classServerURI = sparkIMain.classServer.uri
+  def classServerURI = {
+    require(sparkIMain != null)
+    sparkIMain.classServer.uri
+  }
 
   override def doQuietly[T](body: => T): T = {
+    require(sparkIMain != null)
     sparkIMain.beQuietDuring[T](body)
   }
 
@@ -247,6 +251,7 @@ class ScalaInterpreter(
     variableName: String, typeName: String,
     value: Any, modifiers: List[String]
   ): Unit = {
+    require(sparkIMain != null)
     sparkIMain.bind(variableName, typeName, value, modifiers)
   }
 
