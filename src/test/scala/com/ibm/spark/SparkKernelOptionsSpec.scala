@@ -43,14 +43,14 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
           val options = new SparkKernelOptions(s"--master=${expected}" :: Nil)
           val config: Config = options.toConfig
 
-          config.getString("master") should be(expected)
+          config.getString("spark.master") should be(expected)
         }
 
         it("should set master to local[*]") {
           val options = new SparkKernelOptions(Nil)
           val config: Config = options.toConfig
 
-          config.getString("master") should be("local[*]")
+          config.getString("spark.master") should be("local[*]")
         }
       }
     }

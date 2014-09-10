@@ -33,8 +33,8 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   private var shellActor: ActorRef                    = _
   private var ioPubActor: ActorRef                    = _
 
-  private var interpreter: Interpreter                = _
-  private var sparkContext: SparkContext              = _
+  protected[spark] var interpreter: Interpreter       = _
+  protected[spark] var sparkContext: SparkContext     = _
   private var dependencyMap: DependencyMap            = _
   private var builtinLoader: BuiltinLoader            = _
   private var magicLoader: MagicLoader                = _
@@ -217,11 +217,11 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     })
   }
 
-  private def initializeSparkContext(): Unit = {
+  protected[spark] def initializeSparkContext(): Unit = {
     logger.debug("Creating Spark Configuration")
     val conf = new SparkConf()
 
-    val master = config.getString("master")
+    val master = config.getString("spark.master")
     logger.info("Using " + master + " as Spark Master")
     conf.setMaster(master)
 
@@ -240,7 +240,10 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     // TODO: Move SparkIMain to private and insert in a different way
     logger.warn("Locked to Scala interpreter with SparkIMain until decoupled!")
 
+    reallyInitializeSparkContext(conf)
+  }
 
+  protected[spark] def reallyInitializeSparkContext(conf: SparkConf): Unit = {
     interpreter.doQuietly {
       // TODO: Construct class server outside of SparkIMain
       logger.warn("Unable to control initialization of REPL class server!")

@@ -82,7 +82,7 @@ case class SparkKernelOptions(args: Seq[String]) {
     }
 
     val commandLineConfig: Config = ConfigFactory.parseMap(Map(
-        "master" -> get(_master),
+        "spark.master" -> get(_master),
         "stdin_port" -> get(_stdin_port),
         "shell_port" -> get(_shell_port),
         "iopub_port" -> get(_iopub_port),
