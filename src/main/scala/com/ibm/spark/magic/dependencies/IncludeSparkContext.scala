@@ -9,5 +9,6 @@ trait IncludeSparkContext {
   //val sparkContext: SparkContext
   private var _sparkContext: SparkContext = _
   def sparkContext: SparkContext = _sparkContext
-  def sparkContext_=(newSparkContext: SparkContext) = _sparkContext = newSparkContext
+  def sparkContext_=(newSparkContext: SparkContext) =
+    _sparkContext = newSparkContext
 }

@@ -43,6 +43,9 @@ class MagicManager(magicLoader: MagicLoader)
       if (magicLoader.hasMagic(magicName)) {
         // TODO: Offload this to another actor
         try {
+          // Set output stream to use for this magic
+          magicLoader.dependencyMap.setOutputStream(outputStream)
+
           val output: ExecuteOutput =
             magicLoader.executeMagic(magicName, code, isCell)
           result = Left(output)

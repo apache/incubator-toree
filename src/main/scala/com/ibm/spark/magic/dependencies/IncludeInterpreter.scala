@@ -9,5 +9,6 @@ trait IncludeInterpreter {
   //val interpreter: Interpreter
   private var _interpreter: Interpreter = _
   def interpreter: Interpreter = _interpreter
-  def interpreter_=(newInterpreter: Interpreter) = _interpreter = newInterpreter
+  def interpreter_=(newInterpreter: Interpreter) =
+    _interpreter = newInterpreter
 }

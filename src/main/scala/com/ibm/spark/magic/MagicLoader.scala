@@ -9,7 +9,7 @@ import scala.reflect.runtime.{universe => runtimeUniverse}
 import com.ibm.spark.magic.builtin.{AddJar, MagicTemplate}
 
 class MagicLoader(
-  dependencyMap: DependencyMap = new DependencyMap(),
+  val dependencyMap: DependencyMap = new DependencyMap(),
   urls: Array[URL] = Array(),
   parentLoader: ClassLoader = null
 ) extends URLClassLoader(urls, parentLoader)
