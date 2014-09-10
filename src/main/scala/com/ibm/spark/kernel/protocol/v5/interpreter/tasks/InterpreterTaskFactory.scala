@@ -11,4 +11,10 @@ class InterpreterTaskFactory(interpreter: Interpreter) {
    */
   def ExecuteRequestTask(actorRefFactory: ActorRefFactory, name: String): ActorRef =
     actorRefFactory.actorOf(ExecuteRequestTaskActor.props(interpreter), name)
+
+  /**
+   *
+   */
+  def CodeCompleteTask(actorRefFactory: ActorRefFactory, name: String): ActorRef =
+    actorRefFactory.actorOf(CodeCompleteTaskActor.props(interpreter), name)
 }

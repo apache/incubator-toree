@@ -8,7 +8,8 @@ import java.util.concurrent.ExecutionException
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
 import com.ibm.spark.utils.{TaskManager, LogLike, MultiOutputStream}
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain}
-
+import com.ibm.spark.utils.{LogLike, MultiOutputStream}
+import org.apache.spark.repl.{SparkJLineCompletion, SparkCommandLine, SparkIMain}
 import scala.concurrent.{Await, Future}
 import scala.tools.nsc._
 import scala.tools.nsc.backend.JavaPlatform
@@ -255,6 +256,16 @@ case class ScalaInterpreter(
     value: Any, modifiers: List[String]
   ): Unit = {
     sparkIMain.bind(variableName,typeName,value,modifiers)
+  }
+
+  override def completion(code: String, pos: Int): (Int, List[String]) = {
+    logger.debug(s"Attempting code completion for ${code}")
+    val jlinecompleter = new SparkJLineCompletion(sparkIMain)
+    val regex = """[0-9a-zA-Z._]+$""".r
+    val parsedCode = (regex findAllIn code).mkString("")
+    logger.debug(s"Attempting code completion for ${parsedCode}")
+    val result = jlinecompleter.completer().complete(parsedCode, pos)
+    return (result.cursor, result.candidates)
   }
 }
 

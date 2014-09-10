@@ -5,5 +5,6 @@ package object interpreter {
     type InterpreterChildActorType = Value
 
     val ExecuteRequestTask = Value("execute_request_task")
+    val CodeCompleteTask = Value("code_complete_task")
   }
 }

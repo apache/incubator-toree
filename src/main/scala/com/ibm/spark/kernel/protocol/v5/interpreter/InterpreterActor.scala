@@ -9,6 +9,7 @@ import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.interpreter._
+import com.ibm.spark.utils.LogLike
 
 import scala.concurrent.duration._
 
@@ -27,7 +28,7 @@ object InterpreterActor {
 //
 class InterpreterActor(
   interpreterTaskFactory: InterpreterTaskFactory
-) extends Actor {
+) extends Actor with LogLike {
   // NOTE: Required to provide the execution context for futures with akka
   import context._
 
@@ -38,6 +39,7 @@ class InterpreterActor(
   // List of child actors that the interpreter contains
   //
   private var executeRequestTask: ActorRef = _
+  private var completeCodeTask: ActorRef = _
 
   /**
    * Initializes all child actors performing tasks for the interpreter.
@@ -45,12 +47,24 @@ class InterpreterActor(
   override def preStart = {
     executeRequestTask = interpreterTaskFactory.ExecuteRequestTask(
       context, InterpreterChildActorType.ExecuteRequestTask.toString)
+    completeCodeTask = interpreterTaskFactory.CodeCompleteTask(
+      context, InterpreterChildActorType.CodeCompleteTask.toString)
   }
 
   override def receive: Receive = {
     case (executeRequest: ExecuteRequest, outputStream: OutputStream) =>
       val data = (executeRequest, outputStream)
       (executeRequestTask ? data) recover {
+        case ex: Throwable =>
+          Right(ExecuteError(
+            ex.getClass.getName,
+            ex.getLocalizedMessage,
+            ex.getStackTrace.map(_.toString).toList)
+          )
+      } pipeTo sender
+    case (completeRequest: CompleteRequest) =>
+      logger.debug("InterpreterActor requesting code completion")
+      (completeCodeTask ? completeRequest) recover {
         case ex: Throwable =>
           Right(ExecuteError(
             ex.getClass.getName,

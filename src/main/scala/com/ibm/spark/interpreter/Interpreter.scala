@@ -70,4 +70,12 @@ trait Interpreter {
    * @param err The new error stream
    */
   def updatePrintStreams(in: InputStream, out: OutputStream, err: OutputStream)
+
+  /**
+   * Attempts to perform code completion via the <TAB> command.
+   * @param code The current cell to complete
+   * @param pos The cursor position
+   * @return The cursor position and list of possible completions
+   */
+  def completion(code: String, pos: Int): (Int, List[String] )
 }

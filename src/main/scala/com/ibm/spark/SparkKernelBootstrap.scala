@@ -314,10 +314,12 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     //  These are the handlers for messages coming into the
     initializeRequestHandler(classOf[ExecuteRequestHandler], MessageType.ExecuteRequest )
     initializeRequestHandler(classOf[KernelInfoRequestHandler], MessageType.KernelInfoRequest )
+    initializeRequestHandler(classOf[CodeCompleteHandler], MessageType.CompleteRequest )
 
     //  These are handlers for messages leaving the kernel through the sockets
     initializeSocketHandler(SocketType.Shell, MessageType.KernelInfoReply)
     initializeSocketHandler(SocketType.Shell, MessageType.ExecuteReply)
+    initializeSocketHandler(SocketType.Shell, MessageType.CompleteReply)
     initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteResult)
     initializeSocketHandler(SocketType.IOPub, MessageType.Stream)
     initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteInput)

@@ -2,7 +2,7 @@ package com.ibm.spark.kernel.protocol
 
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
+import com.ibm.spark.kernel.protocol.v5.content.{CompleteReply, CompleteRequest, ExecuteRequest}
 import play.api.libs.json.Json
 
 package object v5Test {
@@ -29,4 +29,7 @@ package object v5Test {
         {"code" : 124 }
     """
   )
+  val MockCompleteRequest: CompleteRequest = CompleteRequest("", 0)
+  val MockCompleteRequestKernelMessage: KernelMessage = MockKernelMessage.copy(contentString = Json.toJson(MockCompleteRequest).toString)
+  val MockKernelMessageWithBadJSON: KernelMessage = MockKernelMessage.copy(contentString = "inval1d")
 }
