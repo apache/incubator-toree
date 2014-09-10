@@ -126,7 +126,24 @@ class ScalaInterpreter(
     logger.debug(s"Interpreting code: $code")
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    val futureResult = taskManager.add {
+    val futureResult = interpretAddTask(code, silent)
+
+    // Map the old result types to our new types
+    val mappedFutureResult = interpretMapToCustomResult(futureResult)
+
+    // Determine whether to provide an error or output
+    val futureResultAndOutput = interpretMapToResultAndOutput(mappedFutureResult)
+
+    val futureResultAndExecuteInfo =
+      interpretMapToResultAndExecuteInfo(futureResultAndOutput)
+
+    // Block indefinitely until our result has arrived
+    import scala.concurrent.duration._
+    Await.result(futureResultAndExecuteInfo, Duration.Inf)
+  }
+
+  protected def interpretAddTask(code: String, silent: Boolean) =
+    taskManager.add {
       if (silent) {
         sparkIMain.beSilentDuring {
           sparkIMain.interpret(code)
@@ -136,54 +153,71 @@ class ScalaInterpreter(
       }
     }
 
-    // Map the old result types to our new types
-    val mappedFutureResult = futureResult map {
+  protected def interpretMapToCustomResult(future: Future[IR.Result]) = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    future map {
       case IR.Success             => Results.Success
       case IR.Error               => Results.Error
       case IR.Incomplete          => Results.Incomplete
     } recover {
       case ex: ExecutionException => Results.Aborted
     }
+  }
 
-    // Determine whether to provide an error or output
-    val finalResult = mappedFutureResult map {
+  protected def interpretMapToResultAndOutput(future: Future[Results.Result]) = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    future map {
       result =>
-        val output = lastResultOut.toString(Charset.forName("UTF-8").name()).trim
+        val output =
+          lastResultOut.toString(Charset.forName("UTF-8").name()).trim
         lastResultOut.reset()
         (result, output)
-    } map {
+    }
+  }
+
+  protected def interpretMapToResultAndExecuteInfo(future: Future[(Results.Result, String)]) = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    future map {
       case (Results.Success, output)    => (Results.Success, Left(output))
       case (Results.Incomplete, output) => (Results.Incomplete, Left(output))
       case (Results.Aborted, output)    => (Results.Aborted, Right(null))
       case (Results.Error, output)      =>
         val x = sparkIMain.valueOfTerm(ExecutionExceptionName)
-        (Results.Error, Right(sparkIMain.valueOfTerm(ExecutionExceptionName) match {
-          // Runtime error
-          case Some(e) =>
-            val ex = e.asInstanceOf[Throwable]
-            ExecuteError(
-              ex.getClass.getName,
-              ex.getLocalizedMessage,
-              ex.getStackTrace.map(_.toString).toList
+        (
+          Results.Error,
+          Right(
+            interpretConstructExecuteError(
+              sparkIMain.valueOfTerm(ExecutionExceptionName),
+              output
             )
-          // Compile time error, need to check internal reporter
-          case _ =>
-            if (sparkIMain.reporter.hasErrors)
-            // TODO: This wrapper is not needed when just getting compile
-            // error that we are not parsing... maybe have it be purely
-            // output and have the error check this?
-              ExecuteError(
-                "Compile Error", output, List()
-              )
-            else
-              ExecuteError("Unknown", "Unable to retrieve error!", List())
-        }))
+          )
+        )
+    }
+  }
+
+  protected def interpretConstructExecuteError(value: Option[AnyRef], output: String) =
+    value match {
+      // Runtime error
+      case Some(e) =>
+        val ex = e.asInstanceOf[Throwable]
+        ExecuteError(
+          ex.getClass.getName,
+          ex.getLocalizedMessage,
+          ex.getStackTrace.map(_.toString).toList
+        )
+      // Compile time error, need to check internal reporter
+      case _ =>
+        if (sparkIMain.reporter.hasErrors)
+        // TODO: This wrapper is not needed when just getting compile
+        // error that we are not parsing... maybe have it be purely
+        // output and have the error check this?
+          ExecuteError(
+            "Compile Error", output, List()
+          )
+        else
+          ExecuteError("Unknown", "Unable to retrieve error!", List())
     }
 
-    // Block indefinitely until our result has arrived
-    import scala.concurrent.duration._
-    Await.result(finalResult, Duration.Inf)
-  }
 
   override def start() = {
     require(sparkIMain == null && taskManager == null)
