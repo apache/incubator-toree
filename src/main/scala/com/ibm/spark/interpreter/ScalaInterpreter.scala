@@ -3,11 +3,13 @@ package com.ibm.spark.interpreter
 import java.io.ByteArrayOutputStream
 import java.net.{URL, URLClassLoader}
 import java.nio.charset.Charset
+import java.util.concurrent.ExecutionException
 
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
-import com.ibm.spark.utils.{LogLike, MultiOutputStream}
+import com.ibm.spark.utils.{TaskManager, LogLike, MultiOutputStream}
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain}
 
+import scala.concurrent.{Await, Future}
 import scala.tools.nsc._
 import scala.tools.nsc.backend.JavaPlatform
 import scala.tools.nsc.interpreter._
@@ -44,6 +46,7 @@ case class ScalaInterpreter(
 
   private val lastResultOut = new ByteArrayOutputStream()
   private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
+  private var taskManager: TaskManager = _
   protected var sparkIMain: SparkIMain = _
 
   /**
@@ -98,35 +101,54 @@ case class ScalaInterpreter(
     )
   }
 
+  override def interrupt(): Interpreter = {
+    require(sparkIMain != null && taskManager != null)
+
+    // Force dumping of current task (begin processing new tasks)
+    taskManager.restart()
+
+    this
+  }
+
   override def interpret(code: String, silent: Boolean = false):
-    (IR.Result, Either[ExecuteOutput, ExecuteError]) =
+    (Results.Result, Either[ExecuteOutput, ExecuteFailure]) =
   {
-    require(sparkIMain != null)
+    require(sparkIMain != null && taskManager != null)
     logger.debug(s"Interpreting code: $code")
+    import scala.concurrent.ExecutionContext.Implicits.global
 
-    var result: IR.Result = null
-    var output: ExecuteOutput = ""
-
-    if (silent) {
-      sparkIMain.beSilentDuring {
-        result = sparkIMain.interpret(code)
+    val futureResult = taskManager.add {
+      if (silent) {
+        sparkIMain.beSilentDuring {
+          sparkIMain.interpret(code)
+        }
+      } else {
+        sparkIMain.interpret(code)
       }
-    } else {
-      result = sparkIMain.interpret(code)
-      output =
-        lastResultOut.toString(Charset.defaultCharset().displayName()).trim
     }
 
-    // Clear our output (per result)
-    lastResultOut.reset()
+    // Map the old result types to our new types
+    val mappedFutureResult = futureResult.map {
+      case IR.Success             => Results.Success
+      case IR.Error               => Results.Error
+      case IR.Incomplete          => Results.Incomplete
+    } recover {
+      case ex: ExecutionException => Results.Aborted
+    }
 
     // Determine whether to provide an error or output
-    result match {
-      case IR.Success => (result, Left(output))
-      case IR.Incomplete => (result, Left(output))
-      case IR.Error =>
+    val finalResult = mappedFutureResult map {
+      result =>
+        val output = lastResultOut.toString(Charset.forName("UTF-8").name()).trim
+        lastResultOut.reset()
+        (result, output)
+    } map {
+      case (Results.Success, output)    => (Results.Success, Left(output))
+      case (Results.Incomplete, output) => (Results.Incomplete, Left(output))
+      case (Results.Aborted, output)    => (Results.Aborted, Right(null))
+      case (Results.Error, output)      =>
         val x = sparkIMain.valueOfTerm(ExecutionExceptionName)
-        (result, Right(sparkIMain.valueOfTerm(ExecutionExceptionName) match {
+        (Results.Error, Right(sparkIMain.valueOfTerm(ExecutionExceptionName) match {
           // Runtime error
           case Some(e) =>
             val ex = e.asInstanceOf[Throwable]
@@ -138,9 +160,9 @@ case class ScalaInterpreter(
           // Compile time error, need to check internal reporter
           case _ =>
             if (sparkIMain.reporter.hasErrors)
-              // TODO: This wrapper is not needed when just getting compile
-              // error that we are not parsing... maybe have it be purely
-              // output and have the error check this?
+            // TODO: This wrapper is not needed when just getting compile
+            // error that we are not parsing... maybe have it be purely
+            // output and have the error check this?
               ExecuteError(
                 "Compile Error", output, List()
               )
@@ -148,6 +170,10 @@ case class ScalaInterpreter(
               ExecuteError("Unknown", "Unable to retrieve error!", List())
         }))
     }
+
+    // Block indefinitely until our result has arrived
+    import scala.concurrent.duration._
+    Await.result(finalResult, Duration.Inf)
   }
 
   // NOTE: Convention is to force parentheses if a side effect occurs.
@@ -167,7 +193,12 @@ case class ScalaInterpreter(
   //
   // SparkScalaInterpreter.start.with( "sc", {} )
   override def start() = {
-    require(sparkIMain == null)
+    require(sparkIMain == null && taskManager == null)
+
+    taskManager = new TaskManager
+
+    logger.info("Initializing task manager")
+    taskManager.start()
 
     sparkIMain =
       new SparkIMain(settings, new JPrintWriter(multiOutputStream, true))
@@ -202,8 +233,12 @@ case class ScalaInterpreter(
   override def stop() = {
     logger.info("Shutting down interpreter")
 
-    if (sparkIMain != null) sparkIMain.close()
+    // Shut down the task manager (kills current execution
+    if (taskManager != null) taskManager.stop()
+    taskManager = null
 
+    // Close the entire interpreter (loses all state)
+    if (sparkIMain != null) sparkIMain.close()
     sparkIMain = null
 
     this

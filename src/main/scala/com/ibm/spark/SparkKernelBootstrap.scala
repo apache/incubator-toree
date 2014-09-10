@@ -60,6 +60,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     initializeSparkContext()
     initializeMagicLoader()
     initializeSystemActors()
+    registerInterruptHook()
     registerShutdownHook()
     publishStatus(KernelStatusType.Idle)
 
@@ -74,7 +75,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     sparkContext.stop()
 
     logger.info("Shutting down interpreter")
-    interpreter.stop
+    interpreter.stop()
 
     logger.info("Shutting down actor system")
     actorSystem.shutdown()
@@ -164,7 +165,38 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     interpreter = new ScalaInterpreter(interpreterArgs, Console.out)
 
     logger.debug("Starting interpreter")
-    interpreter.start
+    interpreter.start()
+  }
+
+  private def registerInterruptHook(): Unit = {
+    val self = this
+
+    import sun.misc.Signal
+    import sun.misc.SignalHandler
+
+    // TODO: Signals are not a good way to handle this since JVM only has the
+    // proprietary sun API that is not necessarily available on all platforms
+    Signal.handle(new Signal("INT"), new SignalHandler() {
+      private val MaxSignalTime: Long = 3000 // 3 seconds
+      var lastSignalReceived: Long    = 0
+
+      def handle(sig: Signal) = {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastSignalReceived > MaxSignalTime) {
+          logger.info("Resetting code execution!")
+          interpreter.interrupt()
+
+          // TODO: Cancel group representing current code execution
+          //sparkContext.cancelJobGroup()
+
+          logger.info("Enter Ctrl-C twice to shutdown!")
+          lastSignalReceived = currentTime
+        } else {
+          logger.info("Shutting down kernel")
+          self.shutdown()
+        }
+      }
+    })
   }
 
   private def registerShutdownHook(): Unit = {

@@ -1,5 +1,7 @@
 package com.ibm.spark.magic
 
+import java.io.OutputStream
+
 import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.magic.builtin.{BuiltinLoader, MagicTemplate}
 import com.ibm.spark.magic.dependencies.{DependencyMap}
@@ -83,10 +85,12 @@ class MagicLoaderSpec extends FunSpec with Matchers with MockitoSugar {
       it("should correctly load a class to execute") {
         val mockInterpreter = mock[Interpreter]
         val mockSparkContext = mock[SparkContext]
+        val mockOutputStream = mock[OutputStream]
 
         val dependencyMap = new DependencyMap()
           .setInterpreter(mockInterpreter)
           .setSparkContext(mockSparkContext)
+          .setOutputStream(mockOutputStream)
 
         val magicLoader = new MagicLoader(
           dependencyMap = dependencyMap,

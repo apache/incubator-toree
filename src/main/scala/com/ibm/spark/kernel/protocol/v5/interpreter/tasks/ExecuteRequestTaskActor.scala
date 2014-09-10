@@ -1,11 +1,11 @@
 package com.ibm.spark.kernel.protocol.v5.interpreter.tasks
 
+import java.io.OutputStream
+
 import akka.actor.{Props, Actor}
-import com.ibm.spark.interpreter.{ExecuteError, Interpreter}
+import com.ibm.spark.interpreter.{ExecuteAborted, Results, ExecuteError, Interpreter}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
-
-import scala.tools.nsc.interpreter._
 
 object ExecuteRequestTaskActor {
   def props(interpreter: Interpreter): Props =
@@ -20,13 +20,15 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor {
       interpreter.updatePrintStreams(System.in, outputStream, outputStream)
       val (success, result) = interpreter.interpret(executeRequest.code)
       success match {
-        case IR.Success =>
+        case Results.Success =>
           val output = result.left.get
           sender ! Left(output)
-        case IR.Error =>
+        case Results.Error =>
           val error = result.right.get
           sender ! Right(error)
-        case _ =>
+        case Results.Aborted =>
+          sender ! Right(new ExecuteAborted)
+        case Results.Incomplete =>
           sender ! Right(
             ExecuteError("Unknown Error", "Unable to identify error!", List()))
       }

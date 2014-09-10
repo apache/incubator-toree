@@ -1,5 +1,7 @@
 package com.ibm.spark.magic.dependencies
 
+import java.io.OutputStream
+
 import com.ibm.spark.interpreter.Interpreter
 import org.apache.spark.SparkContext
 
@@ -37,7 +39,21 @@ class DependencyMap {
     internalMap(typeOf[IncludeSparkContext]) =
       PartialFunction[MagicTemplate, Unit](
         magic =>
-          magic.asInstanceOf[IncludeSparkContext].sparkContext = (sparkContext)
+          magic.asInstanceOf[IncludeSparkContext].sparkContext_=(sparkContext)
+      )
+
+    this
+  }
+
+  /**
+   * Sets the OutputStream for this map.
+   * @param outputStream The new OutputStream
+   */
+  def setOutputStream(outputStream: OutputStream) = {
+    internalMap(typeOf[IncludeOutputStream]) =
+      PartialFunction[MagicTemplate, Unit](
+        magic =>
+          magic.asInstanceOf[IncludeOutputStream].outputStream_=(outputStream)
       )
 
     this
