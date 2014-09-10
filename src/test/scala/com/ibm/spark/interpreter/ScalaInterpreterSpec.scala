@@ -1,14 +1,15 @@
 package com.ibm.spark.interpreter
 
-import java.io.{File, InputStream, OutputStream}
+import java.io.{ByteArrayOutputStream, File, InputStream, OutputStream}
 import java.net.URL
 
+import com.ibm.spark.interpreter.Results.Result
 import org.apache.spark.{SparkConf, HttpServer}
 import com.ibm.spark.utils.TaskManager
 import org.apache.spark.repl.SparkIMain
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.tools.nsc.{interpreter, Settings}
 
 import org.scalatest.mock.MockitoSugar
@@ -150,6 +151,9 @@ class ScalaInterpreterSpec extends FunSpec
       }
     }
 
+    // TODO: Provide testing for the helper functions that return various
+    //       mapped futures -- this was too difficult for me to figure out
+    //       in a short amount of time
     describe("#interpret") {
       it("should fail if not started") {
         intercept[IllegalArgumentException] {
@@ -162,12 +166,15 @@ class ScalaInterpreterSpec extends FunSpec
         val itInterpreter =
           new StubbedStartInterpreter
           with StubbedUpdatePrintStreams
+          //with StubbedInterpretAddTask
           with StubbedInterpretMapToCustomResult
           with StubbedInterpretMapToResultAndOutput
           with StubbedInterpretMapToResultAndExecuteInfo
           with StubbedInterpretConstructExecuteError
           with TaskManagerProducerLike
         {
+          // Must override this way since cannot figure out the signature
+          // to verify this as a mock
           override def newTaskManager(): TaskManager = new TaskManager {
             override def add[T](taskFunction: => T): Future[T] = {
               taskManagerAddCalled = true
