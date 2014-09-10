@@ -8,6 +8,7 @@ import com.ibm.spark.utils.TaskManager
 import org.apache.spark.repl.SparkIMain
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
+import scala.concurrent.Future
 import scala.tools.nsc.{interpreter, Settings}
 
 import org.scalatest.mock.MockitoSugar
@@ -32,6 +33,58 @@ class ScalaInterpreterSpec extends FunSpec
   private var mockTaskManager: TaskManager                = _
   private var mockSettings: Settings                      = _
 
+  trait StubbedUpdatePrintStreams extends Interpreter {
+    override def updatePrintStreams(
+      in: InputStream,
+      out: OutputStream,
+      err: OutputStream
+    ): Unit = {}
+  }
+
+  trait StubbedInterpretAddTask extends StubbedStartInterpreter {
+    override protected def interpretAddTask(code: String, silent: Boolean) =
+      mock[Future[IR.Result]]
+  }
+
+  trait StubbedInterpretMapToCustomResult extends StubbedStartInterpreter {
+    override protected def interpretMapToCustomResult(future: Future[IR.Result]) =
+      mock[Future[Results.Result with Product with Serializable]]
+  }
+
+  trait StubbedInterpretMapToResultAndOutput extends StubbedStartInterpreter {
+    override protected def interpretMapToResultAndOutput(future: Future[Results.Result]) =
+      mock[Future[(Results.Result, String)]]
+  }
+
+  trait StubbedInterpretMapToResultAndExecuteInfo extends StubbedStartInterpreter {
+    override protected def interpretMapToResultAndExecuteInfo(future: Future[(Results.Result, String)]) =
+      mock[Future[(
+        Results.Result with Product with Serializable,
+        Either[ExecuteOutput, ExecuteFailure] with Product with Serializable
+      )]]
+  }
+
+  trait StubbedInterpretConstructExecuteError extends StubbedStartInterpreter {
+    override protected def interpretConstructExecuteError(value: Option[AnyRef], output: String) =
+      mock[ExecuteError]
+  }
+
+  class StubbedStartInterpreter
+    extends ScalaInterpreter(mock[List[String]], mock[OutputStream])
+    with SparkIMainProducerLike
+    with TaskManagerProducerLike
+    with SettingsProducerLike
+  {
+    override def newSparkIMain(settings: Settings, out: JPrintWriter): SparkIMain = mockSparkIMain
+    override def newTaskManager(): TaskManager = mockTaskManager
+    override def newSettings(args: List[String]): Settings = mockSettings
+
+    // Stubbed out (not testing this)
+    override protected def updateCompilerClassPath(jars: URL*): Unit = {}
+
+    override protected def reinitializeSymbols(): Unit = {}
+  }
+
   before {
     mockSparkIMain  = mock[SparkIMain]
 
@@ -44,46 +97,10 @@ class ScalaInterpreterSpec extends FunSpec
     doReturn(mockSettingsClasspath).when(mockSettings).classpath
     doNothing().when(mockSettings).embeddedDefaults(any[ClassLoader])
 
-    interpreter =
-      new ScalaInterpreter(mock[List[String]], mock[OutputStream])
-        with SparkIMainProducerLike
-        with TaskManagerProducerLike
-        with SettingsProducerLike
-      {
-        override def newSparkIMain(
-          settings: Settings, out: JPrintWriter
-        ): SparkIMain = mockSparkIMain
-        override def newTaskManager(): TaskManager = mockTaskManager
-        override def newSettings(args: List[String]): Settings = mockSettings
-
-        // Stubbed out (not testing this)
-        override protected def updateCompilerClassPath(jars: URL*): Unit = {}
-
-        override protected def reinitializeSymbols(): Unit = {}
-      }
+    interpreter = new StubbedStartInterpreter
 
     interpreterNoPrintStreams =
-      new ScalaInterpreter(mock[List[String]], mock[OutputStream])
-        with SparkIMainProducerLike
-        with TaskManagerProducerLike
-        with SettingsProducerLike
-      {
-        override def newSparkIMain(
-                                    settings: Settings, out: JPrintWriter
-                                    ): SparkIMain = mockSparkIMain
-        override def newTaskManager(): TaskManager = mockTaskManager
-        override def newSettings(args: List[String]): Settings = mockSettings
-
-        // Stubbed out (not testing this)
-        override protected def updateCompilerClassPath(jars: URL*): Unit = {}
-
-        override protected def reinitializeSymbols(): Unit = {}
-        override def updatePrintStreams(
-          in: InputStream,
-          out: OutputStream,
-          err: OutputStream
-        ): Unit = {}
-      }
+      new StubbedStartInterpreter with StubbedUpdatePrintStreams
   }
 
   after {
@@ -100,26 +117,10 @@ class ScalaInterpreterSpec extends FunSpec
         import scala.language.reflectiveCalls
 
         // Create a new interpreter exposing the internal runtime classloader
-        val itInterpreter =
-          new ScalaInterpreter(mock[List[String]], mock[OutputStream])
-            with SparkIMainProducerLike
-            with TaskManagerProducerLike
-            with SettingsProducerLike
-          {
-            override def newSparkIMain(
-                                        settings: Settings, out: JPrintWriter
-                                        ): SparkIMain = mockSparkIMain
-            override def newTaskManager(): TaskManager = mockTaskManager
-            override def newSettings(args: List[String]): Settings = mockSettings
-
-            // Stubbed out (not testing this)
-            override protected def updateCompilerClassPath(jars: URL*): Unit = {}
-
-            override protected def reinitializeSymbols(): Unit = {}
-
-            // Expose the runtime classloader
-            def runtimeClassloader = _runtimeClassloader
-          }
+        val itInterpreter = new StubbedStartInterpreter {
+          // Expose the runtime classloader
+          def runtimeClassloader = _runtimeClassloader
+        }
 
         val url = new URL("file://expected")
         itInterpreter.addJars(url)
@@ -156,13 +157,31 @@ class ScalaInterpreterSpec extends FunSpec
         }
       }
 
-      /*it("should add a new task to the task manager") {
-        interpreterNoPrintStreams.start()
+      it("should add a new task to the task manager") {
+        var taskManagerAddCalled = false
+        val itInterpreter =
+          new StubbedStartInterpreter
+          with StubbedUpdatePrintStreams
+          with StubbedInterpretMapToCustomResult
+          with StubbedInterpretMapToResultAndOutput
+          with StubbedInterpretMapToResultAndExecuteInfo
+          with StubbedInterpretConstructExecuteError
+          with TaskManagerProducerLike
+        {
+          override def newTaskManager(): TaskManager = new TaskManager {
+            override def add[T](taskFunction: => T): Future[T] = {
+              taskManagerAddCalled = true
+              mock[TaskManager].add(taskFunction)
+            }
+          }
+        }
 
-        interpreterNoPrintStreams.interpret("val x = 3")
+        itInterpreter.start()
 
-        verify(mockTaskManager).add({ IR.Success })
-      }*/
+        itInterpreter.interpret("val x = 3")
+
+        taskManagerAddCalled should be (true)
+      }
     }
 
     describe("#start") {

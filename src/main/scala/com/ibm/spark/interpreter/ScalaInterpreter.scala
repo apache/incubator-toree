@@ -175,7 +175,10 @@ class ScalaInterpreter(
     }
   }
 
-  protected def interpretMapToResultAndExecuteInfo(future: Future[(Results.Result, String)]) = {
+  protected def interpretMapToResultAndExecuteInfo(
+    future: Future[(Results.Result, String)]
+  ): Future[(Results.Result, Either[ExecuteOutput, ExecuteFailure])] =
+  {
     import scala.concurrent.ExecutionContext.Implicits.global
     future map {
       case (Results.Success, output)    => (Results.Success, Left(output))
