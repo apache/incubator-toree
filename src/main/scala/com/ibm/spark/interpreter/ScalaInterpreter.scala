@@ -19,12 +19,16 @@ import scala.tools.nsc.util.MergedClassPath
 
 import scala.language.reflectiveCalls
 
-case class ScalaInterpreter(
+class ScalaInterpreter(
   args: List[String],
   out: OutputStream
 ) extends Interpreter with LogLike {
+  this: SparkIMainProducerLike
+    with TaskManagerProducerLike
+    with SettingsProducerLike =>
+
   private val ExecutionExceptionName = "lastException"
-  val settings: Settings = new SparkCommandLine(args).settings
+  val settings: Settings = newSettings(args)
 
   private val thisClassLoader = this.getClass.getClassLoader
   private val runtimeClassloader =
@@ -180,13 +184,13 @@ case class ScalaInterpreter(
   override def start() = {
     require(sparkIMain == null && taskManager == null)
 
-    taskManager = new TaskManager
+    taskManager = newTaskManager()
 
     logger.info("Initializing task manager")
     taskManager.start()
 
     sparkIMain =
-      new SparkIMain(settings, new JPrintWriter(multiOutputStream, true))
+      newSparkIMain(settings, new JPrintWriter(multiOutputStream, true))
 
     logger.info("Initializing interpreter")
     sparkIMain.initializeSynchronous()

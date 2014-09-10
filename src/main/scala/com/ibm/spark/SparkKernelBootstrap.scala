@@ -1,7 +1,7 @@
 package com.ibm.spark
 
 import akka.actor._
-import com.ibm.spark.interpreter.{Interpreter, ScalaInterpreter}
+import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
@@ -163,6 +163,9 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
     logger.info("Constructing interpreter with arguments: " + interpreterArgs.mkString(" "))
     interpreter = new ScalaInterpreter(interpreterArgs, Console.out)
+      with StandardSparkIMainProducer
+      with StandardTaskManagerProducer
+      with StandardSettingsProducer
 
     logger.debug("Starting interpreter")
     interpreter.start()

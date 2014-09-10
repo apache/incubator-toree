@@ -4,7 +4,7 @@ import java.io.{ByteArrayOutputStream, OutputStream}
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.ibm.spark.interpreter.{ExecuteError, ExecuteOutput, ScalaInterpreter}
+import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
@@ -34,7 +34,10 @@ class InterpreterActorSpecForIntegration extends TestKit(
 {
 
   private val output = new ByteArrayOutputStream()
-  private val interpreter = ScalaInterpreter(List(), output)
+  private val interpreter = new ScalaInterpreter(List(), output)
+    with StandardSparkIMainProducer
+    with StandardTaskManagerProducer
+    with StandardSettingsProducer
 
   private val conf = new SparkConf()
     .setMaster("local[*]")

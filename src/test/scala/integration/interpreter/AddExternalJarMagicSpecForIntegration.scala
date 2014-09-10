@@ -2,7 +2,7 @@ package integration.interpreter
 
 import java.io.OutputStream
 
-import com.ibm.spark.interpreter.{Results, ScalaInterpreter}
+import com.ibm.spark.interpreter._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpec, Matchers}
 
@@ -13,6 +13,9 @@ class AddExternalJarMagicSpecForIntegration extends FunSpec with Matchers with M
         val testJarUrl = this.getClass.getClassLoader.getResource("TestJar.jar")
         //val interpreter = new ScalaInterpreter(List(), Console.out)
         val interpreter = new ScalaInterpreter(List(), mock[OutputStream])
+          with StandardSparkIMainProducer
+          with StandardTaskManagerProducer
+          with StandardSettingsProducer
         interpreter.start()
 
         //
@@ -43,6 +46,9 @@ class AddExternalJarMagicSpecForIntegration extends FunSpec with Matchers with M
         val testJar2Url =
           this.getClass.getClassLoader.getResource("TestJar2.jar")
         val interpreter = new ScalaInterpreter(List(), mock[OutputStream])
+          with StandardSparkIMainProducer
+          with StandardTaskManagerProducer
+          with StandardSettingsProducer
         interpreter.start()
 
         // Should fail since jars were not added to paths
@@ -75,6 +81,9 @@ class AddExternalJarMagicSpecForIntegration extends FunSpec with Matchers with M
         val testJar2Url =
           this.getClass.getClassLoader.getResource("TestJar2.jar")
         val interpreter = new ScalaInterpreter(List(), mock[OutputStream])
+          with StandardSparkIMainProducer
+          with StandardTaskManagerProducer
+          with StandardSettingsProducer
         interpreter.start()
 
         // Should fail since jars were not added to paths
