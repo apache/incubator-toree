@@ -177,22 +177,6 @@ case class ScalaInterpreter(
     Await.result(finalResult, Duration.Inf)
   }
 
-  // NOTE: Convention is to force parentheses if a side effect occurs.
-  // val int = new SSI with SparkSupport;
-  // val conf = new SparkConf()
-  // int.withSparkConfig(conf).bind( "sc", conf => new SparkContext(conf) )
-  //
-  // int.withContext( "sc", conf, conf => new SparkContext(conf) )
-  //
-  // val sparkKernelContext = new (...)
-  // sparkKernelContext.toSparkContext <-- you lock the config
-  //
-  // sparkKernelContext
-  // Interpreter(sparkKernelContext)
-  //     sparkKernelContext.config.set(...) <-- update the uri
-  //     bind("sc", sparkKernelContext.toSparkContext)
-  //
-  // SparkScalaInterpreter.start.with( "sc", {} )
   override def start() = {
     require(sparkIMain == null && taskManager == null)
 
