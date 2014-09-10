@@ -30,14 +30,14 @@ class ScalaInterpreter(
   private val ExecutionExceptionName = "lastException"
   val settings: Settings = newSettings(args)
 
-  private val thisClassLoader = this.getClass.getClassLoader
-  private val runtimeClassloader =
-    new URLClassLoader(Array(), thisClassLoader) {
+  private val _thisClassloader = this.getClass.getClassLoader
+  protected val _runtimeClassloader =
+    new URLClassLoader(Array(), _thisClassloader) {
       def addJar(url: URL) = this.addURL(url)
     }
 
   /* Add scala.runtime libraries to interpreter classpath */ {
-    val urls = thisClassLoader match {
+    val urls = _thisClassloader match {
       case cl: java.net.URLClassLoader => cl.getURLs.toList
       case a => // TODO: Should we really be using sys.error here?
         sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
@@ -46,7 +46,7 @@ class ScalaInterpreter(
 
     settings.classpath.value =
       classpath.distinct.mkString(java.io.File.pathSeparator)
-    settings.embeddedDefaults(runtimeClassloader)
+    settings.embeddedDefaults(_runtimeClassloader)
   }
 
   private val lastResultOut = new ByteArrayOutputStream()
@@ -61,12 +61,16 @@ class ScalaInterpreter(
    */
   override def addJars(jars: URL*): Unit = {
     // Enable Scala class support
+    reinitializeSymbols()
+
+    jars.foreach(_runtimeClassloader.addJar)
+    updateCompilerClassPath(jars : _*)
+  }
+
+  protected def reinitializeSymbols(): Unit = {
     val global = sparkIMain.global
     import global._
     new Run // Initializes something needed for Scala classes
-
-    jars.foreach(runtimeClassloader.addJar)
-    updateCompilerClassPath(jars : _*)
   }
 
   protected def updateCompilerClassPath( jars: URL*): Unit = {
