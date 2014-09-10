@@ -137,7 +137,7 @@ class ScalaInterpreter(
     }
 
     // Map the old result types to our new types
-    val mappedFutureResult = futureResult.map {
+    val mappedFutureResult = futureResult map {
       case IR.Success             => Results.Success
       case IR.Error               => Results.Error
       case IR.Incomplete          => Results.Incomplete

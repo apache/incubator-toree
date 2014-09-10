@@ -150,7 +150,19 @@ class ScalaInterpreterSpec extends FunSpec
     }
 
     describe("#interpret") {
-      // TODO: Complete this beast
+      it("should fail if not started") {
+        intercept[IllegalArgumentException] {
+          interpreter.interpret("val x = 3")
+        }
+      }
+
+      /*it("should add a new task to the task manager") {
+        interpreterNoPrintStreams.start()
+
+        interpreterNoPrintStreams.interpret("val x = 3")
+
+        verify(mockTaskManager).add({ IR.Success })
+      }*/
     }
 
     describe("#start") {
