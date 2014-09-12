@@ -29,8 +29,9 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor {
         case Results.Aborted =>
           sender ! Right(new ExecuteAborted)
         case Results.Incomplete =>
-          sender ! Right(
-            ExecuteError("Unknown Error", "Unable to identify error!", List()))
+          // This just sends an ExecuteReplyOk for cells with no
+          // executable code
+          sender ! Left("")
       }
     case _ =>
       sender ! "Unknown message" // TODO: Provide a failure message type to be passed around?
