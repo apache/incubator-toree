@@ -1,18 +1,22 @@
 package examples
 
+import java.io.File
+
 import com.ibm.spark.SparkKernelClientBootstrap
-import com.ibm.spark.client.SparkKernelClientOptions
+import com.typesafe.config.{ConfigFactory, Config}
 
 /**
  * This App demonstrates how to use the spark client in scala.
  * Use this class as a playground.
  */
 object ScalaSparkClientUsage extends App {
-  val options: SparkKernelClientOptions = new SparkKernelClientOptions(args)
-  val client = new SparkKernelClientBootstrap(options.toConfig).createClient
+  val profile: File = new File(getClass.getResource("/kernel-profiles/IOPubIntegrationProfile.json").toURI)
+  val config: Config = ConfigFactory.parseFile(profile)
+
+  val client = new SparkKernelClientBootstrap(config).createClient
 
   Thread.sleep(100) // actor system takes a moment to initialize
-  
+
   client.heartbeat(() => {
       println("hb bad")
   })
