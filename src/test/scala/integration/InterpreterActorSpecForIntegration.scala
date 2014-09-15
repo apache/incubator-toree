@@ -100,7 +100,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
           ))
 
         val executeRequest = ExecuteRequest(
-          "val x =", false, false,
+          "...", false, false,
           UserExpressions(), false
         )
 

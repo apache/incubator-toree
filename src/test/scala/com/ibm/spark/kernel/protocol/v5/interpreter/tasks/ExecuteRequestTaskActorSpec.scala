@@ -125,7 +125,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
           ))
 
         val executeRequest = (ExecuteRequest(
-          "val x = 3", false, false,
+          "", false, false,
           UserExpressions(), false
         ), mock[OutputStream])
 
@@ -135,8 +135,8 @@ class ExecuteRequestTaskActorSpec extends TestKit(
           receiveOne(5.seconds)
             .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
 
-        result.isRight should be (true)
-        result.right.get shouldBe an [ExecuteError]
+        result.isLeft should be (true)
+        result.left.get shouldBe an [ExecuteOutput]
       }
     }
   }

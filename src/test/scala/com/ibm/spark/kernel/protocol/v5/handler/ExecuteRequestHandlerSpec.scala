@@ -90,7 +90,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandlerWithOkAndResult()
         var executeResultMessage: KernelMessage = null
-        kernelMessageRelayProbe.receiveWhile(10.milliseconds) {
+        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
           case message : KernelMessage =>
             if(message.header.msg_type == MessageType.ExecuteResult.toString)
               executeResultMessage = message
@@ -102,7 +102,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandlerWithOk()
         var executeResultMessage: KernelMessage = null
-        kernelMessageRelayProbe.receiveWhile(10.milliseconds) {
+        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
           case message : KernelMessage =>
             if(message.header.msg_type == MessageType.ExecuteResult.toString)
               executeResultMessage = message
@@ -114,7 +114,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandlerWithOkAndResult()
         var executeReplyMessage: KernelMessage = null
-        kernelMessageRelayProbe.receiveWhile(10.milliseconds) {
+        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
           case message : KernelMessage =>
             if(message.header.msg_type == MessageType.ExecuteReply.toString)
               executeReplyMessage = message
@@ -125,7 +125,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should send an execute input message") {
         handlerActor ! MockExecuteRequestKernelMessage
         var executeInputMessage: KernelMessage = null
-        kernelMessageRelayProbe.receiveWhile(10.milliseconds) {
+        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
           case message : KernelMessage =>
             if(message.header.msg_type == MessageType.ExecuteInput.toString)
               executeInputMessage = message
@@ -139,7 +139,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         var busy = false
         var idle = false
 
-        statusDispatchProbe.receiveWhile(10.milliseconds) {
+        statusDispatchProbe.receiveWhile(100.milliseconds) {
           case Tuple2(status: KernelStatusType, header: Header)=>
             if(status == KernelStatusType.Busy)
               busy = true
@@ -159,7 +159,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should respond with an execute_reply with status error")    {
         handlerActor ! MockKernelMessageWithBadExecuteRequest
         var executeReplyMessage: Option[KernelMessage] = None
-        kernelMessageRelayProbe.receiveWhile(10.milliseconds) {
+        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
           case message: KernelMessage =>
             if(message.header.msg_type == MessageType.ExecuteReply.toString)
               executeReplyMessage = Option(message)
@@ -179,7 +179,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         handlerActor ! MockKernelMessageWithBadExecuteRequest
         var errorContentMessage: Option[KernelMessage] = None
 
-        kernelMessageRelayProbe.receiveWhile(10.milliseconds) {
+        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
           case message: KernelMessage =>
             if(message.header.msg_type == MessageType.Error.toString)
               errorContentMessage = Option(message)
@@ -198,7 +198,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         var busy = false
         var idle = false
 
-        statusDispatchProbe.receiveWhile(10.milliseconds) {
+        statusDispatchProbe.receiveWhile(100.milliseconds) {
           case Tuple2(status: KernelStatusType, header: Header)=>
             if(status == KernelStatusType.Busy)
               busy = true
