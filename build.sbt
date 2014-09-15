@@ -2,7 +2,7 @@ import de.johoop.testngplugin.TestNGPlugin._
 import sbtdocker.{ImageName, Dockerfile}
 import DockerKeys._
 
-organization := "com.ibm"
+organization := "ignitio"
 
 name := "spark-kernel"
 
@@ -181,7 +181,7 @@ dockerfile in docker := {
 
 // Set a custom image name
 imageName in docker := {
-  ImageName(namespace = Some(organization.value),
+  ImageName(namespace = Some(organization.value + ":5000"),
     repository = name.value,
     tag = Some("v" + version.value))
 }
