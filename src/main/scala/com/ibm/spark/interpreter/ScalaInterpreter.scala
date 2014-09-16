@@ -253,8 +253,16 @@ class ScalaInterpreter(
     in: InputStream, out: OutputStream, err: OutputStream
   ): Unit = {
     sparkIMain.beQuietDuring {
-      sparkIMain.bind("Console", new WrapperConsole(in, out, err))
-      sparkIMain.bind("System", new WrapperSystem(in, out, err))
+      sparkIMain.bind(
+        "Console", classOf[WrapperConsole].getName,
+        new WrapperConsole(in, out, err),
+        List("""@transient""")
+      )
+      sparkIMain.bind(
+        "System", classOf[WrapperSystem].getName,
+        new WrapperSystem(in, out, err),
+        List("""@transient""")
+      )
       sparkIMain.addImports("Console._")
     }
   }
