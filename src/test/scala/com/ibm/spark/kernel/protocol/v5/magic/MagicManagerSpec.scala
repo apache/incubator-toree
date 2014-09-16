@@ -38,7 +38,7 @@ class MagicManagerSpec extends TestKit(
 
           magicManager ! ValidateMagicMessage("notAMagic")
 
-          expectMsg(50.milliseconds, false)
+          expectMsg(200.milliseconds, false)
         }
 
         it("should return true if code parses as line magic") {
@@ -48,7 +48,7 @@ class MagicManagerSpec extends TestKit(
 
           magicManager ! ValidateMagicMessage("%lineMagic asdfasdf")
 
-          expectMsg(50.milliseconds, true)
+          expectMsg(200.milliseconds, true)
         }
 
         it("should return true if code parses as cell magic") {
@@ -58,7 +58,7 @@ class MagicManagerSpec extends TestKit(
 
           magicManager ! ValidateMagicMessage("%%cellMagic asdflj\nasdf\n")
 
-          expectMsg(50.milliseconds, true)
+          expectMsg(200.milliseconds, true)
         }
       }
 
@@ -76,7 +76,7 @@ class MagicManagerSpec extends TestKit(
           ))
 
           // Expect magic to not exist
-          expectMsg(50.milliseconds, Right(ExecuteError(
+          expectMsg(200.milliseconds, Right(ExecuteError(
             "Missing Magic",
             s"Magic $fakeMagicName does not exist!",
             List()
@@ -131,7 +131,7 @@ class MagicManagerSpec extends TestKit(
             mock[OutputStream]
           ))
 
-          expectMsg(50.milliseconds, Left(fakeMagicReturn))
+          expectMsg(200.milliseconds, Left(fakeMagicReturn))
         }
       }
     }
