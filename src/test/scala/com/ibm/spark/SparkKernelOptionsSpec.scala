@@ -78,6 +78,7 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
           config.getInt("shell_port") should be(54321)
           config.getInt("iopub_port") should be(11111)
           config.getInt("control_port") should be(22222)
+          config.getInt("hb_port") should be(33333)
         }
       }
     }
@@ -119,14 +120,22 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
       describe("#toConfig") {
         it("should return config with commandline option values") {
 
-          val options = new SparkKernelOptions(List("--stdin-port", "99999", "--shell-port", "88888"))
+          val options = new SparkKernelOptions(List(
+            "--stdin-port", "99999",
+            "--shell-port", "88888",
+            "--iopub-port", "77777",
+            "--control-port", "55555",
+            "--heartbeat-port", "44444"
+          ))
 
           val config: Config = options.toConfig
 
           config.entrySet() should not be ('empty)
           config.getInt("stdin_port") should be(99999)
           config.getInt("shell_port") should be(88888)
-          config.getInt("iopub_port") should be(43462)
+          config.getInt("iopub_port") should be(77777)
+          config.getInt("control_port") should be(55555)
+          config.getInt("hb_port") should be(44444)
         }
       }
     }

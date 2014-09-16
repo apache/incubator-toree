@@ -87,7 +87,7 @@ case class SparkKernelOptions(args: Seq[String]) {
         "shell_port" -> get(_shell_port),
         "iopub_port" -> get(_iopub_port),
         "control_port" -> get(_control_port),
-        "heartbeat_port" -> get(_heartbeat_port),
+        "hb_port" -> get(_heartbeat_port),
         "ip" -> get(_ip),
         "interpreter_args" -> interpreterArgs
     ).flatMap(removeEmptyOptions).asInstanceOf[Map[String, AnyRef]].asJava)

@@ -2,5 +2,6 @@
     "stdin_port": 12345,
     "shell_port": 54321,
     "iopub_port": 11111,
-    "control_port": 22222
+    "control_port": 22222,
+    "hb_port": 33333
 }
