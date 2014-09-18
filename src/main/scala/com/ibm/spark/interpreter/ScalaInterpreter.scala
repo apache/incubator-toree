@@ -124,7 +124,6 @@ class ScalaInterpreter(
   {
     require(sparkIMain != null && taskManager != null)
     logger.debug(s"Interpreting code: $code")
-    import scala.concurrent.ExecutionContext.Implicits.global
 
     val futureResult = interpretAddTask(code, silent)
 
@@ -201,8 +200,10 @@ class ScalaInterpreter(
   protected def interpretConstructExecuteError(value: Option[AnyRef], output: String) =
     value match {
       // Runtime error
-      case Some(e) =>
+      case Some(e) if e != null =>
         val ex = e.asInstanceOf[Throwable]
+        // Clear runtime error message
+        sparkIMain.directBind[Throwable](ExecutionExceptionName, null)
         ExecuteError(
           ex.getClass.getName,
           ex.getLocalizedMessage,
