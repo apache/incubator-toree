@@ -123,42 +123,6 @@ CodeMirror.requireMode('clike',function(){
 EOF
 )
 
-# Install Kafka & Zookeeper with Docker setup
-# See http://wurstmeister.github.io/kafka-docker/
-if ! flag_is_set KAFKA; then
-  export START_SCRIPT=https://raw2.github.com/wurstmeister/kafka-docker/master/start-broker.sh && \
-  (
-    COUNTER=0; 
-    until curl -Ls $START_SCRIPT | bash /dev/stdin 1 49899 192.168.44.44; do
-      if [ "${COUNTER}" -gt 4 ]; then 
-        exit 1;
-      fi      
-      printf "Trying to install kafka and zookeeper docker container again...."
-      COUNTER=$((COUNTER + 1)) 
-    done
-  ) && \
-  set_flag KAFKA
-fi
-
-# Install Cassandra with Docker setup
-if ! flag_is_set CASSANDRA; then
-  cd /opt/ && \
-  git clone https://github.com/nicolasff/docker-cassandra.git && \
-  cd docker-cassandra && \
-  sudo cp install/bin/pipework /usr/bin && \
-  (
-    COUNTER=0;
-    until make image VERSION=2.0.10; do
-      if [ "${COUNTER}" -gt 4 ]; then 
-        exit 1;
-      fi      
-      printf "Trying to install cassandra docker container again...."
-      COUNTER=$((COUNTER + 1)) 
-    done
-  ) && \
-  set_flag CASSANDRA
-fi
-
 # Fix permissions
 chown -R vagrant.vagrant /home/vagrant/.ipython
 
