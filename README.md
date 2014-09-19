@@ -9,6 +9,25 @@ updates. Finally, the kernel is written with the future plan to allow multiple
 applications to connect to a single kernel to take advantage of the same
 Spark context.
 
+Vagrant Instructions
+--------------------
+
+* vagrant up
+* vagrant ssh
+* cd /ETSparkProjects/SparkKernel
+* sbt pack
+* cd target/pack
+* make install
+* cd /ETSparkProjects/SparkKernel
+* ipython notebook --ip 192.168.44.44 --no-browser
+* access http://192.168.44.44:8888 in your browser
+* create a new Notebook
+* switch kernels from IPython to Spark
+
+Running the above set of commands from the sparkkernel directory will create a Vagrant
+environment with all of the necessary dependencies in order to run the IPython Notebook
+using the Spark kernel. 
+
 Usage Instructions
 ------------------
 
