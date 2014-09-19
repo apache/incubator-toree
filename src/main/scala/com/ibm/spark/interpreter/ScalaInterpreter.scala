@@ -53,6 +53,7 @@ class ScalaInterpreter(
   private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
   private var taskManager: TaskManager = _
   protected var sparkIMain: SparkIMain = _
+  protected var jLineCompleter: SparkJLineCompletion = _
 
   /**
    * Adds jars to the runtime and compile time classpaths. Does not work with
@@ -237,6 +238,9 @@ class ScalaInterpreter(
     logger.info("Initializing interpreter")
     sparkIMain.initializeSynchronous()
 
+    logger.info("Initializing completer")
+    jLineCompleter = new SparkJLineCompletion(sparkIMain)
+
     sparkIMain.beQuietDuring {
       logger.info("Rerouting Console and System related input and output")
       updatePrintStreams(System.in, multiOutputStream, multiOutputStream)
@@ -276,6 +280,9 @@ class ScalaInterpreter(
     if (taskManager != null) taskManager.stop()
     taskManager = null
 
+    // Erase our completer
+    jLineCompleter = null
+
     // Close the entire interpreter (loses all state)
     if (sparkIMain != null) sparkIMain.close()
     sparkIMain = null
@@ -302,12 +309,15 @@ class ScalaInterpreter(
   }
 
   override def completion(code: String, pos: Int): (Int, List[String]) = {
+    require(jLineCompleter != null)
+
     logger.debug(s"Attempting code completion for ${code}")
-    val jlinecompleter = new SparkJLineCompletion(sparkIMain)
     val regex = """[0-9a-zA-Z._]+$""".r
     val parsedCode = (regex findAllIn code).mkString("")
+
     logger.debug(s"Attempting code completion for ${parsedCode}")
-    val result = jlinecompleter.completer().complete(parsedCode, pos)
+    val result = jLineCompleter.completer().complete(parsedCode, pos)
+
     return (result.cursor, result.candidates)
   }
 }
