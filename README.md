@@ -86,6 +86,13 @@ the following ways:
 * Running _make install_ within the resulting pack in _target/pack_ and running from _/home/vagrant/local/bin/sparkkernel_
 * Start notebook server and create a notebook page using the spark kernel. (NEED INSTRUCTIONS TO THIS)
 
+
+Packaging Kernel
+----------------
+
+To create a Tarball of the Kernel, run `sbt pack-archive`. Resulting Tarball will be under target/spark-kernel-(version).tar.gz
+
+
 Running Tests
 -------------
 
@@ -129,9 +136,3 @@ The naming convention for tests is as follows:
 
 4. Scratch
     * Placed under _scratch_
-
-Migrating Remote Repos
-----------------------
-In the ignitio project run the following commands.
-`git remote remove origin`
-`git remote add origin git@github.rtp.raleigh.ibm.com:ignitio/sparkkernel.git`
