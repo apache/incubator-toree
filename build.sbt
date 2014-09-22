@@ -162,9 +162,11 @@ dockerfile in docker := {
     // Base image
     from("dockerfile/java")
     // Copy all dependencies to 'libs' in stage dir
+    runShell("apt-key", "adv", "--keyserver", "keyserver.ubuntu.com", "--recv", "E56151BF")
+    runShell("echo", "deb http://repos.mesosphere.io/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) main", ">>", "/etc/apt/sources.list.d/mesosphere.list")
+    runShell("cat", "/etc/apt/sources.list.d/mesosphere.list")
     runShell("apt-get", "update")
-    runShell("apt-get", "-y", "install", "libzmq-dev")
-    runShell("apt-get", "-y", "install", "build-essential")
+    runShell("apt-get", "-y", "install", "mesos", "build-essential", "libzmq-dev")
     //  Install the pack elements
     stageFile(baseDirectory.value / "target" / "pack" / "Makefile", "/app/Makefile")
     stageFile(baseDirectory.value / "target" / "pack" / "VERSION", "/app/VERSION")
@@ -174,6 +176,7 @@ dockerfile in docker := {
     workDir("/app")
     run("make" , "install")
     run("chmod" , "+x", "/root/local/bin/sparkkernel")
+    env("MESOS_NATIVE_LIBRARY","/usr/local/lib/libmesos.so")
     // On launch run Java with the classpath and the main class
     entryPoint("/root/local/bin/sparkkernel")
   }
@@ -182,6 +185,7 @@ dockerfile in docker := {
 // Set a custom image name
 imageName in docker := {
   ImageName(namespace = Some(organization.value + ":5000"),
-    repository = name.value,
+    //  TODO Temporary fix for Mesos because it does not like : in the image name
+    repository = name.value + "-v" + version.value,
     tag = Some("v" + version.value))
 }
