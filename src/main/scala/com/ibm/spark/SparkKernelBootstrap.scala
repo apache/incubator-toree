@@ -255,7 +255,27 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
       interpreter.bind(
         "sc", "org.apache.spark.SparkContext",
         sparkContext, List( """@transient"""))
+    }
 
+    // Add ourselves as a dependency
+    // TODO: Provide ability to point to library as commandline argument
+    // TODO: Provide better method to determine if can add ourselves
+    // TODO: Avoid duplicating request for master twice (initializeSparkContext
+    //       also does this)
+    val master = config.getString("spark.master")
+    // If in local mode, do not need to add our jar as a dependency
+    if (!master.toLowerCase.startsWith("local")) {
+      logger.info("Adding self as dependency from " +
+        com.ibm.spark.SparkKernel.getClass.getProtectionDomain
+          .getCodeSource.getLocation.getPath
+      )
+      // Assuming inside a jar if not in local mode
+      sparkContext.addJar(
+        com.ibm.spark.SparkKernel.getClass.getProtectionDomain
+          .getCodeSource.getLocation.getPath
+      )
+    } else {
+      logger.info("Running in local mode! Not adding self as dependency!")
     }
   }
 
