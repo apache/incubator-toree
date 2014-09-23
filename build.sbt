@@ -162,11 +162,12 @@ dockerfile in docker := {
     // Base image
     from("ubuntu:14.04")
     // Copy all dependencies to 'libs' in stage dir
-    runShell("apt-key", "adv", "--keyserver", "keyserver.ubuntu.com", "--recv", "E56151BF")
+//    runShell("apt-key", "adv", "--keyserver", "keyserver.ubuntu.com", "--recv", "E56151BF")
+    runShell("gpg", "--keyserver", "hkp://keyserver.ubuntu.com:80", "--recv-keys", "E56151BF")
     runShell("echo", "deb http://repos.mesosphere.io/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) main", ">>", "/etc/apt/sources.list.d/mesosphere.list")
     runShell("cat", "/etc/apt/sources.list.d/mesosphere.list")
     runShell("apt-get", "update")
-    runShell("apt-get", "--no-install-recommends", "-y", "install", "openjdk-7-jre", "mesos", "make", "libzmq-dev")
+    runShell("apt-get", "--no-install-recommends","-y" ,"--force-yes", "install", "openjdk-7-jre", "mesos", "make", "libzmq-dev")
     env("MESOS_NATIVE_LIBRARY","/usr/local/lib/libmesos.so")
     //  Install the pack elements
     stageFile(baseDirectory.value / "target" / "pack" / "Makefile", "/app/Makefile")
