@@ -160,13 +160,14 @@ docker <<= docker.dependsOn(Keys.`package`.in(Compile, packageBin))
 dockerfile in docker := {
   new Dockerfile {
     // Base image
-    from("dockerfile/java")
+    from("ubuntu:14.04")
     // Copy all dependencies to 'libs' in stage dir
     runShell("apt-key", "adv", "--keyserver", "keyserver.ubuntu.com", "--recv", "E56151BF")
     runShell("echo", "deb http://repos.mesosphere.io/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) main", ">>", "/etc/apt/sources.list.d/mesosphere.list")
     runShell("cat", "/etc/apt/sources.list.d/mesosphere.list")
     runShell("apt-get", "update")
-    runShell("apt-get", "-y", "install", "mesos", "build-essential", "libzmq-dev")
+    runShell("apt-get", "--no-install-recommends", "-y", "install", "openjdk-7-jre", "mesos", "make", "libzmq-dev")
+    env("MESOS_NATIVE_LIBRARY","/usr/local/lib/libmesos.so")
     //  Install the pack elements
     stageFile(baseDirectory.value / "target" / "pack" / "Makefile", "/app/Makefile")
     stageFile(baseDirectory.value / "target" / "pack" / "VERSION", "/app/VERSION")
@@ -174,11 +175,9 @@ dockerfile in docker := {
     stageFile(baseDirectory.value / "target" / "pack" / "bin", "/app/bin")
     add("/app", "/app")
     workDir("/app")
-    run("make" , "install")
-    run("chmod" , "+x", "/root/local/bin/sparkkernel")
-    env("MESOS_NATIVE_LIBRARY","/usr/local/lib/libmesos.so")
+    run("chmod" , "+x", "/app/bin/sparkkernel")
     // On launch run Java with the classpath and the main class
-    entryPoint("/root/local/bin/sparkkernel")
+    entryPoint("/app/bin/sparkkernel")
   }
 }
 
