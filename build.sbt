@@ -6,7 +6,7 @@ organization := "ignitio"
 
 name := "spark-kernel"
 
-version := "0.1.0"
+version := "0.1.1"
 
 fork := true // http://www.scala-sbt.org/0.13/docs/Running-Project-Code.html#Deserialization+and+class+loading
 
@@ -76,12 +76,12 @@ libraryDependencies ++= Seq(
 //
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "1.0.2" excludeAll   // Apache v2
+  "org.apache.spark" %% "spark-core" % "1.1.0" excludeAll   // Apache v2
     ExclusionRule(organization = "org.apache.hadoop"),
-  "org.apache.spark" %% "spark-streaming" % "1.0.2",        // Apache v2
-  "org.apache.spark" %% "spark-sql" % "1.0.2",              // Apache v2
-  "org.apache.spark" %% "spark-streaming-kafka" % "1.0.2",  // Apache v2
-  "org.apache.spark" %% "spark-repl" % "1.0.2" excludeAll   // Apache v2
+  "org.apache.spark" %% "spark-streaming" % "1.1.0",        // Apache v2
+  "org.apache.spark" %% "spark-sql" % "1.1.0",              // Apache v2
+  "org.apache.spark" %% "spark-streaming-kafka" % "1.1.0",  // Apache v2
+  "org.apache.spark" %% "spark-repl" % "1.1.0" excludeAll   // Apache v2
     ExclusionRule(organization = "org.apache.hadoop")
 )
 
@@ -183,9 +183,10 @@ dockerfile in docker := {
 }
 
 // Set a custom image name
+// TODO: Move version.value to tag = Some("v" + version.value)
 imageName in docker := {
   ImageName(namespace = Some(organization.value + ":5000"),
     //  TODO Temporary fix for Mesos because it does not like : in the image name
     repository = name.value + "-v" + version.value,
-    tag = Some("v" + version.value))
+    tag = Some("latest"))
 }
