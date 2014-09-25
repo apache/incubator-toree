@@ -14,6 +14,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import org.slf4j.Logger
+import test.utils.UncaughtExceptionSuppression
 
 import scala.concurrent.duration._
 
@@ -30,8 +31,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
     ConfigFactory.parseString(InterpreterActorSpecForIntegration.config)
   )
 ) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
-  with MockitoSugar
-{
+  with MockitoSugar with UncaughtExceptionSuppression {
 
   private val output = new ByteArrayOutputStream()
   private val interpreter = new ScalaInterpreter(List(), output)

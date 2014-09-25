@@ -1,6 +1,6 @@
 package com.ibm.spark.utils
 
-import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.{TimeUnit, ArrayBlockingQueue}
 import java.util.concurrent.atomic.AtomicReference
 
 import scala.concurrent.{Future, Promise, promise}
@@ -10,12 +10,12 @@ import scala.concurrent.{Future, Promise, promise}
  * separate thread (created inside the manager). Facilitates running tasks and
  * provides a method
  */
-class TaskManager {
+class TaskManager extends LogLike{
   // Maximum time to wait (in milliseconds) before forcefully stopping this
   // thread when an interrupt fails
   private val InterruptTimeout = 5 * 1000
-
-  private val _taskQueue = new ConcurrentLinkedQueue[(Runnable, Promise[_])]()
+  private val _queueCapacity = 200
+  private val _taskQueue = new ArrayBlockingQueue[(Runnable, Promise[_])](_queueCapacity)
   private var _taskThread: TaskThread = _
 
   private val _currentPromise: AtomicReference[Promise[_]] =
@@ -37,11 +37,7 @@ class TaskManager {
      */
     override def run(): Unit = {
       while (_running) {
-        // Enable interrupting
-        if (Thread.interrupted())
-          throw new InterruptedException()
-
-        val element = _taskQueue.poll()
+        val element = _taskQueue.poll(1L, TimeUnit.MILLISECONDS)
         if (element != null) {
           _currentTask = element._1
           _currentPromise.set(element._2)

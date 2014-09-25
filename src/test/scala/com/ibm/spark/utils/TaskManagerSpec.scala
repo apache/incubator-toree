@@ -7,12 +7,13 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.time.{Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import test.utils.UncaughtExceptionSuppression
 
 import scala.concurrent.Future
 import scala.runtime.BoxedUnit
 
 class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
-  with BeforeAndAfter with ScalaFutures
+  with BeforeAndAfter with ScalaFutures with UncaughtExceptionSuppression
 {
   private var taskManager: TaskManager = _
 
