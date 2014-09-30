@@ -131,7 +131,7 @@ class MagicManagerSpec extends TestKit(
             mock[OutputStream]
           ))
 
-          expectMsg(200.milliseconds, Left(fakeMagicReturn))
+          expectMsg(1000.milliseconds, Left(fakeMagicReturn))
         }
       }
     }

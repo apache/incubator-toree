@@ -113,7 +113,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         result.right.get shouldBe an [ExecuteError]
       }
 
-      it("should return an ExecuteReplyError if the interpreter returns incomplete") {
+      it("should return ExecuteReplyError if interpreter returns incomplete") {
         val mockInterpreter = mock[Interpreter]
         doReturn((Results.Incomplete, Right(""))).when(mockInterpreter)
           .interpret(anyString(), anyBoolean())
@@ -125,7 +125,33 @@ class ExecuteRequestTaskActorSpec extends TestKit(
           ))
 
         val executeRequest = (ExecuteRequest(
-          "", false, false,
+          "(1 + 2", false, false,
+          UserExpressions(), false
+        ), mock[OutputStream])
+
+        executeRequestTask ! executeRequest
+
+        val result =
+          receiveOne(5.seconds)
+            .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
+
+        result.isLeft should be (false)
+        result.right.get shouldBe an [ExecuteError]
+      }
+
+      it("should return an ExecuteReplyOk when receiving empty code.") {
+        val mockInterpreter = mock[Interpreter]
+        doReturn((Results.Incomplete, Right(""))).when(mockInterpreter)
+          .interpret(anyString(), anyBoolean())
+
+        val executeRequestTask =
+          system.actorOf(Props(
+            classOf[ExecuteRequestTaskActor],
+            mockInterpreter
+          ))
+
+        val executeRequest = (ExecuteRequest(
+          "   ", false, false,
           UserExpressions(), false
         ), mock[OutputStream])
 
@@ -136,7 +162,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
             .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
 
         result.isLeft should be (true)
-        result.left.get shouldBe an [ExecuteOutput]
+        result.isRight should be (false)
       }
     }
   }
