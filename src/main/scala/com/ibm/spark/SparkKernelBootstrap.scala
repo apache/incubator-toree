@@ -54,9 +54,9 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
    * Initializes all kernel systems.
    */
   def initialize() = {
+    initializeIncomingMessageMap()
     setup()
     createSockets()
-    initializeIncomingMessageMap()
     initializeKernelHandlers()
     publishStatus(KernelStatusType.Starting)
     initializeInterpreter()
