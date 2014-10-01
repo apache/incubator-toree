@@ -12,7 +12,22 @@ case class Header(
 
 object Header {
   implicit val headerReads = Json.reads[Header]
-  implicit val headerWrites = Json.writes[Header]
+  //implicit val headerWrites = Json.writes[Header]
+  implicit val headerWriters = new Writes[Header] {
+    def writes(header: Header) =
+      if (header != null) {
+        Json.obj(
+          "msg_id" -> header.msg_id,
+          "username" -> header.username,
+          "session" -> header.session,
+          "msg_type" -> header.msg_type,
+          "version" -> header.version
+        )
+      // Empty header is null
+      } else {
+        Json.obj()
+      }
+  }
 }
 
 /* LEFT FOR REFERENCE IN CREATING CUSTOM READ/WRITE

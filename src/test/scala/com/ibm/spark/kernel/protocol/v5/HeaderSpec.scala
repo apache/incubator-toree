@@ -20,6 +20,13 @@ class HeaderSpec extends FunSpec with Matchers {
   )
 
   describe("Header") {
+    describe("when null") {
+      it("should implicitly convert to empty json") {
+        val header: Header = null
+        Json.toJson(header).toString() should be ("{}")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a header instance") {
         // This is the least safe way to convert as an error is thrown if it fails
