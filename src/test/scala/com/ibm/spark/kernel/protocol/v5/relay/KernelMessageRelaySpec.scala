@@ -2,117 +2,137 @@ package com.ibm.spark.kernel.protocol.v5.relay
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.mockito.Matchers.{eq => mockEq}
+import org.mockito.AdditionalMatchers.{not => mockNot}
 
 import scala.concurrent.duration._
+import com.ibm.spark.kernel.protocol.v5.MessageType._
+import com.ibm.spark.kernel.protocol.v5.KernelMessage
+import scala.collection.immutable.HashMap
 
 class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
-with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
-  //  The header for the message
+  with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfter {
+  val IncomingMessageType = CompleteRequest.toString
+  val OutgoingMessageType = CompleteReply.toString
+
   val header: Header = Header("<UUID>", "<USER>", "<SESSION>",
-    MessageType.ClearOutput.toString, "<VERSION>")
-  //  The parent header for the message
-  val parentHeader: Header = Header("<PARENT-UUID>", "<PARENT-USER>", "<PARENT-SESSION>",
-    MessageType.ClearOutput.toString, "<PARENT-VERSION>")
-  //  The actual kernel message
-  val kernelMessage: KernelMessage = KernelMessage(Seq("<ID>"), "<SIGNATURE>", header,
+    "<TYPE>", "<VERSION>")
+  val parentHeader: Header = Header("<PARENT-UUID>", "<PARENT-USER>",
+    "<PARENT-SESSION>", "<PARENT-TYPE>", "<PARENT-VERSION>")
+  val incomingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>"),
+    "<SIGNATURE>", header.copy(msg_type = IncomingMessageType),
     parentHeader, Metadata(), "<CONTENT>")
-  //  Use the implicit to convert the KernelMessage to ZMQMessage
-  val zmqMessage: ZMQMessage = kernelMessage
+  val outgoingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>"),
+    "<SIGNATURE>", header.copy(msg_type = OutgoingMessageType),
+    parentHeader, Metadata(), "<CONTENT>")
 
-  describe("Relay( ActorLoader, false )") {
-    //  Create a mock ActorLoader for the Relay we are going to test
-    val actorLoader: ActorLoader = mock[ActorLoader]
+  val incomingMessageMap = HashMap[String, String](
+    IncomingMessageType -> ""
+  )
 
-    //  Create a probe for the signature manager and mock the ActorLoader to return the associated ActorSelection
-    val signatureProbe: TestProbe = TestProbe()
-    val signatureSelection: ActorSelection = system.actorSelection(signatureProbe.ref.path.toString)
-    when(actorLoader.load(SystemActorType.SignatureManager)).thenReturn(signatureSelection)
+  var actorLoader: ActorLoader = _
+  var signatureProbe: TestProbe = _
+  var signatureSelection: ActorSelection = _
+  var captureProbe: TestProbe = _
+  var captureSelection: ActorSelection = _
+  var handlerProbe: TestProbe = _
+  var handlerSelection: ActorSelection = _
+  var relayWithoutSignatureManager: ActorRef = _
+  var relayWithSignatureManager: ActorRef = _
 
-    //  Create a probe for the handler and mock the ActorLoader to return the associated ActorSelection
-    val handlerProbe: TestProbe = TestProbe()
-    val handlerSelection: ActorSelection = system.actorSelection(handlerProbe.ref.path.toString)
-    when(actorLoader.load(MessageType.ClearOutput)).thenReturn(handlerSelection)
+  before {
+    // Create a mock ActorLoader for the Relay we are going to test
+    actorLoader = mock[ActorLoader]
 
-    //  The relay we will test against
-    val relay: ActorRef = system.actorOf(Props(classOf[KernelMessageRelay], actorLoader, false))
+    // Create a probe for the signature manager and mock the ActorLoader to
+    // return the associated ActorSelection
+    signatureProbe = TestProbe()
+    signatureSelection = system.actorSelection(signatureProbe.ref.path.toString)
+    when(actorLoader.load(SystemActorType.SignatureManager))
+      .thenReturn(signatureSelection)
 
-    describe("#receive( KernelMessage )") {
-      relay ! kernelMessage
-      it("should not send anything to SecurityManager ") {
-        signatureProbe.expectNoMsg(25.millis)
-      }
-      it("should relay KernelMessage") {
-        handlerProbe.expectMsg(kernelMessage)
-      }
-    }
-    describe("#receive( ZMQMessage )") {
-      relay ! zmqMessage
-      it("should relay ZMQMessage as KernelMessage") {
-        handlerProbe.expectMsg(kernelMessage)
-      }
-    }
+    // Create a probe to capture output from the relay for testing
+    captureProbe = TestProbe()
+    captureSelection = system.actorSelection(captureProbe.ref.path.toString)
+    when(actorLoader.load(mockNot(mockEq(SystemActorType.SignatureManager))))
+      .thenReturn(captureSelection)
+
+    relayWithoutSignatureManager = system.actorOf(Props(
+      classOf[KernelMessageRelay], actorLoader, incomingMessageMap, false
+    ))
+
+    relayWithSignatureManager = system.actorOf(Props(
+      classOf[KernelMessageRelay], actorLoader, incomingMessageMap, true
+    ))
   }
 
-  describe("Relay( ActorLoader, true )"){
-    //  Create a mock ActorLoader for the Relay we are going to test
-    val actorLoader: ActorLoader = mock[ActorLoader]
-
-    //  Create a probe for the signature manager and mock the ActorLoader to return the associated ActorSelection
-    val signatureProbe: TestProbe = TestProbe()
-    val signatureSelection: ActorSelection = system.actorSelection(signatureProbe.ref.path.toString)
-    when(actorLoader.load(SystemActorType.SignatureManager)).thenReturn(signatureSelection)
-
-    //  Create a probe for the handler and mock the ActorLoader to return the associated ActorSelection
-    val handlerProbe: TestProbe = TestProbe()
-    val handlerSelection: ActorSelection = system.actorSelection(handlerProbe.ref.path.toString)
-    when(actorLoader.load(MessageType.ClearOutput)).thenReturn(handlerSelection)
-
-    //  The Relay we are going to be testing against
-    val relay: ActorRef = system.actorOf(Props(classOf[KernelMessageRelay], actorLoader, true))
-
-    describe("#receive( KernelMessage )") {
-      relay ! kernelMessage
-
-      it("should send KernelMessage to security manager") {
-        signatureProbe.expectMsg(kernelMessage)
-        signatureProbe.reply(kernelMessage)
-
-      }
-
-      it("should send KernelMessage to handler"){
-        handlerProbe.expectMsg(kernelMessage)
-      }
-    }
-
-    describe("#receive( ZMQMessage )") {
-      describe("when SecurityManager#( ZMQMessage ) returns true") {
-        relay ! zmqMessage
-
-        it("should send ZMQMessage to security manager") {
-          signatureProbe.expectMsg(zmqMessage)
-          signatureProbe.reply(true)
+  describe("Relay") {
+    describe("#receive") {
+      describe("when not using the signature manager") {
+        it("should not send anything to SignatureManager for incoming") {
+          relayWithoutSignatureManager ! true // Mark as ready for incoming
+          relayWithoutSignatureManager ! incomingKernelMessage
+          signatureProbe.expectNoMsg(25.millis)
         }
 
-        it("should send KernelMessage to handler"){
-          handlerProbe.expectMsg(kernelMessage)
+        it("should not send anything to SignatureManager for outgoing") {
+          relayWithoutSignatureManager ! outgoingKernelMessage
+          signatureProbe.expectNoMsg(25.millis)
+        }
+
+        it("should relay KernelMessage for incoming") {
+          relayWithoutSignatureManager ! true // Mark as ready for incoming
+          relayWithoutSignatureManager ! incomingKernelMessage
+          captureProbe.expectMsg(incomingKernelMessage)
+        }
+
+        it("should relay KernelMessage for outgoing") {
+          relayWithoutSignatureManager ! outgoingKernelMessage
+          captureProbe.expectMsg(outgoingKernelMessage)
         }
       }
 
-      describe("when SecurityManager#( ZMQMessage ) returns false") {
-        relay ! zmqMessage
-
-        it("should send ZMQMessage to security manager") {
-          signatureProbe.expectMsg(zmqMessage)
-          signatureProbe.reply(false)
+      describe("when using the signature manager") {
+        it("should verify the signature if the message is incoming") {
+          relayWithSignatureManager ! true // Mark as ready for incoming
+          relayWithSignatureManager ! incomingKernelMessage
+          signatureProbe.expectMsg(incomingKernelMessage)
         }
 
-        it("should not send KernelMessage to handler"){
-          handlerProbe.expectNoMsg(25.millis)
+        it("should construct the signature if the message is outgoing") {
+          relayWithSignatureManager ! outgoingKernelMessage
+          signatureProbe.expectMsg(outgoingKernelMessage)
+        }
+      }
+
+      describe("when not ready") {
+        it("should not relay the message if it is incoming") {
+          relayWithoutSignatureManager ! incomingKernelMessage
+          captureProbe.expectNoMsg(25.millis)
+        }
+
+        it("should relay the message if it is outgoing") {
+          relayWithoutSignatureManager ! outgoingKernelMessage
+          captureProbe.expectMsg(outgoingKernelMessage)
+        }
+      }
+
+      describe("when ready") {
+        it("should relay the message if it is incoming") {
+          relayWithoutSignatureManager ! true // Mark as ready for incoming
+          relayWithoutSignatureManager ! incomingKernelMessage
+          captureProbe.expectMsg(incomingKernelMessage)
+        }
+
+        it("should relay the message if it is outgoing") {
+          relayWithoutSignatureManager ! true // Mark as ready for incoming
+          relayWithoutSignatureManager ! outgoingKernelMessage
+          captureProbe.expectMsg(outgoingKernelMessage)
         }
       }
     }

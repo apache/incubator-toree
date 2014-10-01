@@ -22,6 +22,7 @@ import com.typesafe.config.Config
 import org.apache.spark.{SparkConf, SparkContext}
 import play.api.libs.json.Json
 import scala.collection.JavaConverters._
+import scala.collection.immutable.HashMap
 
 case class SparkKernelBootstrap(config: Config) extends LogLike {
 
@@ -38,6 +39,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   private var dependencyMap: DependencyMap            = _
   private var builtinLoader: BuiltinLoader            = _
   private var magicLoader: MagicLoader                = _
+  private var incomingMessageMap: Map[String, String] = _
 
   private var actorSystem: ActorSystem                = _
   private var actorLoader: ActorLoader                = _
@@ -54,6 +56,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   def initialize() = {
     setup()
     createSockets()
+    initializeIncomingMessageMap()
     initializeKernelHandlers()
     publishStatus(KernelStatusType.Starting)
     initializeInterpreter()
@@ -63,6 +66,8 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     registerInterruptHook()
     registerShutdownHook()
     publishStatus(KernelStatusType.Idle)
+
+    kernelMessageRelayActor ! true
 
     this
   }
@@ -93,6 +98,20 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     this
   }
 
+  private def initializeIncomingMessageMap(): Unit = {
+    import MessageType._
+
+    incomingMessageMap = HashMap[String, String](
+      CompleteRequest.toString -> "",
+      ConnectRequest.toString -> "",
+      ExecuteRequest.toString -> "",
+      HistoryRequest.toString -> "",
+      InspectRequest.toString -> "",
+      KernelInfoRequest.toString -> "",
+      ShutdownRequest.toString -> ""
+    )
+  }
+
   /**
    * Does minimal setup in order to send the "starting" status message over
    * the IOPub socket
@@ -106,7 +125,9 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
     logger.info("Creating kernel message relay actor")
     kernelMessageRelayActor = actorSystem.actorOf(
-      Props(classOf[KernelMessageRelay], actorLoader),
+      Props(
+        classOf[KernelMessageRelay], actorLoader, incomingMessageMap, true
+      ),
       name = SystemActorType.KernelMessageRelay.toString
     )
 
@@ -116,7 +137,10 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     logger.info("Key = " + sigKey)
     logger.info("Scheme = " + sigScheme)
     signatureManagerActor = actorSystem.actorOf(
-      Props(classOf[SignatureManagerActor], sigKey, sigScheme.replace("-", "")),
+      Props(
+        classOf[SignatureManagerActor], sigKey, sigScheme.replace("-", ""),
+        incomingMessageMap
+      ),
       name = SystemActorType.SignatureManager.toString
     )
 

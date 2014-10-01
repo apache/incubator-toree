@@ -17,7 +17,8 @@ import scala.concurrent.duration._
  * @param actorLoader The ActorLoader used by this class for finding actors for relaying messages
  */
 case class KernelMessageRelay(
-  actorLoader: ActorLoader, useSignatureManager: Boolean
+  actorLoader: ActorLoader, incomingMessageMap: Map[String, String],
+  useSignatureManager: Boolean
 ) extends Actor with LogLike {
   // NOTE: Required to provide the execution context for futures with akka
   import context._
@@ -25,7 +26,10 @@ case class KernelMessageRelay(
   // NOTE: Required for ask (?) to function... maybe can define elsewhere?
   implicit val timeout = Timeout(5.seconds)
 
-  def this(actorLoader: ActorLoader) = this(actorLoader, true)
+  var isReady = false
+
+  def this(actorLoader: ActorLoader, incomingMessageMap: Map[String, String]) =
+    this(actorLoader, incomingMessageMap, true)
 
   /**
    * Relays a KernelMessage to a specific actor to handle that message
@@ -33,6 +37,7 @@ case class KernelMessageRelay(
    */
   private def relay(kernelMessage: KernelMessage){
     val messageType: MessageType = MessageType.withName(kernelMessage.header.msg_type)
+    logger.info("IS_READY: " + isReady)
     logger.info("Relaying message of type " + kernelMessage.header.msg_type )
     actorLoader.load(messageType) ! kernelMessage
   }
@@ -42,38 +47,44 @@ case class KernelMessageRelay(
    * will be forwarded to their actors which are responsible for them.
    */
   override def receive = {
-    //  We need to have these cases explicitly because the implicit to convert is only
-    //  done when we call the method. Hence, the two cases
-    case zmqMessage: ZMQMessage =>
-      if (useSignatureManager) {
-        val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
-        val signatureVerificationFuture = signatureManager ? zmqMessage
+    // TODO: How to restore this when the actor dies?
+    case ready: Boolean =>
+      isReady = ready
+      logger.info("Relay is now fully ready to receive messages!")
 
-        // TODO: Handle error case for mapTo and non-present onFailure
-        signatureVerificationFuture.mapTo[Boolean] onSuccess {
-          // Verification successful, so continue relay
-          case true => relay(zmqMessage)
+    // Assuming these messages are incoming messages
+    case kernelMessage: KernelMessage
+      if incomingMessageMap.contains(kernelMessage.header.msg_type) && isReady =>
+        if (useSignatureManager) {
+          val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
+          val signatureVerificationFuture = signatureManager ? kernelMessage
 
-          // TODO: Figure out what the failure message structure should be!
-          // Verification failed, so report back a failure
-          case false => // sender ! SOME MESSAGE
+          // TODO: Handle error case for mapTo and non-present onFailure
+          signatureVerificationFuture.mapTo[Boolean] onSuccess {
+            // Verification successful, so continue relay
+            case true => relay(kernelMessage)
+
+            // TODO: Figure out what the failure message structure should be!
+            // Verification failed, so report back a failure
+            case false => // sender ! SOME MESSAGE
+          }
+        } else {
+          relay(kernelMessage)
         }
-      } else {
-        relay(zmqMessage)
-      }
 
-    case kernelMessage: KernelMessage =>
-      if (useSignatureManager) {
-        val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
-        val signatureInsertFuture = signatureManager ? kernelMessage
+    // Assuming all other kernel messages are outgoing
+    case kernelMessage: KernelMessage
+      if !incomingMessageMap.contains(kernelMessage.header.msg_type) =>
+        if (useSignatureManager) {
+          val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
+          val signatureInsertFuture = signatureManager ? kernelMessage
 
-        // TODO: Handle error case for mapTo and non-present onFailure
-        signatureInsertFuture.mapTo[KernelMessage] onSuccess {
-          case message => relay(message)
+          // TODO: Handle error case for mapTo and non-present onFailure
+          signatureInsertFuture.mapTo[KernelMessage] onSuccess {
+            case message => relay(message)
+          }
+        } else {
+          relay(kernelMessage)
         }
-      } else {
-        relay(kernelMessage)
-
-      }
   }
 }

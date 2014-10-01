@@ -4,7 +4,6 @@ import java.io.OutputStream
 
 import akka.actor.{Props, ActorSystem}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.typesafe.config.ConfigFactory
@@ -17,7 +16,6 @@ import org.scalatest.{FunSpecLike, Matchers}
 import com.ibm.spark.interpreter._
 
 import scala.concurrent.duration._
-import scala.util.Either.LeftProjection
 
 object ExecuteRequestTaskActorSpec {
   val config = """

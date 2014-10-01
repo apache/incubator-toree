@@ -12,11 +12,12 @@ import akka.pattern.ask
 import akka.pattern.pipe
 
 class SignatureManagerActor(
-  key: String, scheme: String
+  key: String, scheme: String,
+  incomingMessageMap: Map[String, String]
 ) extends Actor with LogLike {
   private val hmac = Hmac(key, HmacAlgorithm(scheme))
 
-  def this(key: String) = this(key, HmacAlgorithm.SHA256.toString)
+  def this(key: String, incomingMessageMap: Map[String, String]) = this(key, HmacAlgorithm.SHA256.toString, incomingMessageMap)
 
   // NOTE: Required to provide the execution context for futures with akka
   import context._
@@ -45,9 +46,13 @@ class SignatureManagerActor(
   }
 
   override def receive: Receive = {
-    case message: ZMQMessage =>
-      val kernelMessage: KernelMessage = message
-      (signatureChecker ? kernelMessage) pipeTo sender
+    // Incoming data only is expected to be checked for invalid signatures
+    case message: KernelMessage
+      if incomingMessageMap.contains(message.header.msg_type) =>
+      (signatureChecker ? message) pipeTo sender
+
+    // All other kernel messages are presumed to be outgoing and are going
+    // to be given signatures
     case message: KernelMessage =>
       // TODO: Proper error handling for possible exception from mapTo
       (signatureProducer ? message).mapTo[String].map(
