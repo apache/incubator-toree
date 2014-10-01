@@ -308,6 +308,13 @@ class ScalaInterpreter(
     sparkIMain.bind(variableName, typeName, value, modifiers)
   }
 
+  override def read(variableName: String): Option[AnyRef] = {
+    require(sparkIMain != null)
+    val variable = sparkIMain.valueOfTerm(variableName)
+    if (variable == null || variable.isEmpty) None
+    else variable
+  }
+
   override def completion(code: String, pos: Int): (Int, List[String]) = {
     require(jLineCompleter != null)
 

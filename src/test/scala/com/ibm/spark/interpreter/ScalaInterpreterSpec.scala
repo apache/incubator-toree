@@ -9,6 +9,7 @@ import com.ibm.spark.utils.TaskManager
 import org.apache.spark.repl.SparkIMain
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
+import scala.None
 import scala.concurrent.{ExecutionContext, Future}
 import scala.tools.nsc.{interpreter, Settings}
 
@@ -272,6 +273,21 @@ class ScalaInterpreterSpec extends FunSpec
           case ex: Throwable  =>
             ex.getClass.getName should be ("org.apache.spark.ServerStateException")
         }
+      }
+    }
+
+    describe("#read") {
+      it("should fail a require if the interpreter is not started") {
+        intercept[IllegalArgumentException] {
+          interpreter.read("someVariable")
+        }
+      }
+
+      it("should execute the underlying valueOfTerm method") {
+        interpreter.start()
+        interpreter.read("someVariable")
+
+        verify(mockSparkIMain).valueOfTerm(anyString())
       }
     }
 

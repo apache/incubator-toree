@@ -62,6 +62,15 @@ trait Interpreter {
   def bind(variableName: String, typeName: String, value: Any, modifiers: List[String])
 
   /**
+   * Retrieves the contents of the variable with the provided name from the
+   * interpreter.
+   * @param variableName The name of the variable whose contents to read
+   * @return An option containing the variable contents or None if the
+   *         variable does not exist
+   */
+  def read(variableName: String): Option[AnyRef]
+
+  /**
    * Mask the Console and System objects with our wrapper implementations
    * and dump the Console methods into the public namespace (similar to
    * the Predef approach).
