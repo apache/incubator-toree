@@ -167,7 +167,7 @@ dockerfile in docker := {
     runShell("echo", "deb http://repos.mesosphere.io/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) main", ">>", "/etc/apt/sources.list.d/mesosphere.list")
     runShell("cat", "/etc/apt/sources.list.d/mesosphere.list")
     runShell("apt-get", "update")
-    runShell("apt-get", "--no-install-recommends","-y" ,"--force-yes", "install", "openjdk-7-jre", "mesos", "make", "libzmq-dev")
+    runShell("apt-get", "--no-install-recommends","-y" ,"--force-yes", "install", "openjdk-7-jre", "mesos=0.20.1-1.0.ubuntu1404", "make", "libzmq-dev")
     env("MESOS_NATIVE_LIBRARY","/usr/local/lib/libmesos.so")
     //  Install the pack elements
     stageFile(baseDirectory.value / "target" / "pack" / "Makefile", "/app/Makefile")
