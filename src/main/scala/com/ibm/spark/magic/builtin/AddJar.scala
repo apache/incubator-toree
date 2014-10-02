@@ -1,9 +1,11 @@
 package com.ibm.spark.magic.builtin
 
-import java.io.{PrintStream, File}
+import java.io.{File, PrintStream}
 import java.net.URL
 
-import com.ibm.spark.magic.dependencies.{IncludeOutputStream, IncludeSparkContext, IncludeInterpreter}
+import com.ibm.spark.kernel.protocol.v5.MIMEType
+import com.ibm.spark.magic.MagicOutput
+import com.ibm.spark.magic.dependencies.{IncludeInterpreter, IncludeOutputStream, IncludeSparkContext}
 import com.ibm.spark.utils.DownloadSupport
 
 class AddJar
@@ -24,10 +26,10 @@ class AddJar
    * interpreter/compiler/cluster classpaths.
    * @param code The lines containing the locations of the jars, separated by newline
    */
-  override def executeCell(code: Seq[String]): String = {
+  override def executeCell(code: Seq[String]): MagicOutput = {
     code.foreach(executeLine)
 
-    "" // No output needed
+    MagicOutput() // No output needed
   }
 
   /**
@@ -35,10 +37,10 @@ class AddJar
    * interpreter/compiler/cluster classpaths.
    * @param code The line containing the location of the jar
    */
-  override def executeLine(code: String): String = {
+  override def executeLine(code: String): MagicOutput = {
     val jarRemoteLocation = code.trim
     if (jarRemoteLocation.isEmpty)
-      return s"%AddJar '$jarRemoteLocation' is invalid!"
+      return MagicOutput(MIMEType.PlainText -> s"%AddJar '$jarRemoteLocation' is invalid!")
 
     val HtmlJarRegex(jarName) = jarRemoteLocation
     val downloadLocation = JarStorageLocation + "/" + jarName
@@ -57,6 +59,6 @@ class AddJar
     interpreter.addJars(jarUrl)
     sparkContext.addJar(jarUrl.getPath)
 
-    "" // No output needed
+    MagicOutput() // No output needed
   }
 }

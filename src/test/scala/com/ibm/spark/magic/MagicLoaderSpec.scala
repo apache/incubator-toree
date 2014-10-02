@@ -1,34 +1,31 @@
 package com.ibm.spark.magic
 
 import java.io.OutputStream
+import java.net.URL
 
 import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.magic.builtin.{BuiltinLoader, MagicTemplate}
-import com.ibm.spark.magic.dependencies.{DependencyMap}
+import com.ibm.spark.magic.dependencies.DependencyMap
 import org.apache.spark.SparkContext
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{Matchers, FunSpec}
-
-import java.net.URL
-
-import org.mockito.Mockito._
 import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.{FunSpec, Matchers}
 
-import scala.tools.nsc.util.ScalaClassLoader.URLClassLoader
 class MagicWithNoDependencies extends MagicTemplate {
   /**
    * Execute a magic representing a line magic.
    * @param code The single line of code
    * @return The output of the magic
    */
-  override def executeLine(code: String): String = ""
+  override def executeLine(code: String): MagicOutput = MagicOutput()
 
   /**
    * Execute a magic representing a cell magic.
    * @param code The list of code, separated by newlines
    * @return The output of the magic
    */
-  override def executeCell(code: Seq[String]): String = ""
+  override def executeCell(code: Seq[String]): MagicOutput = MagicOutput()
 }
 
 class MagicLoaderSpec extends FunSpec with Matchers with MockitoSugar {

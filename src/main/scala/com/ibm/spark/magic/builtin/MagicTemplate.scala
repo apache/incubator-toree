@@ -1,5 +1,7 @@
 package com.ibm.spark.magic.builtin
 
+import com.ibm.spark.magic.MagicOutput
+
 
 /**
  * Represents the base structure for a magic that is loaded and executed.
@@ -10,12 +12,12 @@ trait MagicTemplate {
    * @param code The single line of code
    * @return The output of the magic
    */
-  def executeLine(code: String): String
+  def executeLine(code: String): MagicOutput
 
   /**
    * Execute a magic representing a cell magic.
    * @param code The list of code, separated by newlines
    * @return The output of the magic
    */
-  def executeCell(code: Seq[String]): String
+  def executeCell(code: Seq[String]): MagicOutput
 }

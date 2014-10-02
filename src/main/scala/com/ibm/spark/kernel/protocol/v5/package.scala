@@ -4,8 +4,10 @@ import java.util.UUID
 
 import akka.util.{ByteString, Timeout}
 import akka.zeromq.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType
 import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsPath, Json}
+import play.api.libs.json._
+
 import scala.concurrent.duration._
 //
 // NOTE: This is brought in to remove feature warnings regarding the use of
@@ -33,7 +35,7 @@ package object v5 {
   val Metadata = Map
 
   // Provide a Data type and object representing a map
-  type Data = Map[String, String]
+  type Data = Map[MIMEType, String]
   val Data = Map
 
   // Provide a UserExpressions type and object representing a map
@@ -154,5 +156,13 @@ package object v5 {
     val Starting  = Value("starting")
     val Busy      = Value("busy")
     val Idle      = Value("idle")
+  }
+
+  object MIMEType extends Enumeration {
+    type MIMEType = String
+
+    val PlainText = "text/plain"
+    val ImagePng  = "image/png"
+    val TextHtml  = "text/html"
   }
 }

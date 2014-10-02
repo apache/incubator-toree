@@ -3,8 +3,8 @@ package com.ibm.spark.kernel.protocol.v5.magic
 import java.io.OutputStream
 
 import akka.actor.Actor
-import com.ibm.spark.interpreter.{ExecuteOutput, ExecuteError}
-import com.ibm.spark.magic.MagicLoader
+import com.ibm.spark.interpreter.{ExecuteError}
+import com.ibm.spark.magic.{MagicOutput, MagicLoader}
 import com.ibm.spark.utils.LogLike
 
 import scala.util.parsing.combinator.RegexParsers
@@ -38,7 +38,7 @@ class MagicManager(magicLoader: MagicLoader)
       val (magicName, code) =  (matchData.group(1), matchData.after(1).toString)
       val isCell = message.toString.startsWith("%%")
 
-      var result: Either[ExecuteOutput, ExecuteError] = null
+      var result: Either[MagicOutput, ExecuteError] = null
 
       if (magicLoader.hasMagic(magicName)) {
         // TODO: Offload this to another actor
@@ -46,7 +46,7 @@ class MagicManager(magicLoader: MagicLoader)
           // Set output stream to use for this magic
           magicLoader.dependencyMap.setOutputStream(outputStream)
 
-          val output: ExecuteOutput =
+          val output: MagicOutput =
             magicLoader.executeMagic(magicName, code, isCell)
           result = Left(output)
         } catch {

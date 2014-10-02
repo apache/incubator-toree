@@ -2,11 +2,10 @@ package com.ibm.spark.magic
 
 import java.net.{URL, URLClassLoader}
 
+import com.ibm.spark.magic.builtin.MagicTemplate
 import com.ibm.spark.magic.dependencies.DependencyMap
 
 import scala.reflect.runtime.{universe => runtimeUniverse}
-
-import com.ibm.spark.magic.builtin.{AddJar, MagicTemplate}
 
 class MagicLoader(
   val dependencyMap: DependencyMap = new DependencyMap(),
@@ -46,7 +45,7 @@ class MagicLoader(
     magicInstance
   }
 
-  def executeMagic(name: String, code: String, isCell: Boolean): String = {
+  def executeMagic(name: String, code: String, isCell: Boolean): MagicOutput = {
     val magicInstance = createMagicInstance(name).asInstanceOf[MagicTemplate]
 
     if (isCell) {

@@ -1,19 +1,14 @@
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.{Data, Metadata}
 import play.api.libs.json.Json
-import com.ibm.spark.kernel.protocol.v5.{Metadata, Data}
 
 case class ExecuteResult (
   execution_count: Int,
   data: Data,
   metadata: Metadata
 ) {
-  def hasContent =
-     data != null &&
-     (data.get("text/plain") match {
-       case Some(value) => value != null && value.nonEmpty
-       case None => false
-     })
+  def hasContent = data != null && data.exists(x => x._2 != null && x._2.nonEmpty)
 }
 
 object ExecuteResult {

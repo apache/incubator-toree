@@ -110,7 +110,7 @@ class MagicManagerSpec extends TestKit(
 
         it("should evaluate the magic if it exists and return the output if it succeeds") {
           val fakeMagicName = "myMagic"
-          val fakeMagicReturn = "MY RETURN VALUE"
+          val fakeMagicReturn = Map()
 
           val mockMagic = mock[MagicTemplate]
           doReturn(fakeMagicReturn)

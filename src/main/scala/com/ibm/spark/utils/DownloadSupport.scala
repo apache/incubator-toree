@@ -22,7 +22,7 @@ trait DownloadSupport {
   def downloadFile(fileUrl: URL, destinationUrl: URL): URL = {
     val rbc = Channels.newChannel(fileUrl.openStream())
     val fos = new FileOutputStream(destinationUrl.getPath)
-    fos.getChannel().transferFrom(rbc, 0, Long.MaxValue)
+    fos.getChannel.transferFrom(rbc, 0, Long.MaxValue)
 
     destinationUrl
   }
