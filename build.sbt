@@ -183,10 +183,13 @@ dockerfile in docker := {
 }
 
 // Set a custom image name
-// TODO: Move version.value to tag = Some("v" + version.value)
 imageName in docker := {
-  ImageName(namespace = Some(organization.value + ":5000"),
-    //  TODO Temporary fix for Mesos because it does not like : in the image name
-    repository = name.value + "-v" + version.value,
-    tag = Some("latest"))
+  //  TODO Temporary fix for Mesos because it does not like : in the image name
+  val kernelBuildId = if(System.getenv("KERNEL_BUILD_ID") != null)  Option(System.getenv("KERNEL_BUILD_ID")) else Option( "-v" + version.value)
+  val kernelImageId = if(System.getenv("KERNEL_IMAGE") != null)  System.getenv("KERNEL_IMAGE") else name.value + kernelBuildId.get
+  val dockerRegistry= if(System.getenv("DOCKER_REGISTRY") != null)  Option(System.getenv("DOCKER_REGISTRY")) else Option(organization.value + ":5000")
+  ImageName(
+    namespace = dockerRegistry,
+    repository = kernelImageId,
+    tag = kernelBuildId)
 }
