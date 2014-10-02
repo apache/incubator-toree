@@ -58,7 +58,8 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     setup()
     createSockets()
     initializeKernelHandlers()
-    publishStatus(KernelStatusType.Starting)
+    publishStatus(KernelStatusType.Starting, Some(null))
+    publishStatus(KernelStatusType.Busy)
     initializeInterpreter()
     initializeSparkContext()
     initializeMagicLoader()
@@ -377,8 +378,14 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     initializeSocketHandler(SocketType.IOPub, MessageType.Error)
   }
 
-  private def publishStatus(status: KernelStatusType): Unit = {
-    statusDispatch ! status
+  private def publishStatus(
+    status: KernelStatusType,
+    parentHeader: Option[ParentHeader] = None
+  ): Unit = {
+    parentHeader match {
+      case Some(header) => statusDispatch ! ((status, header))
+      case None         => statusDispatch ! status
+    }
   }
 }
 

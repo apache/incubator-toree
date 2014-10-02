@@ -21,12 +21,13 @@ class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {
   }
 
   override def receive: Receive = {
-    case status: KernelStatusType => {
-      sendStatusMessage( status , DefaultHeader)
-    }
+    case (status: KernelStatusType, null) =>
+      sendStatusMessage(status, null)
 
-    case (status: KernelStatusType, parentHeader: Header) => {
+    case (status: KernelStatusType, parentHeader: Header) =>
       sendStatusMessage( status, parentHeader )
-    }
+
+    case status: KernelStatusType =>
+      sendStatusMessage(status , DefaultHeader)
   }
 }
