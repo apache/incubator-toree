@@ -17,11 +17,11 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader) extends Actor with LogL
 
       val kernelInfo = SparkKernelInfo
       val kernelInfoReply = KernelInfoReply(
-        kernelInfo.protocol_version,
+        kernelInfo.protocolVersion,
         kernelInfo.implementation,
-        kernelInfo.implementation_version,
+        kernelInfo.implementationVersion,
         kernelInfo.language,
-        kernelInfo.language_version,
+        kernelInfo.languageVersion,
         kernelInfo.banner
       )
 
@@ -30,7 +30,7 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader) extends Actor with LogL
         "",
         java.util.UUID.randomUUID.toString,
         MessageType.KernelInfoReply.toString,
-        kernelInfo.protocol_version
+        kernelInfo.protocolVersion
       )
 
       val kernelResponseMessage = new KernelMessage(
