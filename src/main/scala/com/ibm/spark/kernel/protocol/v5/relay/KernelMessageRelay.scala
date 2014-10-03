@@ -75,6 +75,10 @@ case class KernelMessageRelay(
     case zmqMessage: ZMQMessage if isReady =>
       val kernelMessage: KernelMessage = zmqMessage
 
+      //  Send the busy message
+      actorLoader.load(SystemActorType.StatusDispatch) !
+        Tuple2(KernelStatusType.Busy, kernelMessage.header)
+
       if (useSignatureManager) {
         val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureVerificationFuture = signatureManager ? ((
@@ -87,11 +91,7 @@ case class KernelMessageRelay(
         // TODO: Handle error case for mapTo and non-present onFailure
         signatureVerificationFuture.mapTo[Boolean] onSuccess {
           // Verification successful, so continue relay
-          case true =>
-            //  Send the busy message
-            actorLoader.load(SystemActorType.StatusDispatch) !
-              Tuple2(KernelStatusType.Busy, kernelMessage.header)
-            relay(kernelMessage)
+          case true => relay(kernelMessage)
 
           // TODO: Figure out what the failure message structure should be!
           // Verification failed, so report back a failure

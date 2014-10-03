@@ -20,13 +20,6 @@ class Shell(socketFactory: SocketFactory, actorLoader: ActorLoader) extends Acto
     case message: ZMQMessage =>
       logger.debug("SHELL RECEIVING: " +
         message.frames.map((byteString: ByteString) => new String(byteString.toArray, Charset.forName("UTF-8"))).mkString("\n"))
-//      val x =
-//          SparkKernelBootstrap.hmac(
-//            Json.stringify(Json.toJson(message.header)),
-//            Json.stringify(Json.toJson(message.parentHeader)),
-//            Json.stringify(Json.toJson(message.metadata)),
-//            message.contentString
-//          )
       actorLoader.load(SystemActorType.KernelMessageRelay) ! message
 
     case message: KernelMessage =>
