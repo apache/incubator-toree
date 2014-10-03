@@ -21,16 +21,34 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     val actorLoader = mock[ActorLoader]
     val probe : TestProbe = TestProbe()
     val probeClient : TestProbe = TestProbe()
-    when(socketFactory.Shell(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probe.ref)
-    when(socketFactory.ShellClient(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probeClient.ref)
-    when(actorLoader.load(SystemActorType.KernelMessageRelay)).thenReturn(system.actorSelection(probe.ref.path.toString))
+    when(socketFactory.Shell(
+      any(classOf[ActorSystem]), any(classOf[ActorRef])
+    )).thenReturn(probe.ref)
+    when(socketFactory.ShellClient(
+      any(classOf[ActorSystem]), any(classOf[ActorRef])
+    )).thenReturn(probeClient.ref)
+    when(actorLoader.load(SystemActorType.KernelMessageRelay))
+      .thenReturn(system.actorSelection(probe.ref.path.toString))
 
-    val shell = system.actorOf(Props(classOf[Shell], socketFactory, actorLoader))
-    val shellClient = system.actorOf(Props(classOf[ShellClient], socketFactory))
+    val shell = system.actorOf(Props(
+      classOf[Shell], socketFactory, actorLoader
+    ))
+    val shellClient = system.actorOf(Props(
+      classOf[ShellClient], socketFactory
+    ))
 
-    val request = ExecuteRequest("""val x = "foo"""", false, true, UserExpressions(), true)
-    val header = Header(UUID.randomUUID().toString, "spark", UUID.randomUUID().toString, MessageType.ExecuteRequest.toString, "5.0")
-    val kernelMessage = KernelMessage(Seq[String](), "", header, DefaultHeader, Metadata(), Json.toJson(request).toString)
+    val request = ExecuteRequest(
+      """val x = "foo"""", false, true, UserExpressions(), true
+    )
+    val header = Header(
+      UUID.randomUUID().toString, "spark",
+      UUID.randomUUID().toString, MessageType.ExecuteRequest.toString,
+      "5.0"
+    )
+    val kernelMessage = KernelMessage(
+      Seq[String](), "", header, HeaderBuilder.empty, Metadata(),
+      Json.toJson(request).toString
+    )
 
     describe("send execute request") {
       it("should send execute request") {

@@ -21,14 +21,10 @@ import scala.language.implicitConversions
 package object v5 {
   // Provide a UUID type representing a string (there is no object)
   type UUID = String
-  val KernelVersion = "5.0"
 
   // Provide a ParentHeader type and object representing a Header
   type ParentHeader = Header
   val ParentHeader = Header
-
-  def DefaultHeader       = Header( UUID.randomUUID().toString ,"","","",KernelVersion)
-  def DefaultParentHeader = DefaultHeader
 
   // Provide a Metadata type and object representing a map
   type Metadata = Map[String, String]
@@ -56,12 +52,12 @@ package object v5 {
   }
 
   implicit def StringToByteString(string : String) : ByteString = {
-    ByteString(string.getBytes())
+    ByteString(string.getBytes)
   }
 
   implicit def ZMQMessageToKernelMessage(message: ZMQMessage): KernelMessage = {
     val delimiterIndex: Int =
-      message.frames.indexOf(ByteString("<IDS|MSG>".getBytes()))
+      message.frames.indexOf(ByteString("<IDS|MSG>".getBytes))
     //  TODO Handle the case where there is no delimeter
     val ids: Seq[String] =
       message.frames.take(delimiterIndex).map(
@@ -69,7 +65,7 @@ package object v5 {
       )
     val header = Json.parse(message.frames(delimiterIndex + 2)).as[Header]
     val parentHeader = Json.parse(message.frames(delimiterIndex + 3)).validate[ParentHeader].fold[ParentHeader](
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => DefaultParentHeader,
+          (invalid: Seq[(JsPath, Seq[ValidationError])]) => HeaderBuilder.empty,
           (valid: ParentHeader) => valid
         )
     val metadata = Json.parse(message.frames(delimiterIndex + 4)).as[Metadata]

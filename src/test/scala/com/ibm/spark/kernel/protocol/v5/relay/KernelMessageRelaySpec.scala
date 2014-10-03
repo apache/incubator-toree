@@ -13,6 +13,8 @@ import scala.concurrent.duration._
 import com.ibm.spark.kernel.protocol.v5.MessageType._
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
 import scala.collection.immutable.HashMap
+import com.ibm.spark.kernel.protocol.v5.KernelStatusType.KernelStatusType
+import com.ibm.spark.kernel.protocol.v5.KernelStatusType
 
 class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
@@ -29,7 +31,7 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
     parentHeader, Metadata(), "<CONTENT>")
   val outgoingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>"),
     "<SIGNATURE>", header.copy(msg_type = OutgoingMessageType),
-    parentHeader, Metadata(), "<CONTENT>")
+    incomingKernelMessage.header, Metadata(), "<CONTENT>")
 
   val incomingMessageMap = HashMap[String, String](
     IncomingMessageType -> ""
@@ -44,6 +46,26 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
   var handlerSelection: ActorSelection = _
   var relayWithoutSignatureManager: ActorRef = _
   var relayWithSignatureManager: ActorRef = _
+
+  def waitForStatusMessage(
+    testProbe: TestProbe,
+    status: KernelStatusType,
+    relatedMessageHeader: Header
+  ) = testProbe.expectMsg((status, relatedMessageHeader))
+
+  def waitForBusyMessage(
+    testProbe: TestProbe,
+    relatedMessage: KernelMessage
+  ) = waitForStatusMessage(
+    testProbe, KernelStatusType.Busy, relatedMessage.header
+  )
+
+  def waitForIdleMessage(
+    testProbe: TestProbe,
+    relatedMessage: KernelMessage
+  ) = waitForStatusMessage(
+    testProbe, KernelStatusType.Idle, relatedMessage.parentHeader
+  )
 
   before {
     // Create a mock ActorLoader for the Relay we are going to test
@@ -88,11 +110,13 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
         it("should relay KernelMessage for incoming") {
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager ! incomingKernelMessage
+          waitForBusyMessage(captureProbe, incomingKernelMessage)
           captureProbe.expectMsg(incomingKernelMessage)
         }
 
         it("should relay KernelMessage for outgoing") {
           relayWithoutSignatureManager ! outgoingKernelMessage
+          waitForIdleMessage(captureProbe, outgoingKernelMessage)
           captureProbe.expectMsg(outgoingKernelMessage)
         }
       }
@@ -118,6 +142,7 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
 
         it("should relay the message if it is outgoing") {
           relayWithoutSignatureManager ! outgoingKernelMessage
+          waitForIdleMessage(captureProbe, outgoingKernelMessage)
           captureProbe.expectMsg(outgoingKernelMessage)
         }
       }
@@ -126,12 +151,14 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
         it("should relay the message if it is incoming") {
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager ! incomingKernelMessage
+          waitForBusyMessage(captureProbe, incomingKernelMessage)
           captureProbe.expectMsg(incomingKernelMessage)
         }
 
         it("should relay the message if it is outgoing") {
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager ! outgoingKernelMessage
+          waitForIdleMessage(captureProbe, outgoingKernelMessage)
           captureProbe.expectMsg(outgoingKernelMessage)
         }
       }

@@ -47,8 +47,16 @@ class ExecuteHandler(actorLoader: ActorLoader) extends Actor with LogLike {
   def toKernelMessage(message: ExecuteRequest): KernelMessage = {
     // construct a kernel message whose content is an ExecuteRequest
     val id = UUID.randomUUID().toString
-    val header = Header(id, "spark", sessionId, MessageType.ExecuteRequest.toString, "5.0")
-    KernelMessage(Seq[String](), "", header, DefaultHeader, Metadata(), Json.toJson(message).toString())
+    val header = Header(
+      id, "spark",
+      sessionId, MessageType.ExecuteRequest.toString,
+      "5.0"
+    )
+    KernelMessage(
+      Seq[String](), "",
+      header, HeaderBuilder.empty,
+      Metadata(), Json.toJson(message).toString()
+    )
   }
 
   override def receive: Receive = {

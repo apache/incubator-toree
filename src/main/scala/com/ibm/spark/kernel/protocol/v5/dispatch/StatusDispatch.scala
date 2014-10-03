@@ -13,7 +13,7 @@ class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {
     actorLoader.load(SystemActorType.KernelMessageRelay) ! KernelMessage(
       Seq(MessageType.Status.toString),
       "",
-      DefaultHeader.copy(msg_type = MessageType.Status.toString),
+      HeaderBuilder.create(MessageType.Status.toString),
       parentHeader,
       Metadata(),
       Json.toJson(KernelStatus(kernelStatus.toString)).toString
@@ -28,6 +28,6 @@ class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {
       sendStatusMessage( status, parentHeader )
 
     case status: KernelStatusType =>
-      sendStatusMessage(status , DefaultHeader)
+      sendStatusMessage(status , HeaderBuilder.empty)
   }
 }
