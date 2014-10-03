@@ -13,7 +13,7 @@ class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {
     actorLoader.load(SystemActorType.KernelMessageRelay) ! KernelMessage(
       Seq(MessageType.Status.toString),
       "",
-      DefaultHeader.copy( msg_type = MessageType.Status.toString),
+      DefaultHeader.copy(msg_type = MessageType.Status.toString),
       parentHeader,
       Metadata(),
       Json.toJson(KernelStatus(kernelStatus.toString)).toString

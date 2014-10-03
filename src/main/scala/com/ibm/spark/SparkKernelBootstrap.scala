@@ -59,14 +59,12 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     createSockets()
     initializeKernelHandlers()
     publishStatus(KernelStatusType.Starting, Some(null))
-    publishStatus(KernelStatusType.Busy)
     initializeInterpreter()
     initializeSparkContext()
     initializeMagicLoader()
     initializeSystemActors()
     registerInterruptHook()
     registerShutdownHook()
-    publishStatus(KernelStatusType.Idle)
 
     kernelMessageRelayActor ! true
 

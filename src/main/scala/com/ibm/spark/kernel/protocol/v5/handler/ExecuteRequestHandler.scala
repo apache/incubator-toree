@@ -78,9 +78,6 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
                 relayActor ! kernelResultMessage
               }
 
-              //  Send the idle message
-              actorLoader.load(SystemActorType.StatusDispatch) ! Tuple2(KernelStatusType.Idle, message.header)
-
             case Failure(error: Throwable) =>
               //  Send the error to the client on the Shell socket
               val replyError: ExecuteReply = ExecuteReplyError(

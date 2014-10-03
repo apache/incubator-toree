@@ -1,16 +1,17 @@
 package com.ibm.spark.kernel.protocol.v5.relay
 
-import java.util.UUID
 
 import akka.actor.Actor
 import akka.pattern.ask
 import akka.util.Timeout
-import akka.zeromq.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
-import com.ibm.spark.kernel.protocol.v5.{ActorLoader, KernelMessage, MessageType, SystemActorType}
+import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.utils.LogLike
 
 import scala.concurrent.duration._
+import scala.Tuple2
+import com.ibm.spark.kernel.protocol.v5.KernelMessage
+import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
+import com.ibm.spark.kernel.protocol.v5.MessageType
 
 /**
  * This class is meant to be a relay for send KernelMessages through kernel system.
@@ -26,7 +27,10 @@ case class KernelMessageRelay(
   // NOTE: Required for ask (?) to function... maybe can define elsewhere?
   implicit val timeout = Timeout(5.seconds)
 
+  // Flag indicating if can receive messages (or add them to buffer)
   var isReady = false
+  val MaxMessageBufferSize = 10
+  val messageBuffer = new collection.mutable.Queue[KernelMessage]()
 
   def this(actorLoader: ActorLoader, incomingMessageMap: Map[String, String]) =
     this(actorLoader, incomingMessageMap, true)
@@ -35,12 +39,14 @@ case class KernelMessageRelay(
    * Relays a KernelMessage to a specific actor to handle that message
    * @param kernelMessage The message to relay
    */
-  private def relay(kernelMessage: KernelMessage){
+  private def relay(kernelMessage: KernelMessage) = {
     val messageType: MessageType = MessageType.withName(kernelMessage.header.msg_type)
-    logger.info("IS_READY: " + isReady)
     logger.info("Relaying message of type " + kernelMessage.header.msg_type )
     actorLoader.load(messageType) ! kernelMessage
   }
+
+  private def isStatusMessage(kernelMessage: KernelMessage) =
+    kernelMessage.header.msg_type == MessageType.Status.toString
 
   /**
    * This actor will receive and handle two types; ZMQMessage and KernelMessage. These messages
@@ -50,11 +56,26 @@ case class KernelMessageRelay(
     // TODO: How to restore this when the actor dies?
     case ready: Boolean =>
       isReady = ready
+      logger.info("Relaying " + messageBuffer.size + " messages!")
+      messageBuffer.dequeueAll(_ => true).foreach(self ! _)
       logger.info("Relay is now fully ready to receive messages!")
+
+    // Add incoming messages (when not ready) to buffer to be processed
+    case kernelMessage: KernelMessage
+      if incomingMessageMap.contains(kernelMessage.header.msg_type) && !isReady =>
+      if (messageBuffer.size < MaxMessageBufferSize)
+        messageBuffer.enqueue(kernelMessage)
+      else
+        logger.warn("Message buffer is full! Discarding message of type: "
+          + kernelMessage.header.msg_type)
 
     // Assuming these messages are incoming messages
     case kernelMessage: KernelMessage
       if incomingMessageMap.contains(kernelMessage.header.msg_type) && isReady =>
+        //  Send the busy message
+        actorLoader.load(SystemActorType.StatusDispatch) !
+          Tuple2(KernelStatusType.Busy, kernelMessage.header)
+
         if (useSignatureManager) {
           val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
           val signatureVerificationFuture = signatureManager ? kernelMessage
@@ -78,6 +99,13 @@ case class KernelMessageRelay(
     // Assuming all other kernel messages are outgoing
     case kernelMessage: KernelMessage
       if !incomingMessageMap.contains(kernelMessage.header.msg_type) =>
+        // TODO: Investigate cleaner, less hard-coded solution
+        // Send idle message (unless our outgoing status is the message type)
+        if (!isStatusMessage(kernelMessage)) {
+          actorLoader.load(SystemActorType.StatusDispatch) !
+            Tuple2(KernelStatusType.Idle, kernelMessage.parentHeader)
+        }
+
         if (useSignatureManager) {
           val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
           val signatureInsertFuture = signatureManager ? kernelMessage
