@@ -66,7 +66,10 @@ case class KernelMessageRelay(
 
             // TODO: Figure out what the failure message structure should be!
             // Verification failed, so report back a failure
-            case false => // sender ! SOME MESSAGE
+            case false =>
+              logger.error("Invalid signature received from message!\n" +
+                kernelMessage.toString
+              )
           }
         } else {
           relay(kernelMessage)
