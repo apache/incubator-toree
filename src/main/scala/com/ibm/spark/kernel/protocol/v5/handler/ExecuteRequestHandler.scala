@@ -47,7 +47,8 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
 
           //  Send a message to the clients saying we are executing something
           val executeInputMessage = messageReplySkeleton.copy(
-            header = message.header.copy(msg_type = MessageType.ExecuteInput.toString),
+            //header = message.header.copy(msg_type = MessageType.ExecuteInput.toString),
+            header = HeaderBuilder.create(MessageType.ExecuteInput.toString),
             contentString = Json.toJson(new ExecuteInput(executeRequest.code, executionCount)).toString
           )
           relayActor ! executeInputMessage
@@ -63,7 +64,8 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
 
               //  Send the reply message to the client
               val kernelReplyMessage = messageReplySkeleton.copy(
-                header = message.header.copy(msg_type = MessageType.ExecuteReply.toString),
+                //header = message.header.copy(msg_type = MessageType.ExecuteReply.toString),
+                header = HeaderBuilder.create(MessageType.ExecuteReply.toString),
                 contentString = Json.toJson(tuple._1.copy(execution_count = executionCount)).toString
               )
               relayActor ! kernelReplyMessage
@@ -72,7 +74,8 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
               if (tuple._2.hasContent) {
                 val kernelResultMessage = messageReplySkeleton.copy(
                   ids = Seq(MessageType.ExecuteResult.toString),
-                  header = message.header.copy(msg_type = MessageType.ExecuteResult.toString),
+                  //header = message.header.copy(msg_type = MessageType.ExecuteResult.toString),
+                  header = HeaderBuilder.create(MessageType.ExecuteResult.toString),
                   contentString = Json.toJson(tuple._2.copy(execution_count = executionCount)).toString
                 )
                 relayActor ! kernelResultMessage
@@ -100,7 +103,8 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
   def relayErrorMessages(relayActor: ActorSelection, replyError: ExecuteReply, headerSkeleton: Header,
                          messageReplySkeleton: KernelMessage) {
     relayActor ! messageReplySkeleton.copy(
-      header = headerSkeleton.copy(msg_type = MessageType.ExecuteReply.toString),
+      //header = headerSkeleton.copy(msg_type = MessageType.ExecuteReply.toString),
+      header = HeaderBuilder.create(MessageType.ExecuteReply.toString),
       contentString = replyError
     )
 
@@ -110,7 +114,9 @@ class ExecuteRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike
     )
 
     relayActor ! messageReplySkeleton.copy(
-      header = headerSkeleton.copy(msg_type = MessageType.Error.toString), contentString = errorContent
+      //header = headerSkeleton.copy(msg_type = MessageType.Error.toString),
+      header = HeaderBuilder.create(MessageType.Error.toString),
+      contentString = errorContent
     )
 
     //  Send idle status to client

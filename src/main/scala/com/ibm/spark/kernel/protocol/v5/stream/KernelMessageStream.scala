@@ -31,10 +31,11 @@ class KernelMessageStream(
     // Build our kernel message with the current byte array contents
     val kernelMessage = skeletonKernelMessage.copy(
       ids = Seq(MessageType.Stream.toString),
-      header = skeletonKernelMessage.parentHeader.copy(
-        msg_type = MessageType.Stream.toString,
-        msg_id = UUID.randomUUID().toString
-      ),
+      //header = skeletonKernelMessage.parentHeader.copy(
+      //  msg_type = MessageType.Stream.toString,
+      //  msg_id = UUID.randomUUID().toString
+      //),
+      header = HeaderBuilder.create(MessageType.Stream.toString),
       contentString = Json.toJson(streamContent).toString
     )
 

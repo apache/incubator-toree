@@ -158,13 +158,11 @@ class KernelMessageStreamSpec
       }
 
       it("should make a copy of the kernel message skeleton") {
+        // TODO: After refactoring, this no longer calls parentHeader.copy
+        //       and instead invokes the HeaderBuilder object create method,
+        //       which cannot be spied/mocked -- how do we test it?
         Given("a kernel message stream with a skeleton kernel message")
-        val mockHeader = mock[Header]
-        doReturn(mockHeader).when(mockHeader).copy(
-          any[UUID], anyString(), any[UUID], anyString(), anyString()
-        )
         val mockKernelMessage = mock[KernelMessage]
-        doReturn(mockHeader).when(mockKernelMessage).parentHeader
         doReturn(mockKernelMessage).when(mockKernelMessage).copy(
           any[Seq[String]], anyString(), any[Header], any[ParentHeader],
           any[Metadata], anyString()
@@ -181,10 +179,6 @@ class KernelMessageStreamSpec
 
         Then("the resulting message should be a copy of the skeleton message")
         kernelMessageRelayProbe.expectMsgClass(classOf[KernelMessage])
-
-        verify(mockHeader).copy(
-          any[UUID], anyString(), any[UUID], anyString(), anyString()
-        )
 
         verify(mockKernelMessage).copy(
           any[Seq[String]], anyString(), any[Header], any[ParentHeader],

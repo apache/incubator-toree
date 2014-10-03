@@ -34,7 +34,8 @@ class CodeCompleteHandler(actorLoader: ActorLoader) extends Actor with LogLike {
               logger.debug("Sending complete reply to relay actor")
               actorLoader.load(SystemActorType.KernelMessageRelay) !
                 message.copy(
-                  header = message.header.copy(msg_type = MessageType.CompleteReply.toString),
+                  //header = message.header.copy(msg_type = MessageType.CompleteReply.toString),
+                  header = HeaderBuilder.create(MessageType.CompleteReply.toString),
                   parentHeader = message.header,
                   contentString = Json.toJson(reply).toString
                 )
