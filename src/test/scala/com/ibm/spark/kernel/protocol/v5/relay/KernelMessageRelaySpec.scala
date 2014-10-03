@@ -104,13 +104,12 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
           signatureProbe.expectNoMsg(25.millis)
         }
 
-        // TODO: Investigate where the busy message went
         it("should relay KernelMessage for incoming") {
           val incomingMessage: ZMQMessage = incomingKernelMessage
 
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager ! incomingMessage
-          //waitForBusyMessage(captureProbe, incomingKernelMessage)
+          waitForBusyMessage(captureProbe, incomingKernelMessage)
           captureProbe.expectMsg(incomingKernelMessage)
         }
 
@@ -150,13 +149,12 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
       }
 
       describe("when ready") {
-        // TODO: Investigate where the busy message went
         it("should relay the message if it is incoming") {
           val incomingMessage: ZMQMessage = incomingKernelMessage
 
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager ! incomingMessage
-          //waitForBusyMessage(captureProbe, incomingKernelMessage)
+          waitForBusyMessage(captureProbe, incomingKernelMessage)
           captureProbe.expectMsg(incomingKernelMessage)
         }
 
