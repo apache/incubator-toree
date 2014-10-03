@@ -39,7 +39,6 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   private var dependencyMap: DependencyMap            = _
   private var builtinLoader: BuiltinLoader            = _
   private var magicLoader: MagicLoader                = _
-  private var incomingMessageMap: Map[String, String] = _
 
   private var actorSystem: ActorSystem                = _
   private var actorLoader: ActorLoader                = _
@@ -54,7 +53,6 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
    * Initializes all kernel systems.
    */
   def initialize() = {
-    initializeIncomingMessageMap()
     setup()
     createSockets()
     initializeKernelHandlers()
@@ -97,20 +95,6 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     this
   }
 
-  private def initializeIncomingMessageMap(): Unit = {
-    import MessageType._
-
-    incomingMessageMap = HashMap[String, String](
-      CompleteRequest.toString -> "",
-      ConnectRequest.toString -> "",
-      ExecuteRequest.toString -> "",
-      HistoryRequest.toString -> "",
-      InspectRequest.toString -> "",
-      KernelInfoRequest.toString -> "",
-      ShutdownRequest.toString -> ""
-    )
-  }
-
   /**
    * Does minimal setup in order to send the "starting" status message over
    * the IOPub socket
@@ -125,7 +109,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     logger.info("Creating kernel message relay actor")
     kernelMessageRelayActor = actorSystem.actorOf(
       Props(
-        classOf[KernelMessageRelay], actorLoader, incomingMessageMap, true
+        classOf[KernelMessageRelay], actorLoader, true
       ),
       name = SystemActorType.KernelMessageRelay.toString
     )
@@ -137,8 +121,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     logger.info("Scheme = " + sigScheme)
     signatureManagerActor = actorSystem.actorOf(
       Props(
-        classOf[SignatureManagerActor], sigKey, sigScheme.replace("-", ""),
-        incomingMessageMap
+        classOf[SignatureManagerActor], sigKey, sigScheme.replace("-", "")
       ),
       name = SystemActorType.SignatureManager.toString
     )

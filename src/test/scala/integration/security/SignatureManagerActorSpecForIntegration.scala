@@ -12,6 +12,7 @@ import scala.concurrent.duration._
 import scala.collection.immutable.HashMap
 import com.ibm.spark.kernel.protocol.v5.MessageType._
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
+import play.api.libs.json.Json
 
 object SignatureManagerActorSpecForIntegration {
   val config = """
@@ -49,24 +50,18 @@ class SignatureManagerActorSpecForIntegration extends TestKit(
       "<STRING>"
     )
 
-  private var incomingMessageMap: Map[String, String] = _
-
   private var signatureManager: ActorRef = _
   private var signatureManagerWithNoIncoming: ActorRef = _
 
   before {
-    incomingMessageMap = HashMap[String, String](
-      IncomingMessageType -> ""
-    )
-
     signatureManager =
       system.actorOf(Props(
-        classOf[SignatureManagerActor], sigKey, incomingMessageMap
+        classOf[SignatureManagerActor], sigKey
       ))
 
     signatureManagerWithNoIncoming =
       system.actorOf(Props(
-        classOf[SignatureManagerActor], sigKey, Map()
+        classOf[SignatureManagerActor], sigKey
       ))
   }
 
@@ -78,12 +73,24 @@ class SignatureManagerActorSpecForIntegration extends TestKit(
     describe("#receive") {
       describe("when receiving an incoming message") {
         it("should return true if the signature is valid") {
-          signatureManager ! goodIncomingMessage
+          val blob =
+            Json.stringify(Json.toJson(goodIncomingMessage.header)) ::
+            Json.stringify(Json.toJson(goodIncomingMessage.parentHeader)) ::
+            Json.stringify(Json.toJson(goodIncomingMessage.metadata)) ::
+            goodIncomingMessage.contentString ::
+            Nil
+          signatureManager ! ((goodIncomingMessage.signature, blob))
           expectMsg(true)
         }
 
         it("should return false if the signature is invalid") {
-          signatureManager ! badIncomingMessage
+          val blob =
+            Json.stringify(Json.toJson(badIncomingMessage.header)) ::
+            Json.stringify(Json.toJson(badIncomingMessage.parentHeader)) ::
+            Json.stringify(Json.toJson(badIncomingMessage.metadata)) ::
+            badIncomingMessage.contentString ::
+            Nil
+          signatureManager ! ((badIncomingMessage.signature, blob))
           expectMsg(false)
         }
       }

@@ -3,7 +3,7 @@ package com.ibm.spark.kernel.protocol.v5.relay
 
 import akka.actor.Actor
 import akka.pattern.ask
-import akka.util.Timeout
+import akka.util.{ByteString, Timeout}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.utils.LogLike
 
@@ -12,13 +12,15 @@ import scala.Tuple2
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.MessageType
+import akka.zeromq.ZMQMessage
+import java.nio.charset.Charset
 
 /**
  * This class is meant to be a relay for send KernelMessages through kernel system.
  * @param actorLoader The ActorLoader used by this class for finding actors for relaying messages
  */
 case class KernelMessageRelay(
-  actorLoader: ActorLoader, incomingMessageMap: Map[String, String],
+  actorLoader: ActorLoader,
   useSignatureManager: Boolean
 ) extends Actor with LogLike {
   // NOTE: Required to provide the execution context for futures with akka
@@ -30,10 +32,10 @@ case class KernelMessageRelay(
   // Flag indicating if can receive messages (or add them to buffer)
   var isReady = false
   val MaxMessageBufferSize = 10
-  val messageBuffer = new collection.mutable.Queue[KernelMessage]()
+  val messageBuffer = new collection.mutable.Queue[ZMQMessage]()
 
-  def this(actorLoader: ActorLoader, incomingMessageMap: Map[String, String]) =
-    this(actorLoader, incomingMessageMap, true)
+  def this(actorLoader: ActorLoader) =
+    this(actorLoader, true)
 
   /**
    * Relays a KernelMessage to a specific actor to handle that message
@@ -61,61 +63,64 @@ case class KernelMessageRelay(
       logger.info("Relay is now fully ready to receive messages!")
 
     // Add incoming messages (when not ready) to buffer to be processed
-    case kernelMessage: KernelMessage
-      if incomingMessageMap.contains(kernelMessage.header.msg_type) && !isReady =>
+    case zmqMessage: ZMQMessage if !isReady =>
+      val kernelMessage: KernelMessage = zmqMessage
       if (messageBuffer.size < MaxMessageBufferSize)
-        messageBuffer.enqueue(kernelMessage)
+        messageBuffer.enqueue(zmqMessage)
       else
         logger.warn("Message buffer is full! Discarding message of type: "
           + kernelMessage.header.msg_type)
 
     // Assuming these messages are incoming messages
-    case kernelMessage: KernelMessage
-      if incomingMessageMap.contains(kernelMessage.header.msg_type) && isReady =>
-        //  Send the busy message
+    case zmqMessage: ZMQMessage if isReady =>
+      val kernelMessage: KernelMessage = zmqMessage
+
+      if (useSignatureManager) {
+        val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
+        val signatureVerificationFuture = signatureManager ? ((
+          kernelMessage.signature,
+          zmqMessage.frames.map((byteString: ByteString) =>
+            new String(byteString.toArray, Charset.forName("UTF-8"))
+          ).takeRight(4) // TODO: This assumes NO extra buffers, refactor?
+        ))
+
+        // TODO: Handle error case for mapTo and non-present onFailure
+        signatureVerificationFuture.mapTo[Boolean] onSuccess {
+          // Verification successful, so continue relay
+          case true =>
+            //  Send the busy message
+            actorLoader.load(SystemActorType.StatusDispatch) !
+              Tuple2(KernelStatusType.Busy, kernelMessage.header)
+            relay(kernelMessage)
+
+          // TODO: Figure out what the failure message structure should be!
+          // Verification failed, so report back a failure
+          case false =>
+            logger.error("Invalid signature received from message!")
+        }
+      } else {
+        relay(kernelMessage)
+      }
+
+    // Assuming all kernel messages are outgoing
+    case kernelMessage: KernelMessage =>
+      // TODO: Investigate cleaner, less hard-coded solution
+      // Send idle message (unless our outgoing status is the message type)
+      if (!isStatusMessage(kernelMessage)) {
         actorLoader.load(SystemActorType.StatusDispatch) !
-          Tuple2(KernelStatusType.Busy, kernelMessage.header)
+          Tuple2(KernelStatusType.Idle, kernelMessage.parentHeader)
+      }
 
-        if (useSignatureManager) {
-          val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
-          val signatureVerificationFuture = signatureManager ? kernelMessage
+      if (useSignatureManager) {
+        val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
+        val signatureInsertFuture = signatureManager ? kernelMessage
 
-          // TODO: Handle error case for mapTo and non-present onFailure
-          signatureVerificationFuture.mapTo[Boolean] onSuccess {
-            // Verification successful, so continue relay
-            case true => relay(kernelMessage)
-
-            // TODO: Figure out what the failure message structure should be!
-            // Verification failed, so report back a failure
-            case false =>
-              logger.error("Invalid signature received from message!\n" +
-                kernelMessage.toString
-              )
-          }
-        } else {
-          relay(kernelMessage)
+        // TODO: Handle error case for mapTo and non-present onFailure
+        signatureInsertFuture.mapTo[KernelMessage] onSuccess {
+          case message => relay(message)
         }
-
-    // Assuming all other kernel messages are outgoing
-    case kernelMessage: KernelMessage
-      if !incomingMessageMap.contains(kernelMessage.header.msg_type) =>
-        // TODO: Investigate cleaner, less hard-coded solution
-        // Send idle message (unless our outgoing status is the message type)
-        if (!isStatusMessage(kernelMessage)) {
-          actorLoader.load(SystemActorType.StatusDispatch) !
-            Tuple2(KernelStatusType.Idle, kernelMessage.parentHeader)
-        }
-
-        if (useSignatureManager) {
-          val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
-          val signatureInsertFuture = signatureManager ? kernelMessage
-
-          // TODO: Handle error case for mapTo and non-present onFailure
-          signatureInsertFuture.mapTo[KernelMessage] onSuccess {
-            case message => relay(message)
-          }
-        } else {
-          relay(kernelMessage)
-        }
+      } else {
+        relay(kernelMessage)
+      }
   }
 }

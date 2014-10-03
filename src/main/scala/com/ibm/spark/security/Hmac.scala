@@ -42,7 +42,9 @@ class Hmac(
   def apply(items: String*): String = digest(items)
 
   def digest(items: Seq[String]): String = if (key.nonEmpty) {
-    items.map(_.getBytes).foreach(mac.update)
-    mac.doFinal.map("%02x" format _).mkString
+    mac synchronized {
+      items.map(_.getBytes("UTF-8")).foreach(mac.update)
+      mac.doFinal().map("%02x" format _).mkString
+    }
   } else ""
 }

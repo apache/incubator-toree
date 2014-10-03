@@ -20,7 +20,7 @@ object ShellSpec {
 class ShellSpec extends TestKit(ActorSystem("ShellActorSpec", ConfigFactory.parseString(ShellSpec.config)))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
-  describe("ShellActor") {
+  describe("Shell") {
     val socketFactory = mock[SocketFactory]
     val actorLoader = mock[ActorLoader]
     val socketProbe : TestProbe = TestProbe()
@@ -38,9 +38,9 @@ class ShellSpec extends TestKit(ActorSystem("ShellActorSpec", ConfigFactory.pars
         socketProbe.expectMsg(MockZMQMessage)
       }
 
-      it("( ZMQMessage ) should forward KernelMessage to Relay") {
+      it("( ZMQMessage ) should forward ZMQMessage to Relay") {
         shell ! MockZMQMessage
-        relayProbe.expectMsg(MockKernelMessage)
+        relayProbe.expectMsg(MockZMQMessage)
       }
     }
   }

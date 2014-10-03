@@ -14,13 +14,9 @@ class SignatureCheckerActor(
   private val hmac: Hmac
 ) extends Actor with LogLike {
   override def receive: Receive = {
-    case message: KernelMessage =>
-      val isValidSignature = hmac(
-        Json.toJson(message.header).toString,
-        Json.toJson(message.parentHeader).toString,
-        Json.toJson(message.metadata).toString,
-        message.contentString
-      ) == message.signature
+    case (signature: String, blob: Seq[_]) =>
+      val stringBlob: Seq[String] = blob.map(_.toString)
+      val isValidSignature = hmac(stringBlob: _*) == signature
       sender ! isValidSignature
   }
 }

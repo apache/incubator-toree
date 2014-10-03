@@ -16,9 +16,9 @@ class SignatureProducerActor(
   override def receive: Receive = {
     case message: KernelMessage =>
       val signature = hmac(
-        Json.toJson(message.header).toString,
-        Json.toJson(message.parentHeader).toString,
-        Json.toJson(message.metadata).toString,
+        Json.stringify(Json.toJson(message.header)),
+        Json.stringify(Json.toJson(message.parentHeader)),
+        Json.stringify(Json.toJson(message.metadata)),
         message.contentString
       )
       sender ! signature

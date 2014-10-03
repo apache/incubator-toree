@@ -9,6 +9,8 @@ import play.api.data.validation.ValidationError
 import play.api.libs.json._
 
 import scala.concurrent.duration._
+import java.nio.charset.Charset
+
 //
 // NOTE: This is brought in to remove feature warnings regarding the use of
 //       implicit conversions regarding the following:
@@ -48,7 +50,7 @@ package object v5 {
   implicit val timeout = Timeout(100000.days)
 
   implicit def ByteStringToString(byteString : ByteString) : String = {
-    new String(byteString.toArray)
+    new String(byteString.toArray, Charset.forName("UTF-8"))
   }
 
   implicit def StringToByteString(string : String) : ByteString = {
@@ -65,7 +67,8 @@ package object v5 {
       )
     val header = Json.parse(message.frames(delimiterIndex + 2)).as[Header]
     val parentHeader = Json.parse(message.frames(delimiterIndex + 3)).validate[ParentHeader].fold[ParentHeader](
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => HeaderBuilder.empty,
+          // TODO: Investigate better solution than setting parentHeader to null for {}
+          (invalid: Seq[(JsPath, Seq[ValidationError])]) => null, //HeaderBuilder.empty,
           (valid: ParentHeader) => valid
         )
     val metadata = Json.parse(message.frames(delimiterIndex + 4)).as[Metadata]

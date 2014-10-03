@@ -7,6 +7,7 @@ import com.ibm.spark.kernel.protocol.v5.security.SignatureCheckerActor
 import com.ibm.spark.security.Hmac
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import play.api.libs.json.Json
 
 object SignatureCheckerActorSpecForIntegration {
   val config = """
@@ -49,7 +50,6 @@ class SignatureCheckerActorSpecForIntegration extends TestKit(
     val hmac = Hmac(sigKey)
     signatureChecker =
       system.actorOf(Props(classOf[SignatureCheckerActor], hmac))
-
   }
 
   after {
@@ -59,12 +59,24 @@ class SignatureCheckerActorSpecForIntegration extends TestKit(
   describe("SignatureCheckerActor") {
     describe("#receive") {
       it("should return true if the kernel message is valid") {
-        signatureChecker ! goodMessage
+        val blob =
+          Json.stringify(Json.toJson(goodMessage.header)) ::
+          Json.stringify(Json.toJson(goodMessage.parentHeader)) ::
+          Json.stringify(Json.toJson(goodMessage.metadata)) ::
+          goodMessage.contentString ::
+          Nil
+        signatureChecker ! ((goodMessage.signature, blob))
         expectMsg(true)
       }
 
       it("should return false if the kernel message is invalid") {
-        signatureChecker ! badMessage
+        val blob =
+          Json.stringify(Json.toJson(badMessage.header)) ::
+          Json.stringify(Json.toJson(badMessage.parentHeader)) ::
+          Json.stringify(Json.toJson(badMessage.metadata)) ::
+          badMessage.contentString ::
+          Nil
+        signatureChecker ! ((badMessage.signature, blob))
         expectMsg(false)
       }
     }
