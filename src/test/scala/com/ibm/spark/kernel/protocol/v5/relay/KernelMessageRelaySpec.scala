@@ -20,29 +20,30 @@ import akka.zeromq.ZMQMessage
 class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter {
-  val IncomingMessageType = CompleteRequest.toString
-  val OutgoingMessageType = CompleteReply.toString
+  private val IncomingMessageType = CompleteRequest.toString
+  private val OutgoingMessageType = CompleteReply.toString
 
-  val header: Header = Header("<UUID>", "<USER>", "<SESSION>",
+  private val header: Header = Header("<UUID>", "<USER>", "<SESSION>",
     "<TYPE>", "<VERSION>")
-  val parentHeader: Header = Header("<PARENT-UUID>", "<PARENT-USER>",
+  private val parentHeader: Header = Header("<PARENT-UUID>", "<PARENT-USER>",
     "<PARENT-SESSION>", "<PARENT-TYPE>", "<PARENT-VERSION>")
-  val incomingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>"),
+  private val incomingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>"),
     "<SIGNATURE>", header.copy(msg_type = IncomingMessageType),
     parentHeader, Metadata(), "<CONTENT>")
-  val outgoingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>"),
+  private val outgoingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>"),
     "<SIGNATURE>", header.copy(msg_type = OutgoingMessageType),
     incomingKernelMessage.header, Metadata(), "<CONTENT>")
+  private val incomingZmqStrings = "1" :: "2" :: "3" :: "4" :: Nil
 
-  var actorLoader: ActorLoader = _
-  var signatureProbe: TestProbe = _
-  var signatureSelection: ActorSelection = _
-  var captureProbe: TestProbe = _
-  var captureSelection: ActorSelection = _
-  var handlerProbe: TestProbe = _
-  var handlerSelection: ActorSelection = _
-  var relayWithoutSignatureManager: ActorRef = _
-  var relayWithSignatureManager: ActorRef = _
+  private var actorLoader: ActorLoader = _
+  private var signatureProbe: TestProbe = _
+  private var signatureSelection: ActorSelection = _
+  private var captureProbe: TestProbe = _
+  private var captureSelection: ActorSelection = _
+  private var handlerProbe: TestProbe = _
+  private var handlerSelection: ActorSelection = _
+  private var relayWithoutSignatureManager: ActorRef = _
+  private var relayWithSignatureManager: ActorRef = _
 
   def waitForStatusMessage(
     testProbe: TestProbe,
@@ -105,10 +106,9 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
         }
 
         it("should relay KernelMessage for incoming") {
-          val incomingMessage: ZMQMessage = incomingKernelMessage
-
           relayWithoutSignatureManager ! true // Mark as ready for incoming
-          relayWithoutSignatureManager ! incomingMessage
+          relayWithoutSignatureManager !
+            ((incomingZmqStrings, incomingKernelMessage))
           waitForBusyMessage(captureProbe, incomingKernelMessage)
           captureProbe.expectMsg(incomingKernelMessage)
         }
@@ -150,10 +150,9 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
 
       describe("when ready") {
         it("should relay the message if it is incoming") {
-          val incomingMessage: ZMQMessage = incomingKernelMessage
-
           relayWithoutSignatureManager ! true // Mark as ready for incoming
-          relayWithoutSignatureManager ! incomingMessage
+          relayWithoutSignatureManager !
+            ((incomingZmqStrings, incomingKernelMessage))
           waitForBusyMessage(captureProbe, incomingKernelMessage)
           captureProbe.expectMsg(incomingKernelMessage)
         }

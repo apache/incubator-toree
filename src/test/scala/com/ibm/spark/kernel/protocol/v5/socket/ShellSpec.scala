@@ -1,14 +1,19 @@
 package com.ibm.spark.kernel.protocol.v5.socket
 
+import java.nio.charset.Charset
+
 import akka.actor.{ActorSelection, ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import com.ibm.spark.kernel.protocol.v5.{SystemActorType, ActorLoader}
+import akka.util.ByteString
+import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5Test._
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
+
+import scala.concurrent.duration._
 
 object ShellSpec {
   val config ="""
@@ -38,9 +43,17 @@ class ShellSpec extends TestKit(ActorSystem("ShellActorSpec", ConfigFactory.pars
         socketProbe.expectMsg(MockZMQMessage)
       }
 
-      it("( ZMQMessage ) should forward ZMQMessage to Relay") {
+      it("( ZMQMessage ) should forward ZMQ Strings and KernelMessage to Relay") {
         shell ! MockZMQMessage
-        relayProbe.expectMsg(MockZMQMessage)
+
+        // Should get the last four (assuming no buffer) strings in UTF-8
+        val zmqStrings = MockZMQMessage.frames.map((byteString: ByteString) =>
+          new String(byteString.toArray, Charset.forName("UTF-8"))
+        ).takeRight(4)
+
+        val kernelMessage: KernelMessage = MockZMQMessage
+
+        relayProbe.expectMsg((zmqStrings, kernelMessage))
       }
     }
   }

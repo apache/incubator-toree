@@ -18,14 +18,35 @@ class Shell(socketFactory: SocketFactory, actorLoader: ActorLoader) extends Acto
   val socket = socketFactory.Shell(context.system, self)
   override def receive: Receive = {
     case message: ZMQMessage =>
+      // Convert our ZMQ message to a kernel message
+      val kernelMessage: KernelMessage = message
+
       logger.debug("SHELL RECEIVING: " +
-        message.frames.map((byteString: ByteString) => new String(byteString.toArray, Charset.forName("UTF-8"))).mkString("\n"))
-      actorLoader.load(SystemActorType.KernelMessageRelay) ! message
+        message.frames.map(
+          (byteString: ByteString) =>
+            new String(byteString.toArray, Charset.forName("UTF-8"))
+        ).mkString("\n"))
+
+      // Grab the strings to use for signature verification
+      val zmqStrings = message.frames.map((byteString: ByteString) =>
+        new String(byteString.toArray, Charset.forName("UTF-8"))
+      ).takeRight(4) // TODO: This assumes NO extra buffers, refactor?
+
+      // Forward along our message (along with the strings used for signatures)
+      actorLoader.load(SystemActorType.KernelMessageRelay) !
+        ((zmqStrings, kernelMessage))
 
     case message: KernelMessage =>
+      // Convert our kernel message to a ZMQ message
       val zmqMessage: ZMQMessage = message
+
       logger.debug("SHELL SENDING: " +
-        zmqMessage.frames.map((byteString: ByteString) => new String(byteString.toArray, Charset.forName("UTF-8"))).mkString("\n"))
+        zmqMessage.frames.map(
+          (byteString: ByteString) =>
+            new String(byteString.toArray, Charset.forName("UTF-8"))
+        ).mkString("\n"))
+
+      // Forward along our message back through the socket
       socket ! zmqMessage
   }
 }

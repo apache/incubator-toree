@@ -55,7 +55,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         shellClient ! kernelMessage
         probeClient.expectMsgClass(classOf[ZMQMessage])
         probeClient.forward(shell)
-        probe.expectMsgClass(classOf[ZMQMessage])
+        probe.expectMsgClass(classOf[Tuple2[Seq[_], KernelMessage]])
         probe.forward(shellClient)
       }
     }

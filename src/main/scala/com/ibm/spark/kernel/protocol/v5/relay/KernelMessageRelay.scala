@@ -32,7 +32,8 @@ case class KernelMessageRelay(
   // Flag indicating if can receive messages (or add them to buffer)
   var isReady = false
   val MaxMessageBufferSize = 10
-  val messageBuffer = new collection.mutable.Queue[ZMQMessage]()
+  val messageBuffer =
+    new collection.mutable.Queue[(Seq[_], KernelMessage)]()
 
   def this(actorLoader: ActorLoader) =
     this(actorLoader, true)
@@ -63,18 +64,15 @@ case class KernelMessageRelay(
       logger.info("Relay is now fully ready to receive messages!")
 
     // Add incoming messages (when not ready) to buffer to be processed
-    case zmqMessage: ZMQMessage if !isReady =>
-      val kernelMessage: KernelMessage = zmqMessage
+    case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if !isReady =>
       if (messageBuffer.size < MaxMessageBufferSize)
-        messageBuffer.enqueue(zmqMessage)
+        messageBuffer.enqueue((zmqStrings, kernelMessage))
       else
         logger.warn("Message buffer is full! Discarding message of type: "
           + kernelMessage.header.msg_type)
 
     // Assuming these messages are incoming messages
-    case zmqMessage: ZMQMessage if isReady =>
-      val kernelMessage: KernelMessage = zmqMessage
-
+    case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if isReady =>
       //  Send the busy message
       actorLoader.load(SystemActorType.StatusDispatch) !
         Tuple2(KernelStatusType.Busy, kernelMessage.header)
@@ -82,10 +80,7 @@ case class KernelMessageRelay(
       if (useSignatureManager) {
         val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureVerificationFuture = signatureManager ? ((
-          kernelMessage.signature,
-          zmqMessage.frames.map((byteString: ByteString) =>
-            new String(byteString.toArray, Charset.forName("UTF-8"))
-          ).takeRight(4) // TODO: This assumes NO extra buffers, refactor?
+          kernelMessage.signature, zmqStrings
         ))
 
         // TODO: Handle error case for mapTo and non-present onFailure
@@ -102,7 +97,7 @@ case class KernelMessageRelay(
         relay(kernelMessage)
       }
 
-    // Assuming all kernel messages are outgoing
+    // Assuming all kernel messages without zmq strings are outgoing
     case kernelMessage: KernelMessage =>
       // TODO: Investigate cleaner, less hard-coded solution
       // Send idle message (unless our outgoing status is the message type)
