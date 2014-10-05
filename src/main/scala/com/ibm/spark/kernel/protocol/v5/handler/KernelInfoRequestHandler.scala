@@ -6,13 +6,18 @@ import com.ibm.spark.kernel.protocol.v5.content.KernelInfoReply
 import com.ibm.spark.utils.LogLike
 import play.api.libs.json.Json
 
+import scala.concurrent._
+
 /**
  * Receives a KernelInfoRequest KernelMessage and returns a KernelInfoReply
  * KernelMessage.
  */
-class KernelInfoRequestHandler(actorLoader: ActorLoader) extends Actor with LogLike {
-  override def receive: Receive = {
-    case message: KernelMessage =>
+class KernelInfoRequestHandler(actorLoader: ActorLoader)
+  extends BaseHandler(actorLoader) with LogLike
+{
+  def process(kernelMessage: KernelMessage): Future[_] = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    future {
       logger.debug("Sending kernel info reply message")
 
       val kernelInfo = SparkKernelInfo
@@ -34,14 +39,15 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader) extends Actor with LogL
       )
 
       val kernelResponseMessage = new KernelMessage(
-        message.ids,
+        kernelMessage.ids,
         "",
         replyHeader,
-        message.header,
+        kernelMessage.header,
         Metadata(),
         Json.toJson(kernelInfoReply).toString
       )
 
       actorLoader.load(SystemActorType.KernelMessageRelay) ! kernelResponseMessage
+    }
   }
 }

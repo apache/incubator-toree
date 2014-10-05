@@ -45,26 +45,6 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
   private var relayWithoutSignatureManager: ActorRef = _
   private var relayWithSignatureManager: ActorRef = _
 
-  def waitForStatusMessage(
-    testProbe: TestProbe,
-    status: KernelStatusType,
-    relatedMessageHeader: Header
-  ) = testProbe.expectMsg((status, relatedMessageHeader))
-
-  def waitForBusyMessage(
-    testProbe: TestProbe,
-    relatedMessage: KernelMessage
-  ) = waitForStatusMessage(
-    testProbe, KernelStatusType.Busy, relatedMessage.header
-  )
-
-  def waitForIdleMessage(
-    testProbe: TestProbe,
-    relatedMessage: KernelMessage
-  ) = waitForStatusMessage(
-    testProbe, KernelStatusType.Idle, relatedMessage.parentHeader
-  )
-
   before {
     // Create a mock ActorLoader for the Relay we are going to test
     actorLoader = mock[ActorLoader]
@@ -109,13 +89,11 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager !
             ((incomingZmqStrings, incomingKernelMessage))
-          waitForBusyMessage(captureProbe, incomingKernelMessage)
           captureProbe.expectMsg(incomingKernelMessage)
         }
 
         it("should relay KernelMessage for outgoing") {
           relayWithoutSignatureManager ! outgoingKernelMessage
-          waitForIdleMessage(captureProbe, outgoingKernelMessage)
           captureProbe.expectMsg(outgoingKernelMessage)
         }
       }
@@ -143,7 +121,6 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
 
         it("should relay the message if it is outgoing") {
           relayWithoutSignatureManager ! outgoingKernelMessage
-          waitForIdleMessage(captureProbe, outgoingKernelMessage)
           captureProbe.expectMsg(outgoingKernelMessage)
         }
       }
@@ -153,14 +130,12 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager !
             ((incomingZmqStrings, incomingKernelMessage))
-          waitForBusyMessage(captureProbe, incomingKernelMessage)
           captureProbe.expectMsg(incomingKernelMessage)
         }
 
         it("should relay the message if it is outgoing") {
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager ! outgoingKernelMessage
-          waitForIdleMessage(captureProbe, outgoingKernelMessage)
           captureProbe.expectMsg(outgoingKernelMessage)
         }
       }

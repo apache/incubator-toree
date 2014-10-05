@@ -1,7 +1,7 @@
 package com.ibm.spark.kernel.protocol.v5.relay
 
 
-import akka.actor.Actor
+import akka.actor.{Stash, Actor}
 import akka.pattern.ask
 import akka.util.{ByteString, Timeout}
 import com.ibm.spark.kernel.protocol.v5._
@@ -22,7 +22,7 @@ import java.nio.charset.Charset
 case class KernelMessageRelay(
   actorLoader: ActorLoader,
   useSignatureManager: Boolean
-) extends Actor with LogLike {
+) extends Actor with LogLike with Stash {
   // NOTE: Required to provide the execution context for futures with akka
   import context._
 
@@ -31,9 +31,6 @@ case class KernelMessageRelay(
 
   // Flag indicating if can receive messages (or add them to buffer)
   var isReady = false
-  val MaxMessageBufferSize = 10
-  val messageBuffer =
-    new collection.mutable.Queue[(Seq[_], KernelMessage)]()
 
   def this(actorLoader: ActorLoader) =
     this(actorLoader, true)
@@ -48,8 +45,6 @@ case class KernelMessageRelay(
     actorLoader.load(messageType) ! kernelMessage
   }
 
-  private def isStatusMessage(kernelMessage: KernelMessage) =
-    kernelMessage.header.msg_type == MessageType.Status.toString
 
   /**
    * This actor will receive and handle two types; ZMQMessage and KernelMessage. These messages
@@ -57,26 +52,24 @@ case class KernelMessageRelay(
    */
   override def receive = {
     // TODO: How to restore this when the actor dies?
+    // Update ready status
     case ready: Boolean =>
       isReady = ready
-      logger.info("Relaying " + messageBuffer.size + " messages!")
-      messageBuffer.dequeueAll(_ => true).foreach(self ! _)
-      logger.info("Relay is now fully ready to receive messages!")
+      if (isReady) {
+        logger.info("Unstashing all messages received!")
+        unstashAll()
+        logger.info("Relay is now fully ready to receive messages!")
+      } else {
+        logger.info("Relay is now disabled!")
+      }
 
     // Add incoming messages (when not ready) to buffer to be processed
     case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if !isReady =>
-      if (messageBuffer.size < MaxMessageBufferSize)
-        messageBuffer.enqueue((zmqStrings, kernelMessage))
-      else
-        logger.warn("Message buffer is full! Discarding message of type: "
-          + kernelMessage.header.msg_type)
+      logger.info("Not ready for messages! Stashing until ready!")
+      stash()
 
     // Assuming these messages are incoming messages
     case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if isReady =>
-      //  Send the busy message
-      actorLoader.load(SystemActorType.StatusDispatch) !
-        Tuple2(KernelStatusType.Busy, kernelMessage.header)
-
       if (useSignatureManager) {
         val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureVerificationFuture = signatureManager ? ((
@@ -99,12 +92,6 @@ case class KernelMessageRelay(
 
     // Assuming all kernel messages without zmq strings are outgoing
     case kernelMessage: KernelMessage =>
-      // TODO: Investigate cleaner, less hard-coded solution
-      // Send idle message (unless our outgoing status is the message type)
-      if (!isStatusMessage(kernelMessage)) {
-        actorLoader.load(SystemActorType.StatusDispatch) !
-          Tuple2(KernelStatusType.Idle, kernelMessage.parentHeader)
-      }
 
       if (useSignatureManager) {
         val signatureManager = actorLoader.load(SystemActorType.SignatureManager)

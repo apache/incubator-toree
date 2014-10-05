@@ -1,9 +1,11 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import akka.actor.{ActorSelection, ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSelection, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import com.ibm.spark.kernel.protocol.v5.content.KernelInfoReply
 import com.ibm.spark.kernel.protocol.v5.{SystemActorType, ActorLoader, Header, KernelMessage}
+import org.mockito.AdditionalMatchers.{not => mockNot}
+import org.mockito.Matchers.{eq => mockEq}
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
@@ -27,8 +29,12 @@ class KernelInfoRequestHandlerSpec extends TestKit(
   val actor = system.actorOf(Props(classOf[KernelInfoRequestHandler], actorLoader))
 
   val relayProbe : TestProbe = TestProbe()
-  val relaySelection : ActorSelection = system.actorSelection(relayProbe.ref.path)
-  when(actorLoader.load(SystemActorType.KernelMessageRelay)).thenReturn(relaySelection)
+  val relaySelection : ActorSelection =
+    system.actorSelection(relayProbe.ref.path)
+  when(actorLoader.load(SystemActorType.KernelMessageRelay))
+    .thenReturn(relaySelection)
+  when(actorLoader.load(mockNot(mockEq(SystemActorType.KernelMessageRelay))))
+    .thenReturn(system.actorSelection(""))
 
   val header = Header("","","","","")
   val kernelMessage = new KernelMessage(
