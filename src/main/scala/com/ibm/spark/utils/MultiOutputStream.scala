@@ -2,23 +2,23 @@ package com.ibm.spark.utils
 
 import java.io.OutputStream
 
-case class MultiOutputStream(val outputOutputStreams: List[OutputStream])
+case class MultiOutputStream(val outputStreams: List[OutputStream])
   extends OutputStream
 {
-  require(outputOutputStreams != null)
+  require(outputStreams != null)
 
   override def write(cbuf: Array[Byte]): Unit =
-    outputOutputStreams.foreach(outputStream => outputStream.write(cbuf))
+    outputStreams.foreach(outputStream => outputStream.write(cbuf))
 
   override def write(cbuf: Array[Byte], off: Int, len: Int): Unit =
-    outputOutputStreams.foreach(outputStream => outputStream.write(cbuf, off, len))
+    outputStreams.foreach(outputStream => outputStream.write(cbuf, off, len))
 
   override def write(b: Int): Unit =
-    outputOutputStreams.foreach(outputStream => outputStream.write(b))
+    outputStreams.foreach(outputStream => outputStream.write(b))
 
   override def flush() =
-    outputOutputStreams.foreach(outputStream => outputStream.flush())
+    outputStreams.foreach(outputStream => outputStream.flush())
 
   override def close() =
-    outputOutputStreams.foreach(outputStream => outputStream.close())
+    outputStreams.foreach(outputStream => outputStream.close())
 }

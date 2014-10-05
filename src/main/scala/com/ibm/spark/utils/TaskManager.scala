@@ -1,27 +1,34 @@
 package com.ibm.spark.utils
 
+import java.util.UUID
 import java.util.concurrent.{TimeUnit, ArrayBlockingQueue}
 import java.util.concurrent.atomic.AtomicReference
 
 import scala.concurrent.{Future, Promise, promise}
 
+import com.ibm.spark.security.KernelSecurityManager._
+
 /**
  * Represents a generic manager of Runnable tasks that will be executed in a
  * separate thread (created inside the manager). Facilitates running tasks and
- * provides a method
+ * provides a method to kill
  */
-class TaskManager extends LogLike{
+class TaskManager(
+  taskThreadGroup: ThreadGroup = new ThreadGroup(RestrictedGroupName),
+  taskThreadName: String = "task-" + UUID.randomUUID().toString
+) extends LogLike {
   // Maximum time to wait (in milliseconds) before forcefully stopping this
   // thread when an interrupt fails
   private val InterruptTimeout = 5 * 1000
   private val _queueCapacity = 200
-  private val _taskQueue = new ArrayBlockingQueue[(Runnable, Promise[_])](_queueCapacity)
+  private val _taskQueue =
+    new ArrayBlockingQueue[(Runnable, Promise[_])](_queueCapacity)
   private var _taskThread: TaskThread = _
 
   private val _currentPromise: AtomicReference[Promise[_]] =
     new AtomicReference[Promise[_]]()
 
-  private class TaskThread extends Thread {
+  private class TaskThread extends Thread(taskThreadGroup, taskThreadName) {
     private[TaskManager] var _currentTask: Runnable = _
     private[TaskManager] var _running = false
 

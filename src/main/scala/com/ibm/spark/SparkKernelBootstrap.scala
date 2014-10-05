@@ -17,6 +17,7 @@ import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
+import com.ibm.spark.security.KernelSecurityManager
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 import org.apache.spark.{SparkConf, SparkContext}
@@ -53,7 +54,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
    * Initializes all kernel systems.
    */
   def initialize() = {
-    setup()
+    initializeBareComponents()
     createSockets()
     initializeKernelHandlers()
     publishStatus(KernelStatusType.Starting, Some(null))
@@ -64,6 +65,10 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     registerInterruptHook()
     registerShutdownHook()
 
+    logger.info("Initializing security manager")
+    System.setSecurityManager(new KernelSecurityManager)
+
+    logger.info("Marking relay as ready for receiving messages")
     kernelMessageRelayActor ! true
 
     this
@@ -99,7 +104,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
    * Does minimal setup in order to send the "starting" status message over
    * the IOPub socket
    */
-  private def setup(): Unit = {
+  private def initializeBareComponents(): Unit = {
     logger.info("Initializing internal actor system")
     actorSystem = ActorSystem(DefaultActorSystemName)
 
