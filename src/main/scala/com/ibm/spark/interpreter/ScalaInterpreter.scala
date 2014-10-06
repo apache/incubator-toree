@@ -325,7 +325,7 @@ class ScalaInterpreter(
     logger.debug(s"Attempting code completion for ${parsedCode}")
     val result = jLineCompleter.completer().complete(parsedCode, pos)
 
-    return (result.cursor, result.candidates)
+    (result.cursor, result.candidates)
   }
 }
 
