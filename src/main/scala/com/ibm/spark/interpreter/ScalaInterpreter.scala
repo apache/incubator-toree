@@ -242,10 +242,8 @@ class ScalaInterpreter(
     jLineCompleter = new SparkJLineCompletion(sparkIMain)
 
     sparkIMain.beQuietDuring {
-      logger.info("Rerouting Console and System related input and output")
-      updatePrintStreams(System.in, multiOutputStream, multiOutputStream)
-
-      // TODO: Investigate using execution wrapper to catch errors
+      //logger.info("Rerouting Console and System related input and output")
+      //updatePrintStreams(System.in, multiOutputStream, multiOutputStream)
 
       logger.info("Adding org.apache.spark.SparkContext._ to imports")
       sparkIMain.addImports("org.apache.spark.SparkContext._")
@@ -256,7 +254,7 @@ class ScalaInterpreter(
 
   override def updatePrintStreams(
     in: InputStream, out: OutputStream, err: OutputStream
-  ): Unit = {/*
+  ): Unit = {
     val inReader = new BufferedReader(new InputStreamReader(in))
     val outPrinter = new PrintStream(out)
     val errPrinter = new PrintStream(err)
@@ -274,7 +272,7 @@ class ScalaInterpreter(
       )
       sparkIMain.addImports("Console._")
     }
-  */}
+  }
 
   // NOTE: Convention is to force parentheses if a side effect occurs.
   override def stop() = {
