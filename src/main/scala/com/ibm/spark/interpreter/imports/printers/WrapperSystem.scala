@@ -29,6 +29,4 @@ class WrapperSystem(
   def in = inStream
   def out = outPrinter
   def err = errPrinter
-  def exit(x: Any*): Unit = Unit
-  def exit(): Unit = Unit
 }
