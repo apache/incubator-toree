@@ -11,25 +11,21 @@ import com.ibm.spark.utils.DynamicSupport
  * @param err The output stream used for standard error
  */
 class WrapperConsole(
-  val in: InputStream,
-  val out: OutputStream,
-  val err: OutputStream
+  val in: BufferedReader,
+  val out: PrintStream,
+  val err: PrintStream
 ) extends DynamicSupport(Class.forName("scala.Console$"), scala.Console) {
   require(in != null)
   require(out != null)
   require(err != null)
 
-  private val inReader = new BufferedReader(new InputStreamReader(in))
-  private val outPrinter = new PrintStream(out)
-  private val errPrinter = new PrintStream(err)
-
   //
   // SUPPORTED PRINT OPERATIONS
   //
 
-  def print(obj: Any): Unit = outPrinter.print(obj)
+  def print(obj: Any): Unit = out.print(obj)
   def printf(text: String, args: Any*): Unit =
-    outPrinter.print(text.format(args: _*))
-  def println(x: Any): Unit = outPrinter.println(x)
-  def println(): Unit = outPrinter.println
+    out.print(text.format(args: _*))
+  def println(x: Any): Unit = out.println(x)
+  def println(): Unit = out.println()
 }

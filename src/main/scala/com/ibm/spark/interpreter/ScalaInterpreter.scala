@@ -1,6 +1,6 @@
 package com.ibm.spark.interpreter
 
-import java.io.ByteArrayOutputStream
+import java.io.{BufferedReader, InputStreamReader, PrintStream, ByteArrayOutputStream}
 import java.net.{URL, URLClassLoader}
 import java.nio.charset.Charset
 import java.util.concurrent.ExecutionException
@@ -256,11 +256,15 @@ class ScalaInterpreter(
 
   override def updatePrintStreams(
     in: InputStream, out: OutputStream, err: OutputStream
-  ): Unit = {
+  ): Unit = {/*
+    val inReader = new BufferedReader(new InputStreamReader(in))
+    val outPrinter = new PrintStream(out)
+    val errPrinter = new PrintStream(err)
+
     sparkIMain.beQuietDuring {
       sparkIMain.bind(
         "Console", classOf[WrapperConsole].getName,
-        new WrapperConsole(in, out, err),
+        new WrapperConsole(inReader, outPrinter, errPrinter),
         List("""@transient""")
       )
       sparkIMain.bind(
@@ -270,7 +274,7 @@ class ScalaInterpreter(
       )
       sparkIMain.addImports("Console._")
     }
-  }
+  */}
 
   // NOTE: Convention is to force parentheses if a side effect occurs.
   override def stop() = {
