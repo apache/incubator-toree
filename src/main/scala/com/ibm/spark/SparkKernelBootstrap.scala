@@ -1,5 +1,7 @@
 package com.ibm.spark
 
+import java.io.{FileOutputStream, OutputStream}
+
 import akka.actor._
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
@@ -18,7 +20,7 @@ import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
 import com.ibm.spark.security.KernelSecurityManager
-import com.ibm.spark.utils.LogLike
+import com.ibm.spark.utils.{GlobalStreamState, LogLike}
 import com.typesafe.config.Config
 import org.apache.spark.{SparkConf, SparkContext}
 import play.api.libs.json.Json
@@ -54,6 +56,15 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
    * Initializes all kernel systems.
    */
   def initialize() = {
+    // TODO: Investigate potential to initialize System out/err/in to capture
+    //       Console DynamicVariable initialization (since takes System fields)
+    //       and redirect it to a workable location (like an actor) with the
+    //       thread's current information attached
+    //
+    // E.G. System.setOut(customPrintStream) ... all new threads will have
+    //      customPrintStream as their initial Console.out value
+    //
+
     initializeBareComponents()
     createSockets()
     initializeKernelHandlers()
