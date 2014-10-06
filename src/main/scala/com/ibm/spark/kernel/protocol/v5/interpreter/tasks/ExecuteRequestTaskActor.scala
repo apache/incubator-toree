@@ -22,20 +22,25 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
       // If the cell is not empty, then interpret.
       if(executeRequest.code.trim != "") {
         //interpreter.updatePrintStreams(System.in, outputStream, outputStream)
+        val newInputStream = System.in
+        val newOutputStream = buildOutputStream(outputStream, System.out)
+        val newErrorStream = buildOutputStream(outputStream, System.err)
+
         val (success, result) =
           GlobalStreamState.withStreams(
-            System.in,
-            buildOutputStream(outputStream, System.out),
-            buildOutputStream(outputStream, System.err)) {
-            // TODO: Investigate better approach (this is required to capture
-            //       Console output)
-            interpreter.interpret("""
-              Console.setIn(System.in)
-              Console.setOut(System.out)
-              Console.setErr(System.err)
-            """)
+            newInputStream, newOutputStream, newErrorStream
+          ) {
+            // TODO: Think of a cleaner wrapper to handle updating the Console
+            //       input and ouput streams
+            interpreter.interpret(
+              """
+                Console.setIn(System.in)
+                Console.setOut(System.out)
+                Console.setErr(System.err)
+              """)
             interpreter.interpret(executeRequest.code)
           }
+
         success match {
           case Results.Success =>
             val output = result.left.get
