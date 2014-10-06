@@ -36,7 +36,7 @@ class KernelMessageStream(
       //  msg_id = UUID.randomUUID().toString
       //),
       header = HeaderBuilder.create(MessageType.Stream.toString),
-      contentString = Json.toJson(streamContent).toString
+      contentString = Json.toJson(streamContent).toString()
     )
 
     actorLoader.load(SystemActorType.KernelMessageRelay) ! kernelMessage

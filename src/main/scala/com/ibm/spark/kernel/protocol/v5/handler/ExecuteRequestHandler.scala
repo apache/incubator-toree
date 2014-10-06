@@ -1,11 +1,14 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
+import java.io.OutputStream
+
 import akka.actor.{Actor, ActorSelection}
 import akka.pattern.ask
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
-import com.ibm.spark.utils.{ExecutionCounter, LogLike}
+import com.ibm.spark.security.KernelSecurityManager
+import com.ibm.spark.utils._
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, Json}
 
@@ -48,13 +51,18 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
           val executeInputMessage = kernelMessageReplySkeleton.copy(
             //header = kernelMessage.header.copy(msg_type = MessageType.ExecuteInput.toString),
             header = HeaderBuilder.create(MessageType.ExecuteInput.toString),
-            contentString = Json.toJson(new ExecuteInput(executeRequest.code, executionCount)).toString
+            contentString = Json.toJson(new ExecuteInput(executeRequest.code, executionCount)).toString()
           )
           relayActor ! executeInputMessage
 
+          // Construct our new set of streams
+          val newOutputStream =
+            new KernelMessageStream(actorLoader, kernelMessageReplySkeleton)
+
+          // TODO: Add support for error streams
           val executeFuture = ask(
             actorLoader.load(SystemActorType.ExecuteRequestRelay),
-            (executeRequest, new KernelMessageStream(actorLoader, kernelMessageReplySkeleton))
+            (executeRequest, newOutputStream)
           ).mapTo[(ExecuteReply, ExecuteResult)]
 
           executeFuture.onComplete {
@@ -65,7 +73,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
               val kernelReplyMessage = kernelMessageReplySkeleton.copy(
                 //header = kernelMessage.header.copy(msg_type = MessageType.ExecuteReply.toString),
                 header = HeaderBuilder.create(MessageType.ExecuteReply.toString),
-                contentString = Json.toJson(tuple._1.copy(execution_count = executionCount)).toString
+                contentString = Json.toJson(tuple._1.copy(execution_count = executionCount)).toString()
               )
               relayActor ! kernelReplyMessage
 
@@ -75,7 +83,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
                   ids = Seq(MessageType.ExecuteResult.toString),
                   //header = kernelMessage.header.copy(msg_type = MessageType.ExecuteResult.toString),
                   header = HeaderBuilder.create(MessageType.ExecuteResult.toString),
-                  contentString = Json.toJson(tuple._2.copy(execution_count = executionCount)).toString
+                  contentString = Json.toJson(tuple._2.copy(execution_count = executionCount)).toString()
                 )
                 relayActor ! kernelResultMessage
               }
@@ -93,6 +101,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
         }
       )
   }
+
 
   /**
    * Create a common method to relay errors based on a ExecuteReplyError
