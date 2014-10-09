@@ -31,7 +31,7 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
             newInputStream, newOutputStream, newErrorStream
           ) {
             // TODO: Think of a cleaner wrapper to handle updating the Console
-            //       input and ouput streams
+            //       input and output streams
             interpreter.interpret(
               """
                 Console.setIn(System.in)
