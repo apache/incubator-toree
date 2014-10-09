@@ -13,7 +13,7 @@ class PlotSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAft
 
   val mockInterpreter = mock[Interpreter]
   val image = "image"
-  val plotMagic = new plot with IncludeInterpreter {
+  val plotMagic = new Plot with IncludeInterpreter {
     override val interpreter: Interpreter = mockInterpreter
   }
 
