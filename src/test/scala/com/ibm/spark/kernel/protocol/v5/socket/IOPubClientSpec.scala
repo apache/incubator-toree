@@ -35,10 +35,11 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
         //  Construct the kernel message
         val result = ExecuteResult(1, Data(), Metadata())
-        val header = Header(id, "spark", UUID.randomUUID().toString, MessageType.ExecuteResult.toString, "5.0")
+        val header = Header(UUID.randomUUID().toString, "spark", UUID.randomUUID().toString, MessageType.ExecuteResult.toString, "5.0")
+        val parentHeader = Header(id, "spark", UUID.randomUUID().toString, MessageType.ExecuteRequest.toString, "5.0")
         val kernelMessage = new KernelMessage(
           Seq[String](), "",
-          header, HeaderBuilder.empty,
+          header, parentHeader,
           Metadata(), Json.toJson(result).toString()
         )
 

@@ -32,17 +32,21 @@ class ShellClient(socketFactory: SocketFactory) extends Actor with LogLike {
     // from shell
     case message: ZMQMessage =>
       val kernelMessage: KernelMessage = message
-      futureMap(message.header.msg_id) ! Json.parse(kernelMessage.contentString).as[ExecuteReply]
-      futureMap.remove(message.header.msg_id)
+      logger.debug(s"Shell messaged received with header ${kernelMessage.header.msg_id} and parent header ${kernelMessage.parentHeader.msg_id}")
+      futureMap(kernelMessage.parentHeader.msg_id) ! Json.parse(kernelMessage.contentString).as[ExecuteReply]
+      futureMap.remove(kernelMessage.parentHeader.msg_id)
 
     // from handler
     case message: KernelMessage =>
       val zmq: ZMQMessage = message
+      logger.debug(s"Shell message sent with header ${message.header.msg_id}")
       futureMap += (message.header.msg_id -> sender)
       val future = socket ? zmq
       future.onComplete {
         // future always times out since server "tells" response; remove key
-        case _ => futureMap.remove(message.header.msg_id)
+        case _ =>
+          futureMap.remove(message.header.msg_id)
+          logger.debug("Future complete, removing message.header.msg_id from futureMap")
       }
   }
 }

@@ -31,25 +31,36 @@ class IOPubClient(socketFactory: SocketFactory) extends Actor with LogLike {
 
       messageType match {
         case MessageType.ExecuteResult =>
+          logger.debug("Received ExecuteResult message")
           // look up callback in CallbackMap based on msg_id and invoke
-          val id = kernelMessage.header.msg_id
+          val id = kernelMessage.parentHeader.msg_id
+          logger.debug("SenderMap Key set" + senderMap.keySet)
           val client = senderMap.get(id)
+          logger.debug(s"id is: ${id}")
+          logger.debug(s"client is: ${client}")
           client match {
             case Some(actorRef) =>
+              logger.debug("Matched cased for actorRef")
               actorRef ! Json.parse(kernelMessage.contentString).as[ExecuteResult]
               senderMap.remove(id)
             case None =>
+              logger.debug("Matched case for none")
               logger.debug("IOPubClient: actorRef was none")
           }
 
         case MessageType.Stream =>
+          logger.debug("Received Stream message")
           val id = kernelMessage.parentHeader.msg_id
           val func = callbackMap.get(id)
+          logger.debug(s"id is: ${id}")
+          logger.debug(s"func is: ${func}")
           func match {
             case Some(f) =>
+              logger.debug("Matched cased f")
               val streamContent = Json.parse(kernelMessage.contentString).as[StreamContent]
               f(streamContent.data)
             case None =>
+              logger.debug("Matched case None")
               logger.debug(s"IOPubClient: no function for id ${id}")
           }
 
