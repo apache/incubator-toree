@@ -9,7 +9,7 @@ import com.ibm.spark.client.ExecuteRequestTuple
 import com.ibm.spark.client.handler.ExecuteHandler.resolve
 import com.ibm.spark.client.message.StreamMessage
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.{ExecuteReply, ExecuteRequest, ExecuteResult}
+import com.ibm.spark.kernel.protocol.v5.content.{ExecuteRequest, ExecuteResult}
 import com.ibm.spark.utils.LogLike
 import play.api.libs.json.Json
 
@@ -43,15 +43,17 @@ object ExecuteHandler extends LogLike {
 class ExecuteHandler(actorLoader: ActorLoader) extends Actor with LogLike {
   implicit val timeout = Timeout(100000.days)
   private val sessionId = UUID.randomUUID().toString
+  logger.info(s"Session ID for kernel client is ${sessionId}" )
 
   def toKernelMessage(message: ExecuteRequest): KernelMessage = {
     // construct a kernel message whose content is an ExecuteRequest
-    val id = UUID.randomUUID().toString
+    logger.info("Creating new KernelMessage from ExecuteRequest")
     val header = Header(
-      id, "spark",
+      UUID.randomUUID().toString, "spark",
       sessionId, MessageType.ExecuteRequest.toString,
       "5.0"
     )
+    logger.debug(s"KernelMessage created with header id ${header.msg_id}")
     KernelMessage(
       Seq[String](), "",
       header, HeaderBuilder.empty,
@@ -61,6 +63,7 @@ class ExecuteHandler(actorLoader: ActorLoader) extends Actor with LogLike {
 
   override def receive: Receive = {
     case message: ExecuteRequest =>
+      logger.info("Handling request for submit execute request.")
       // create message to send to shell
       val kernelMessage = toKernelMessage(message)
 
@@ -81,6 +84,7 @@ class ExecuteHandler(actorLoader: ActorLoader) extends Actor with LogLike {
       } { senderRef ! resolve(ioPubResult) }
 
     case message: ExecuteRequestTuple =>
+      logger.info("Handling request for streaming execute request.")
       // create message to send to shell
       val kernelMessage = toKernelMessage(message.request)
 
