@@ -4,6 +4,9 @@ import com.ibm.spark.kernel.protocol.v5.MIMEType
 import com.ibm.spark.magic.MagicOutput
 import com.ibm.spark.magic.dependencies.IncludeInterpreter
 
+/**
+ * Temporary magic to show chart as image
+ */
 class Plot extends MagicTemplate with IncludeInterpreter {
 
   // TODO don't pollute interpreter with png val

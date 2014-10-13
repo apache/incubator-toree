@@ -146,7 +146,7 @@ package object v5 {
     val Interpreter         = Value("interpreter")
     val SignatureManager    = Value("signature_manager")
     val MagicManager        = Value("magic_manager")
-    val StatusDispatch    = Value("status_dispatch")
+    val StatusDispatch      = Value("status_dispatch")
   }
 
   object KernelStatusType extends Enumeration {
@@ -160,8 +160,9 @@ package object v5 {
   object MIMEType extends Enumeration {
     type MIMEType = String
 
-    val PlainText = "text/plain"
-    val ImagePng  = "image/png"
-    val TextHtml  = "text/html"
+    val PlainText       = "text/plain"
+    val ImagePng        = "image/png"
+    val TextHtml        = "text/html"
+    val ApplicationJson = "application/json"
   }
 }
