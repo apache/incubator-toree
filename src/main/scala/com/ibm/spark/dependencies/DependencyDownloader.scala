@@ -14,7 +14,9 @@ abstract class DependencyDownloader(repositoryUrl: String, baseDir: String) {
    *
    * @return The sequence of strings pointing to the retrieved dependency jars
    */
-  def retrieve(groupId: String, artifactId: String, version: String): Seq[URL]
+  def retrieve(
+    groupId: String, artifactId: String, version: String, transitive: Boolean
+  ): Seq[URL]
 
   /**
    * Sets the printstream to log to.

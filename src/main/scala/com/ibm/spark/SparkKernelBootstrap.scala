@@ -26,6 +26,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import play.api.libs.json.Json
 import scala.collection.JavaConverters._
 import scala.collection.immutable.HashMap
+import com.ibm.spark.dependencies.{IvyDependencyDownloader, DependencyDownloader}
 
 case class SparkKernelBootstrap(config: Config) extends LogLike {
 
@@ -39,6 +40,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
   protected[spark] var interpreter: Interpreter       = _
   protected[spark] var sparkContext: SparkContext     = _
+  protected[spark] var dependencyDownloader: DependencyDownloader = _
   private var dependencyMap: DependencyMap            = _
   private var builtinLoader: BuiltinLoader            = _
   private var magicLoader: MagicLoader                = _
@@ -71,6 +73,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     publishStatus(KernelStatusType.Starting, Some(null))
     initializeInterpreter()
     initializeSparkContext()
+    initializeDependencyDownloader()
     initializeMagicLoader()
     initializeSystemActors()
     registerInterruptHook()
@@ -180,6 +183,12 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     )
   }
 
+  private def initializeDependencyDownloader(): Unit = {
+    dependencyDownloader = new IvyDependencyDownloader(
+      "http://repo1.maven.org/maven2/", config.getString("ivy_local")
+    )
+  }
+
   private def initializeInterpreter(): Unit = {
     val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
 
@@ -274,9 +283,25 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
       logger.info("Constructing new Spark Context")
       sparkContext = new SparkContext(conf)
+
+      logger.info("Binding context into interpreter")
       interpreter.bind(
         "sc", "org.apache.spark.SparkContext",
         sparkContext, List( """@transient"""))
+
+      // NOTE: This is needed because interpreter blows up after adding
+      //       dependencies to SparkContext and Interpreter before the
+      //       cluster has been used... not exactly sure why this is the case
+      // TODO: Investigate why the cluster has to be initialized in the kernel
+      //       to avoid the kernel's interpreter blowing up (must be done
+      //       inside the interpreter)
+      logger.info("Initializing Spark cluster in interpreter")
+      interpreter.doQuietly {
+        interpreter.interpret("""
+          var $toBeNulled = sc.emptyRDD.collect()
+          $toBeNulled = null
+        """)
+      }
     }
 
     // Add ourselves as a dependency
@@ -331,6 +356,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     dependencyMap = new DependencyMap()
       .setInterpreter(interpreter)
       .setSparkContext(sparkContext)
+      .setDependencyDownloader(dependencyDownloader)
 
     logger.debug("Creating BuiltinLoader")
     builtinLoader = new BuiltinLoader()

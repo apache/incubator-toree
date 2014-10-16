@@ -7,6 +7,7 @@ import org.apache.spark.SparkContext
 
 import scala.reflect.runtime.universe._
 import com.ibm.spark.magic.builtin.MagicTemplate
+import com.ibm.spark.dependencies.DependencyDownloader
 
 /**
  * Represents a mapping of dependency types to implementations.
@@ -54,6 +55,21 @@ class DependencyMap {
       PartialFunction[MagicTemplate, Unit](
         magic =>
           magic.asInstanceOf[IncludeOutputStream].outputStream_=(outputStream)
+      )
+
+    this
+  }
+
+  /**
+   * Sets the DependencyDownloader for this map.
+   * @param dependencyDownloader The new DependencyDownloader
+   */
+  def setDependencyDownloader(dependencyDownloader: DependencyDownloader) = {
+    internalMap(typeOf[IncludeDependencyDownloader]) =
+      PartialFunction[MagicTemplate, Unit](
+        magic =>
+          magic.asInstanceOf[IncludeDependencyDownloader]
+            .dependencyDownloader=(dependencyDownloader)
       )
 
     this

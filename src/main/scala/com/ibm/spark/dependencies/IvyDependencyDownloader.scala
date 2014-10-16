@@ -39,7 +39,7 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
   val ivy = Ivy.newInstance(ivySettings)
 
   override def retrieve(
-    groupId: String, artifactId: String, version: String
+    groupId: String, artifactId: String, version: String, transitive: Boolean
   ): Seq[URL] = {
     // Start building the ivy.xml file
     val ivyFile = File.createTempFile("ivy", ".xml")
@@ -84,7 +84,7 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
 
     // Grab our dependencies (and theirs, etc) recursively
     val resolveOptions = new ResolveOptions()
-      .setTransitive(true)
+      .setTransitive(transitive)
       .setDownload(true)
 
     // Init resolve report (has what was downloaded, etc)
