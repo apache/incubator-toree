@@ -3,7 +3,7 @@ package com.ibm.spark.kernel.protocol.v5.magic
 import java.io.OutputStream
 
 import akka.actor.Actor
-import com.ibm.spark.interpreter.{ExecuteError}
+import com.ibm.spark.interpreter.ExecuteError
 import com.ibm.spark.magic.{MagicOutput, MagicLoader}
 import com.ibm.spark.utils.LogLike
 
@@ -35,7 +35,9 @@ class MagicManager(magicLoader: MagicLoader)
     case (message: ExecuteMagicMessage, outputStream: OutputStream) =>
       val matchData =
         magicRegex.findFirstMatchIn(message.toString).get
-      val (magicName, code) =  (matchData.group(1), matchData.after(1).toString)
+      val (magicName, code) = (
+        matchData.group(1), matchData.after(1).toString.trim
+      )
       val isCell = message.toString.startsWith("%%")
 
       var result: Either[MagicOutput, ExecuteError] = null

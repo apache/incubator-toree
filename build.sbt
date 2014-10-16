@@ -112,9 +112,12 @@ libraryDependencies += "com.typesafe.play" %% "play-json" % "2.3.1" // Apache v2
 libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.6" // MIT
 
 //
-// VIZ DEPENDENCIES TODO How to handle since this is LGPL
+// MAGIC DEPENDENCIES
 //
-libraryDependencies += "org.jfree" % "jfreechart" % "1.0.19"
+libraryDependencies ++= Seq(
+  "org.jfree" % "jfreechart" % "1.0.19", //TODO How to handle since this is LGPL
+  "org.apache.ivy" % "ivy" % "2.4.0-rc1"
+)
 
 //
 // TEST DEPENDENCIES

@@ -11,7 +11,7 @@ import org.scalatest.{FunSpec, Matchers}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 
-class AddJarTest extends FunSpec with Matchers with MockitoSugar {
+class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
   describe("AddJar"){
     describe("#executeCell") {
       it("should call addJar on the provided SparkContext and addJars on the provided interpreter") {
