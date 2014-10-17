@@ -23,9 +23,9 @@ class RDD extends MagicTemplate with IncludeInterpreter {
           val rdd = interpreter.read(matchData.group(2)).get.asInstanceOf[SchemaRDD]
           MagicOutput(MIMEType.ApplicationJson -> RddToJson.convert(rdd))
         } catch {
-          case e: Exception =>
-            e.printStackTrace
-            MagicOutput(MIMEType.PlainText -> ("An error occurred converting RDD to JSON.\n"+e.getMessage))
+            case e: Exception =>
+              MagicOutput(MIMEType.PlainText ->
+                ("An error occurred converting RDD to JSON.\n"+e.getMessage))
         }
       } else MagicOutput(MIMEType.PlainText -> result)
     } else MagicOutput(MIMEType.PlainText -> message.right.get.toString)
