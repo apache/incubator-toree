@@ -7,3 +7,5 @@ target/
 *.iml
 *.ipynb
 scratch/
+**/resources/ivy.xml
+

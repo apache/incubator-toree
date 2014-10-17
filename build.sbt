@@ -1,4 +1,5 @@
 import de.johoop.testngplugin.TestNGPlugin._
+import org.apache.commons.io.FileUtils
 import sbtdocker.{ImageName, Dockerfile}
 import DockerKeys._
 
@@ -38,6 +39,58 @@ kill := {
   "sh terminate_spark_kernels.sh" !
 }
 
+lazy val rebuildIvyXml = TaskKey[Unit](
+  "rebuild-ivy-xml",
+  "Rebuilds the ivy xml using deliver-local and copies it to src " +
+    "resource directories"
+)
+lazy val rebuildTestIvyXml = TaskKey[Unit](
+  "rebuild-test-ivy-xml",
+  "Rebuilds the ivy xml using deliver-local and copies it to test " +
+    "resource directories"
+)
+
+// TODO: Figure out how to retrieve the configuration being used to avoid
+//       this duplication
+lazy val rebuildIvyXmlSettings = Seq(
+  rebuildIvyXml := {
+    val s: TaskStreams = streams.value
+    //val inputFile = (crossTarget.value / "[artifact].[ext]").getAbsolutePath
+    val inputFile = (crossTarget.value / "ivy.xml").getAbsoluteFile
+    val outputFile =
+      ((resourceDirectory in Compile).value / "ivy.xml").getAbsoluteFile
+    s.log.info(s"Copying ${inputFile.getPath} to ${outputFile.getPath}")
+    FileUtils.copyFile(inputFile, outputFile)
+  },
+  rebuildTestIvyXml := {
+    val s: TaskStreams = streams.value
+    //val inputFile = (crossTarget.value / "[artifact].[ext]").getAbsolutePath
+    val inputFile = (crossTarget.value / "ivy.xml").getAbsoluteFile
+    val outputFile =
+      ((resourceDirectory in Test).value / "ivy.xml").getAbsoluteFile
+    s.log.info(s"Copying ${inputFile.getPath} to ${outputFile.getPath}")
+    FileUtils.copyFile(inputFile, outputFile)
+  }
+)
+
+rebuildIvyXmlSettings
+
+// TODO: Investigate way to temporarily change the destination
+deliverLocalConfiguration := {
+  val newDestinationPath =
+    crossTarget.value / "ivy.xml"
+    //crossTarget.value / "[artifact].[ext]"
+  val dlc = deliverLocalConfiguration.value
+  new DeliverConfiguration(
+    newDestinationPath.absolutePath, dlc.status,
+    dlc.configurations, dlc.logging)
+}
+
+//rebuildIvyXml <<= rebuildIvyXmlImpl
+
+//def rebuildIvyXmlImpl = {
+//    println("Hello!")
+//}
 
 //
 // ADDITIONAL REPOSITORIES
@@ -201,3 +254,12 @@ imageName in docker := {
     repository = kernelImageId,
     tag = kernelBuildId)
 }
+
+compile <<= (compile in Compile) dependsOn (rebuildIvyXml dependsOn deliverLocal)
+
+test <<= (test in Test) dependsOn (rebuildTestIvyXml dependsOn deliverLocal)
+
+pack <<= pack dependsOn (rebuildIvyXml dependsOn deliverLocal)
+
+packArchive <<= packArchive dependsOn (rebuildIvyXml dependsOn deliverLocal)
+
