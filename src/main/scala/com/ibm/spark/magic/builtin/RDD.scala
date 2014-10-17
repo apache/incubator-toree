@@ -3,13 +3,14 @@ package com.ibm.spark.magic.builtin
 import com.ibm.spark.kernel.protocol.v5.MIMEType
 import com.ibm.spark.magic.MagicOutput
 import com.ibm.spark.magic.dependencies.IncludeInterpreter
+import com.ibm.spark.utils.LogLike
 import com.ibm.spark.utils.json.RddToJson
 import org.apache.spark.sql.SchemaRDD
 
 /**
  * Temporary magic to show an RDD as JSON
  */
-class RDD extends MagicTemplate with IncludeInterpreter {
+class RDD extends MagicTemplate with IncludeInterpreter with LogLike {
 
   private def convertToJson(code: String) = {
     val (_, message) = interpreter.interpret(code)
@@ -24,6 +25,7 @@ class RDD extends MagicTemplate with IncludeInterpreter {
           MagicOutput(MIMEType.ApplicationJson -> RddToJson.convert(rdd))
         } catch {
             case e: Exception =>
+              logger.error(e.getMessage, e)
               MagicOutput(MIMEType.PlainText ->
                 ("An error occurred converting RDD to JSON.\n"+e.getMessage))
         }
