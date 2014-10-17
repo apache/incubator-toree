@@ -52,7 +52,8 @@ class KernelSecurityManager extends SecurityManager {
     // TODO: Investigate why the StackOverflowError occurs in IntelliJ without
     //       this check for FilePermission related to this class
     // NOTE: The above problem does not happen when built with sbt pack
-    if (perm.getActions == "read" && perm.getName.contains(this.getClass.getSimpleName))
+    if (perm.getActions == "read" &&
+      perm.getName.contains(this.getClass.getSimpleName))
       return
 
     if (shouldCheckPermission(perm.getName))
@@ -63,7 +64,8 @@ class KernelSecurityManager extends SecurityManager {
     // TODO: Investigate why the StackOverflowError occurs in IntelliJ without
     //       this check for FilePermission related to this class
     // NOTE: The above problem does not happen when built with sbt pack
-    if (perm.getActions == "read" && perm.getName.contains(this.getClass.getSimpleName))
+    if (perm.getActions == "read" &&
+      perm.getName.contains(this.getClass.getSimpleName))
       return
 
     if (shouldCheckPermission(perm.getName))
