@@ -27,10 +27,10 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
   resolver.setM2compatible(true)
   resolver.setName("central")
 
-  //adding maven repo resolver
+  // Add our resolver as the main resolver (IBiblio goes to Maven Central)
   ivySettings.addResolver(resolver)
 
-  //set to the default resolver
+  // Mark our resolver as the default one to use
   ivySettings.setDefaultResolver(resolver.getName)
 
   // Set the destination
@@ -73,7 +73,7 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
     )
 
     // TODO: figure out why this is not excluded. It's in our build.sbt file
-    // TODO: and we exclude all deps there. Need to get rid of this hard-code.
+    // TODO: and we exclude all deps there. Need to get rid of this hard-code
     val scalaCompilerModuleId = new ModuleId("org.scala-lang", "*")
     val scalaCompilerArtifactId = new ArtifactId(
       scalaCompilerModuleId, "*", "*", "*"
