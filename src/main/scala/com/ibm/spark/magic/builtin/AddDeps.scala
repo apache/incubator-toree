@@ -51,6 +51,17 @@ class AddDeps extends MagicTemplate with IncludeInterpreter
     interpreter.addJars(urls:_*)
     urls.foreach(url => sparkContext.addJar(url.getPath))
 
+    // TODO: Investigate why %AddJar http://...factorie.jar works without
+    //       needing to rebind the SparkContext
+    // NOTE: Quick fix to re-enable SparkContext usage, otherwise any code
+    //       using the SparkContext (after this) has issues with some sort of
+    //       bad type of
+    //       org.apache.spark.org.apache.spark.org.apache.spark.SparkContext
+    interpreter.bind(
+      "sc", "org.apache.spark.SparkContext",
+      sparkContext, List("@transient")
+    )
+
     // TODO: report issues, etc, to the user or is the ivy output enough?
     MagicOutput()
   }
