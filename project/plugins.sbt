@@ -2,9 +2,6 @@ logLevel := Level.Warn
 
 resolvers += Classpaths.sbtPluginReleases
 
-// Provides the ability to create an uber-jar using `sbt assembly`
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.11.2")
-
 // Provides the ability to create an IntelliJ project using `sbt gen-idea`
 addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 
