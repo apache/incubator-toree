@@ -36,7 +36,7 @@ javacOptions ++= Seq(
 lazy val kill = taskKey[Unit]("Executing the shell script.")
 
 kill := {
-  "sh terminate_spark_kernels.sh" !
+  "sh scripts/terminate_spark_kernels.sh" !
 }
 
 lazy val rebuildIvyXml = TaskKey[Unit](
