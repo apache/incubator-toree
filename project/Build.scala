@@ -40,7 +40,10 @@ trait SubProjects extends Settings with TestTasks {
     id = "client",
     base = file("client"),
     settings = fullSettings
-  )) dependsOn(kernel % "test->test;compile->compile")
+  )) dependsOn(
+    kernel % "test->test;compile->compile"//,
+    //commons % "test->test;compile->compile"
+  )
 
   /**
    * Project representing the server code for providing Spark interfaces.
@@ -52,7 +55,10 @@ trait SubProjects extends Settings with TestTasks {
       packSettings ++ Seq(
         packMain := Map("sparkkernel" -> "com.ibm.spark.SparkKernel")
       )
-  )) dependsOn(kernel % "test->test;compile->compile")
+  )) dependsOn(
+    kernel % "test->test;compile->compile",
+    commons % "test->test;compile->compile"
+  )
 
   /**
    * Project representing the common code used between kernel pieces, namely
@@ -62,7 +68,7 @@ trait SubProjects extends Settings with TestTasks {
     id = "kernel",
     base = file("kernel"),
     settings = fullSettings
-  )) dependsOn(commons % "test->test;compile->compile")
+  ))
 
   /**
    * Project representing the common code used throughout other projects.

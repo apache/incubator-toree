@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel.protocol
 
-import akka.zeromq.ZMQMessage
+//import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.{CompleteRequest, ExecuteRequest}
 import play.api.libs.json.Json
@@ -16,7 +16,7 @@ package object v5Test {
   val MockKernelMessage : KernelMessage = KernelMessage(Seq("<ID>"), "<SIGNATURE>", MockHeader,
     MockParenHeader, Metadata(), "<CONTENT>")
   //  Use the implicit to convert the KernelMessage to ZMQMessage
-  val MockZMQMessage : ZMQMessage = MockKernelMessage
+  //val MockZMQMessage : ZMQMessage = MockKernelMessage
 
   val MockExecuteRequest: ExecuteRequest =
     ExecuteRequest("spark code", false, true, Map(), false)

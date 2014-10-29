@@ -5,6 +5,17 @@ import DockerKeys._
 
 fork := true // http://www.scala-sbt.org/0.13/docs/Running-Project-Code.html#Deserialization+and+class+loading
 
+//
+// AKKA DEPENDENCIES (from Spark project)
+//
+libraryDependencies +=
+  "org.spark-project.akka" %% "akka-zeromq" % "2.2.3-shaded-protobuf" // Apache v2
+
+//
+// TEST DEPENDENCIES
+//
+libraryDependencies +=
+  "org.spark-project.akka" %% "akka-testkit" % "2.2.3-shaded-protobuf" % "test" // MIT
 
 //
 // CUSTOM TASKS

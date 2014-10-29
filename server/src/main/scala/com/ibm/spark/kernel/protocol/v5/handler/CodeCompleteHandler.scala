@@ -3,6 +3,7 @@ package com.ibm.spark.kernel.protocol.v5.handler
 import akka.pattern.ask
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
+import com.ibm.spark.kernel.protocol.v5.Utilities._
 import com.ibm.spark.utils.LogLike
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, Json}

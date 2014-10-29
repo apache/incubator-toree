@@ -1,8 +1,3 @@
-//
-// AKKA DEPENDENCIES (from Spark project)
-//
-libraryDependencies +=
-  "org.spark-project.akka" %% "akka-zeromq" % "2.2.3-shaded-protobuf" // Apache v2
 
 //
 // JSON DEPENDENCIES
@@ -13,5 +8,9 @@ libraryDependencies +=
 //
 // TEST DEPENDENCIES
 //
-libraryDependencies +=
-  "org.spark-project.akka" %% "akka-testkit" % "2.2.3-shaded-protobuf" % "test" // MIT
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "2.2.0" % "test", // Apache v2
+  "org.scalactic" %% "scalactic" % "2.2.0" % "test", // Apache v2
+  "org.mockito" % "mockito-all" % "1.9.5" % "test"   // MIT
+)
+

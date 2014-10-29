@@ -5,6 +5,7 @@ import akka.util.ByteString
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.utils.LogLike
+import com.ibm.spark.kernel.protocol.v5.Utilities._
 
 /**
  * The server endpoint for IOPub messages specified in the IPython Kernel Spec

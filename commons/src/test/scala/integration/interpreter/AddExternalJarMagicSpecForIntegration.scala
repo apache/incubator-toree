@@ -1,6 +1,6 @@
 package integration.interpreter
 
-import java.io.{ByteArrayOutputStream, OutputStream}
+import java.io.ByteArrayOutputStream
 import java.util.UUID
 
 import com.ibm.spark.interpreter._
@@ -15,7 +15,7 @@ class AddExternalJarMagicSpecForIntegration
   private var interpreter: Interpreter = _
 
   before {
-    interpreter = new ScalaInterpreter(Nil, mock[OutputStream])
+    interpreter = new ScalaInterpreter(Nil, Console.out)//mock[OutputStream])
       with StandardSparkIMainProducer
       with StandardTaskManagerProducer
       with StandardSettingsProducer
@@ -59,6 +59,27 @@ class AddExternalJarMagicSpecForIntegration
           """println(new TestClass().sayHello("Chip"))"""
         ) should be ((Results.Success, Left("")))
         outputResult.toString should be ("Hello, Chip\n")
+      }
+
+      it("should support Scala jars") {
+        val testJarUrl = this.getClass.getClassLoader.getResource("ScalaTestJar.jar")
+
+        // Should fail since jar was not added to paths
+        interpreter.interpret(
+          "import com.ibm.scalatestjar.TestClass")._1 should be (Results.Error)
+
+        // Add jar to paths
+        interpreter.addJars(testJarUrl)
+
+        // Should now succeed
+        interpreter.interpret(
+          "import com.ibm.scalatestjar.TestClass")._1 should be (Results.Success)
+
+        // Should now run
+        interpreter.interpret(
+          """println(new TestClass().runMe())"""
+        ) should be ((Results.Success, Left("")))
+        outputResult.toString should be ("You ran me!")
       }
 
       it("should be able to add multiple jars at once") {

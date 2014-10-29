@@ -2,12 +2,14 @@ package com.ibm.spark.kernel.protocol.v5.socket
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5Test._
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
+import com.ibm.spark.kernel.protocol.v5.Utilities._
 
 object IOPubSpec {
   val config ="""
@@ -29,6 +31,9 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     // TODO test that the response type changed
     describe("#receive") {
       it("should reply with a ZMQMessage") {
+        //  Use the implicit to convert the KernelMessage to ZMQMessage
+        val MockZMQMessage : ZMQMessage = MockKernelMessage
+
         socket ! MockKernelMessage
         probe.expectMsg(MockZMQMessage)
       }
