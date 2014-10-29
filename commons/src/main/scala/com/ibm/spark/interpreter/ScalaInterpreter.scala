@@ -77,7 +77,6 @@ class ScalaInterpreter(
   protected def updateCompilerClassPath( jars: URL*): Unit = {
     require(!sparkIMain.global.forMSIL) // Only support JavaPlatform
 
-    sparkIMain.reset()
     val platform = sparkIMain.global.platform.asInstanceOf[JavaPlatform]
 
     val newClassPath = mergeJarsIntoClassPath(platform, jars:_*)

@@ -1,6 +1,6 @@
 package integration.interpreter
 
-import java.io.ByteArrayOutputStream
+import java.io.{OutputStream, ByteArrayOutputStream}
 import java.util.UUID
 
 import com.ibm.spark.interpreter._
@@ -15,7 +15,7 @@ class AddExternalJarMagicSpecForIntegration
   private var interpreter: Interpreter = _
 
   before {
-    interpreter = new ScalaInterpreter(Nil, Console.out)//mock[OutputStream])
+    interpreter = new ScalaInterpreter(Nil, mock[OutputStream])
       with StandardSparkIMainProducer
       with StandardTaskManagerProducer
       with StandardSettingsProducer
@@ -79,7 +79,7 @@ class AddExternalJarMagicSpecForIntegration
         interpreter.interpret(
           """println(new TestClass().runMe())"""
         ) should be ((Results.Success, Left("")))
-        outputResult.toString should be ("You ran me!")
+        outputResult.toString should be ("You ran me!\n")
       }
 
       it("should be able to add multiple jars at once") {
