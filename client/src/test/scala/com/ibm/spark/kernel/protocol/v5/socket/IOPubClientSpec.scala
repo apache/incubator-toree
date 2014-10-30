@@ -8,6 +8,7 @@ import akka.zeromq.ZMQMessage
 import com.ibm.spark.client.message.StreamMessage
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.{StreamContent, ExecuteResult}
+import com.ibm.spark.kernel.protocol.v5.Utilities._
 import com.typesafe.config.ConfigFactory
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
@@ -15,18 +16,27 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 import play.api.libs.json.Json
 
-class IOPubClientSpec extends TestKit(ActorSystem("IOPubClientSpecSystem", ConfigFactory.parseString(ShellSpec.config)))
-with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
-  describe("IOPubClient( SocketFactory )") {
+object IOPubClientSpec {
+  val config ="""
+    akka {
+      loglevel = "WARNING"
+    }"""
+}
+
+class IOPubClientSpec extends TestKit(ActorSystem(
+  "IOPubClientSpecSystem", ConfigFactory.parseString(IOPubClientSpec.config)
+)) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
+{
+  describe("IOPubClient( ClientSocketFactory )") {
     //  Create a probe for the socket
     val clientSocketProbe = TestProbe()
     //  Mock the socket factory
-    val mockSocketFactory = mock[SocketFactory]
+    val mockClientSocketFactory = mock[ClientSocketFactory]
     //  Stub the return value for the socket factory
-    when(mockSocketFactory.IOPubClient(anyObject(), any[ActorRef])).thenReturn(clientSocketProbe.ref)
+    when(mockClientSocketFactory.IOPubClient(anyObject(), any[ActorRef])).thenReturn(clientSocketProbe.ref)
 
     //  Construct the object we will test against
-    val ioPubClient = system.actorOf(Props(classOf[IOPubClient], mockSocketFactory))
+    val ioPubClient = system.actorOf(Props(classOf[IOPubClient], mockClientSocketFactory))
 
     describe("#receive( ZMQMessage )") {
       it("should send an ExecuteResult message") {

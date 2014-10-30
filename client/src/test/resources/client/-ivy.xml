@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+	<info organisation="com.ibm.spark" module="client_2.10" revision="0.1.1" status="release" publication="20141030160325">
+		<description>
+		client
+		</description>
+	</info>
+	<configurations>
+		<conf name="compile" visibility="public" description=""/>
+		<conf name="runtime" visibility="public" description="" extends="compile"/>
+		<conf name="test" visibility="public" description="" extends="runtime"/>
+		<conf name="provided" visibility="public" description=""/>
+		<conf name="optional" visibility="public" description=""/>
+		<conf name="unit" visibility="public" description="" extends="test"/>
+		<conf name="integration" visibility="public" description="" extends="test"/>
+		<conf name="system" visibility="public" description="" extends="test"/>
+		<conf name="scratch" visibility="public" description="" extends="test"/>
+		
+		
+		
+		
+		<conf name="sources" visibility="public" description=""/>
+		<conf name="docs" visibility="public" description=""/>
+		<conf name="pom" visibility="public" description=""/>
+		
+		
+		
+	</configurations>
+	<publications>
+		<artifact name="client_2.10" type="pom" ext="pom" conf="pom"/>
+		<artifact name="client_2.10" type="jar" ext="jar" conf="compile"/>
+		<artifact name="client_2.10" type="src" ext="jar" conf="sources" e:classifier="sources"/>
+		<artifact name="client_2.10" type="doc" ext="jar" conf="docs" e:classifier="javadoc"/>
+	</publications>
+	<dependencies>
+		
+		
+		<dependency org="com.ibm.spark" name="protocol_2.10" rev="0.1.1" conf="test->test;compile->compile"/>
+		<dependency org="com.ibm.spark" name="shared_2.10" rev="0.1.1" conf="test->test;compile->compile"/>
+		<dependency org="com.ibm.spark" name="kernel_2.10" rev="0.1.1" conf="test->compile"/>
+		<dependency org="com.typesafe" name="config" rev="1.2.1" conf="compile->default(compile)"/>
+		<dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5" conf="test->default(compile)"/>
+		<dependency org="log4j" name="log4j" rev="1.2.17" conf="test->default(compile)"/>
+		<dependency org="org.scalatest" name="scalatest_2.10" rev="2.2.0" conf="test->default(compile)"/>
+		<dependency org="org.scalactic" name="scalactic_2.10" rev="2.2.0" conf="test->default(compile)"/>
+		<dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="test->default(compile)"/>
+		
+		<dependency org="org.slf4j" name="slf4j-api" rev="1.7.7" conf="compile->default(compile)"/>
+		<dependency org="org.testng" name="testng" rev="6.8.5" conf="test->default(compile)"/>
+		<dependency org="org.easytesting" name="fest-assert" rev="1.4" conf="test->default(compile)"/>
+		<dependency org="org.fluentlenium" name="fluentlenium-testng" rev="0.9.0" conf="test->default(compile)"/>
+		<dependency org="org.fluentlenium" name="fluentlenium-festassert" rev="0.9.0" conf="test->default(compile)"/>
+		<dependency org="org.fluentlenium" name="fluentlenium-core" rev="0.9.0" conf="test->default(compile)"/>
+	</dependencies>
+</ivy-module>

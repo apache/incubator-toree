@@ -14,7 +14,7 @@ object HeartbeatMessage {}
  * The client endpoint for heartbeat messages specified in the IPython Kernel Spec
  * @param socketFactory A factory to create the ZeroMQ socket connection
  */
-class HeartbeatClient(socketFactory : SocketFactory) extends Actor with LogLike {
+class HeartbeatClient(socketFactory : ClientSocketFactory) extends Actor with LogLike {
   logger.debug("Created new Heartbeat Client actor")
   implicit val timeout = Timeout(1.minute)
 

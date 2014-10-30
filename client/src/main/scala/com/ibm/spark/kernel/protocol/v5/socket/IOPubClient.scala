@@ -5,6 +5,7 @@ import akka.zeromq.ZMQMessage
 import com.ibm.spark.client.message.StreamMessage
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.content.{StreamContent, ExecuteResult}
+import com.ibm.spark.kernel.protocol.v5.Utilities._
 import com.ibm.spark.kernel.protocol.v5.socket.IOPubClient._
 import com.ibm.spark.kernel.protocol.v5.{MessageType, KernelMessage, UUID}
 import com.ibm.spark.utils.LogLike
@@ -21,7 +22,7 @@ object IOPubClient {
  * The client endpoint for IOPub messages specified in the IPython Kernel Spec
  * @param socketFactory A factory to create the ZeroMQ socket connection
  */
-class IOPubClient(socketFactory: SocketFactory) extends Actor with LogLike {
+class IOPubClient(socketFactory: ClientSocketFactory) extends Actor with LogLike {
   private val socket = socketFactory.IOPubClient(context.system, self)
 
   override def receive: Receive = {

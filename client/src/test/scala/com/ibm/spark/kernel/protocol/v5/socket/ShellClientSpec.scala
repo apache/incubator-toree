@@ -17,7 +17,7 @@ class ShellClientSpec extends TestKit(ActorSystem("ShellActorSpec"))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
   describe("ShellClientActor") {
-    val socketFactory = mock[SocketFactory]
+    val socketFactory = mock[ClientSocketFactory]
     val probe : TestProbe = TestProbe()
     when(socketFactory.ShellClient(
       any(classOf[ActorSystem]), any(classOf[ActorRef])

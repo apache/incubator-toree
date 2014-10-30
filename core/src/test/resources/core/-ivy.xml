@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:e="http://ant.apache.org/ivy/extra">
+	<info organisation="com.ibm.spark" module="core_2.10" revision="0.1.1" status="release" publication="20141030160247">
+		<description>
+		core
+		</description>
+	</info>
+	<configurations>
+		<conf name="compile" visibility="public" description=""/>
+		<conf name="runtime" visibility="public" description="" extends="compile"/>
+		<conf name="test" visibility="public" description="" extends="runtime"/>
+		<conf name="provided" visibility="public" description=""/>
+		<conf name="optional" visibility="public" description=""/>
+		<conf name="unit" visibility="public" description="" extends="test"/>
+		<conf name="integration" visibility="public" description="" extends="test"/>
+		<conf name="system" visibility="public" description="" extends="test"/>
+		<conf name="scratch" visibility="public" description="" extends="test"/>
+		
+		
+		
+		
+		<conf name="sources" visibility="public" description=""/>
+		<conf name="docs" visibility="public" description=""/>
+		<conf name="pom" visibility="public" description=""/>
+		
+		
+		
+	</configurations>
+	<publications>
+		<artifact name="core_2.10" type="pom" ext="pom" conf="pom"/>
+		<artifact name="core_2.10" type="jar" ext="jar" conf="compile"/>
+		<artifact name="core_2.10" type="src" ext="jar" conf="sources" e:classifier="sources"/>
+		<artifact name="core_2.10" type="doc" ext="jar" conf="docs" e:classifier="javadoc"/>
+	</publications>
+	<dependencies>
+		<dependency org="com.ibm.spark" name="macros_2.10" rev="0.1.1" conf="test->test;compile->compile"/>
+		<dependency org="com.typesafe" name="config" rev="1.2.1" conf="compile->default(compile)"/>
+		<dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.5" conf="test->default(compile)"/>
+		<dependency org="log4j" name="log4j" rev="1.2.17" conf="test->default(compile)"/>
+		<dependency org="org.scalatest" name="scalatest_2.10" rev="2.2.0" conf="test->default(compile)"/>
+		<dependency org="org.scalactic" name="scalactic_2.10" rev="2.2.0" conf="test->default(compile)"/>
+		<dependency org="org.mockito" name="mockito-all" rev="1.9.5" conf="test->default(compile)"/>
+		
+		<dependency org="org.scala-lang" name="scala-library" rev="2.10.4" conf="compile->default(compile)"/>
+		
+		<dependency org="org.scala-lang" name="scala-reflect" rev="2.10.4" conf="compile->default(compile)"/>
+		<dependency org="org.apache.spark" name="spark-core_2.10" rev="1.1.0" conf="compile->default(compile)">
+			<exclude org="org.apache.hadoop" module="*" name="*" type="*" ext="*" conf="" matcher="exact"/>
+		</dependency>
+		<dependency org="org.apache.spark" name="spark-streaming_2.10" rev="1.1.0" conf="compile->default(compile)"/>
+		<dependency org="org.apache.spark" name="spark-sql_2.10" rev="1.1.0" conf="compile->default(compile)"/>
+		<dependency org="org.apache.spark" name="spark-mllib_2.10" rev="1.1.0" conf="compile->default(compile)"/>
+		<dependency org="org.apache.spark" name="spark-graphx_2.10" rev="1.1.0" conf="compile->default(compile)"/>
+		<dependency org="org.apache.spark" name="spark-repl_2.10" rev="1.1.0" conf="compile->default(compile)">
+			<exclude org="org.apache.hadoop" module="*" name="*" type="*" ext="*" conf="" matcher="exact"/>
+		</dependency>
+		<dependency org="org.apache.hadoop" name="hadoop-client" rev="2.3.0" conf="compile->default(compile)">
+			<exclude org="javax.servlet" module="*" name="*" type="*" ext="*" conf="" matcher="exact"/>
+		</dependency>
+		<dependency org="net.sf.jopt-simple" name="jopt-simple" rev="4.6" conf="compile->default(compile)"/>
+		<dependency org="org.apache.ivy" name="ivy" rev="2.4.0-rc1" conf="compile->default(compile)"/>
+	</dependencies>
+</ivy-module>

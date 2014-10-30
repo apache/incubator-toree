@@ -1,7 +1,10 @@
+import org.apache.commons.io.FileUtils
 import sbt._
 import Keys._
 import scoverage.ScoverageSbtPlugin._
 import xerial.sbt.Pack._
+import sbtunidoc.Plugin._
+import sbtunidoc.Plugin.UnidocKeys._
 
 object Build extends Build with Settings with SubProjects with TestTasks {
   /**
@@ -12,8 +15,10 @@ object Build extends Build with Settings with SubProjects with TestTasks {
       id = "root",
       base = file("."),
       settings = fullSettings
+    ).settings(
+      scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand"
     )
-  ).aggregate(client, server, kernel, commons, macros)
+  ).aggregate(client, kernel, core, protocol, shared, macros)
 }
 
 /**
@@ -26,7 +31,8 @@ trait Settings {
       // Enable syntax highlighting (disabled due to bugs in sbt)
       ScoverageKeys.highlighting := true
     ) ++
-    net.virtualvoid.sbt.graph.Plugin.graphSettings
+    net.virtualvoid.sbt.graph.Plugin.graphSettings ++
+    unidocSettings
 }
 
 /**
@@ -41,43 +47,56 @@ trait SubProjects extends Settings with TestTasks {
     base = file("client"),
     settings = fullSettings
   )) dependsOn(
-    kernel % "test->test;compile->compile"//,
-    //commons % "test->test;compile->compile"
+    protocol % "test->test;compile->compile",
+    shared % "test->test;compile->compile",
+    kernel % "test->compile" // TODO: Remove dependency on kernel for tests
   )
 
   /**
-   * Project representing the server code for providing Spark interfaces.
+   * Project representing the kernel code for the Spark Kernel backend.
    */
-  lazy val server = addTestTasksToProject(Project(
-    id = "server",
-    base = file("server"),
+  lazy val kernel = addTestTasksToProject(Project(
+    id = "kernel",
+    base = file("kernel"),
     settings = fullSettings ++
       packSettings ++ Seq(
         packMain := Map("sparkkernel" -> "com.ibm.spark.SparkKernel")
       )
   )) dependsOn(
-    kernel % "test->test;compile->compile",
-    commons % "test->test;compile->compile"
+    protocol % "test->test;compile->compile",
+    shared % "test->test;compile->compile",
+    core % "test->test;compile->compile"
   )
 
   /**
-   * Project representing the common code used between kernel pieces, namely
-   * the client and server.
+   * Project representing the core code used by the Spark Kernel. Others can
+   * import this to implement their own magics and plugins.
    */
-  lazy val kernel = addTestTasksToProject(Project(
-    id = "kernel",
-    base = file("kernel"),
+  lazy val core = addTestTasksToProject(Project(
+    id = "core",
+    base = file("core"),
+    settings = fullSettings
+  )) dependsOn(macros % "test->test;compile->compile")
+
+  /**
+   * Project representing the IPython kernel message protocol in Scala. Used
+   * by the client and kernel implementations.
+   */
+  lazy val protocol = addTestTasksToProject(Project(
+    id = "protocol",
+    base = file("protocol"),
     settings = fullSettings
   ))
 
   /**
-   * Project representing the common code used throughout other projects.
+   * Project representing shared classes between the client and kernel
+   * implementations.
    */
-  lazy val commons = addTestTasksToProject(Project(
-    id = "commons",
-    base = file("commons"),
+  lazy val shared = addTestTasksToProject(Project(
+    id = "shared",
+    base = file("shared"),
     settings = fullSettings
-  )) dependsOn(macros % "test->test;compile->compile")
+  )) dependsOn(protocol % "test->test;compile->compile")
 
   /**
    * Project representing macros in Scala that must be compiled separately from
@@ -131,3 +150,4 @@ trait TestTasks {
   lazy val SystemTest = config("system") extend Test
   lazy val ScratchTest = config("scratch") extend Test
 }
+

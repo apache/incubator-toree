@@ -8,4 +8,5 @@ target/
 *.ipynb
 scratch/
 **/resources/ivy.xml
+test-output/
 

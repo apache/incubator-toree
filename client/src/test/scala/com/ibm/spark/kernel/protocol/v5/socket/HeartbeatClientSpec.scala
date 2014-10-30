@@ -12,7 +12,7 @@ class HeartbeatClientSpec extends TestKit(ActorSystem("HeartbeatActorSpec"))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
   describe("HeartbeatClientActor") {
-    val socketFactory = mock[SocketFactory]
+    val socketFactory = mock[ClientSocketFactory]
     val probe : TestProbe = TestProbe()
     when(socketFactory.HeartbeatClient(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probe.ref)
 

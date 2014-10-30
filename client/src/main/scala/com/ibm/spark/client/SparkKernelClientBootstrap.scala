@@ -6,6 +6,7 @@ import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SimpleActorLoader
 import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.socket.SocketConfig
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 

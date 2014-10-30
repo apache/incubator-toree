@@ -5,6 +5,7 @@ import akka.util.Timeout
 import akka.zeromq.ZMQMessage
 import akka.pattern.ask
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteReply
+import com.ibm.spark.kernel.protocol.v5.Utilities._
 import com.ibm.spark.kernel.protocol.v5.socket.ShellClient._
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, UUID}
 import com.ibm.spark.utils.LogLike
@@ -21,7 +22,7 @@ object ShellClient {
  * The client endpoint for Shell messages specified in the IPython Kernel Spec
  * @param socketFactory A factory to create the ZeroMQ socket connection
  */
-class ShellClient(socketFactory: SocketFactory) extends Actor with LogLike {
+class ShellClient(socketFactory: ClientSocketFactory) extends Actor with LogLike {
   logger.debug("Created shell client actor")
   implicit val timeout = Timeout(100000.days)
 
