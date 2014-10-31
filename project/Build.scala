@@ -17,7 +17,7 @@ object Build extends Build with Settings with SubProjects with TestTasks {
     ).settings(
       scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand"
     )
-  ).aggregate(client, kernel, core, protocol, macros)
+  ).aggregate(client, kernel, kernel_api, protocol, macros)
 }
 
 /**
@@ -61,16 +61,16 @@ trait SubProjects extends Settings with TestTasks {
       )
   )) dependsOn(
     protocol % "test->test;compile->compile",
-    core % "test->test;compile->compile"
+    kernel_api % "test->test;compile->compile"
   )
 
   /**
-   * Project representing the core code used by the Spark Kernel. Others can
+   * Project representing the kernel-api code used by the Spark Kernel. Others can
    * import this to implement their own magics and plugins.
    */
-  lazy val core = addTestTasksToProject(Project(
-    id = "core",
-    base = file("core"),
+  lazy val kernel_api = addTestTasksToProject(Project(
+    id = "kernel-api",
+    base = file("kernel-api"),
     settings = fullSettings
   )) dependsOn(macros % "test->test;compile->compile")
 
