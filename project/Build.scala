@@ -48,8 +48,7 @@ trait SubProjects extends Settings with TestTasks {
     settings = fullSettings
   )) dependsOn(
     protocol % "test->test;compile->compile",
-    shared % "test->test;compile->compile",
-    kernel % "test->compile" // TODO: Remove dependency on kernel for tests
+    shared % "test->test;compile->compile"
   )
 
   /**
@@ -64,7 +63,6 @@ trait SubProjects extends Settings with TestTasks {
       )
   )) dependsOn(
     protocol % "test->test;compile->compile",
-    shared % "test->test;compile->compile",
     core % "test->test;compile->compile"
   )
 
