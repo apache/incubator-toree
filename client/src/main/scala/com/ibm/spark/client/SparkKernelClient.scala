@@ -2,17 +2,15 @@ package com.ibm.spark.client
 
 import akka.pattern.ask
 import akka.util.Timeout
-import com.ibm.spark.client.message.StreamMessage
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
 import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.utils.LogLike
+import scala.concurrent.duration._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration._
 import scala.util.{Failure, Success}
-import akka.util.Timeout
 /**
  * Client API for Spark Kernel.
  *
@@ -20,7 +18,7 @@ import akka.util.Timeout
  * if an API is to be used immediately after initialization.
  */
 class SparkKernelClient(actorLoader: ActorLoader) extends LogLike {
-  implicit val timeout = Timeout(100000.days)
+  implicit val timeout = Timeout(21474835.seconds)
 
   /**
    * Executed Scala code on the Spark Kernel.

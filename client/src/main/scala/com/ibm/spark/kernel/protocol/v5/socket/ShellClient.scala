@@ -1,18 +1,16 @@
 package com.ibm.spark.kernel.protocol.v5.socket
 
 import akka.actor.{Actor, ActorRef}
-import akka.util.Timeout
-import akka.zeromq.ZMQMessage
 import akka.pattern.ask
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteReply
+import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.Utilities._
+import com.ibm.spark.kernel.protocol.v5.content.ExecuteReply
 import com.ibm.spark.kernel.protocol.v5.socket.ShellClient._
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, UUID}
 import com.ibm.spark.utils.LogLike
 import play.api.libs.json.Json
 
 import scala.collection.concurrent.{Map, TrieMap}
-import scala.concurrent.duration._
 
 object ShellClient {
   private val futureMap: Map[UUID, ActorRef] = TrieMap[UUID, ActorRef]()
@@ -24,7 +22,6 @@ object ShellClient {
  */
 class ShellClient(socketFactory: ClientSocketFactory) extends Actor with LogLike {
   logger.debug("Created shell client actor")
-  implicit val timeout = Timeout(100000.days)
 
   val socket = socketFactory.ShellClient(context.system, self)
 

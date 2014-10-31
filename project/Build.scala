@@ -1,10 +1,9 @@
-import org.apache.commons.io.FileUtils
+import sbt.Keys._
 import sbt._
-import Keys._
+import sbtunidoc.Plugin.UnidocKeys._
+import sbtunidoc.Plugin._
 import scoverage.ScoverageSbtPlugin._
 import xerial.sbt.Pack._
-import sbtunidoc.Plugin._
-import sbtunidoc.Plugin.UnidocKeys._
 
 object Build extends Build with Settings with SubProjects with TestTasks {
   /**
@@ -18,7 +17,7 @@ object Build extends Build with Settings with SubProjects with TestTasks {
     ).settings(
       scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand"
     )
-  ).aggregate(client, kernel, core, protocol, shared, macros)
+  ).aggregate(client, kernel, core, protocol, macros)
 }
 
 /**
@@ -47,8 +46,7 @@ trait SubProjects extends Settings with TestTasks {
     base = file("client"),
     settings = fullSettings
   )) dependsOn(
-    protocol % "test->test;compile->compile",
-    shared % "test->test;compile->compile"
+    protocol % "test->test;compile->compile"
   )
 
   /**
@@ -85,16 +83,6 @@ trait SubProjects extends Settings with TestTasks {
     base = file("protocol"),
     settings = fullSettings
   ))
-
-  /**
-   * Project representing shared classes between the client and kernel
-   * implementations.
-   */
-  lazy val shared = addTestTasksToProject(Project(
-    id = "shared",
-    base = file("shared"),
-    settings = fullSettings
-  )) dependsOn(protocol % "test->test;compile->compile")
 
   /**
    * Project representing macros in Scala that must be compiled separately from
