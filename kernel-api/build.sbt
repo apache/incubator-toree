@@ -27,6 +27,8 @@ libraryDependencies ++= Seq(
 //
 val sparkVersion = Common.sparkVersion
 
+// TODO: Mark these as provided and bring them in via the kernel project
+//       so users wanting to implement a magic do not bring in Spark itself
 libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion excludeAll   // Apache v2
     ExclusionRule(organization = "org.apache.hadoop"),
