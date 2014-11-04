@@ -4,8 +4,8 @@ import play.api.libs.json._
 
 case class StreamContent(
    name: String,
-   data: String
-   )
+   text: String
+)
 
 
 object StreamContent {
