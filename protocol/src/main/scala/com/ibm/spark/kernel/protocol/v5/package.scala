@@ -104,9 +104,10 @@ package object v5 {
   object MIMEType extends Enumeration {
     type MIMEType = String
 
-    val PlainText       = "text/plain"
-    val ImagePng        = "image/png"
-    val TextHtml        = "text/html"
-    val ApplicationJson = "application/json"
+    val PlainText               = """text/plain"""
+    val ImagePng                = """image/png"""
+    val TextHtml                = """text/html"""
+    val ApplicationJson         = """application/json"""
+    val ApplicationJavaScript   = """application/javascript"""
   }
 }
