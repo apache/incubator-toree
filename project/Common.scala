@@ -3,7 +3,7 @@ import sbt._
 import Keys._
 
 object Common {
-  private val buildOrganization = "com.ibm.spark"
+  private val buildOrganization = "ignitio"
   private val buildVersion      = "0.1.1"
   private val buildScalaVersion = "2.10.4"
   private val buildSbtVersion   = "0.13.5"

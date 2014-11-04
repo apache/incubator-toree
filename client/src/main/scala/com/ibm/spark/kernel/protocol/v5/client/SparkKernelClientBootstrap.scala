@@ -1,9 +1,9 @@
-package com.ibm.spark.client
+package com.ibm.spark.kernel.protocol.v5.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import com.ibm.spark.client.handler.ExecuteHandler
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SimpleActorLoader
+import com.ibm.spark.kernel.protocol.v5.client.handler.ExecuteHandler
 import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.socket.SocketConfig
@@ -15,8 +15,7 @@ class SparkKernelClientBootstrap(config: Config) extends LogLike {
   // set up our actor system and configure the socket factory
   private val actorSystem = ActorSystem("spark-client-actor-system")
   private val actorLoader = SimpleActorLoader(actorSystem)
-  private val socketFactory =
-    new ClientSocketFactory(SocketConfig.fromConfig(config))
+  private val socketFactory = new ClientSocketFactory(SocketConfig.fromConfig(config))
 
   private var heartbeatClientActor: Option[ActorRef] = None
 
@@ -24,7 +23,10 @@ class SparkKernelClientBootstrap(config: Config) extends LogLike {
    * @return an instance of a SparkKernelClient
    */
   def createClient: SparkKernelClient = {
-    new SparkKernelClient(actorLoader)
+    val client = new SparkKernelClient(actorLoader, actorSystem)
+    // We need to give the kernel client some time to connect, otherwise messages will never get sent
+    Thread.sleep(2000)
+    client
   }
 
   /**
@@ -33,16 +35,6 @@ class SparkKernelClientBootstrap(config: Config) extends LogLike {
   def initialize(): Unit = {
     initializeSystemActors()
     initializeMessageHandlers()
-  }
-
-  /**
-   * Shuts down all kernel systems.
-   */
-  def shutdown = {
-    logger.info("Shutting down actor system")
-    actorSystem.shutdown()
-
-    this
   }
 
   private def initializeSystemActors(): Unit = {

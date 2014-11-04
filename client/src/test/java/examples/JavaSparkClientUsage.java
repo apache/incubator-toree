@@ -1,8 +1,8 @@
 package examples;
 
-import com.ibm.spark.client.SparkKernelClientBootstrap;
-import com.ibm.spark.client.java.EmptyFunction;
-import com.ibm.spark.client.java.SparkKernelClient;
+import com.ibm.spark.kernel.protocol.v5.client.SparkKernelClientBootstrap;
+import com.ibm.spark.kernel.protocol.v5.client.java.EmptyFunction;
+import com.ibm.spark.kernel.protocol.v5.client.java.SparkKernelClient;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import scala.Function1;

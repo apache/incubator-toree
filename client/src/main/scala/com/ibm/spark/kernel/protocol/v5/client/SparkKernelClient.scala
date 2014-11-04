@@ -1,5 +1,6 @@
-package com.ibm.spark.client
+package com.ibm.spark.kernel.protocol.v5.client
 
+import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5._
@@ -16,8 +17,10 @@ import scala.util.{Failure, Success}
  *
  * Note: This takes a moment to initialize an actor system, so take appropriate action
  * if an API is to be used immediately after initialization.
+ *
+ * The actorSystem parameter allows shutdown of this client's ActorSystem.
  */
-class SparkKernelClient(actorLoader: ActorLoader) extends LogLike {
+class SparkKernelClient(actorLoader: ActorLoader, actorSystem: ActorSystem) extends LogLike {
   implicit val timeout = Timeout(21474835.seconds)
 
   /**
@@ -35,7 +38,7 @@ class SparkKernelClient(actorLoader: ActorLoader) extends LogLike {
    * @param code Streaming Scala code (prints to stdout)
    * @param callback Function called when stream messages are received
    */
-  def stream(code: String, callback: Any => Unit) = {
+  def stream(code: String, callback: Any => Unit): Future[Any] = {
     val request = ExecuteRequest(code, false, true, UserExpressions(), true)
     actorLoader.load(MessageType.ExecuteRequest) ? ExecuteRequestTuple(request, callback)
   }
@@ -51,5 +54,10 @@ class SparkKernelClient(actorLoader: ActorLoader) extends LogLike {
         failure()
         logger.info("There was an error receiving heartbeat from kernel.")
     }
+  }
+
+  def shutdown() = {
+    logger.info("Shutting down client")
+    actorSystem.shutdown()
   }
 }

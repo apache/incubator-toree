@@ -1,4 +1,4 @@
-package com.ibm.spark.client.java;
+package com.ibm.spark.kernel.protocol.v5.client.java;
 
 import scala.Function1;
 import scala.concurrent.Future;
@@ -6,13 +6,13 @@ import scala.runtime.AbstractFunction0;
 import scala.runtime.BoxedUnit;
 
 /**
- * Java adapter for {@link com.ibm.spark.client.SparkKernelClient}
+ * Java adapter for {@link com.ibm.spark.kernel.protocol.v5.client.SparkKernelClient}
  */
 public class SparkKernelClient {
 
-    protected com.ibm.spark.client.SparkKernelClient client;
+    protected com.ibm.spark.kernel.protocol.v5.client.SparkKernelClient client;
 
-    public SparkKernelClient(com.ibm.spark.client.SparkKernelClient client) {
+    public SparkKernelClient(com.ibm.spark.kernel.protocol.v5.client.SparkKernelClient client) {
         this.client = client;
     }
 
