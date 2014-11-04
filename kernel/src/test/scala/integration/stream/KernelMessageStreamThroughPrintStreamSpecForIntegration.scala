@@ -61,7 +61,7 @@ class KernelMessageStreamThroughPrintStreamSpecForIntegration
           .receiveN(3).map(_.asInstanceOf[KernelMessage])
         messages.foldLeft("")( (result: String, message: KernelMessage) => {
           val executeResult = Json.parse(message.contentString).as[StreamContent]
-          result + executeResult.data
+          result + executeResult.text
         }) should be (expected + "\n")
       }
     }

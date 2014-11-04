@@ -59,7 +59,7 @@ class IOPubClient(socketFactory: ClientSocketFactory) extends Actor with LogLike
             case Some(f) =>
               logger.debug("Matched cased f")
               val streamContent = Json.parse(kernelMessage.contentString).as[StreamContent]
-              f(streamContent.data)
+              f(streamContent.text)
               callbackMap.remove(id)
             case None =>
               logger.warn(s"IOPubClient: no function for id ${id}")

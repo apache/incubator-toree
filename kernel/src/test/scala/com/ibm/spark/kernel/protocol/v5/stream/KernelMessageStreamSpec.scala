@@ -60,7 +60,7 @@ class KernelMessageStreamSpec
         val message = kernelMessageRelayProbe
           .receiveOne(1.seconds).asInstanceOf[KernelMessage]
         val executeResult = Json.parse(message.contentString).as[StreamContent]
-        executeResult.data should be (expected.toString)
+        executeResult.text should be (expected.toString)
       }
 
       it("should call flush if the byte provided is a newline") {
@@ -80,7 +80,7 @@ class KernelMessageStreamSpec
         val message = kernelMessageRelayProbe
           .receiveOne(1.seconds).asInstanceOf[KernelMessage]
         val executeResult = Json.parse(message.contentString).as[StreamContent]
-        executeResult.data should be (expected.toString)
+        executeResult.text should be (expected.toString)
       }
 
       it("should not call flush if the byte provided is not a newline") {
@@ -154,7 +154,7 @@ class KernelMessageStreamSpec
         val message = kernelMessageRelayProbe
           .receiveOne(1.seconds).asInstanceOf[KernelMessage]
         val executeResult = Json.parse(message.contentString).as[StreamContent]
-        executeResult.data should be (expected)
+        executeResult.text should be (expected)
       }
 
       it("should make a copy of the kernel message skeleton") {

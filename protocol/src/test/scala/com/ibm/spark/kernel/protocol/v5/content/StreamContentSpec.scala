@@ -7,7 +7,7 @@ import play.api.libs.json._
 class StreamContentSpec extends FunSpec with Matchers {
   val streamJson: JsValue = Json.parse("""
   {
-    "data": "<STRING>",
+    "text": "<STRING>",
     "name": "<STRING>"
   }
   """)
