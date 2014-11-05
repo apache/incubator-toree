@@ -74,6 +74,9 @@ package object v5 {
     val ExecuteResult   = Value("execute_result")
     val Status          = Value("status")
     val Stream          = Value("stream")
+    val CommOpen        = Value("comm_open")
+    val CommMsg         = Value("comm_msg")
+    val CommClose       = Value("comm_close")
   }
 
   object HandlerType extends Enumeration {
