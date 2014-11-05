@@ -1,7 +1,7 @@
 package examples
 
 import java.io.File
-import com.ibm.spark.client.SparkKernelClientBootstrap
+import com.ibm.spark.kernel.protocol.v5.client.SparkKernelClientBootstrap
 import com.typesafe.config.{ConfigFactory, Config}
 
 /**

@@ -3,6 +3,7 @@ package com.ibm.spark.client
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.client.{ExecuteRequestTuple, SparkKernelClient}
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
@@ -12,7 +13,7 @@ class SparkKernelClientSpec extends TestKit(ActorSystem("RelayActorSystem"))
   with Matchers with MockitoSugar with FunSpecLike {
 
   val actorLoader = mock[ActorLoader]
-  val client = new SparkKernelClient(actorLoader)
+  val client = new SparkKernelClient(actorLoader, system)
   val probe = TestProbe()
   when(actorLoader.load(MessageType.ExecuteRequest))
     .thenReturn(system.actorSelection(probe.ref.path.toString))

@@ -15,7 +15,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object ExecuteHandler extends LogLike {
   private[client] def resolve(shellReply: ExecuteReply, ioPubResult: Any): Option[Either[ExecuteReplyError, ExecuteResult]] = {
-    println("shellReply: " + shellReply)
     shellReply.status match {
       //case errorReply: ExecuteReplyError =>
       case "error" =>

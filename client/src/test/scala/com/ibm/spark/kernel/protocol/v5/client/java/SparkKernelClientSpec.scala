@@ -6,15 +6,16 @@ import org.mockito.Mockito._
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 import org.scalatest.mock.MockitoSugar
 import scala.runtime.BoxedUnit
+import com.ibm.spark.kernel.protocol.v5.client.java.{EmptyFunction, SparkKernelClient}
 
 class SparkKernelClientSpec extends FunSpec with Matchers with MockitoSugar
   with BeforeAndAfter
 {
   private var sparkKernelClient: SparkKernelClient = _
-  private var mockScalaClient: com.ibm.spark.client.SparkKernelClient = _
+  private var mockScalaClient: com.ibm.spark.kernel.protocol.v5.client.SparkKernelClient = _
 
   before {
-    mockScalaClient = mock[com.ibm.spark.client.SparkKernelClient]
+    mockScalaClient = mock[com.ibm.spark.kernel.protocol.v5.client.SparkKernelClient]
     sparkKernelClient = new SparkKernelClient(mockScalaClient)
   }
 
