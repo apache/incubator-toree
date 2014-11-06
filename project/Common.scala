@@ -21,7 +21,7 @@ object Common {
   )
 
   // The prefix used for our custom artifact names
-  private val artifactPrefix    = "ibm-spark"
+  private val artifactPrefix = "ibm-spark"
 
   val settings: Seq[Def.Setting[_]] = Seq(
     organization := buildOrganization,
@@ -69,9 +69,7 @@ object Common {
 
     // Change destination of local delivery (building ivy.xml) to have *-ivy.xml
     deliverLocalConfiguration := {
-      val newDestinationPath =
-        crossTarget.value / "ivy.xml"
-      //crossTarget.value / "[artifact].[ext]"
+      val newDestinationPath = crossTarget.value / s"${name.value}-ivy.xml"
       val dlc = deliverLocalConfiguration.value
       new DeliverConfiguration(
         newDestinationPath.absolutePath, dlc.status,
@@ -79,8 +77,7 @@ object Common {
     },
 
     // Add rebuild ivy xml to the following tasks
-    compile <<= (compile in Compile) dependsOn (rebuildIvyXml dependsOn deliverLocal),
-    test <<= (test in Test) dependsOn (rebuildTestIvyXml dependsOn deliverLocal)
+    compile <<= (compile in Compile) dependsOn (rebuildIvyXml dependsOn deliverLocal)
   ) ++ rebuildIvyXmlSettings // Include our rebuild ivy xml settings
 
   // ==========================================================================
@@ -92,30 +89,15 @@ object Common {
     "Rebuilds the ivy xml using deliver-local and copies it to src " +
       "resource directories"
   )
-  lazy val rebuildTestIvyXml = TaskKey[Unit](
-    "rebuild-test-ivy-xml",
-    "Rebuilds the ivy xml using deliver-local and copies it to test " +
-      "resource directories"
-  )
 
   // TODO: Figure out how to retrieve the configuration being used to avoid
   //       this duplication
   lazy val rebuildIvyXmlSettings = Seq(
     rebuildIvyXml := {
       val s: TaskStreams = streams.value
-      //val inputFile = (crossTarget.value / "[artifact].[ext]").getAbsolutePath
-      val inputFile = (crossTarget.value / "ivy.xml").getAbsoluteFile
+      val inputFile = (crossTarget.value / s"${name.value}-ivy.xml").getAbsoluteFile
       val outputFile =
-        ((resourceDirectory in Compile).value / "ivy.xml").getAbsoluteFile
-      s.log.info(s"Copying ${inputFile.getPath} to ${outputFile.getPath}")
-      FileUtils.copyFile(inputFile, outputFile)
-    },
-    rebuildTestIvyXml := {
-      val s: TaskStreams = streams.value
-      //val inputFile = (crossTarget.value / "[artifact].[ext]").getAbsolutePath
-      val inputFile = (crossTarget.value / "ivy.xml").getAbsoluteFile
-      val outputFile =
-        ((resourceDirectory in Test).value / "ivy.xml").getAbsoluteFile
+        ((resourceDirectory in Compile).value / s"${name.value}-ivy.xml").getAbsoluteFile
       s.log.info(s"Copying ${inputFile.getPath} to ${outputFile.getPath}")
       FileUtils.copyFile(inputFile, outputFile)
     }

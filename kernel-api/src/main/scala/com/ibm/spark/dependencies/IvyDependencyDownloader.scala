@@ -1,20 +1,20 @@
 package com.ibm.spark.dependencies
 
-import org.apache.ivy.core.settings.IvySettings
-import org.apache.ivy.plugins.resolver.IBiblioResolver
-import org.apache.ivy.Ivy
-import java.io.{PrintStream, File}
-import org.apache.ivy.core.module.descriptor.{DependencyDescriptor, DefaultExcludeRule, DefaultDependencyDescriptor, DefaultModuleDescriptor}
-import org.apache.ivy.core.module.id.{ModuleId, ArtifactId, ModuleRevisionId}
-import org.apache.ivy.plugins.parser.xml.{XmlModuleDescriptorParser, XmlModuleDescriptorWriter}
-import org.apache.ivy.core.resolve.ResolveOptions
-import org.apache.ivy.core.retrieve.RetrieveOptions
-import org.apache.ivy.util.{Message, DefaultMessageLogger}
-import scala.io.Source
-import org.apache.ivy.plugins.matcher.{ExactPatternMatcher, RegexpPatternMatcher}
+import java.io.{File, PrintStream}
 import java.net.URL
 
-import collection.JavaConverters._
+import org.apache.ivy.Ivy
+import org.apache.ivy.core.module.descriptor._
+import org.apache.ivy.core.module.id.{ArtifactId, ModuleId, ModuleRevisionId}
+import org.apache.ivy.core.resolve.ResolveOptions
+import org.apache.ivy.core.retrieve.RetrieveOptions
+import org.apache.ivy.core.settings.IvySettings
+import org.apache.ivy.plugins.matcher.RegexpPatternMatcher
+import org.apache.ivy.plugins.parser.xml.{XmlModuleDescriptorParser, XmlModuleDescriptorWriter}
+import org.apache.ivy.plugins.resolver.IBiblioResolver
+import org.apache.ivy.util.{DefaultMessageLogger, Message}
+import org.springframework.core.io.support._
+
 
 class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
   extends DependencyDownloader(repositoryUrl, baseDirectory)
@@ -40,11 +40,26 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
   //creates an Ivy instance with settings
   val ivy = Ivy.newInstance(ivySettings)
 
-  private def getBaseDependencies: Seq[DependencyDescriptor] = {
-    val baseIvyFile = getClass.getClassLoader.getResource("/ivy.xml")
-    val baseMD = XmlModuleDescriptorParser.getInstance().parseDescriptor(
-      new IvySettings(), baseIvyFile.toURI.toURL, false)
-    baseMD.getDependencies
+  private def getBaseDependencies: Iterable[DependencyDescriptor] = {
+    val xmlModuleDescriptor = XmlModuleDescriptorParser.getInstance()
+    val getDependencies = (url: URL) => xmlModuleDescriptor.parseDescriptor(
+      new IvySettings(), url, false
+    ).getDependencies
+
+    // Find all of the *ivy.xml files on the classpath.
+    val ivyFiles = new PathMatchingResourcePatternResolver().getResources(
+      "classpath*:**/*ivy.xml"
+    )
+    val classpathURLs = ivyFiles.map(_.getURI.toURL)
+
+    // Get all of the dependencies from the *ivy.xml files
+    val dependencies = classpathURLs.map(getDependencies).flatten
+
+    // Remove duplicates based on artifact name
+    val distinctDependencies =
+      dependencies.groupBy(_.getDependencyId.getName).map(_._2.head)
+
+    distinctDependencies
   }
 
   override def retrieve(

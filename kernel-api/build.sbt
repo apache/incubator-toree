@@ -43,7 +43,6 @@ libraryDependencies ++= Seq(
 //
 // HADOOP DEPENDENCIES
 //
-
 libraryDependencies ++= Seq(
   "org.apache.hadoop" % "hadoop-client" % "2.3.0" excludeAll
     ExclusionRule(organization = "javax.servlet")
@@ -52,7 +51,6 @@ libraryDependencies ++= Seq(
 //
 // CLI DEPENDENCIES
 //
-
 libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.6" // MIT
 
 //
@@ -62,3 +60,7 @@ libraryDependencies ++= Seq(
   "org.apache.ivy" % "ivy" % "2.4.0-rc1" // Apache v2
 )
 
+// Brought in in order to simplify the reading of each project's ivy.xml file
+// from the classpath. If we really want we can write our own class and remove
+// this dependency but the wheel has already been invented.
+libraryDependencies += "org.springframework" % "spring-core" % "4.1.1.RELEASE"

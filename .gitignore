@@ -7,6 +7,6 @@ target/
 *.iml
 *.ipynb
 scratch/
-**/resources/*ivy.xml
+**/*ivy.xml
 test-output/
 
