@@ -63,4 +63,4 @@ libraryDependencies ++= Seq(
 // Brought in in order to simplify the reading of each project's ivy.xml file
 // from the classpath. If we really want we can write our own class and remove
 // this dependency but the wheel has already been invented.
-libraryDependencies += "org.springframework" % "spring-core" % "4.1.1.RELEASE"
+libraryDependencies += "org.springframework" % "spring-core" % "4.1.1.RELEASE" // Apache v2
