@@ -15,11 +15,12 @@ import com.ibm.spark.kernel.protocol.v5.magic.MagicManager
 import com.ibm.spark.kernel.protocol.v5.relay.{ExecuteRequestRelay, KernelMessageRelay}
 import com.ibm.spark.kernel.protocol.v5.security.SignatureManagerActor
 import com.ibm.spark.kernel.protocol.v5.socket._
+import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
 import com.ibm.spark.security.KernelSecurityManager
-import com.ibm.spark.utils.LogLike
+import com.ibm.spark.utils.{GlobalStreamState, LogLike}
 import com.typesafe.config.Config
 import org.apache.spark.{SparkConf, SparkContext}
 import collection.JavaConverters._
@@ -278,7 +279,13 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
       conf.set("spark.repl.class.uri", interpreter.classServerURI)
 
       logger.info("Constructing new Spark Context")
-      sparkContext = new SparkContext(conf)
+      // TODO: Inject stream redirect headers in Spark dynamically
+      val outStream = new KernelMessageStream(actorLoader, new KernelMessage(
+        Nil, "", null, null, Metadata(), ""
+      ))
+      GlobalStreamState.withStreams(System.in, outStream, outStream) {
+        sparkContext = new SparkContext(conf)
+      }
 
       logger.info("Binding context into interpreter")
       interpreter.bind(
