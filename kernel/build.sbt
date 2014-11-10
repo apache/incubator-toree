@@ -1,7 +1,7 @@
-import sbtdocker.{ImageName, Dockerfile}
-import DockerKeys._
-
 import Common._
+import sbtdocker.Plugin.DockerKeys._
+import sbtdocker.{Dockerfile, ImageName}
+import xerial.sbt.Pack._
 
 fork := true // http://www.scala-sbt.org/0.13/docs/Running-Project-Code.html#Deserialization+and+class+loading
 

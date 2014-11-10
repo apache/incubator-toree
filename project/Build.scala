@@ -71,7 +71,7 @@ trait SubProjects extends Settings with TestTasks {
   lazy val kernel_api = addTestTasksToProject(Project(
     id = "kernel-api",
     base = file("kernel-api"),
-    settings = fullSettings
+    settings = fullSettings ++ packSettings
   )) dependsOn(macros % "test->test;compile->compile")
 
   /**
@@ -81,7 +81,7 @@ trait SubProjects extends Settings with TestTasks {
   lazy val protocol = addTestTasksToProject(Project(
     id = "protocol",
     base = file("protocol"),
-    settings = fullSettings
+    settings = fullSettings ++ packSettings
   ))
 
   /**

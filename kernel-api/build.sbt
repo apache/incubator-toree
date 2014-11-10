@@ -1,3 +1,6 @@
+import xerial.sbt.Pack._
+
+pack <<= pack dependsOn compile
 
 //
 // SCALA INTERPRETER DEPENDENCIES

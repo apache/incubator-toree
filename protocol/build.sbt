@@ -1,3 +1,6 @@
+import xerial.sbt.Pack._
+
+pack <<= pack dependsOn compile
 
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
@@ -15,4 +18,3 @@ libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % "2.2.0" % "test", // Apache v2
   "org.mockito" % "mockito-all" % "1.9.5" % "test"   // MIT
 )
-

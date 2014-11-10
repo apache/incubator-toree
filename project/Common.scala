@@ -62,7 +62,7 @@ object Common {
     unmanagedResourceDirectories in Test +=
       (baseDirectory in Build.root).value / "resources/test",
 
-    // Change the dstination of publish to our local m2 directory
+    // Change the destination of publish to our local m2 directory
     publishTo := Some(Resolver.file(
       "file",  new File(Path.userHome.absolutePath + "/.m2/repository"))
     ),
