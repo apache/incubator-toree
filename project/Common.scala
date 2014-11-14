@@ -67,6 +67,10 @@ object Common {
       "file",  new File(Path.userHome.absolutePath + "/.m2/repository"))
     ),
 
+    publishTo := Some("Ignitio Nexus Repo" at "http://etc194.austin.ibm.com:8081/nexus/content/repositories/releases/"),
+
+    credentials += Credentials("Sonatype Nexus Repository Manager", "etc194.austin.ibm.com", "admin", "admin123"),
+
     // Change destination of local delivery (building ivy.xml) to have *-ivy.xml
     deliverLocalConfiguration := {
       val newDestinationPath = crossTarget.value / s"${name.value}-ivy.xml"
