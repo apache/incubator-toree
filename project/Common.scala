@@ -6,7 +6,7 @@ import scala.util.Properties
 
 object Common {
   private val buildOrganization = "ignitio"
-  private val buildVersion      = "0.1.1"
+  private val buildVersion      = if(snapshot) "0.1.1-SNAPSHOT" else "0.1.1"
   private val buildScalaVersion = "2.10.4"
   private val buildSbtVersion   = "0.13.5"
   val sparkVersion              = "1.1.0"
