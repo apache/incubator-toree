@@ -5,11 +5,6 @@ import Keys._
 import scala.util.Properties
 
 object Common {
-  private val buildOrganization = "ignitio"
-  private val buildVersion      = if(snapshot) "0.1.1-SNAPSHOT" else "0.1.1"
-  private val buildScalaVersion = "2.10.4"
-  private val buildSbtVersion   = "0.13.5"
-  val sparkVersion              = "1.1.0"
   //  Parameters for publishing to artifact repositories
   val snapshot                  = Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
   val repoPort                  = Properties.envOrNone("REPO_PORT")
@@ -18,6 +13,12 @@ object Common {
   val repoPassword              = Properties.envOrNone("REPO_PASSWORD")
   val repoEndpoint              = Properties.envOrElse("REPO_ENDPOINT", if(snapshot) "/nexus/content/repositories/snapshots/" else "/nexus/content/repositories/releases/")
   val repoUrl                   = Properties.envOrElse("REPO_URL", s"http://${repoHost.get}:${repoPort.get}${repoEndpoint}")
+
+  private val buildOrganization = "ignitio"
+  private val buildVersion      = if(snapshot) "0.1.1-SNAPSHOT" else "0.1.1"
+  private val buildScalaVersion = "2.10.4"
+  private val buildSbtVersion   = "0.13.5"
+  val sparkVersion              = "1.1.0"
 
   // Global dependencies provided to all projects
   private val buildLibraryDependencies = Seq(
