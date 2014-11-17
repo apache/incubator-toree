@@ -16,7 +16,7 @@ object Common {
   val repoHost                  = Properties.envOrNone("REPO_HOST")
   val repoUsername              = Properties.envOrNone("REPO_USERNAME")
   val repoPassword              = Properties.envOrNone("REPO_PASSWORD")
-  val repoEndpoint              = Properties.envOrElse("REPO_ENDPOINT", if(isSnapshot.value) "/nexus/content/repositories/snapshots/" else "/nexus/content/repositories/releases/")
+  val repoEndpoint              = Properties.envOrElse("REPO_ENDPOINT", if(snapshot) "/nexus/content/repositories/snapshots/" else "/nexus/content/repositories/releases/")
   val repoUrl                   = Properties.envOrElse("REPO_URL", s"http://${repoHost.get}:${repoPort.get}${repoEndpoint}")
 
   // Global dependencies provided to all projects
