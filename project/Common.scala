@@ -2,12 +2,22 @@ import org.apache.commons.io.FileUtils
 import sbt._
 import Keys._
 
+import scala.util.Properties
+
 object Common {
   private val buildOrganization = "ignitio"
   private val buildVersion      = "0.1.1"
   private val buildScalaVersion = "2.10.4"
   private val buildSbtVersion   = "0.13.5"
   val sparkVersion              = "1.1.0"
+  //  Parameters for publishing to artifact repositories
+  val snapshot                  = Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
+  val repoPort                  = Properties.envOrNone("REPO_PORT")
+  val repoHost                  = Properties.envOrNone("REPO_HOST")
+  val repoUsername              = Properties.envOrNone("REPO_USERNAME")
+  val repoPassword              = Properties.envOrNone("REPO_PASSWORD")
+  val repoEndpoint              = Properties.envOrElse("REPO_ENDPOINT", if(isSnapshot.value) "/nexus/content/repositories/snapshots/" else "/nexus/content/repositories/releases/")
+  val repoUrl                   = Properties.envOrElse("REPO_URL", s"http://${repoHost.get}:${repoPort.get}${repoEndpoint}")
 
   // Global dependencies provided to all projects
   private val buildLibraryDependencies = Seq(
@@ -29,6 +39,7 @@ object Common {
     scalaVersion := buildScalaVersion,
     sbtVersion := buildSbtVersion,
     libraryDependencies := buildLibraryDependencies,
+    isSnapshot := snapshot,
 
     // Force artifact name of
     // ibm-spark-<artifact>_<scala version>-<build version>.jar
@@ -62,14 +73,9 @@ object Common {
     unmanagedResourceDirectories in Test +=
       (baseDirectory in Build.root).value / "resources/test",
 
-    // Change the destination of publish to our local m2 directory
-    publishTo := Some(Resolver.file(
-      "file",  new File(Path.userHome.absolutePath + "/.m2/repository"))
-    ),
+    publishTo := Some("Ignitio Nexus Repo" at repoUrl),
 
-    publishTo := Some("Ignitio Nexus Repo" at "http://etc194.austin.ibm.com:8081/nexus/content/repositories/releases/"),
-
-    credentials += Credentials("Sonatype Nexus Repository Manager", "etc194.austin.ibm.com", "admin", "admin123"),
+    credentials += Credentials("Sonatype Nexus Repository Manager", repoHost.get, repoUsername.get, repoPassword.get),
 
     // Change destination of local delivery (building ivy.xml) to have *-ivy.xml
     deliverLocalConfiguration := {
