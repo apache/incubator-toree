@@ -7,12 +7,12 @@ import scala.util.Properties
 object Common {
   //  Parameters for publishing to artifact repositories
   val snapshot                  = Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
-  val repoPort                  = Properties.envOrNone("REPO_PORT")
-  val repoHost                  = Properties.envOrNone("REPO_HOST")
-  val repoUsername              = Properties.envOrNone("REPO_USERNAME")
-  val repoPassword              = Properties.envOrNone("REPO_PASSWORD")
+  val repoPort                  = Properties.envOrElse("REPO_PORT","")
+  val repoHost                  = Properties.envOrElse("REPO_HOST","")
+  val repoUsername              = Properties.envOrElse("REPO_USERNAME","")
+  val repoPassword              = Properties.envOrElse("REPO_PASSWORD","")
   val repoEndpoint              = Properties.envOrElse("REPO_ENDPOINT", if(snapshot) "/nexus/content/repositories/snapshots/" else "/nexus/content/repositories/releases/")
-  val repoUrl                   = Properties.envOrElse("REPO_URL", s"http://${repoHost.get}:${repoPort.get}${repoEndpoint}")
+  val repoUrl                   = Properties.envOrElse("REPO_URL", s"http://${repoHost}:${repoPort}${repoEndpoint}")
 
   private val buildOrganization = "ignitio"
   private val buildVersion      = if(snapshot) "0.1.1-SNAPSHOT" else "0.1.1"
@@ -76,7 +76,7 @@ object Common {
 
     publishTo := Some("Ignitio Nexus Repo" at repoUrl),
 
-    credentials += Credentials("Sonatype Nexus Repository Manager", repoHost.get, repoUsername.get, repoPassword.get),
+    credentials += Credentials("Sonatype Nexus Repository Manager", repoHost, repoUsername, repoPassword),
 
     // Change destination of local delivery (building ivy.xml) to have *-ivy.xml
     deliverLocalConfiguration := {
