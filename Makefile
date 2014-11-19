@@ -3,6 +3,7 @@ KERNEL_IMAGE?=spark-kernel
 KERNEL_BUILD_ID?=latest
 DOCKER_REGISTRY?=ignitio:5000
 FULL_IMAGE?=$(DOCKER_REGISTRY)/$(KERNEL_IMAGE):$(KERNEL_BUILD_ID)
+CACHE?="--no-cache"
 
 #   Container Properties
 KERNEL_CONTAINER?=spark-kernel
@@ -23,7 +24,7 @@ kernel/target/pack/bin/sparkkernel:
 build: kernel/target/pack/bin/sparkkernel
 
 pack:
-	docker build -t $(FULL_IMAGE) .
+	docker build $(CACHE) -t $(FULL_IMAGE) .
 	docker push $(FULL_IMAGE)
 
 deploy:
