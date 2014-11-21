@@ -4,11 +4,9 @@ import java.io.{File, PrintStream}
 import java.net.URL
 
 import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.magic.{MagicTemplate, MagicOutput}
+import com.ibm.spark.magic._
 import com.ibm.spark.magic.dependencies.{IncludeInterpreter, IncludeOutputStream, IncludeSparkContext}
 import com.ibm.spark.utils.{ArgumentParsingSupport, DownloadSupport}
-
-import scala.io.Source
 
 class AddJar
   extends MagicTemplate with IncludeInterpreter with IncludeSparkContext
@@ -16,7 +14,7 @@ class AddJar
 {
   // TODO: Figure out where to put this AND a better location as /tmp does not
   //       keep the jars around forever.
-  private[builtin] val JarStorageLocation = "/tmp"
+  private[magic] val JarStorageLocation = "/tmp"
 
   private val HtmlJarRegex = """.*?\/([^\/]*?)$""".r
 
