@@ -1,7 +1,7 @@
 package com.ibm.spark.magic.builtin
 
 import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.magic.{MagicTemplate, MagicOutput}
+import com.ibm.spark.magic._
 import com.ibm.spark.magic.dependencies.IncludeInterpreter
 import com.ibm.spark.utils.LogLike
 import com.ibm.spark.utils.json.RddToJson
