@@ -4,17 +4,21 @@ import com.ibm.spark.kernel.protocol.v5.MIMEType
 import com.ibm.spark.magic._
 
 class LSMagic extends MagicTemplate {
+
+  val cellUnsupportedMessage =
+    "Cell magic unsupported. Please use the line magic %lsmagic."
+
   /**
    * Lists all available magics
    * @param code The single line of code
    * @return The output of the magic
    */
   override def executeLine(code: String): MagicOutput = {
-      val classes = new BuiltinLoader().getBuiltinClasses
-      val magics = classes.map("%" + _.getSimpleName).mkString(" ")
-      val result =
+      val classes = new BuiltinLoader().getClasses()
+      val magics = classes.map("%" + _.getSimpleName).mkString(" ").toLowerCase
+      val message =
         s"Available magics:\n$magics\n\nType %<magic_name> for usage info."
-      MagicOutput(MIMEType.PlainText -> result)
+      MagicOutput(MIMEType.PlainText -> message)
   }
 
   /**
@@ -23,6 +27,6 @@ class LSMagic extends MagicTemplate {
    * @return The output of the magic
    */
   override def executeCell(code: Seq[String]): MagicOutput = {
-    MagicOutput()
+    MagicOutput(MIMEType.PlainText -> cellUnsupportedMessage)
   }
 }
