@@ -60,6 +60,45 @@ class MagicLoaderSpec extends FunSpec with Matchers with MockitoSugar {
 
         magicLoader.hasMagic("potato") should be (true)
       }
+
+      it("should return true if a class with the magic name is found irregardless of case"){
+
+        // Only loads a class named "Potato"
+        val classLoader = new ClassLoader() {
+          override def findClass(name: String) =
+            if (name == "Potato") this.getClass else throw new Exception
+        }
+
+        // Case insensitive matching should be performed on "Potato"
+        val magicLoader = new MagicLoader(parentLoader = classLoader) {
+          override def magicClassNames = List("Potato")
+        }
+
+        magicLoader.hasMagic("Potato") should be (true)
+        magicLoader.hasMagic("potato") should be (true)
+        magicLoader.hasMagic("pOTatO") should be (true)
+      }
+    }
+
+    describe("#magicClassName"){
+      it("should return the correctly-cased version of the requested magic name") {
+        val magicLoader = new MagicLoader() {
+          override def magicClassNames = List("Potato")
+        }
+
+        magicLoader.magicClassName("Potato") should be ("Potato")
+        magicLoader.magicClassName("potato") should be ("Potato")
+        magicLoader.magicClassName("pOTatO") should be ("Potato")
+      }
+
+      it("should return the query if a corresponding magic class does not exist") {
+        val magicLoader = new MagicLoader() {
+          override def magicClassNames = List()
+        }
+
+        magicLoader.magicClassName("dne") should be ("dne")
+        magicLoader.magicClassName("dNE") should be ("dNE")
+      }
     }
 
     describe("#executeMagic") {

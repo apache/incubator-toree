@@ -16,7 +16,7 @@ Vagrant Instructions
 * vagrant ssh
 * cd /ETSparkProjects/SparkKernel
 * sbt pack
-* cd target/pack
+* cd kernel/target/pack
 * make install
 * cd /ETSparkProjects/SparkKernel
 * ipython notebook --ip 192.168.44.44 --no-browser

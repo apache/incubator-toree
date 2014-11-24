@@ -68,7 +68,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     initializeBareComponents()
     createSockets()
     initializeKernelHandlers()
-    publishStatus(KernelStatusType.Starting, Some(null))
+    publishStatus(KernelStatusType.Starting)
     initializeInterpreter()
     initializeSparkContext()
     initializeDependencyDownloader()

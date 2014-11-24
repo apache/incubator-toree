@@ -1,10 +1,9 @@
 package com.ibm.spark.magic.builtin
 
-import com.ibm.spark.magic.{MagicTemplate, MagicOutput}
-import com.ibm.spark.magic.dependencies.{IncludeDependencyDownloader, IncludeSparkContext, IncludeOutputStream, IncludeInterpreter}
-import com.ibm.spark.dependencies.IvyDependencyDownloader
 import java.io.PrintStream
-import com.ibm.spark.SparkKernelOptions
+
+import com.ibm.spark.magic._
+import com.ibm.spark.magic.dependencies.{IncludeDependencyDownloader, IncludeInterpreter, IncludeOutputStream, IncludeSparkContext}
 import com.ibm.spark.utils.ArgumentParsingSupport
 
 class AddDeps extends MagicTemplate with IncludeInterpreter
