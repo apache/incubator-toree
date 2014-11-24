@@ -23,13 +23,22 @@ kernel/target/pack/bin/sparkkernel:
 
 build: kernel/target/pack/bin/sparkkernel
 
-pack:
+build-image:
 	docker build $(CACHE) -t $(FULL_IMAGE) .
+
+pack: build-image
 	docker push $(FULL_IMAGE)
 
 deploy:
 	(docker rm -f $(KERNEL_CONTAINER) || true)
-	docker run --net=host -d --name=$(KERNEL_CONTAINER) -e "STDIN_PORT=$(STDIN_PORT)" -e "SHELL_PORT=$(SHELL_PORT)" -e "IOPUB_PORT=$(IOPUB_PORT)" -e "CONTROL_PORT=$(CONTROL_PORT)" -e "HB_PORT=$(HB_PORT)" -e "IP=$(IP)" $(DOCKER_REGISTRY)/$(KERNEL_IMAGE):$(KERNEL_BUILD_ID)
+	docker run -d \
+	    --name=$(KERNEL_CONTAINER) \
+	    -e "STDIN_PORT=$(STDIN_PORT)" \
+	    -e "SHELL_PORT=$(SHELL_PORT)" \
+	    -e "IOPUB_PORT=$(IOPUB_PORT)" \
+	    -e "CONTROL_PORT=$(CONTROL_PORT)" \
+	    -e "HB_PORT=$(HB_PORT)" -e "IP=$(IP)" \
+	    $(FULL_IMAGE)
 
 integration:
 	printf "No integration tests at the moment"
