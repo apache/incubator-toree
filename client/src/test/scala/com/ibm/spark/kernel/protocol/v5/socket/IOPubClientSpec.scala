@@ -2,8 +2,13 @@ package com.ibm.spark.kernel.protocol.v5.socket
 
 import java.util.UUID
 
+import akka.actor.Status.Success
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
+import akka.util.Timeout
+import org.scalatest.concurrent.ScalaFutures
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.client.message.StreamMessage
@@ -15,6 +20,8 @@ import org.scalatest.{Matchers, FunSpecLike}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import play.api.libs.json.Json
+import akka.pattern.ask
+import scala.util.{Failure}
 
 object IOPubClientSpec {
   val config ="""
@@ -25,8 +32,9 @@ object IOPubClientSpec {
 
 class IOPubClientSpec extends TestKit(ActorSystem(
   "IOPubClientSpecSystem", ConfigFactory.parseString(IOPubClientSpec.config)
-)) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
+)) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar with ScalaFutures
 {
+  implicit val timeout = Timeout(10.seconds)
   describe("IOPubClient( ClientSocketFactory )") {
     //  Create a probe for the socket
     val clientSocketProbe = TestProbe()
@@ -58,10 +66,13 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 
         // Send the message to the IOPubClient
         val zmqMessage: ZMQMessage = kernelMessage
-        ioPubClient ! zmqMessage
-
-        Thread.sleep(10)
-        expectMsg(result)
+        val futureResult = ioPubClient ? zmqMessage
+        whenReady(futureResult) {
+          case result: Failure[Any] =>
+            fail(s"Received failure ${result} when asking IOPubClient")
+          case Success =>
+            expectMsg(result)
+        }
       }
 
       it("should call a registered callback on stream message") {
@@ -91,11 +102,47 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 
         // Send the message to the IOPubClient
         val zmqMessage: ZMQMessage = kernelMessage
-        ioPubClient ! zmqMessage
+        val futureResult = ioPubClient ? zmqMessage
+        whenReady(futureResult) {
+          case result: Failure[Any] =>
+            fail(s"Received failure ${result} when asking IOPubClient")
+          case Success =>
+            capturedArg shouldNot be(None)
+        }
+      }
 
-        // Verify callback was called
-        Thread.sleep(10)
-        capturedArg shouldNot be(None)
+      it("should not invoke callback when stream message's parent header is null") {
+        // Generate an id for the kernel message
+        val id = UUID.randomUUID().toString
+
+        // Construct the kernel message
+        val result = StreamContent("foo", "bar")
+        val header = Header(id, "spark", id, MessageType.Stream.toString, "5.0")
+
+        val kernelMessage = new KernelMessage(
+          Seq[String](),
+          "",
+          header,
+          null,
+          Metadata(),
+          Json.toJson(result).toString()
+        )
+
+        // Send the message to the IOPubClient
+        val zmqMessage: ZMQMessage = kernelMessage
+        val futureResult: Future[Any] = ioPubClient ? zmqMessage
+        whenReady(futureResult) {
+          case result: Failure[Any] =>
+            //  Getting the value of the failure will cause the underlying exception will be thrown
+            try {
+              result.get
+            } catch {
+              case t:RuntimeException =>
+                t.getMessage should be(IOPubClient.PARENT_HEADER_NULL_MESSAGE)
+            }
+          case result =>
+            fail("Did not receive failure!!")
+        }
       }
     }
   }

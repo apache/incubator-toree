@@ -1,21 +1,25 @@
 package com.ibm.spark.kernel.protocol.v5.socket
 
+import akka.actor.Status.Success
 import akka.actor.{Actor, ActorRef}
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.Utilities._
 import com.ibm.spark.kernel.protocol.v5.client.message.StreamMessage
-import com.ibm.spark.kernel.protocol.v5.content.{ExecuteResult, StreamContent}
+import com.ibm.spark.kernel.protocol.v5.content.{KernelStatus, ExecuteResult, StreamContent}
 import com.ibm.spark.kernel.protocol.v5.socket.IOPubClient._
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, MessageType, UUID}
 import com.ibm.spark.utils.LogLike
-import play.api.libs.json.Json
+import play.api.data.validation.ValidationError
+import play.api.libs.json.{Reads, JsPath, Json}
 
 import scala.collection.concurrent.{Map, TrieMap}
+import scala.util.Failure
 
 object IOPubClient {
   private val senderMap: Map[UUID, ActorRef] = TrieMap[UUID, ActorRef]()
   private val callbackMap: Map[UUID, Any => Unit] = TrieMap[UUID, Any => Unit]()
+  val PARENT_HEADER_NULL_MESSAGE = "Parent Header was null in Kernel Message."
 }
 
 /**
@@ -25,6 +29,44 @@ object IOPubClient {
 class IOPubClient(socketFactory: ClientSocketFactory) extends Actor with LogLike {
   private val socket = socketFactory.IOPubClient(context.system, self)
   logger.info("Created IOPub socket")
+
+  def receiveKernelMessage(kernelMessage: KernelMessage, func: (String)=>Unit): Unit = {
+    if(kernelMessage.parentHeader != null){
+      func(kernelMessage.parentHeader.msg_id)
+      sender().forward(Success)
+    } else {
+      sender().forward(Failure(new RuntimeException(PARENT_HEADER_NULL_MESSAGE)))
+    }
+
+  }
+  def parseAndHandle[T](json: String, reads: Reads[T], handler: T => Unit) : Unit = {
+    Json.parse(json).validate[T](reads).fold(
+      (invalid: Seq[(JsPath, Seq[ValidationError])]) =>
+        logger.error(s"Could not parse JSON, ${json}"),
+      (content: T) => handler(content)
+    )
+  }
+
+  def receiveStreamMessage(parentHeaderId:String, kernelMessage: KernelMessage): Unit ={
+    // look up callback in CallbackMap based on msg_id and invoke
+    val func = callbackMap.get(parentHeaderId)
+    func match {
+      case Some(streamCallback) => parseAndHandle(kernelMessage.contentString, StreamContent.inspectRequestReads,
+        (streamContent: StreamContent) => streamCallback(streamContent))
+      case None =>
+        logger.warn(s"No stream callback function for message with parent header id ${parentHeaderId}")
+    }
+  }
+
+  def receiveExecuteResult(parentHeaderId:String, kernelMessage: KernelMessage): Unit = {
+    val client = senderMap.get(parentHeaderId)
+    client match {
+      case Some(actorRef) => parseAndHandle(kernelMessage.contentString, ExecuteResult.executeResultReads,
+          (res: ExecuteResult) => { actorRef ! res; senderMap.remove(parentHeaderId);})
+      case None =>
+        logger.warn(s"Sender actor ref was none for message with parent header id ${parentHeaderId}")
+    }
+  }
 
   override def receive: Receive = {
     case message: ZMQMessage =>
@@ -37,44 +79,24 @@ class IOPubClient(socketFactory: ClientSocketFactory) extends Actor with LogLike
 
       messageType match {
         case MessageType.ExecuteResult =>
-          // look up callback in CallbackMap based on msg_id and invoke
-          val id = kernelMessage.parentHeader.msg_id
-          val client = senderMap.get(id)
-          client match {
-            case Some(actorRef) =>
-              actorRef ! Json.parse(kernelMessage.contentString).as[ExecuteResult]
-              senderMap.remove(id)
-            case None =>
-              logger.debug("IOPubClient: actorRef was none")
-          }
-
+          receiveKernelMessage(kernelMessage, receiveExecuteResult(_, kernelMessage))
         case MessageType.Stream =>
-          val id = kernelMessage.parentHeader.msg_id
-          val func = callbackMap.get(id)
-          func match {
-            case Some(f) =>
-              val streamContent = Json.parse(kernelMessage.contentString).as[StreamContent]
-              f(streamContent.text)
-            case None =>
-              logger.debug(s"IOPubClient: no function for id ${id}")
-          }
-
+          receiveKernelMessage(kernelMessage, receiveStreamMessage(_, kernelMessage))
         case any =>
-          logger.debug(s"Received unhandled MessageType ${any}")
+          logger.warn(s"Received unhandled MessageType ${any}")
       }
 
     case message: UUID =>
       senderMap.put(message, sender)
 
     case message: StreamMessage => {
-      logger.trace("Registering Stream message information.")
-      logger.trace(s"Message id is ${message.id}")
+      logger.trace(s"Registering sender and callback information for StreamMessage with id ${message.id}")
       // registers with the senderMap for ExecuteResult
       senderMap.put(message.id, sender)
       // registers with the callbackMap for Stream
       callbackMap.put(message.id, message.callback)
 
-      logger.debug("Registered Stream message information.")
+      logger.trace("Registered Stream message information.")
     }
   }
 }
