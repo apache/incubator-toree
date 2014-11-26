@@ -35,6 +35,7 @@ class IOPubClient(socketFactory: ClientSocketFactory) extends Actor with LogLike
       func(kernelMessage.parentHeader.msg_id)
       sender().forward(Success)
     } else {
+      logger.debug("Received message with null parent header.", kernelMessage)
       sender().forward(Failure(new RuntimeException(PARENT_HEADER_NULL_MESSAGE)))
     }
 
