@@ -19,7 +19,6 @@ clean:
 
 kernel/target/pack/bin/sparkkernel:
 	sbt/sbt compile  kernel/pack
-	sbt/sbt publish
 
 build: kernel/target/pack/bin/sparkkernel
 
@@ -27,6 +26,7 @@ build-image:
 	docker build $(CACHE) -t $(FULL_IMAGE) .
 
 pack: build-image
+	sbt/sbt publish
 	docker push $(FULL_IMAGE)
 
 deploy:
