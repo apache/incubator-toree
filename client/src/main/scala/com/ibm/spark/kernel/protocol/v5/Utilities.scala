@@ -1,14 +1,15 @@
 package com.ibm.spark.kernel.protocol.v5
 
 import java.nio.charset.Charset
-
 import akka.util.{ByteString, Timeout}
 import akka.zeromq.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
+import com.ibm.spark.utils.LogLike
 import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsPath, Json}
+import play.api.libs.json.{Reads, JsPath, Json}
 import scala.concurrent.duration._
 
-object Utilities {
+object Utilities extends LogLike {
   //
   // NOTE: This is brought in to remove feature warnings regarding the use of
   //       implicit conversions regarding the following:
@@ -17,6 +18,8 @@ object Utilities {
   //       2. ZMQMessageToKernelMessage
   //
   import scala.language.implicitConversions
+
+  private val sessionId: UUID = java.util.UUID.randomUUID().toString
 
   /**
    * This timeout needs to be defined for the Akka asks to timeout
@@ -61,6 +64,25 @@ object Utilities {
     frames += Json.toJson(kernelMessage.metadata).toString
     frames += kernelMessage.contentString
     ZMQMessage(frames  : _*)
+  }
+
+  def parseAndHandle[T](json: String, reads: Reads[T], handler: T => Unit) : Unit = {
+    Json.parse(json).validate[T](reads).fold(
+      (invalid: Seq[(JsPath, Seq[ValidationError])]) =>
+        logger.error(s"Could not parse JSON, ${json}"),
+      (content: T) => handler(content)
+    )
+  }
+
+  def toKernelMessage(message: ExecuteRequest): KernelMessage = {
+    // construct a kernel message whose content is an ExecuteRequest
+    val id = java.util.UUID.randomUUID().toString
+    val header = Header(
+      id, "spark", sessionId, MessageType.ExecuteRequest.toString, "5.0")
+    KernelMessage(
+      Seq[String](), "", header, HeaderBuilder.empty,
+      Metadata(), Json.toJson(message).toString()
+    )
   }
 
 }

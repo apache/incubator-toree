@@ -1,5 +1,6 @@
 package com.ibm.spark.kernel.protocol.v5.client.java;
 
+import com.ibm.spark.kernel.protocol.v5.client.execution.DeferredExecution;
 import scala.Function1;
 import scala.concurrent.Future;
 import scala.runtime.AbstractFunction0;
@@ -28,17 +29,8 @@ public class SparkKernelClient {
      * Sends code to the Spark Kernel for execution.
      * @param code code to run
      */
-    public Future<Object> submit(String code) {
-        return this.client.submit(code);
-    }
-
-    /**
-     * Sends streaming code to the Spark Kernel for execution.
-     * @param code code to run
-     * @param func callback that gets called when the kernel prints a result.
-     */
-    public void stream(String code, Function1<Object, BoxedUnit> func) {
-        this.client.stream(code, func);
+    public DeferredExecution execute(String code) {
+        return this.client.execute(code);
     }
 
     private AbstractFunction0<BoxedUnit> wrap(final EmptyFunction func) {

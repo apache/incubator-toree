@@ -1,8 +1,13 @@
 package examples
 
 import java.io.File
+import com.ibm.spark.kernel.protocol.v5.MIMEType
 import com.ibm.spark.kernel.protocol.v5.client.SparkKernelClientBootstrap
+import com.ibm.spark.kernel.protocol.v5.content.{ExecuteResult}
+import com.ibm.spark.kernel.protocol.v5.content._
 import com.typesafe.config.{ConfigFactory, Config}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Promise
 
 /**
  * This App demonstrates how to use the spark client in scala.
@@ -11,30 +16,141 @@ import com.typesafe.config.{ConfigFactory, Config}
 object ScalaSparkClientUsage extends App {
   val profile: File = new File(getClass.getResource("/kernel-profiles/IOPubIntegrationProfile.json").toURI)
   val config: Config = ConfigFactory.parseFile(profile)
-
+  //  Setup
   val client = new SparkKernelClientBootstrap(config).createClient
+
+  def printStreamContent(content:StreamContent) = {
+    println(s"Stream content on channel ${content.name} was: ${content.text}")
+  }
+
+  def printTextResult(result:ExecuteResult) = {
+    println(s"ExecuteResult data was: ${result.data.get(MIMEType.PlainText).get}")
+  }
+
+  def printError(reply:ExecuteReply) = {
+    println(s"ExecuteReply error name was: ${reply.ename.get}")
+  }
 
   Thread.sleep(100) // actor system takes a moment to initialize
 
+  //  A callback used to determine if the kernel is no longer responding
   client.heartbeat(() => {
       println("hb bad")
   })
-  client.submit("val z = 0")
 
-  val func = (x: Any) => println(x)
-  val code: String =
+  //  Assign a val
+  client.execute("val z = 0")
+
+  //  Print the val out to stdout
+  client.execute("println(z)").onStream(printStreamContent)
+  //  Stream content on channel stdout was: 0
+
+  //  Sleep so output does not overlap
+  Thread.sleep(500)
+
+  //  Non streaming message with result
+  client.execute("1+1").onResult(printTextResult)
+  //  ExecuteResult data was: res(\d)+: Int =  2
+
+  //  Sleep so output does not overlap
+  Thread.sleep(500)
+
+  //  Non streaming message with error
+  client.execute("1/0")
+    .onResult(printTextResult)
+    .onError(printError)
+  //  ExecuteReply error name was: java.lang.ArithmeticException
+
+  //  Sleep so output does not overlap
+  Thread.sleep(500)
+
+  //  Stream message and result
+  client.execute("println(\"Hello World\"); 2 + 2")
+    .onStream(printStreamContent)
+    .onResult(printTextResult)
+  //  Stream content on channel stdout was: "Hello World"
+  //  ExecuteResult data was: res(\d)+: Int = 4
+
+  //  Sleep so output does not overlap
+  Thread.sleep(500)
+
+  //  Stream message with error
+  client.execute("println(1/1); println(1/2); println(1/0);")
+    .onStream(printStreamContent)
+    .onError(printError)
+  //  Stream content on channel stdout was: 1
+  //  Stream content on channel stdout was: 0
+  //  ExecuteReply error name was: java.lang.ArithmeticException
+
+  //  Sleep so output does not overlap
+  Thread.sleep(500)
+
+  client.execute("val foo = 1+1; 2+2;")
+    .onResult(printTextResult)
+    .onStream(printStreamContent)
+  //  ExecuteResult data was: foo: Int = 2
+  //  res278: Int = 4
+
+  //  Sleep so output does not overlap
+  Thread.sleep(500)
+
+  //  Simulates calculating two numbers in the cluster and adding them client side
+  def complexMath(x: Int, y: Int) = (x + 2) * y
+
+  val xPromise: Promise[Int] = Promise()
+  val yPromise: Promise[Int] = Promise()
+  def parseResult(result: String): Int = {
+    val intPattern = """res(\d)+: Int = (\d)+""".r
+    intPattern findFirstIn result match {
+      case Some(intPattern(resCount, res))  => Integer.parseInt(res)
+      case None                             => 0
+    }
+  }
+
+  //  Big data function 1
+  client.execute("1+1").onResult((executeResult: ExecuteResult) => {
+    val result: Int = parseResult(executeResult.data(MIMEType.PlainText))
+    xPromise.success(result)
+  })
+
+  //  Big data function 2
+  client.execute("3+3").onResult((executeResult: ExecuteResult) => {
+    val result: Int = parseResult(executeResult.data(MIMEType.PlainText))
+    yPromise.success(result)
+  })
+
+  val resultPromise = for {
+    x <- xPromise.future
+    y <- yPromise.future
+  } yield (complexMath(x, y))
+
+  resultPromise.onSuccess {case x => println(s"Added result is ${x}") }
+  //  Added result is 24
+
+  //  Sleep so output does not overlap
+  Thread.sleep(500)
+
+  //  Running code on another thread
+  val threadCode: String =
     """
       val s = new Thread(new Runnable {
         def run() {
-          while(true) {
+        var x = 0
+          while(x < 3) {
             Thread.sleep(1000)
-            println("bar")
+            println("bean")
+            x = x  + 1
           }
         }
       })
       s.start()
     """.stripMargin
 
-  client.stream(code, func)
-  Thread.sleep(100000)
+  client.execute(threadCode).onStream(printStreamContent)
+  //  Stream content on channel stdout was: bean
+  //  Stream content on channel stdout was: bean
+  //  Stream content on channel stdout was: bean
+
+  //  Sleep so output does not overlap
+  Thread.sleep(500)
 }

@@ -1,18 +1,16 @@
 package com.ibm.spark.kernel.protocol.v5.socket
 
 import java.util.UUID
-
-import akka.actor.Status.Success
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import akka.util.Timeout
+import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, DeferredExecutionManager}
 import org.scalatest.concurrent.ScalaFutures
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Promise, Future}
 import scala.concurrent.duration._
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.client.message.StreamMessage
-import com.ibm.spark.kernel.protocol.v5.content.{StreamContent, ExecuteResult}
+import com.ibm.spark.kernel.protocol.v5.content.{StreamContent}
 import com.ibm.spark.kernel.protocol.v5.Utilities._
 import com.typesafe.config.ConfigFactory
 import org.scalatest.mock.MockitoSugar
@@ -21,7 +19,7 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 import play.api.libs.json.Json
 import akka.pattern.ask
-import scala.util.{Failure}
+import scala.util.Failure
 
 object IOPubClientSpec {
   val config ="""
@@ -47,41 +45,9 @@ class IOPubClientSpec extends TestKit(ActorSystem(
     val ioPubClient = system.actorOf(Props(classOf[IOPubClient], mockClientSocketFactory))
 
     describe("#receive( ZMQMessage )") {
-      it("should send an ExecuteResult message") {
-        //  Generate an id for the kernel message
-        val id = UUID.randomUUID().toString
-
-        //  Construct the kernel message
-        val result = ExecuteResult(1, Data(), Metadata())
-        val header = Header(UUID.randomUUID().toString, "spark", UUID.randomUUID().toString, MessageType.ExecuteResult.toString, "5.0")
-        val parentHeader = Header(id, "spark", UUID.randomUUID().toString, MessageType.ExecuteRequest.toString, "5.0")
-        val kernelMessage = new KernelMessage(
-          Seq[String](), "",
-          header, parentHeader,
-          Metadata(), Json.toJson(result).toString()
-        )
-
-        // Register ourselves to receive the ExecuteResult from the IOPubClient
-        ioPubClient ! id
-
-        // Send the message to the IOPubClient
-        val zmqMessage: ZMQMessage = kernelMessage
-        val futureResult = ioPubClient ? zmqMessage
-        whenReady(futureResult) {
-          case result: Failure[Any] =>
-            fail(s"Received failure ${result} when asking IOPubClient")
-          case Success =>
-            expectMsg(result)
-        }
-      }
-
       it("should call a registered callback on stream message") {
         // Generate an id for the kernel message
         val id = UUID.randomUUID().toString
-
-        // Callback and method of verifying the callback was called
-        var capturedArg: Any = None
-        val func = (x: Any) => { capturedArg = x }
 
         // Construct the kernel message
         val result = StreamContent("foo", "bar")
@@ -96,18 +62,23 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           Metadata(),
           Json.toJson(result).toString()
         )
-
-        // Register the callback with the IOPubClient
-        ioPubClient ! StreamMessage(parentHeader.msg_id, func)
-
+        val promise: Promise[String] = Promise()
+        val de: DeferredExecution = DeferredExecution().onStream(
+          (content: StreamContent) => {
+            promise.success(content.text)
+          }
+        )
+        DeferredExecutionManager.add(id, de)
         // Send the message to the IOPubClient
         val zmqMessage: ZMQMessage = kernelMessage
-        val futureResult = ioPubClient ? zmqMessage
-        whenReady(futureResult) {
-          case result: Failure[Any] =>
-            fail(s"Received failure ${result} when asking IOPubClient")
-          case Success =>
-            capturedArg shouldNot be(None)
+
+        ioPubClient ! zmqMessage
+
+        whenReady(promise.future) {
+          case res: String =>
+            res should be eq("bar")
+          case _ =>
+            fail(s"Received failure when asking IOPubClient")
         }
       }
 
@@ -138,10 +109,10 @@ class IOPubClientSpec extends TestKit(ActorSystem(
               result.get
             } catch {
               case t:RuntimeException =>
-                t.getMessage should be(IOPubClient.PARENT_HEADER_NULL_MESSAGE)
+                t.getMessage should be("Parent Header was null in Kernel Message.")
             }
           case result =>
-            fail("Did not receive failure!!")
+            fail(s"Did not receive failure!! ${result}")
         }
       }
     }

@@ -41,16 +41,16 @@ class SparkKernelClientSpec extends FunSpec with Matchers with MockitoSugar
 
     describe("#submit") {
       it("should invoke the underlying Scala SparkKernelClient implementation") {
-        sparkKernelClient.submit("foo code")
-        verify(mockScalaClient).submit(anyString())
+        sparkKernelClient.execute("foo code")
+        verify(mockScalaClient).execute(anyString())
       }
     }
 
     describe("#stream") {
       it("should invoke the underlying Scala SparkKernelClient implementation") {
         val func = mock[(AnyRef) => BoxedUnit]
-        sparkKernelClient.stream("bar code", func)
-        verify(mockScalaClient).stream(anyString(), any(classOf[(Any) => Unit]))
+        sparkKernelClient.execute("bar code")
+        verify(mockScalaClient).execute(anyString())
       }
     }
   }

@@ -36,7 +36,7 @@ public class JavaSparkClientUsage {
                     }
                 });
 
-        client.submit("val y = 9");
+        client.execute("val y = 9");
 
         String code = "val s = new Thread(new Runnable {def run() {while(true) {Thread.sleep(1000); println(\"bar\")}}}); s.start()";
         Function1 func = new AbstractFunction1<Object, BoxedUnit>() {
@@ -47,6 +47,8 @@ public class JavaSparkClientUsage {
             }
         };
 
-        client.stream(code, func);
+        //  TODO pass the func
+        client.execute(code);
+
     }
 }
