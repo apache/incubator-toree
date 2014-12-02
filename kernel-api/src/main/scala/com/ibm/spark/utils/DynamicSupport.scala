@@ -93,6 +93,7 @@ case class DynamicSupport(
   private def flatten(l: Seq[Any]): Seq[Any] = {
     l.flatMap {
       case newList: List[_] => flatten(newList)
+      case newSeq: Seq[_] => flatten(newSeq)
       case x => List(x)
     }
   }
