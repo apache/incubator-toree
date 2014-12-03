@@ -1,14 +1,14 @@
 package com.ibm.spark.kernel.protocol.v5.client.execution
 
 import com.ibm.spark.kernel.protocol.v5.content.{ExecuteReply, ExecuteReplyError, ExecuteResult, StreamContent}
+import com.ibm.spark.utils.LogLike
 
-case class DeferredExecution() {
-  var executeResultCallbacks: List[(ExecuteResult) => Unit] = Nil
-  var streamCallbacks: List[(StreamContent) => Unit] = Nil
-  var errorCallbacks: List[(ExecuteReplyError) => Unit] = Nil
-
-  var executeResultOption: Option[ExecuteResult] = None
-  var executeReplyOption: Option[ExecuteReply] = None
+case class DeferredExecution() extends LogLike {
+  private var executeResultCallbacks: List[(ExecuteResult) => Unit] = Nil
+  private var streamCallbacks: List[(StreamContent) => Unit] = Nil
+  private var errorCallbacks: List[(ExecuteReplyError) => Unit] = Nil
+  private var executeResultOption: Option[ExecuteResult] = None
+  private var executeReplyOption: Option[ExecuteReply] = None
 
   /**
    * Registers a callback for handling ExecuteResult messages.
@@ -16,8 +16,9 @@ case class DeferredExecution() {
    * then be unregistered. If {@param callback} is registered after the result
    * has been returned it will be invoked immediately.
    * In the event of a failure {@param callback} will never be called.
-   * @param callback
-   * @return
+   * @param callback A callback function, which will be invoked at most once,
+   *                 with an ExecuteResult IPython message
+   * @return  The DeferredExecution with the given callback registered.
    */
   def onResult(callback: (ExecuteResult) => Unit): DeferredExecution = {
     this.executeResultCallbacks = callback :: this.executeResultCallbacks
@@ -25,18 +26,39 @@ case class DeferredExecution() {
     this
   }
 
-  def onStream(callback: (StreamContent)=>Unit): DeferredExecution = {
+  /**
+   * Registers a callback for handling StreamContent messages.
+   * Ths {@param callback} can be called 0 or more times. If the
+   * {@param callback} is registered after StreamContent messages have been
+   * emitted, the {@param callback} will only receive messages emitted after the
+   * point of registration.
+   * @param callback A callback function, which can be invoked 0 or more times,
+   *                 with Stream Ipython messages
+   * @return  The DeferredExecution with the given callback registered.
+   */
+  def onStream(callback: (StreamContent) => Unit): DeferredExecution = {
     this.streamCallbacks = callback :: this.streamCallbacks
     this
   }
 
-  def onError(callback: (ExecuteReplyError)=>Unit): DeferredExecution = {
+  /**
+   * Registers a callback for handling ExecuteReply messages when there is an
+   * error during code execution. This {@param callback} will run once on failed
+   * code execution and then be unregistered. If {@param callback} is registered
+   * after the error reply has been returned it will be invoked immediately.
+   * In the event of successful code execution {@param callback} will never be
+   * called.
+   * @param callback A callback function, which will be invoked at most once,
+   *                 with an ExecuteReply IPython message
+   * @return  The DeferredExecution with the given callback registered.
+   */
+  def onError(callback: (ExecuteReplyError) => Unit): DeferredExecution = {
     this.errorCallbacks = callback :: this.errorCallbacks
     processCallbacks()
     this
   }
 
-  def processCallbacks(): Unit = {
+  private def processCallbacks(): Unit = {
     (executeReplyOption, executeResultOption) match {
       case (Some(executeReply), Some(executeResult)) if executeReply.status.equals("error") =>
           // call error callbacks
@@ -50,7 +72,13 @@ case class DeferredExecution() {
           // This prevents methods from getting called again when
           // a callback is registered after processing occurs
           this.executeResultCallbacks = Nil
-      case _ => // TODO log a message
+      case _ =>
+        logger.debug(
+          s"""
+              Did not invoke client callbacks.
+              ExecuteReply was: ${executeReplyOption}
+              ExecuteResult was: ${executeResultOption}
+           """.stripMargin)
     }
   }
 

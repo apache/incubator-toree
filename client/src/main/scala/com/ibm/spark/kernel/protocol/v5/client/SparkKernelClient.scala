@@ -24,8 +24,55 @@ class SparkKernelClient(actorLoader: ActorLoader, actorSystem: ActorSystem) exte
   implicit val timeout = Timeout(21474835.seconds)
 
   /**
-   * Execute streaming code on the Spark Kernel.
-   * @param code Streaming Scala code (prints to stdout)
+   * Executes code on the Spark Kernel.
+   * Gives a <code>DeferredExecution</code> used to handle results from
+   * code execution. Specifically it can be used to register
+   * callbacks that handle stream results, the code execution result, or code
+   * execution errors.
+   *
+   * Code that prints to stdout is considered streaming and will be sent to all
+   * callbacks registered with the onStream() method. For example:
+   * <code>
+   * client.execute("println(1)").onStream(someFunction)
+   * </code>
+   * someFunction will receive a
+   * {@link com.ibm.spark.kernel.protocol.v5.content.StreamContent} message:
+   * <code>
+   * {
+   *  "name" : "stdout",
+   *  "text" : "1"
+   * }
+   * </code>
+   *
+   * Code that produces a result will cause invocation of the callbacks
+   * registered with the onResult() method. The callbacks will be invoked with
+   * the result of the executed code. For example:
+   * <code>
+   * client.execute("1+1").onResult(someFunction)
+   * </code>
+   * someFunction will receive a
+   * {@link com.ibm.spark.kernel.protocol.v5.content.ExecuteResult} message:
+   * <code>
+   * {
+   *  "execution_count" : 1,
+   *  "data" : {
+   *    "text/plain" : "2"
+   *  },
+   *  "metadata" : {}
+   * }
+   * </code>
+   *
+   * Code that produces an error will be sent to all callbacks registered
+   * with the onResult() method. For example:
+   * <code>
+   * client.execute("1+1").onResult(someFunction)
+   * </code>
+   * someFunction will be invoked with an
+   * {@link com.ibm.spark.kernel.protocol.v5.content.ExecuteReply} message
+   * containing the error.
+   *
+   * @param code Scala code
+   * @return The DeferredExecution associated with the code execution.
    */
   def execute(code: String): DeferredExecution = {
     val request = ExecuteRequest(code, false, true, UserExpressions(), true)

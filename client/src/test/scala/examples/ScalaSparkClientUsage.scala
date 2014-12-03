@@ -27,7 +27,7 @@ object ScalaSparkClientUsage extends App {
     println(s"ExecuteResult data was: ${result.data.get(MIMEType.PlainText).get}")
   }
 
-  def printError(reply:ExecuteReply) = {
+  def printError(reply:ExecuteReplyError) = {
     println(s"ExecuteReply error name was: ${reply.ename.get}")
   }
 
