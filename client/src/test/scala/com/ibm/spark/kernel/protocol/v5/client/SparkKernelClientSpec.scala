@@ -20,14 +20,7 @@ class SparkKernelClientSpec extends TestKit(ActorSystem("RelayActorSystem"))
     .thenReturn(system.actorSelection(probe.ref.path.toString))
 
   describe("SparkKernelClient") {
-    describe("#submit") {
-      it("should send an ExecuteRequest message") {
-        client.execute("val foo = 2")
-        probe.expectMsgClass(classOf[ExecuteRequest])
-      }
-    }
-
-    describe("#stream") {
+    describe("#execute") {
       it("should send an ExecuteRequest message") {
         val func = (x: Any) => println(x)
         client.execute("val foo = 2")
