@@ -14,13 +14,6 @@ libraryDependencies +=
   "org.spark-project.akka" %% "akka-zeromq" % "2.2.3-shaded-protobuf" // Apache v2
 
 //
-// MAGIC DEPENDENCIES
-//
-libraryDependencies ++= Seq(
-  "org.jfree" % "jfreechart" % "1.0.19" // LGPL
-)
-
-//
 // TEST DEPENDENCIES
 //
 libraryDependencies +=
