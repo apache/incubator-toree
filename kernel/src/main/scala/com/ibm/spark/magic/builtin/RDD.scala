@@ -1,5 +1,6 @@
 package com.ibm.spark.magic.builtin
 
+import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError}
 import com.ibm.spark.kernel.protocol.v5.MIMEType
 import com.ibm.spark.magic._
 import com.ibm.spark.magic.dependencies.IncludeInterpreter
@@ -30,7 +31,17 @@ class RDD extends MagicTemplate with IncludeInterpreter with LogLike {
                 ("An error occurred converting RDD to JSON.\n"+e.getMessage))
         }
       } else MagicOutput(MIMEType.PlainText -> result)
-    } else MagicOutput(MIMEType.PlainText -> message.right.get.toString)
+
+    // NOTE: Forced to construct and throw exception to trigger proper reporting
+    // TODO: Refactor to potentially have interpreter throw exception
+    } else {
+      message.right.get match {
+        case ex: ExecuteError => throw new Throwable(ex.value)
+        case ex: ExecuteAborted => throw new Throwable("RDD magic aborted!")
+      }
+    }
+
+    //else MagicOutput(MIMEType.PlainText -> message.right.get.toString)
   }
 
   override def executeLine(code: String): MagicOutput = convertToJson(code)

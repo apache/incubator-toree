@@ -1,6 +1,6 @@
 package com.ibm.spark.magic.builtin
 
-import com.ibm.spark.interpreter.Interpreter
+import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError, Interpreter}
 import com.ibm.spark.interpreter.Results.Result
 import com.ibm.spark.kernel.protocol.v5.MIMEType
 import com.ibm.spark.magic.dependencies.IncludeInterpreter
@@ -53,6 +53,37 @@ class RDDSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfte
         val magicOutput = rddMagic.executeCell(Seq(""))
         magicOutput.contains(MIMEType.PlainText) should be (true)
       }
+      it("should throw a Throwable if the interpreter returns an ExecuteError") {
+        val expected = "some error message"
+        val mockExecuteError = mock[ExecuteError]
+        doReturn(expected).when(mockExecuteError).value
+
+        doReturn((mock[Result], Right(mockExecuteError))).when(mockInterpreter)
+          .interpret(anyString(), anyBoolean())
+        val actual = {
+          val exception = intercept[Throwable] {
+            rddMagic.executeCell(Seq(""))
+          }
+          exception.getLocalizedMessage
+        }
+
+        actual should be (expected)
+      }
+      it("should throw a Throwable if the interpreter returns an ExecuteAborted") {
+        val expected = "RDD magic aborted!"
+        val mockExecuteAborted = mock[ExecuteAborted]
+
+        doReturn((mock[Result], Right(mockExecuteAborted))).when(mockInterpreter)
+          .interpret(anyString(), anyBoolean())
+        val actual = {
+          val exception = intercept[Throwable] {
+            rddMagic.executeCell(Seq(""))
+          }
+          exception.getLocalizedMessage
+        }
+
+        actual should be (expected)
+      }
     }
 
     describe("#executeLine") {
@@ -70,6 +101,37 @@ class RDDSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfte
         doReturn(Some("foo")).when(mockInterpreter).read(anyString())
         val magicOutput = rddMagic.executeLine("")
         magicOutput.contains(MIMEType.PlainText) should be (true)
+      }
+      it("should throw a Throwable if the interpreter returns an ExecuteError") {
+        val expected = "some error message"
+        val mockExecuteError = mock[ExecuteError]
+        doReturn(expected).when(mockExecuteError).value
+
+        doReturn((mock[Result], Right(mockExecuteError))).when(mockInterpreter)
+          .interpret(anyString(), anyBoolean())
+        val actual = {
+          val exception = intercept[Throwable] {
+            rddMagic.executeLine("")
+          }
+          exception.getLocalizedMessage
+        }
+
+        actual should be (expected)
+      }
+      it("should throw a Throwable if the interpreter returns an ExecuteAborted") {
+        val expected = "RDD magic aborted!"
+        val mockExecuteAborted = mock[ExecuteAborted]
+
+        doReturn((mock[Result], Right(mockExecuteAborted))).when(mockInterpreter)
+          .interpret(anyString(), anyBoolean())
+        val actual = {
+          val exception = intercept[Throwable] {
+            rddMagic.executeLine("")
+          }
+          exception.getLocalizedMessage
+        }
+
+        actual should be (expected)
       }
     }
   }
