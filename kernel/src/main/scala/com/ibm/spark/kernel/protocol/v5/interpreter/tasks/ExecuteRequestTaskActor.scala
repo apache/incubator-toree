@@ -41,6 +41,7 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
             interpreter.interpret(executeRequest.code)
           }
 
+        logger.debug(s"Interpreter execution result was ${success}")
         success match {
           case Results.Success =>
             val output = result.left.get
@@ -55,12 +56,12 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
             // let the user know.
             sender ! Right(new ExecuteError("Syntax Error.", "", List()))
         }
-      }
-      // If we get empty code from a cell then just return ExecuteReplyOk
-      else {
+      } else {
+        // If we get empty code from a cell then just return ExecuteReplyOk
         sender ! Left("")
       }
-    case _ =>
+    case unknownValue =>
+      logger.warn(s"Received unknown message type ${unknownValue}")
       sender ! "Unknown message" // TODO: Provide a failure message type to be passed around?
   }
 

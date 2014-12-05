@@ -4,7 +4,7 @@ import akka.pattern.ask
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.Utilities._
-import com.ibm.spark.utils.LogLike
+import com.ibm.spark.utils.{MessageLogSupport, LogLike}
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, Json}
 
@@ -13,19 +13,19 @@ import scala.concurrent.Future
 import scala.util.Success
 
 class CodeCompleteHandler(actorLoader: ActorLoader)
-  extends BaseHandler(actorLoader) with LogLike
+  extends BaseHandler(actorLoader) with MessageLogSupport
 {
   override def process(kernelMessage: KernelMessage): Future[_] = {
-    logger.info("Received CompleteRequest")
+    logKernelMessageAction("Generating code completion for", kernelMessage)
     val interpreterActor = actorLoader.load(SystemActorType.Interpreter)
-    logger.debug(s"contentString is ${kernelMessage.contentString}")
+
+    // TODO refactor using a function like the client's Utilities.parseAndHandle
     Json.parse(kernelMessage.contentString).validate[CompleteRequest].fold(
       (invalid: Seq[(JsPath, Seq[ValidationError])]) => {
-        logger.error("Could not parse JSON for complete request!!!!!!!!!!!!!")
+        logger.error("Could not parse JSON for complete request!")
         throw new Throwable("Parse error in CodeCompleteHandler")
       },
       (completeRequest: CompleteRequest) => {
-        logger.debug("Completion request being asked to interpreterActor")
         val codeCompleteFuture = ask(interpreterActor, completeRequest).mapTo[(Int, List[String])]
         codeCompleteFuture.onComplete {
           case Success(tuple) =>
@@ -43,7 +43,6 @@ class CodeCompleteHandler(actorLoader: ActorLoader)
           case _ =>
             new Exception("Parse error in CodeCompleteHandler")
         }
-
         codeCompleteFuture
       }
     )

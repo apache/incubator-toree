@@ -22,12 +22,12 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
   extends BaseHandler(actorLoader) with LogLike
 {
   def process(kernelMessage: KernelMessage): Future[_] = {
-      logger.debug("Forwarding execute request")
       val executionCount = ExecutionCounter.incr(kernelMessage.header.session)
       val relayActor = actorLoader.load(SystemActorType.KernelMessageRelay)
       //  This is a collection of common pieces that will be sent back in all reply kernelMessage, use with .copy
       val kernelMessageReplySkeleton =  new KernelMessage( kernelMessage.ids, "", null,  kernelMessage.header, Metadata(), null)
 
+    // TODO refactor using a function like the client's Utilities.parseAndHandle
       Json.parse(kernelMessage.contentString).validate[ExecuteRequest].fold(
         (invalid: Seq[(JsPath, Seq[ValidationError])]) => {
           val validationErrors: List[String] = List()

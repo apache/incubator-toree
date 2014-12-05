@@ -5,7 +5,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, MessageType, _}
-import com.ibm.spark.utils.LogLike
+import com.ibm.spark.utils.{MessageLogSupport, LogLike}
 
 import scala.concurrent.duration._
 
@@ -16,7 +16,7 @@ import scala.concurrent.duration._
 case class KernelMessageRelay(
   actorLoader: ActorLoader,
   useSignatureManager: Boolean
-) extends Actor with LogLike with Stash {
+) extends Actor with MessageLogSupport with Stash {
   // NOTE: Required to provide the execution context for futures with akka
   import context._
 
@@ -35,14 +35,14 @@ case class KernelMessageRelay(
    */
   private def relay(kernelMessage: KernelMessage) = {
     val messageType: MessageType = MessageType.withName(kernelMessage.header.msg_type)
-    logger.info("Relaying message of type " + kernelMessage.header.msg_type )
+    logKernelMessageAction("Relaying", kernelMessage)
     actorLoader.load(messageType) ! kernelMessage
   }
 
 
   /**
-   * This actor will receive and handle two types; ZMQMessage and KernelMessage. These messages
-   * will be forwarded to their actors which are responsible for them.
+   * This actor will receive and handle two types; ZMQMessage and KernelMessage.
+   * These messages will be forwarded to the actors that are responsible for them.
    */
   override def receive = {
     // TODO: How to restore this when the actor dies?
@@ -65,6 +65,8 @@ case class KernelMessageRelay(
     // Assuming these messages are incoming messages
     case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if isReady =>
       if (useSignatureManager) {
+        logger.trace(s"Verifying signature for incoming message " +
+          s"${kernelMessage.header.msg_id}")
         val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureVerificationFuture = signatureManager ? ((
           kernelMessage.signature, zmqStrings
@@ -78,9 +80,12 @@ case class KernelMessageRelay(
           // TODO: Figure out what the failure message structure should be!
           // Verification failed, so report back a failure
           case false =>
-            logger.error("Invalid signature received from message!")
+            logger.error(s"Invalid signature received from message " +
+              s"${kernelMessage.header.msg_id}!")
         }
       } else {
+        logger.debug(s"Relaying incoming message " +
+          s"${kernelMessage.header.msg_id} without SignatureManager")
         relay(kernelMessage)
       }
 
@@ -88,6 +93,8 @@ case class KernelMessageRelay(
     case kernelMessage: KernelMessage =>
 
       if (useSignatureManager) {
+        logger.trace(s"Creating signature for outgoing message " +
+          s"${kernelMessage.header.msg_id}")
         val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
         val signatureInsertFuture = signatureManager ? kernelMessage
 
@@ -96,6 +103,8 @@ case class KernelMessageRelay(
           case message => relay(message)
         }
       } else {
+        logger.debug(s"Relaying outgoing message " +
+          s"${kernelMessage.header.msg_id} without SignatureManager")
         relay(kernelMessage)
       }
   }

@@ -14,7 +14,10 @@ class SignatureCheckerActor(
   override def receive: Receive = {
     case (signature: String, blob: Seq[_]) =>
       val stringBlob: Seq[String] = blob.map(_.toString)
-      val isValidSignature = hmac(stringBlob: _*) == signature
+      val hmacString = hmac(stringBlob: _*)
+      val isValidSignature = hmacString == signature
+      logger.trace(s"Signature ${signature} validity checked against " +
+        s"hmac ${hmacString} with outcome ${isValidSignature}")
       sender ! isValidSignature
   }
 }

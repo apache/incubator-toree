@@ -22,6 +22,7 @@ class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {
 
   override def receive: Receive = {
     case (status: KernelStatusType, null) =>
+      //  TODO Determine if this should be null or an empty parent header
       sendStatusMessage(status, null)
 
     case (status: KernelStatusType, parentHeader: Header) =>

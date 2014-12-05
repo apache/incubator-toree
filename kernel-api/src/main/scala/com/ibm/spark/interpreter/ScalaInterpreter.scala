@@ -125,7 +125,7 @@ class ScalaInterpreter(
     (Results.Result, Either[ExecuteOutput, ExecuteFailure]) =
   {
     require(sparkIMain != null && taskManager != null)
-    logger.debug(s"Interpreting code: $code")
+    logger.trace(s"Interpreting code: $code")
 
     val futureResult = interpretAddTask(code, silent)
 

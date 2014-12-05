@@ -15,8 +15,9 @@ class Heartbeat(socketFactory : ServerSocketFactory) extends Actor with LogLike 
 
   override def receive: Receive = {
     case message: ZMQMessage =>
-      logger.debug("HEARTBEAT RECEIVING: " +
-        message.frames.map((byteString: ByteString) => new String(byteString.toArray)).mkString("\n"))
+      logger.trace("Heartbeat received message: " +
+        message.frames.map((byteString: ByteString) =>
+          new String(byteString.toArray)).mkString("\n"))
       socket ! message
   }
 }

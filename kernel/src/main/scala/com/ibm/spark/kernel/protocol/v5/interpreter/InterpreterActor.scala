@@ -56,6 +56,8 @@ class InterpreterActor(
       val data = (executeRequest, outputStream)
       (executeRequestTask ? data) recover {
         case ex: Throwable =>
+          logger.error(s"Could not execute code ${executeRequest.code} because "
+            + s"of exception: ${ex.getMessage}")
           Right(ExecuteError(
             ex.getClass.getName,
             ex.getLocalizedMessage,
@@ -63,9 +65,12 @@ class InterpreterActor(
           )
       } pipeTo sender
     case (completeRequest: CompleteRequest) =>
-      logger.debug("InterpreterActor requesting code completion")
+      logger.debug(s"InterpreterActor requesting code completion for code " +
+        s"${completeRequest.code}")
       (completeCodeTask ? completeRequest) recover {
         case ex: Throwable =>
+          logger.error(s"Could not complete code ${completeRequest.code}: " +
+            s"${ex.getMessage}")
           Right(ExecuteError(
             ex.getClass.getName,
             ex.getLocalizedMessage,
