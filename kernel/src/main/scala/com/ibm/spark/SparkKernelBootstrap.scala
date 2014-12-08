@@ -25,6 +25,7 @@ import com.typesafe.config.Config
 import org.apache.spark.{SparkConf, SparkContext}
 import collection.JavaConverters._
 import play.api.libs.json.Json
+import java.io.File
 
 case class SparkKernelBootstrap(config: Config) extends LogLike {
 
@@ -345,8 +346,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     )
 
 
-    logger.debug("Creating magic manager actor")
-    logger.warn("MagicManager has a MagicLoader that is empty!")
+    logger.info("Creating magic manager actor")
     magicManagerActor = actorSystem.actorOf(
       Props(classOf[MagicManager], magicLoader),
       name = SystemActorType.MagicManager.toString
@@ -365,9 +365,19 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     logger.debug("Creating BuiltinLoader")
     builtinLoader = new BuiltinLoader()
 
+    val magicUrlArray = config.getStringList("magic_urls").asScala
+      .map(s => new File(s).toURI.toURL).toArray
+
+    if (magicUrlArray.isEmpty)
+      logger.warn("No external magics provided to MagicLoader!")
+    else
+      logger.info("Using magics from the following locations: " +
+        magicUrlArray.map(_.getPath).mkString(","))
+
     logger.debug("Creating MagicLoader")
     magicLoader = new MagicLoader(
       dependencyMap = dependencyMap,
+      urls = magicUrlArray,
       parentLoader = builtinLoader
     )
   }

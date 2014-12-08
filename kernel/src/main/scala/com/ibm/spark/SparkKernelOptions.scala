@@ -6,6 +6,7 @@ import com.typesafe.config.{ConfigFactory, Config}
 import joptsimple.{OptionSpec, OptionParser}
 
 import scala.collection.JavaConverters._
+import java.net.URL
 
 case class SparkKernelOptions(args: Seq[String]) {
   private val parser = new OptionParser()
@@ -49,6 +50,10 @@ case class SparkKernelOptions(args: Seq[String]) {
     "heartbeat-port", "port of the heartbeat socket"
   ).withRequiredArg().ofType(classOf[Int])
 
+  private val _magic_url =
+    parser.accepts("magic-url", "path to a magic jar")
+      .withRequiredArg().ofType(classOf[String])
+
   private val options = parser.parse(args: _*)
 
   /*
@@ -61,6 +66,9 @@ case class SparkKernelOptions(args: Seq[String]) {
 
   private def get[T](spec: OptionSpec[T]): Option[T] =
     Some(options.valueOf(spec)).filter(_ != null)
+
+  private def getAll[T](spec: OptionSpec[T]): Option[List[T]] =
+    Some(options.valuesOf(spec).asScala.toList).filter(_ != null)
 
   /*
    * Expose options in terms of their existence/value.
@@ -90,7 +98,8 @@ case class SparkKernelOptions(args: Seq[String]) {
         "control_port" -> get(_control_port),
         "hb_port" -> get(_heartbeat_port),
         "ip" -> get(_ip),
-        "interpreter_args" -> interpreterArgs
+        "interpreter_args" -> interpreterArgs,
+        "magic_urls" -> Some(getAll(_magic_url).get.asJava)
     ).flatMap(removeEmptyOptions).asInstanceOf[Map[String, AnyRef]].asJava)
 
     commandLineConfig.withFallback(profileConfig).withFallback(ConfigFactory.load)
