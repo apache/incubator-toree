@@ -66,7 +66,8 @@ class MagicLoaderSpec extends FunSpec with Matchers with MockitoSugar {
         // Only loads a class named "Potato"
         val classLoader = new ClassLoader() {
           override def findClass(name: String) =
-            if (name == "Potato") this.getClass else throw new Exception
+            if (name == "Potato") this.getClass
+            else throw new ClassNotFoundException
         }
 
         // Case insensitive matching should be performed on "Potato"
