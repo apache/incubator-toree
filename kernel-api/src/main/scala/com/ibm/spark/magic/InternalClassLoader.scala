@@ -9,6 +9,12 @@ package com.ibm.spark.magic
 class InternalClassLoader(
   classLoader: ClassLoader = classOf[InternalClassLoader].getClassLoader
 ) extends ClassLoader(classLoader) {
+
+  // TODO: Provides an exposed reference to the super loadClass to be stubbed
+  // out in tests.
+  private[magic] def parentLoadClass(name: String, resolve: Boolean) =
+    super.loadClass(name, resolve)
+
   /**
    * Attempts to load the class using the local package of the builtin loader
    * as the base of the name if unable to load normally.
@@ -21,11 +27,11 @@ class InternalClassLoader(
   override def loadClass(name: String, resolve: Boolean): Class[_] =
     try {
       val packageName = this.getClass.getPackage.getName
-      val classNameRegex = """.*?\.?(\w+)$""".r
-      val classNameRegex(className) = name
-      super.loadClass(packageName + "." + className, resolve)
+      val className = name.split('.').last
+
+      parentLoadClass(packageName + "." + className, resolve)
     } catch {
       case ex: ClassNotFoundException =>
-        super.loadClass(name, resolve)
+        parentLoadClass(name, resolve)
     }
 }

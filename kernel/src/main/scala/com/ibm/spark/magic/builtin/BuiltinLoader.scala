@@ -18,6 +18,7 @@ class BuiltinLoader
       case true =>
         List()
       case false =>
+        // TODO: Decide if this.getClass.getClassLoader should just be this
         val classPath = ClassPath.from(this.getClass.getClassLoader)
         classPath.getTopLevelClasses(pkg).filter(
           _.getSimpleName != this.getClass.getSimpleName

@@ -27,6 +27,14 @@ class MagicLoader(
     }
   }
 
+  override def loadClass(name: String, resolve: Boolean): Class[_] =
+    try {
+      super.loadClass(magicPackage + "." + name, resolve)
+    } catch {
+      case ex: ClassNotFoundException =>
+        super.loadClass(name, resolve)
+    }
+
   /**
    * Returns the class name for a case insensitive magic name query.
    * If no match is found, returns the query.
@@ -40,7 +48,7 @@ class MagicLoader(
    * @return list of magic class names in magicPackage.
    */
   protected def magicClassNames : List[String] = {
-    val classPath: ClassPath = ClassPath.from(this.getClass.getClassLoader)
+    val classPath: ClassPath = ClassPath.from(this)
     val classes = classPath.getTopLevelClasses(magicPackage)
     classes.asList.map(_.getSimpleName).toList
   }
@@ -56,7 +64,8 @@ class MagicLoader(
   protected def createMagicInstance(name: String) = {
     val magicClass = loadClass(name) // Checks parent loadClass first
 
-    val runtimeMirror = runtimeUniverse.runtimeMirror(magicClass.getClassLoader)
+    val runtimeMirror = runtimeUniverse.runtimeMirror(this)
+    //val runtimeMirror = runtimeUniverse.runtimeMirror(magicClass.getClassLoader)
 
     val classSymbol = runtimeMirror.staticClass(magicClass.getCanonicalName)
     val classMirror = runtimeMirror.reflectClass(classSymbol)
