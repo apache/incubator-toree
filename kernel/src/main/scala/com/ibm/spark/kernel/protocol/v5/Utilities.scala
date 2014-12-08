@@ -4,11 +4,12 @@ import java.nio.charset.Charset
 
 import akka.util.{ByteString, Timeout}
 import akka.zeromq.ZMQMessage
+import com.ibm.spark.utils.LogLike
 import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsPath, Json}
+import play.api.libs.json.{Reads, JsPath, Json}
 import scala.concurrent.duration._
 
-object Utilities {
+object Utilities extends LogLike {
   //
   // NOTE: This is brought in to remove feature warnings regarding the use of
   //       implicit conversions regarding the following:
@@ -61,6 +62,16 @@ object Utilities {
     frames += Json.toJson(kernelMessage.metadata).toString
     frames += kernelMessage.contentString
     ZMQMessage(frames  : _*)
+  }
+
+  def parseAndHandle[T, U](json: String, reads: Reads[T], handler: T => U) : U = {
+    Json.parse(json).validate[T](reads).fold(
+      (invalid: Seq[(JsPath, Seq[ValidationError])]) => {
+        logger.error(s"Could not parse JSON, ${json}")
+        throw new Throwable(s"Could not parse JSON, ${json}")
+      },
+      (content: T) => handler(content)
+    )
   }
 
 }

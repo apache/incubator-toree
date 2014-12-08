@@ -1,6 +1,6 @@
 package com.ibm.spark.utils
 
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
+import com.ibm.spark.kernel.protocol.v5.{MessageType, KernelMessage}
 
 trait MessageLogSupport extends LogLike {
   /**
@@ -12,9 +12,12 @@ trait MessageLogSupport extends LogLike {
     logger.trace(s"Kernel message signature: ${km.signature}")
     logger.debug(s"Kernel message header id: ${km.header.msg_id}")
     logger.debug(s"Kernel message header type: ${km.header.msg_type}")
-    km.parentHeader match {
-      case null =>
-        logger.warn(s"Parent header is null for message ${km.header.msg_id} of type ${km.header.msg_type}")
+    val incomingMessage = isIncomingMessage(km.header.msg_type)
+    (km.parentHeader, incomingMessage) match {
+      case (null, true)   =>  //  Don't do anything, this is expected
+      case (null, false)  =>  //  Messages coming from the kernel should have parent headers
+        logger.warn(s"Parent header is null for message ${km.header.msg_id} " +
+          s"of type ${km.header.msg_type}")
       case _ =>
         logger.trace(s"Kernel message parent id: ${km.parentHeader.msg_id}")
         logger.trace(s"Kernel message parent type: ${km.parentHeader.msg_type}")
@@ -31,6 +34,21 @@ trait MessageLogSupport extends LogLike {
   def logKernelMessageAction(action: String, km: KernelMessage): Unit = {
     logger.debug(s"${action} KernelMessage ${km.header.msg_id} " +
       s"of type ${km.header.msg_type}")
+  }
+
+  /**
+   * This method is used to determine if a message is being received by the
+   * kernel or being sent from the kernel.
+   * @return true if the message is received by the kernel, false otherwise.
+   */
+  private def isIncomingMessage(messageType: String): Boolean ={
+    MessageType.CompleteRequest.toString.equals(messageType) ||
+      MessageType.ConnectRequest.toString.equals(messageType) ||
+      MessageType.ExecuteRequest.toString.equals(messageType) ||
+      MessageType.HistoryRequest.toString.equals(messageType) ||
+      MessageType.InspectRequest.toString.equals(messageType) ||
+      MessageType.ShutdownRequest.toString.equals(messageType)||
+      MessageType.KernelInfoRequest.toString.equals(messageType)
   }
 
 }

@@ -77,7 +77,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     registerInterruptHook()
     registerShutdownHook()
 
-    logger.info("Initializing security manager")
+    logger.debug("Initializing security manager")
     System.setSecurityManager(new KernelSecurityManager)
 
     logger.info("Marking relay as ready for receiving messages")
@@ -120,10 +120,10 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     logger.info("Initializing internal actor system")
     actorSystem = ActorSystem(DefaultActorSystemName)
 
-    logger.info("Creating Simple Actor Loader")
+    logger.debug("Creating Simple Actor Loader")
     actorLoader = SimpleActorLoader(actorSystem)
 
-    logger.info("Creating kernel message relay actor")
+    logger.debug("Creating kernel message relay actor")
     kernelMessageRelayActor = actorSystem.actorOf(
       Props(
         classOf[KernelMessageRelay], actorLoader, true
@@ -131,11 +131,11 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
       name = SystemActorType.KernelMessageRelay.toString
     )
 
-    logger.info("Creating signature manager actor")
+    logger.debug("Creating signature manager actor")
     val sigKey = config.getString("key")
     val sigScheme = config.getString("signature_scheme")
-    logger.info("Key = " + sigKey)
-    logger.info("Scheme = " + sigScheme)
+    logger.debug("Key = " + sigKey)
+    logger.debug("Scheme = " + sigScheme)
     signatureManagerActor = actorSystem.actorOf(
       Props(
         classOf[SignatureManagerActor], sigKey, sigScheme.replace("-", "")
@@ -143,7 +143,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
       name = SystemActorType.SignatureManager.toString
     )
 
-    logger.info("Creating status dispatch actor")
+    logger.debug("Creating status dispatch actor")
     statusDispatch = actorSystem.actorOf(
       Props(classOf[StatusDispatch], actorLoader),
       name = SystemActorType.StatusDispatch.toString
@@ -151,10 +151,11 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   }
 
   private def createSockets(): Unit = {
-    logger.info("Creating sockets")
+    logger.debug("Creating sockets")
 
     val socketConfig: SocketConfig = SocketConfig.fromConfig(config)
-    logger.info("Connection Profile: " + Json.toJson(socketConfig))
+    logger.info("Connection Profile: "
+      + Json.prettyPrint(Json.toJson(socketConfig)))
 
     logger.debug("Constructing ServerSocketFactory")
     socketFactory = new ServerSocketFactory(socketConfig)
@@ -231,7 +232,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   }
 
   private def registerShutdownHook(): Unit = {
-    logger.info("Registering shutdown hook")
+    logger.debug("Registering shutdown hook")
     val self = this
     val mainThread = Thread.currentThread()
     Runtime.getRuntime.addShutdownHook(new Thread() {
@@ -278,7 +279,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
       logger.info("REPL Class Server Uri: " + interpreter.classServerURI)
       conf.set("spark.repl.class.uri", interpreter.classServerURI)
 
-      logger.info("Constructing new Spark Context")
+      logger.debug("Constructing new Spark Context")
       // TODO: Inject stream redirect headers in Spark dynamically
       val outStream = new KernelMessageStream(actorLoader, new KernelMessage(
         Nil, "", null, null, Metadata(), ""
@@ -287,7 +288,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
         sparkContext = new SparkContext(conf)
       }
 
-      logger.info("Binding context into interpreter")
+      logger.debug("Binding context into interpreter")
       interpreter.bind(
         "sc", "org.apache.spark.SparkContext",
         sparkContext, List( """@transient"""))
@@ -298,7 +299,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
       // TODO: Investigate why the cluster has to be initialized in the kernel
       //       to avoid the kernel's interpreter blowing up (must be done
       //       inside the interpreter)
-      logger.info("Initializing Spark cluster in interpreter")
+      logger.debug("Initializing Spark cluster in interpreter")
       interpreter.doQuietly {
         interpreter.interpret("""
           var $toBeNulled = sc.emptyRDD.collect()
@@ -330,21 +331,21 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   }
 
   private def initializeSystemActors(): Unit = {
-    logger.info("Creating interpreter actor")
+    logger.debug("Creating interpreter actor")
     interpreterActor = actorSystem.actorOf(
       Props(classOf[InterpreterActor], new InterpreterTaskFactory(interpreter)),
       name = SystemActorType.Interpreter.toString
     )
 
 
-    logger.info("Creating execute request relay actor")
+    logger.debug("Creating execute request relay actor")
     executeRequestRelayActor = actorSystem.actorOf(
       Props(classOf[ExecuteRequestRelay], actorLoader),
       name = SystemActorType.ExecuteRequestRelay.toString
     )
 
 
-    logger.info("Creating magic manager actor")
+    logger.debug("Creating magic manager actor")
     logger.warn("MagicManager has a MagicLoader that is empty!")
     magicManagerActor = actorSystem.actorOf(
       Props(classOf[MagicManager], magicLoader),
@@ -353,7 +354,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   }
 
   private def initializeMagicLoader(): Unit = {
-    logger.info("Constructing magic loader")
+    logger.debug("Constructing magic loader")
 
     logger.debug("Building dependency map")
     dependencyMap = new DependencyMap()
@@ -372,7 +373,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   }
 
   private def initializeRequestHandler[T](clazz: Class[T], messageType: MessageType){
-    logger.info("Creating %s handler".format(messageType.toString))
+    logger.debug("Creating %s handler".format(messageType.toString))
     actorSystem.actorOf(
       Props(clazz, actorLoader),
       name = messageType.toString
@@ -380,7 +381,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   }
 
   private def initializeSocketHandler(socketType: SocketType, messageType: MessageType): Unit = {
-    logger.info("Creating %s to %s socket handler ".format(messageType.toString ,socketType.toString))
+    logger.debug("Creating %s to %s socket handler ".format(messageType.toString ,socketType.toString))
     actorSystem.actorOf(
       Props(classOf[GenericSocketMessageHandler], actorLoader, socketType),
       name = messageType.toString

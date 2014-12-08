@@ -230,23 +230,23 @@ class ScalaInterpreter(
 
     taskManager = newTaskManager()
 
-    logger.info("Initializing task manager")
+    logger.debug("Initializing task manager")
     taskManager.start()
 
     sparkIMain =
       newSparkIMain(settings, new JPrintWriter(multiOutputStream, true))
 
-    logger.info("Initializing interpreter")
+    logger.debug("Initializing interpreter")
     sparkIMain.initializeSynchronous()
 
-    logger.info("Initializing completer")
+    logger.debug("Initializing completer")
     jLineCompleter = new SparkJLineCompletion(sparkIMain)
 
     sparkIMain.beQuietDuring {
       //logger.info("Rerouting Console and System related input and output")
       //updatePrintStreams(System.in, multiOutputStream, multiOutputStream)
 
-      logger.info("Adding org.apache.spark.SparkContext._ to imports")
+      logger.debug("Adding org.apache.spark.SparkContext._ to imports")
       sparkIMain.addImports("org.apache.spark.SparkContext._")
     }
 

@@ -17,34 +17,31 @@ class CodeCompleteHandler(actorLoader: ActorLoader)
 {
   override def process(kernelMessage: KernelMessage): Future[_] = {
     logKernelMessageAction("Generating code completion for", kernelMessage)
-    val interpreterActor = actorLoader.load(SystemActorType.Interpreter)
-
-    // TODO refactor using a function like the client's Utilities.parseAndHandle
-    Json.parse(kernelMessage.contentString).validate[CompleteRequest].fold(
-      (invalid: Seq[(JsPath, Seq[ValidationError])]) => {
-        logger.error("Could not parse JSON for complete request!")
-        throw new Throwable("Parse error in CodeCompleteHandler")
-      },
-      (completeRequest: CompleteRequest) => {
-        val codeCompleteFuture = ask(interpreterActor, completeRequest).mapTo[(Int, List[String])]
-        codeCompleteFuture.onComplete {
-          case Success(tuple) =>
-            //  Construct a CompleteReply
-            val reply = CompleteReplyOk(tuple._2, completeRequest.cursor_pos, tuple._1, Metadata())
-            //  Send the CompleteReply to the Relay actor
-            logger.debug("Sending complete reply to relay actor")
-            actorLoader.load(SystemActorType.KernelMessageRelay) !
-              kernelMessage.copy(
-                //header = kernelMessage.header.copy(msg_type = MessageType.CompleteReply.toString),
-                header = HeaderBuilder.create(MessageType.CompleteReply.toString),
-                parentHeader = kernelMessage.header,
-                contentString = Json.toJson(reply).toString
-              )
-          case _ =>
-            new Exception("Parse error in CodeCompleteHandler")
-        }
-        codeCompleteFuture
-      }
+    Utilities.parseAndHandle(
+      kernelMessage.contentString,
+      CompleteRequest.completeRequestReads,
+      completeRequest(kernelMessage, _ : CompleteRequest)
     )
+  }
+
+  private def completeRequest(km: KernelMessage, cr: CompleteRequest):
+                              Future[(Int, List[String])] = {
+    val interpreterActor = actorLoader.load(SystemActorType.Interpreter)
+    val codeCompleteFuture = ask(interpreterActor, cr).mapTo[(Int, List[String])]
+    codeCompleteFuture.onComplete {
+      case Success(tuple) =>
+        val reply = CompleteReplyOk(tuple._2, cr.cursor_pos,
+                                    tuple._1, Metadata())
+        logKernelMessageAction("Sending code complete reply for", km)
+        actorLoader.load(SystemActorType.KernelMessageRelay) !
+          km.copy(
+            header = HeaderBuilder.create(MessageType.CompleteReply.toString),
+            parentHeader = km.header,
+            contentString = Json.toJson(reply).toString
+          )
+      case _ =>
+        new Exception("Parse error in CodeCompleteHandler")
+    }
+    codeCompleteFuture
   }
 }
