@@ -5,9 +5,10 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, MessageType, _}
-import com.ibm.spark.utils.{MessageLogSupport, LogLike}
+import com.ibm.spark.utils.MessageLogSupport
 
 import scala.concurrent.duration._
+import scala.util.{Failure, Success}
 
 /**
  * This class is meant to be a relay for send KernelMessages through kernel system.
@@ -64,6 +65,7 @@ case class KernelMessageRelay(
 
     // Assuming these messages are incoming messages
     case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if isReady =>
+      context.become(waiting, discardOld = false)
       if (useSignatureManager) {
         logger.trace(s"Verifying signature for incoming message " +
           s"${kernelMessage.header.msg_id}")
@@ -72,21 +74,23 @@ case class KernelMessageRelay(
           kernelMessage.signature, zmqStrings
         ))
 
-        // TODO: Handle error case for mapTo and non-present onFailure
-        signatureVerificationFuture.mapTo[Boolean] onSuccess {
-          // Verification successful, so continue relay
-          case true => relay(kernelMessage)
-
-          // TODO: Figure out what the failure message structure should be!
-          // Verification failed, so report back a failure
-          case false =>
+        signatureVerificationFuture.mapTo[Boolean].onComplete {
+          case Success(true) =>
+            relay(kernelMessage)
+            self ! DoneProcessing
+          case Success(false) =>
+            // TODO: Figure out what the failure message structure should be!
             logger.error(s"Invalid signature received from message " +
               s"${kernelMessage.header.msg_id}!")
+            self ! DoneProcessing
+          case Failure(t)  =>
+            logger.error("Failure when verifying signature!", t)
         }
       } else {
         logger.debug(s"Relaying incoming message " +
           s"${kernelMessage.header.msg_id} without SignatureManager")
         relay(kernelMessage)
+        self ! DoneProcessing
       }
 
     // Assuming all kernel messages without zmq strings are outgoing
@@ -108,4 +112,14 @@ case class KernelMessageRelay(
         relay(kernelMessage)
       }
   }
+
+  def waiting : Receive = {
+    case DoneProcessing =>
+      context.unbecome()
+      unstashAll()
+    case _ =>
+      stash()
+  }
 }
+
+case object DoneProcessing

@@ -5,22 +5,24 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.Utilities._
 import org.mockito.Mockito._
+import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures}
 import org.scalatest.mock.MockitoSugar
+import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import org.mockito.Matchers.{eq => mockEq}
 import org.mockito.AdditionalMatchers.{not => mockNot}
-
 import scala.concurrent.duration._
 import com.ibm.spark.kernel.protocol.v5.MessageType._
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import scala.collection.immutable.HashMap
-import com.ibm.spark.kernel.protocol.v5.KernelStatusType.KernelStatusType
-import com.ibm.spark.kernel.protocol.v5.KernelStatusType
 import akka.zeromq.ZMQMessage
+import scala.concurrent._
+import akka.pattern.pipe
+import scala.util.Random
+import ExecutionContext.Implicits.global
 
 class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter {
+  with BeforeAndAfter with ScalaFutures {
   private val IncomingMessageType = CompleteRequest.toString
   private val OutgoingMessageType = CompleteReply.toString
 
@@ -140,6 +142,81 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
           captureProbe.expectMsg(outgoingKernelMessage)
         }
       }
+
+      describe("multiple messages in order"){
+        it("should relay messages in the order they were received") {
+          //  Setup the base actor system and the relay
+          val actorLoader = mock[ActorLoader]
+          val kernelMessageRelay = system.actorOf(Props(
+            classOf[KernelMessageRelay], actorLoader, true
+          ))
+          //  Where all of the messages are relayed to, otherwise NPE
+          val captureProbe = TestProbe()
+          val captureSelection = system.actorSelection(captureProbe.ref.path.toString)
+          when(actorLoader.load(CompleteRequest)).thenReturn(captureSelection)
+
+
+          val n = 5
+          val chaoticPromise: Promise[String] = Promise()
+          var actual : List[String] = List()
+          val expected = (0 until n).map(_.toString).toList
+
+          // setup a ChaoticActor to accumulate message values
+          // A promise succeeds after n messages have been accumulated
+          val chaoticActor: ActorRef = system.actorOf(Props(
+            classOf[ChaoticActor[Boolean]],
+            (paramVal: Any) => {
+              val tuple = paramVal.asInstanceOf[(String, Seq[_])]
+              actual = actual :+ tuple._1
+              if (actual.length == n) chaoticPromise.success("Done")
+              true
+            }
+          ))
+
+          when(actorLoader.load(SystemActorType.SignatureManager))
+            .thenReturn(system.actorSelection(chaoticActor.path))
+
+          kernelMessageRelay ! true
+
+          // Sends messages with contents = to values of increasing counter
+          sendKernelMessages(n, kernelMessageRelay)
+          // Message values should be accumulated in the proper order
+          whenReady(chaoticPromise.future,
+            PatienceConfiguration.Timeout(Span(2, Seconds)),
+            PatienceConfiguration.Interval(Span(5, Millis))) {
+            case _: String =>
+              actual should be(expected)
+          }
+
+        }
+      }
     }
+  }
+  def sendKernelMessages(n: Int, kernelMessageRelay: ActorRef): Unit ={
+    // Sends n messages to the relay
+    (0 until n).foreach (i => {
+      val km = KernelMessage(Seq("<ID>"), s"${i}",
+        header.copy(msg_type = IncomingMessageType), parentHeader,
+        Metadata(), s"${i}")
+      kernelMessageRelay ! Tuple2(Seq("SomeString"), km)
+    })
+
+  }
+}
+
+
+case class ChaoticActor[U](receiveFunc : Any => U) extends Actor {
+  override def receive: Receive = {
+    case fVal: Any =>
+      //  The test actor system runs the actors on a single thread, so we must
+      //  simulate asynchronous behaviour by staring a new thread
+      val promise = Promise[U]()
+      promise.future pipeTo sender
+      new Thread(new Runnable {
+        override def run(): Unit = {
+          Thread.sleep(Random.nextInt(30) * 10)
+          promise.success(receiveFunc(fVal))
+        }
+      }).start()
   }
 }
