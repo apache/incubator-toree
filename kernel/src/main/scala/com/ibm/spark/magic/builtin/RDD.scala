@@ -47,5 +47,5 @@ class RDD extends MagicTemplate with IncludeInterpreter with LogLike {
   override def executeLine(code: String): MagicOutput = convertToJson(code)
 
   override def executeCell(code: Seq[String]): MagicOutput =
-    convertToJson(code.tail.mkString("\n"))
+    convertToJson(code.mkString("\n"))
 }
