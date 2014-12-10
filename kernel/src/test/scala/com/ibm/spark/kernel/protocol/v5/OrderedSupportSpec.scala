@@ -1,0 +1,85 @@
+package com.ibm.spark.kernel.protocol.v5
+
+import akka.actor._
+import akka.testkit.{ImplicitSender, TestKit}
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.{FunSpecLike, Matchers}
+
+case class OrderedType()
+case class NotOrderedType()
+case class FinishProcessingMessage()
+case class ReceiveMessageCount(count: Int)
+
+class TestOrderedSupport extends OrderedSupport {
+  var receivedCounter = 0
+  override def orderedTypes(): Seq[Class[_]] = Seq(classOf[OrderedType])
+
+  override def receive: Receive = {
+    case OrderedType() =>
+      startProcessing()
+      receivedCounter = receivedCounter + 1
+      sender ! ReceiveMessageCount(receivedCounter)
+    case NotOrderedType() =>
+      receivedCounter = receivedCounter + 1
+      sender ! ReceiveMessageCount(receivedCounter)
+    case FinishProcessingMessage() =>
+      finishedProcessing()
+  }
+}
+
+class OrderedSupportSpec extends TestKit(ActorSystem("OrderedSupportSystem"))
+  with ImplicitSender with Matchers with FunSpecLike
+  with MockitoSugar  {
+
+  describe("OrderedSupport"){
+    describe("#waiting"){
+      it("should wait for types defined in orderedTypes"){
+      val testOrderedSupport = system.actorOf(Props[TestOrderedSupport])
+
+        // Send a message having a type in orderedTypes
+        // Starts processing and is handled with receive()
+        testOrderedSupport ! new OrderedType
+        // This message should be handled with waiting()
+        testOrderedSupport ! new OrderedType
+
+        // Verify receive was not called for the second OrderedType
+        expectMsg(ReceiveMessageCount(1))
+
+      }
+
+      it("should process types not defined in orderedTypes"){
+        val testOrderedSupport = system.actorOf(Props[TestOrderedSupport])
+
+        // Send a message that starts the processing
+        testOrderedSupport ! new OrderedType
+
+        // Send a message having a type not in orderedTypes
+        testOrderedSupport ! new NotOrderedType
+
+        // Verify receive did get called for NotOrderedType
+        expectMsg(ReceiveMessageCount(1))
+        expectMsg(ReceiveMessageCount(2))
+      }
+    }
+    describe("#finishedProcessing"){
+      it("should switch actor to receive method"){
+        val testOrderedSupport = system.actorOf(Props[TestOrderedSupport])
+        
+        //  Switch actor to waiting mode
+        testOrderedSupport ! new OrderedType
+
+        //  Call finishedProcessing
+        testOrderedSupport ! new FinishProcessingMessage
+
+        //  Sending something that would match in receive, and is in orderedTypes
+        testOrderedSupport ! new OrderedType
+
+        expectMsg(ReceiveMessageCount(1))
+        expectMsg(ReceiveMessageCount(2))
+
+      }
+
+    }
+  }
+
+}

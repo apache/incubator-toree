@@ -1,14 +1,12 @@
 package com.ibm.spark.kernel.protocol.v5.relay
 
-import akka.actor.{Actor, Stash}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, MessageType, _}
 import com.ibm.spark.utils.MessageLogSupport
-
 import scala.concurrent.duration._
-import scala.util.{Failure, Success}
+import scala.util.{Random, Failure, Success}
 
 /**
  * This class is meant to be a relay for send KernelMessages through kernel system.
@@ -16,8 +14,7 @@ import scala.util.{Failure, Success}
  */
 case class KernelMessageRelay(
   actorLoader: ActorLoader,
-  useSignatureManager: Boolean
-) extends Actor with MessageLogSupport with Stash {
+  useSignatureManager: Boolean) extends OrderedSupport with MessageLogSupport  {
   // NOTE: Required to provide the execution context for futures with akka
   import context._
 
@@ -65,7 +62,7 @@ case class KernelMessageRelay(
 
     // Assuming these messages are incoming messages
     case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if isReady =>
-      context.become(waiting, discardOld = false)
+      startProcessing()
       if (useSignatureManager) {
         logger.trace(s"Verifying signature for incoming message " +
           s"${kernelMessage.header.msg_id}")
@@ -77,20 +74,21 @@ case class KernelMessageRelay(
         signatureVerificationFuture.mapTo[Boolean].onComplete {
           case Success(true) =>
             relay(kernelMessage)
-            self ! DoneProcessing
+            finishedProcessing()
           case Success(false) =>
             // TODO: Figure out what the failure message structure should be!
             logger.error(s"Invalid signature received from message " +
               s"${kernelMessage.header.msg_id}!")
-            self ! DoneProcessing
+            finishedProcessing()
           case Failure(t)  =>
             logger.error("Failure when verifying signature!", t)
+            finishedProcessing()
         }
       } else {
         logger.debug(s"Relaying incoming message " +
           s"${kernelMessage.header.msg_id} without SignatureManager")
         relay(kernelMessage)
-        self ! DoneProcessing
+        finishedProcessing()
       }
 
     // Assuming all kernel messages without zmq strings are outgoing
@@ -113,13 +111,7 @@ case class KernelMessageRelay(
       }
   }
 
-  def waiting : Receive = {
-    case DoneProcessing =>
-      context.unbecome()
-      unstashAll()
-    case _ =>
-      stash()
+  override def orderedTypes(): Seq[Class[_]] = {
+    Seq(classOf[(Seq[_], KernelMessage)])
   }
 }
-
-case object DoneProcessing

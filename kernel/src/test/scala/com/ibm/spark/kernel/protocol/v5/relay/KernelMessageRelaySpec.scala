@@ -182,8 +182,8 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
           sendKernelMessages(n, kernelMessageRelay)
           // Message values should be accumulated in the proper order
           whenReady(chaoticPromise.future,
-            PatienceConfiguration.Timeout(Span(2, Seconds)),
-            PatienceConfiguration.Interval(Span(5, Millis))) {
+            PatienceConfiguration.Timeout(Span(3, Seconds)),
+            PatienceConfiguration.Interval(Span(100, Millis))) {
             case _: String =>
               actual should be(expected)
           }
