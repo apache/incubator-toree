@@ -2,7 +2,7 @@ package com.ibm.spark.interpreter.imports.printers
 
 import java.io._
 
-import com.ibm.spark.utils.DynamicSupport
+import com.ibm.spark.utils.DynamicReflectionSupport
 
 /**
  * Represents a wrapper for java.lang.System.
@@ -14,7 +14,7 @@ class WrapperSystem(
   private val inStream: InputStream,
   private val outStream: OutputStream,
   private val errStream: OutputStream
-) extends DynamicSupport(Class.forName("java.lang.System"), null){
+) extends DynamicReflectionSupport(Class.forName("java.lang.System"), null){
   require(inStream != null)
   require(outStream != null)
   require(errStream != null)

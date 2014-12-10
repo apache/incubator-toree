@@ -7,10 +7,10 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{GivenWhenThen, BeforeAndAfter, FunSpec, Matchers}
 
-class DynamicSupportSpec
+class DynamicReflectionSupportSpec
   extends FunSpec with Matchers with MockitoSugar {
 
-  describe("DynamicSupport") {
+  describe("DynamicReflectionSupport") {
     describe("with a class instance") {
       describe("#selectDynamic") {
         it("should support accessing a normal field") {
@@ -20,7 +20,7 @@ class DynamicSupportSpec
 
           val x: MyTestClass = new MyTestClass
 
-          val dynamicSupport = DynamicSupport(x.getClass, x)
+          val dynamicSupport = DynamicReflectionSupport(x.getClass, x)
 
           dynamicSupport.test should be (3)
         }
@@ -32,7 +32,7 @@ class DynamicSupportSpec
 
           val x: MyTestClass = new MyTestClass
 
-          val dynamicSupport = DynamicSupport(x.getClass, x)
+          val dynamicSupport = DynamicReflectionSupport(x.getClass, x)
 
           dynamicSupport.test should be (3)
         }
@@ -42,7 +42,7 @@ class DynamicSupportSpec
 
           val x: MyTestClass = new MyTestClass
 
-          val dynamicSupport = DynamicSupport(x.getClass, x)
+          val dynamicSupport = DynamicReflectionSupport(x.getClass, x)
 
           intercept[NoSuchFieldException] {
             dynamicSupport.test
@@ -58,7 +58,7 @@ class DynamicSupportSpec
 
           val x: MyTestClass = new MyTestClass
 
-          val dynamicSupport = DynamicSupport(x.getClass, x)
+          val dynamicSupport = DynamicReflectionSupport(x.getClass, x)
 
           dynamicSupport.test(5) should be (5)
         }
@@ -70,7 +70,7 @@ class DynamicSupportSpec
 
           val x: MyTestClass = new MyTestClass
 
-          val dynamicSupport = DynamicSupport(x.getClass, x)
+          val dynamicSupport = DynamicReflectionSupport(x.getClass, x)
 
           dynamicSupport.test(5, "test me") should be ((5, "test me"))
         }
@@ -80,7 +80,7 @@ class DynamicSupportSpec
 
           val x: MyTestClass = new MyTestClass
 
-          val dynamicSupport = DynamicSupport(x.getClass, x)
+          val dynamicSupport = DynamicReflectionSupport(x.getClass, x)
 
           intercept[NoSuchMethodException] {
             dynamicSupport.test(5, "test me")
@@ -97,7 +97,7 @@ class DynamicSupportSpec
           }
 
           val dynamicSupport =
-            DynamicSupport(MyTestObject.getClass, MyTestObject)
+            DynamicReflectionSupport(MyTestObject.getClass, MyTestObject)
 
           dynamicSupport.test should be (3)
         }
@@ -108,7 +108,7 @@ class DynamicSupportSpec
           }
 
           val dynamicSupport =
-            DynamicSupport(MyTestObject.getClass, MyTestObject)
+            DynamicReflectionSupport(MyTestObject.getClass, MyTestObject)
 
           dynamicSupport.test should be (3)
         }
@@ -117,7 +117,7 @@ class DynamicSupportSpec
           object MyTestObject
 
           val dynamicSupport =
-            DynamicSupport(MyTestObject.getClass, MyTestObject)
+            DynamicReflectionSupport(MyTestObject.getClass, MyTestObject)
 
           intercept[NoSuchFieldException] {
             dynamicSupport.test
@@ -132,7 +132,7 @@ class DynamicSupportSpec
           }
 
           val dynamicSupport =
-            DynamicSupport(MyTestObject.getClass, MyTestObject)
+            DynamicReflectionSupport(MyTestObject.getClass, MyTestObject)
 
           dynamicSupport.test(5) should be (5)
         }
@@ -143,7 +143,7 @@ class DynamicSupportSpec
           }
 
           val dynamicSupport =
-            DynamicSupport(MyTestObject.getClass, MyTestObject)
+            DynamicReflectionSupport(MyTestObject.getClass, MyTestObject)
 
           dynamicSupport.test(5, "test me") should be ((5, "test me"))
 
@@ -153,7 +153,7 @@ class DynamicSupportSpec
           object MyTestObject
 
           val dynamicSupport =
-            DynamicSupport(MyTestObject.getClass, MyTestObject)
+            DynamicReflectionSupport(MyTestObject.getClass, MyTestObject)
 
           intercept[NoSuchMethodException] {
             dynamicSupport.test(5, "test me")

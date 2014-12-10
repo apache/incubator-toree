@@ -2,7 +2,7 @@ package com.ibm.spark.interpreter.imports.printers
 
 import java.io._
 
-import com.ibm.spark.utils.DynamicSupport
+import com.ibm.spark.utils.DynamicReflectionSupport
 
 /**
  * Represents a wrapper for the scala.Console for Scala 2.10.4 implementation.
@@ -14,7 +14,7 @@ class WrapperConsole(
   val in: BufferedReader,
   val out: PrintStream,
   val err: PrintStream
-) extends DynamicSupport(Class.forName("scala.Console$"), scala.Console) {
+) extends DynamicReflectionSupport(Class.forName("scala.Console$"), scala.Console) {
   require(in != null)
   require(out != null)
   require(err != null)

@@ -11,7 +11,7 @@ import java.lang.reflect.Method
  * @param klass The class whose fields and methods to access
  * @param instance The specific instance whose fields and methods to access
  */
-case class DynamicSupport(
+case class DynamicReflectionSupport(
   private val klass: Class[_], private val instance: Any
 ) extends Dynamic {
 
