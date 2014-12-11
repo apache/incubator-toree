@@ -11,14 +11,16 @@ To install the kernel using the _pack_ plugin for _sbt_, execute the following:
 
 1. Move into the root of the Spark Kernel directory
 
-2. Execute `sbt pack` - generates a _pack_ directory inside `target/`
-    * The _pack_ directory contains `README`, `Makefile`, `bin/`, and `lib/`
+2. Execute `sbt pack` - generates a _pack/_ directory inside _kernel/target/_
 
-3. Move into `target/pack/`
+    * The _pack/_ directory contains _README_, _Makefile_, _bin/_, and _lib/_
+
+3. Move into _kernel/target/pack/_
 
 4. Execute `make install` - generates a local bin directory with a script
-   representing the Spark Kernel (currently labelled as `sparkkernel`)
-    * This path is usually something like `$HOME/local/bin/sparkkernel`
+   representing the Spark Kernel (currently labelled as _sparkkernel_)
+
+    * This path is usually something like _$HOME/local/bin/sparkkernel_
 
 Adding the configuration for a kernel to IPython
 ------------------------------------------------
@@ -29,7 +31,7 @@ provide a specific configuration file. This process has changed from IPython
 
 So, first, make sure that you have IPython 3.x installed on your machine.
 
-From there, you need to create a new subdirectory within `.ipython/kernels/`
+From there, you need to create a new subdirectory within _.ipython/kernels/_
 to contain your configuration. Standard name for the Spark Kernel would be
 _spark_.
 
@@ -38,7 +40,7 @@ subdirectory that has similar structure to the following:
 
 ```
 {
-    "display_name": "Spark 1.0.1 (Scala 2.10.4)",
+    "display_name": "Spark 1.1.0 (Scala 2.10.4)",
     "language": "scala",
     "argv": [
         "/Users/Senkwich/local/bin/sparkkernel",
@@ -49,7 +51,7 @@ subdirectory that has similar structure to the following:
 }
 ```
 
-Replace `/Users/Senkwich/` with the path to your home directory.
+Replace _/Users/Senkwich/_ with the path to your home directory.
 
 The _display name_ property is merely used in the dropdown menu of the
 notebook interface.
