@@ -84,7 +84,7 @@ structure using `sbt gen-idea`.
 Running tests
 -------------
 
-There are three levels of test in this project:
+There are four levels of test in this project:
 
 1. Unit - tests that isolate a specific class/object/etc for its functionality
 
@@ -119,9 +119,14 @@ The naming convention for tests is as follows:
     * Placed under _integration_
 
 3. System - test classes end with _SpecForSystem_
-   e.g. InputToAddJarForSystem
+   e.g. InputToAddJarSpecForSystem
     * Placed under _system_
 
 4. Scratch
     * Placed under _scratch_
+
+It is also possible to run tests for a specific project by using the following
+syntax in sbt:
+
+    sbt <PROJECT>/test
 
