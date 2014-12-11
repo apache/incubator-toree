@@ -24,8 +24,6 @@ class SparkKernelClientBootstrap(config: Config) extends LogLike {
    */
   def createClient: SparkKernelClient = {
     val client = new SparkKernelClient(actorLoader, actorSystem)
-    // We need to give the kernel client some time to connect, otherwise messages will never get sent
-    Thread.sleep(2000)
     client
   }
 

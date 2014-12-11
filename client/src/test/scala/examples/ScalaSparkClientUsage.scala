@@ -31,8 +31,6 @@ object ScalaSparkClientUsage extends App {
     println(s"ExecuteReply error name was: ${reply.ename.get}")
   }
 
-  Thread.sleep(100) // actor system takes a moment to initialize
-
   //  A callback used to determine if the kernel is no longer responding
   client.heartbeat(() => {
       println("hb bad")
