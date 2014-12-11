@@ -12,10 +12,12 @@ Spark context.
 Building from Source
 --------------------
 
-To build the kernel from source, you can use the provided sbt launcher script
-to compile the Scala code:
+To build the kernel from source, you need to have 
+[sbt](http://www.scala-sbt.org/download.html) installed on your machine. Once
+it is on your path, you can compile the Spark Kernel by running the following
+from the root of the Spark Kernel directory:
 
-    sbt/sbt compile
+    sbt compile
     
 Usage Instructions
 ------------------
@@ -57,7 +59,7 @@ You can run the following to package the kernel, which creates a directory in
 _kernel/target/pack_ contains a Makefile that can be used to install the kernel
 on the current machine:
 
-    sbt/sbt kernel/pack
+    sbt kernel/pack
     
 To install the kernel, run the following:
     
@@ -72,12 +74,12 @@ Development Instructions
 ------------------------
 
 You must have *SBT 0.13.5* installed. From the command line, you can attempt to
-run the project by executing `sbt/sbt kernel/run <args>` from the root 
-directory of the project. You can run all tests using `sbt/sbt test` (see
+run the project by executing `sbt kernel/run <args>` from the root 
+directory of the project. You can run all tests using `sbt test` (see
 instructions below for more testing details).
 
 For IntelliJ developers, you can attempt to create an IntelliJ project
-structure using `sbt/sbt gen-idea`.
+structure using `sbt gen-idea`.
 
 Running tests
 -------------
@@ -96,15 +98,15 @@ There are three levels of test in this project:
 
 To execute specific tests, run sbt with the following:
 
-1. Unit - `sbt/sbt unit:test`
+1. Unit - `sbt unit:test`
 
-2. Integration - `sbt/sbt integration:test`
+2. Integration - `sbt integration:test`
 
-3. System - `sbt/sbt system:test`
+3. System - `sbt system:test`
 
-4. Scratch - `sbt/sbt scratch:test`
+4. Scratch - `sbt scratch:test`
 
-To run all tests, use `sbt/sbt test`!
+To run all tests, use `sbt test`!
 
 The naming convention for tests is as follows:
 
@@ -122,3 +124,4 @@ The naming convention for tests is as follows:
 
 4. Scratch
     * Placed under _scratch_
+
