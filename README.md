@@ -1,5 +1,5 @@
-IBM Spark Kernel
-================
+Spark Kernel
+============
 
 A simple Scala application to connect to a Spark cluster and provide a generic,
 robust API to tap into various Spark APIs. Furthermore, this project intends to
@@ -20,7 +20,7 @@ to compile the Scala code:
 Usage Instructions
 ------------------
 
-The IBM Spark Kernel is provided as a series of jars, which can be executed on
+The Spark Kernel is provided as a series of jars, which can be executed on
 their own or as part of the launch process of an IPython notebook.
 
 The following command line options are available:
