@@ -31,6 +31,31 @@ it is on your path, you can compile the Spark Kernel by running the following
 from the root of the Spark Kernel directory:
 
     sbt compile
+
+The recommended configuration options for sbt are as follows:
+
+    -Xms1024M
+    -Xmx2048M
+    -Xss1M
+    -XX:+CMSClassUnloadingEnabled
+    -XX:MaxPermSize=1024M
+
+Library Dependencies
+--------------------
+
+The Spark Kernel uses _ZeroMQ_ as the medium for communication. In order for
+the Spark Kernel to be able to use this protocol, the ZeroMQ library needs to
+be installed on the system where the kernel will be run. The _Vagrant_ and
+_Docker_ environments set this up for you.
+
+For Mac OS X, you can use [Homebrew](http://brew.sh/) to install the library:
+
+    brew install zeromq22
+
+For aptitude-based systems (such as Ubuntu 14.04), you can install via 
+_apt-get_:
+
+    apt-get install libzmq-dev
     
 Usage Instructions
 ------------------
@@ -107,8 +132,8 @@ explicitly set the ports for the kernel.
 Development Instructions
 ------------------------
 
-You must have *SBT 0.13.5* installed. From the command line, you can attempt to
-run the project by executing `sbt kernel/run <args>` from the root 
+You must have *SBT 0.13.5+* installed. From the command line, you can attempt
+to run the project by executing `sbt kernel/run <args>` from the root 
 directory of the project. You can run all tests using `sbt test` (see
 instructions below for more testing details).
 
