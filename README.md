@@ -9,6 +9,19 @@ updates. Finally, the kernel is written with the future plan to allow multiple
 applications to connect to a single kernel to take advantage of the same
 Spark context.
 
+Vagrant Dev Environment
+-----------------------
+
+A Vagrantfile is provided to easily setup a development environment. You will 
+need to install [Virtualbox 4.3.12+](https://www.virtualbox.org/wiki/Downloads) 
+and [Vagrant 1.6.2+](https://www.vagrantup.com/downloads.html). Once Vagrant
+and Virtualbox are installed, the environment can be created by running 
+`vagrant up`. When the VM is running, you can get to the source code by 
+executing:
+
+    vagrant ssh
+    cd /src/spark-kernel
+
 Building from Source
 --------------------
 
@@ -69,6 +82,27 @@ To install the kernel, run the following:
 This will place the necessary jars in _~/local/kernel/current/lib_ and provides
 a convient script to start the kernel located at 
 _~/local/kernel/current/bin/sparkkernel_.
+
+Running A Docker Container
+---------------------------
+
+The Spark Kernel can be run in a docker container using Docker 1.0.0+. There is 
+a Dockerfile included in the root of the project. You will need to compile and 
+pack the Spark Kernel before the docker image can be built.
+
+    sbt compile
+    sbt pack
+    docker build -t spark-kernel .
+
+After the image has been successfully created, you can run your container by 
+executing the command:
+
+    docker run -d -e IP=0.0.0.0 spark-kernel 
+
+You must always include `-e IP=0.0.0.0` to allow the kernel to bind to the 
+docker container's IP. The environment variables listed in the getting 
+started section can be used in the docker run command. This allows you to 
+explicitly set the ports for the kernel.
 
 Development Instructions
 ------------------------
