@@ -15,7 +15,7 @@ directory. You can now include the Spark Kernel Client jar in your SBT
 dependencies:
 
 ```
-libraryDependencies += "ignitio" %% "client" % "0.1.1-SNAPSHOT"
+libraryDependencies += "com.ibm.spark" %% "client" % "0.1.1-SNAPSHOT"
 ```
 
 ## Usage Instructions

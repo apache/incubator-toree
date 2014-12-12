@@ -97,8 +97,8 @@ modules of the Spark Kernel to your project.
 In _sbt_, you can add the following lines:
 
     libraryDependencies ++= Seq(
-        "ignitio" %% "kernel-api" % "0.1.1-SNAPSHOT",
-        "ignitio" %% "protocol" % "0.1.1-SNAPSHOT"
+        "com.ibm.spark" %% "kernel-api" % "0.1.1-SNAPSHOT",
+        "com.ibm.spark" %% "protocol" % "0.1.1-SNAPSHOT"
     )
 
 As the modules are not hosted on any repository, you will also need to build

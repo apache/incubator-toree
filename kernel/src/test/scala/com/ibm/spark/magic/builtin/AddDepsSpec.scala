@@ -105,7 +105,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           override val outputStream: OutputStream = mock[OutputStream]
         }
 
-        val expected = "com.ibm" :: "ignitio" :: "1.0" :: "--transitive" :: Nil
+        val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: "--transitive" :: Nil
         addDepsMagic.executeLine(expected.mkString(" "))
 
         verify(mockDependencyDownloader).retrieve(
@@ -131,7 +131,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           override val outputStream: OutputStream = mock[OutputStream]
         }
 
-        val expected = "com.ibm" :: "ignitio" :: "1.0" :: Nil
+        val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: Nil
         addDepsMagic.executeLine(expected.mkString(" "))
 
         verify(mockDependencyDownloader).retrieve(
@@ -158,7 +158,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           override val outputStream: OutputStream = mock[OutputStream]
         }
 
-        val expected = "com.ibm" :: "ignitio" :: "1.0" :: Nil
+        val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: Nil
         addDepsMagic.executeLine(expected.mkString(" "))
 
         verify(mockInterpreter).addJars(any[URL])
@@ -187,7 +187,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           override val outputStream: OutputStream = mock[OutputStream]
         }
 
-        val expected = "com.ibm" :: "ignitio" :: "1.0" :: Nil
+        val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: Nil
         addDepsMagic.executeLine(expected.mkString(" "))
 
         verify(mockSparkContext, times(3)).addJar(anyString())
@@ -238,7 +238,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
 
         val expected = MagicOutput()
         val actual = addDepsMagic.executeLine((
-          "com.ibm" :: "ignitio" :: "1.0" :: Nil).mkString(" "))
+          "com.ibm.spark" :: "kernel" :: "1.0" :: Nil).mkString(" "))
         actual should be (expected)
       }
     }

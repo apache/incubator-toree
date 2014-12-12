@@ -17,7 +17,7 @@
 #  Image Properties
 KERNEL_IMAGE?=spark-kernel
 KERNEL_BUILD_ID?=latest
-DOCKER_REGISTRY?=ignitio:5000
+DOCKER_REGISTRY?=com.ibm.spark:5000
 FULL_IMAGE?=$(DOCKER_REGISTRY)/$(KERNEL_IMAGE):$(KERNEL_BUILD_ID)
 CACHE?="--no-cache"
 
