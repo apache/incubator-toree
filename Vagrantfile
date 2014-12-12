@@ -1,3 +1,19 @@
+#
+# Copyright 2014 IBM Corp.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -10,62 +26,69 @@ function flag_is_set() {
     return 1
   fi
 }
+
 function set_flag() {
   touch /var/lib/vagrant_dev_install_flags/$1
 }
+
 function unset_flag() {
   rm -f /var/lib/vagrant_dev_install_flags/$1
 }
+
 function unset_all_flags() {
   rm -f /var/lib/vagrant_dev_install_flags/*
 }
 
-sudo apt-get update
+# Set vagrant user pw
+printf "vagrant:vagrant\n" | chpasswd
+
+# Update before we go
+apt-get update
 
 # Install Java and other dependencies
 if ! flag_is_set CORE_DEPS; then
-  sudo apt-get -y install openjdk-7-jdk maven wget build-essential git uuid-dev && \
+  apt-get -y install openjdk-7-jdk maven wget build-essential git uuid-dev && \
   set_flag CORE_DEPS
 fi
 
-
 # Install IPython and ZeroMQ
+COMMIT="d3858463c9cd284508ac2deff9a2cde0281d20d3"
+SUBMODULE="1968f4f78d7e8cd227d0b3f4cc3183591969b52a"
+
+# Alternatively
+# COMMIT="4ad9a496424fea42f5f25891701fd94d9b925b33"
+
 if ! flag_is_set IPYTHON; then
-  sudo apt-get -f -y install && \
-  sudo apt-get -y install python-pip python-dev libzmq-dev && \
-  sudo pip install pyzmq==2.1.11 && \
-  sudo pip install jinja2 && \
-  sudo pip install tornado && \
-  sudo pip install jsonschema && \
-  sudo pip install runipy && \
-  sudo apt-get -y install git && \
-  cd /ETSparkProjects && \
-  git clone --recursive https://github.com/ipython/ipython.git && \
-  cd ipython && \
-  sudo python setup.py install && \
+  apt-get -f -y install && \
+  apt-get -y install python-pip python-dev libzmq-dev build-essential && \
+  cd /src && \
+  pip install pyzmq tornado runipy jsonschema jinja2 && \
+  pip install -e git+https://github.com/ipython/ipython.git@${COMMIT}#egg=ipython && \
+  chown -R vagrant.vagrant ./src && \
+  (cd src/ipython/IPython/html/static/components && git checkout ${SUBMODULE}) && \
+  (cd src/ipython && pip install -e ".[notebook]" --user) && \
+  ipython profile create && \
   set_flag IPYTHON
 fi
 
 if [ -z `which docker` ]; then
-  curl -sSL https://get.docker.io/ubuntu/ | sudo sh
-  sudo gpasswd -a vagrant docker
-  sudo service docker stop
-  sudo chown vagrant /var/run/docker.sock
-  sudo service docker start
+  curl -sSL https://get.docker.io/ubuntu/ | sh
+  gpasswd -a vagrant docker
+  service docker stop
+  chown vagrant /var/run/docker.sock
+  service docker start
 fi
-
-echo "vagrant:vagrant"|chpasswd
 
 # Install scala and sbt (if not already installed)
 cd /tmp
 
 # If Scala is not installed, install it
 if ! flag_is_set SCALA; then
-  sudo apt-get install -f -y && \
-  sudo apt-get install -y libjansi-java && \
-  sudo apt-get install -f -y && \
+  apt-get install -f -y && \
+  apt-get install -y libjansi-java && \
+  apt-get install -f -y && \
   wget --progress=bar:force http://www.scala-lang.org/files/archive/scala-2.10.4.deb && \
-  sudo dpkg -i scala-2.10.4.deb && \
+  dpkg -i scala-2.10.4.deb && \
   rm scala-2.10.4.deb && \
   set_flag SCALA
 fi
@@ -73,7 +96,7 @@ fi
 # If sbt is not installed, install it
 if ! flag_is_set SBT; then
   wget --progress=bar:force http://dl.bintray.com/sbt/debian/sbt-0.13.5.deb && \
-  sudo dpkg -i sbt-0.13.5.deb && \
+  dpkg -i sbt-0.13.5.deb && \
   rm sbt-0.13.5.deb && \
   set_flag SBT
 fi
@@ -83,7 +106,7 @@ echo "Adding kernel.json"
 mkdir -p /home/vagrant/.ipython/kernels/spark
 cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
 {
-    "display_name": "Spark 1.0.2 (Scala 2.10.4)",
+    "display_name": "Spark 1.1.0 (Scala 2.10.4)",
     "language": "scala",
     "argv": [
         "/home/vagrant/local/bin/sparkkernel",
@@ -95,9 +118,8 @@ cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
 EOF
 
 # Add Scala syntax highlighting support to custom.js of default profile
-echo "Appending to profile_default custom.js"
+printf "Appending to profile_default custom.js\n"
 (su vagrant
-ipython profile create
 mkdir -p /home/vagrant/.ipython/profile_default/static/custom/
 cat << EOF >> /home/vagrant/.ipython/profile_default/static/custom/custom.js
 CodeMirror.requireMode('clike',function(){
@@ -123,9 +145,6 @@ CodeMirror.requireMode('clike',function(){
 EOF
 )
 
-# Fix permissions
-chown -R vagrant.vagrant /home/vagrant/.ipython
-
 SCRIPT
 
 Vagrant.configure("2") do |config|
@@ -137,31 +156,18 @@ Vagrant.configure("2") do |config|
   config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
   config.vm.hostname = "host-box"
 
-  # Lets ubuntu reach the intranet when using vpn
-  config.vm.provider "virtualbox" do |vb|
-    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-  end
-
   # Mount the directory containing this file as /vagrant in the VM.
   # Since this file is copied around we need to figure out where the docker files are
-
-  config.vm.synced_folder "./" , "/ETSparkProjects/SparkKernel"
+  config.vm.synced_folder "./" , "/src/spark-kernel"
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP. Make sure this IP doesn't exist on your local network.
   config.vm.network :private_network, ip: "192.168.44.44"
+  config.vm.network :forwarded_port, guest: 22, host: 2223
 
-  # Forward all Docker ports to localhost if set.
-  if ENV['EXPOSE_DOCKER']
-    (49000..49900).each do |port|
-      config.vm.network :forwarded_port, :host => port, :guest => port
-    end
-  end
-
+  # Configure memory and cpus
   config.vm.provider :virtualbox do |vb|
-    vb.cpus = 2
-
-    # Expand the memory.
     vb.customize ["modifyvm", :id, "--memory", "2048"]
+    vb.customize ["modifyvm", :id, "--cpus", "2"]
   end
 end
