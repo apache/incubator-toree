@@ -145,6 +145,8 @@ CodeMirror.requireMode('clike',function(){
 EOF
 )
 
+chown -R vagrant.vagrant /home/vagrant/.ipython
+
 SCRIPT
 
 Vagrant.configure("2") do |config|
