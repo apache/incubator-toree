@@ -14,13 +14,21 @@ Vagrant Dev Environment
 
 A Vagrantfile is provided to easily setup a development environment. You will 
 need to install [Virtualbox 4.3.12+](https://www.virtualbox.org/wiki/Downloads) 
-and [Vagrant 1.6.2+](https://www.vagrantup.com/downloads.html). Once Vagrant
-and Virtualbox are installed, the environment can be created by running 
-`vagrant up`. When the VM is running, you can get to the source code by 
-executing:
+and [Vagrant 1.6.2+](https://www.vagrantup.com/downloads.html). 
+
+First, from the root of the project, bring up the vagrant box:
+
+    vagrant up
+    
+Second, ssh into the vagrant box:
 
     vagrant ssh
-    cd /src/spark-kernel
+    
+Third, to interact with the Spark Kernel, you will need to start the IPython notebook server:
+
+    ipython notebook --ip=0.0.0.0 --no-browser
+    
+You can now find the notebook frontend by going to http://192.168.44.44:8888. The source code for the project can be found in the `/src/spark-kernel` directory.
 
 Building from Source
 --------------------
