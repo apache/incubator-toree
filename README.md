@@ -9,6 +9,18 @@ updates. Finally, the kernel is written with the future plan to allow multiple
 applications to connect to a single kernel to take advantage of the same
 Spark context.
 
+Mailing list
+------------
+
+The mailing list for developers and users of the Spark Kernel can be found
+here:
+
+    spark-kernel@googlegroups.com 
+
+The forum equivalent of the mailing list can be found here:
+
+    https://groups.google.com/forum/#!forum/spark-kernel
+
 Vagrant Dev Environment
 -----------------------
 
