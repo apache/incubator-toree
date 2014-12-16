@@ -69,7 +69,7 @@ class ScalaInterpreter(
   private val lastResultOut = new ByteArrayOutputStream()
   private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
   private var taskManager: TaskManager = _
-  protected var sparkIMain: SparkIMain = _
+  var sparkIMain: SparkIMain = _
   protected var jLineCompleter: SparkJLineCompletion = _
 
   /**
@@ -252,8 +252,8 @@ class ScalaInterpreter(
     sparkIMain =
       newSparkIMain(settings, new JPrintWriter(multiOutputStream, true))
 
-    logger.debug("Initializing interpreter")
-    sparkIMain.initializeSynchronous()
+    //logger.debug("Initializing interpreter")
+    //sparkIMain.initializeSynchronous()
 
     logger.debug("Initializing completer")
     jLineCompleter = new SparkJLineCompletion(sparkIMain)
