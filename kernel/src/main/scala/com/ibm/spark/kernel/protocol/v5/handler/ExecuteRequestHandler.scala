@@ -37,110 +37,110 @@ import scala.util.{Failure, Success}
 class ExecuteRequestHandler(actorLoader: ActorLoader)
   extends BaseHandler(actorLoader) with LogLike
 {
-  def process(kernelMessage: KernelMessage): Future[_] = {
-      val executionCount = ExecutionCounter.incr(kernelMessage.header.session)
-      val relayActor = actorLoader.load(SystemActorType.KernelMessageRelay)
-      //  This is a collection of common pieces that will be sent back in all reply kernelMessage, use with .copy
-      val kernelMessageReplySkeleton =  new KernelMessage( kernelMessage.ids, "", null,  kernelMessage.header, Metadata(), null)
 
-    // TODO refactor using a function like the client's Utilities.parseAndHandle
-      Json.parse(kernelMessage.contentString).validate[ExecuteRequest].fold(
-        (invalid: Seq[(JsPath, Seq[ValidationError])]) => {
-          val validationErrors: List[String] = List()
-          for (path <- invalid) {
-            validationErrors :+ s"JSPath ${path._1} has error: ${path._2(0).toString}"
+  override def process(km: KernelMessage): Future[_] = {
+    val executionCount = ExecutionCounter.incr(km.header.session)
+    val relayActor = actorLoader.load(SystemActorType.KernelMessageRelay)
+    val replySkeleton = KernelMessage(km.ids, "", null, km.header, Metadata(), null)
+
+    def handleExecuteRequest(executeRequest: ExecuteRequest):
+                             Future[(ExecuteReply, ExecuteResult)] = {
+      //  Send an ExecuteInput to the client saying we are executing something
+      val executeInputMessage = replySkeleton.copy(
+        header = HeaderBuilder.create(MessageType.ExecuteInput.toString),
+        contentString = Json.toJson(
+          ExecuteInput(executeRequest.code, executionCount)).toString)
+      relayMsg(executeInputMessage, relayActor)
+
+      // Construct our new set of streams
+      // TODO: Add support for error streams
+      val outputStream = new KernelMessageStream(actorLoader, replySkeleton)
+      val executeFuture = ask(
+        actorLoader.load(SystemActorType.ExecuteRequestRelay),
+        (executeRequest, outputStream)
+      ).mapTo[(ExecuteReply, ExecuteResult)]
+
+      executeFuture.onComplete {
+        case Success(replyResultTuple) =>
+          //  Send an ExecuteReply to the client
+          val executeReplyMsg = replySkeleton.copy(
+            header = HeaderBuilder.create(MessageType.ExecuteReply.toString),
+            contentString = Json.toJson(
+              replyResultTuple._1.copy(execution_count = executionCount)).toString)
+          relayMsg(executeReplyMsg, relayActor)
+
+          //  Send an ExecuteResult with the result of the code execution
+          if (replyResultTuple._2.hasContent) {
+            val executeResultMsg = replySkeleton.copy(
+              ids = Seq(MessageType.ExecuteResult.toString),
+              header = HeaderBuilder.create(MessageType.ExecuteResult.toString),
+              contentString = Json.toJson(
+                replyResultTuple._2.copy(execution_count = executionCount)).toString)
+            relayMsg(executeResultMsg, relayActor)
           }
-          logger.error("Validation errors when parsing ExecuteRequest:")
-          logger.error(s"$validationErrors")
+
+        case Failure(error: Throwable) =>
+          //  Send an ExecuteReplyError to the client on the Shell socket
           val replyError: ExecuteReply = ExecuteReplyError(
-            executionCount, Option("JsonParseException"), Option("Error parsing fields"),
-            Option(validationErrors)
-          )
-          future {
-            relayErrorMessages(relayActor, replyError, kernelMessage.header, kernelMessageReplySkeleton)
-          }
-        },
-        (executeRequest: ExecuteRequest) => {
-          //  Send a kernelMessage to the clients saying we are executing something
-          val executeInputMessage = kernelMessageReplySkeleton.copy(
-            //header = kernelMessage.header.copy(msg_type = MessageType.ExecuteInput.toString),
-            header = HeaderBuilder.create(MessageType.ExecuteInput.toString),
-            contentString = Json.toJson(new ExecuteInput(executeRequest.code, executionCount)).toString()
-          )
-          relayActor ! executeInputMessage
+            executionCount,
+            Option(error.getClass.getCanonicalName),
+            Option(error.getMessage),
+            Option(error.getStackTrace.map(_.toString).toList))
+          relayErrorMessages(relayActor, replyError, km.header, replySkeleton)
+      }
+      executeFuture
+    }
 
-          // Construct our new set of streams
-          val newOutputStream =
-            new KernelMessageStream(actorLoader, kernelMessageReplySkeleton)
-
-          // TODO: Add support for error streams
-          val executeFuture = ask(
-            actorLoader.load(SystemActorType.ExecuteRequestRelay),
-            (executeRequest, newOutputStream)
-          ).mapTo[(ExecuteReply, ExecuteResult)]
-
-          executeFuture.onComplete {
-            case Success(tuple) =>
-              logger.debug("Sending Kernel kernelMessages to router")
-
-              //  Send the reply kernelMessage to the client
-              val kernelReplyMessage = kernelMessageReplySkeleton.copy(
-                //header = kernelMessage.header.copy(msg_type = MessageType.ExecuteReply.toString),
-                header = HeaderBuilder.create(MessageType.ExecuteReply.toString),
-                contentString = Json.toJson(tuple._1.copy(execution_count = executionCount)).toString()
-              )
-              relayActor ! kernelReplyMessage
-
-              //  Send the result of the code execution
-              if (tuple._2.hasContent) {
-                val kernelResultMessage = kernelMessageReplySkeleton.copy(
-                  ids = Seq(MessageType.ExecuteResult.toString),
-                  //header = kernelMessage.header.copy(msg_type = MessageType.ExecuteResult.toString),
-                  header = HeaderBuilder.create(MessageType.ExecuteResult.toString),
-                  contentString = Json.toJson(tuple._2.copy(execution_count = executionCount)).toString()
-                )
-                relayActor ! kernelResultMessage
-              }
-
-            case Failure(error: Throwable) =>
-              //  Send the error to the client on the Shell socket
-              val replyError: ExecuteReply = ExecuteReplyError(
-                executionCount, Option(error.getClass.getCanonicalName), Option(error.getMessage),
-                Option(error.getStackTrace.map(_.toString).toList)
-              )
-              relayErrorMessages(relayActor, replyError, kernelMessage.header, kernelMessageReplySkeleton)
-          }
-
-          executeFuture
-        }
+    def parseErrorHandler(invalid: Seq[(JsPath, Seq[ValidationError])]) = {
+      val errs = invalid.map (e => s"JSPath ${e._1} has error ${e._2}").toList
+      logger.error(s"Validation errors when parsing ExecuteRequest: ${errs}")
+      val replyError: ExecuteReply = ExecuteReplyError(
+        executionCount,
+        Option("JsonParseException"),
+        Option("Error parsing fields"),
+        Option(errs)
       )
+      future { relayErrorMessages(relayActor, replyError, km.header, replySkeleton) }
+    }
+
+    Utilities.parseAndHandle(
+      km.contentString,
+      ExecuteRequest.executeRequestReads,
+      handler    = handleExecuteRequest,
+      errHandler = parseErrorHandler)
   }
 
-
   /**
-   * Create a common method to relay errors based on a ExecuteReplyError
+   * Sends an ExecuteReplyError and and Error message to the given actor.
    * @param relayActor The relay to send kernelMessages through
    * @param replyError The reply error to build the error kernelMessages from
-   * @param headerSkeleton A skeleton for the reply headers (Everything should be filled in except msg_type)
-   * @param kernelMessageReplySkeleton A skeleton to build kernelMessages from (Everything should be filled in except header, contentString)
+   * @param headerSkeleton A skeleton for the reply headers. Everything should
+   *                       be filled in except msg_type.
+   * @param replySkeleton A skeleton to build kernelMessages from. Everything
+   *                      should be filled in except header, contentString.
    */
-  def relayErrorMessages(relayActor: ActorSelection, replyError: ExecuteReply, headerSkeleton: Header,
-                         kernelMessageReplySkeleton: KernelMessage) {
-    relayActor ! kernelMessageReplySkeleton.copy(
-      //header = headerSkeleton.copy(msg_type = MessageType.ExecuteReply.toString),
+  def relayErrorMessages(relayActor: ActorSelection,
+                         replyError: ExecuteReply,
+                         headerSkeleton: Header,
+                         replySkeleton: KernelMessage) {
+    val executeReplyMsg = replySkeleton.copy(
       header = HeaderBuilder.create(MessageType.ExecuteReply.toString),
-      contentString = replyError
-    )
+      contentString = replyError)
 
-    //  Send the error to the client on the IOPub socket
     val errorContent: ErrorContent =  ErrorContent(
-      replyError.ename.get, replyError.evalue.get, replyError.traceback.get
-    )
+      replyError.ename.get, replyError.evalue.get, replyError.traceback.get)
 
-    relayActor ! kernelMessageReplySkeleton.copy(
-      //header = headerSkeleton.copy(msg_type = MessageType.Error.toString),
+    val errorMsg = replySkeleton.copy(
       header = HeaderBuilder.create(MessageType.Error.toString),
-      contentString = errorContent
-    )
+      contentString = errorContent)
+
+    relayMsg(executeReplyMsg, relayActor)
+    //  Send the Error to the client on the IOPub socket
+    relayMsg(errorMsg, relayActor)
+  }
+
+  private def relayMsg(km: KernelMessage, relayActor: ActorSelection) = {
+    logKernelMessageAction("Sending to KernelMessageRelay.", km)
+    relayActor ! km
   }
 }
