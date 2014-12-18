@@ -27,7 +27,7 @@ import scala.collection.mutable.ListBuffer
 
 class KernelMessageStream(
   actorLoader: ActorLoader,
-  skeletonKernelMessage: KernelMessage
+  kmBuilder: KMBuilder
 ) extends OutputStream {
   private val EncodingType = Charset.forName("UTF-8")
   private var internalBytes: ListBuffer[Byte] = ListBuffer()
@@ -42,16 +42,11 @@ class KernelMessageStream(
       "stdout", contents
     )
 
-    // Build our kernel message with the current byte array contents
-    val kernelMessage = skeletonKernelMessage.copy(
-      ids = Seq(MessageType.Stream.toString),
-      //header = skeletonKernelMessage.parentHeader.copy(
-      //  msg_type = MessageType.Stream.toString,
-      //  msg_id = UUID.randomUUID().toString
-      //),
-      header = HeaderBuilder.create(MessageType.Stream.toString),
-      contentString = Json.toJson(streamContent).toString()
-    )
+    val kernelMessage = kmBuilder
+      .withIds(Seq(MessageType.Stream.toString))
+      .withHeader(MessageType.Stream)
+      .withContentString(streamContent, StreamContent.inspectRequestWrites)
+      .build
 
     actorLoader.load(SystemActorType.KernelMessageRelay) ! kernelMessage
 

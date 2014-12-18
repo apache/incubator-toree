@@ -45,6 +45,7 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader)
         kernelInfo.banner
       )
 
+      // TODO could we use HeaderBuilder here?
       val replyHeader = Header(
         java.util.UUID.randomUUID.toString,
         "",
@@ -53,14 +54,13 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader)
         kernelInfo.protocolVersion
       )
 
-      val kernelResponseMessage = new KernelMessage(
-        kernelMessage.ids,
-        "",
-        replyHeader,
-        kernelMessage.header,
-        Metadata(),
-        Json.toJson(kernelInfoReply).toString
-      )
+      val kernelResponseMessage = KMBuilder()
+        .withIds(kernelMessage.ids)
+        .withSignature("")
+        .withHeader(replyHeader)
+        .withParent(kernelMessage)
+        .withContentString(kernelInfoReply, KernelInfoReply.kernelInfoReplyWrites)
+        .build
 
       actorLoader.load(SystemActorType.KernelMessageRelay) ! kernelResponseMessage
     }

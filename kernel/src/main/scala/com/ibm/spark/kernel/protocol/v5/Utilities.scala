@@ -65,8 +65,12 @@ object Utilities extends LogLike {
     )
     val metadata = Json.parse(message.frames(delimiterIndex + 4)).as[Metadata]
 
-    new KernelMessage(ids,message.frame(delimiterIndex + 1),
-      header, parentHeader, metadata, message.frame(delimiterIndex + 5))
+    KMBuilder().withIds(ids.toList)
+               .withSignature(message.frame(delimiterIndex + 1))
+               .withHeader(header)
+               .withParentHeader(parentHeader)
+               .withMetadata(metadata)
+               .withContentString(message.frame(delimiterIndex + 5)).build
   }
 
   implicit def KernelMessageToZMQMessage(kernelMessage : KernelMessage) : ZMQMessage = {

@@ -57,11 +57,11 @@ class KernelMessageStreamThroughPrintStreamSpecForIntegration
       it("should flush the stream on each call") {
         Given("a kernel message stream with a skeleton kernel message")
         val executionCount = 3
-        val skeletonKernelMessage = new KernelMessage(
-          Nil, "", null, Header("", "", "", "", "5.0"), Metadata(), ""
-        )
+        val skeletonBuilder = KMBuilder()
+          .withIds(Nil).withSignature("").withContentString("")
+          .withParentHeader(Header("", "", "", "", "5.0"))
         val kernelMessageStream = spy(new KernelMessageStream(
-          actorLoader, skeletonKernelMessage
+          actorLoader, skeletonBuilder
         ))
         val printStream = new PrintStream(kernelMessageStream)
 
@@ -85,11 +85,11 @@ class KernelMessageStreamThroughPrintStreamSpecForIntegration
       it("should flush the stream on receiving a newline") {
         Given("a kernel message stream with a skeleton kernel message")
         val executionCount = 3
-        val skeletonKernelMessage = new KernelMessage(
-          Nil, "", null, Header("", "", "", "", "5.0"), Metadata(), ""
-        )
+        val skeletonBuilder = KMBuilder()
+          .withIds(Nil).withSignature("").withContentString("")
+          .withParentHeader(Header("", "", "", "", "5.0"))
         val kernelMessageStream = spy(new KernelMessageStream(
-          actorLoader, skeletonKernelMessage
+          actorLoader, skeletonBuilder
         ))
         val printStream = new PrintStream(kernelMessageStream)
 
@@ -107,11 +107,11 @@ class KernelMessageStreamThroughPrintStreamSpecForIntegration
       it("should not flush the stream when no newline is received") {
         Given("a kernel message stream with a skeleton kernel message")
         val executionCount = 3
-        val skeletonKernelMessage = new KernelMessage(
-          Nil, "", null, Header("", "", "", "", "5.0"), Metadata(), ""
-        )
+        val skeletonBuilder = KMBuilder()
+          .withIds(Nil).withSignature("").withContentString("")
+          .withParentHeader(Header("", "", "", "", "5.0"))
         val kernelMessageStream = spy(new KernelMessageStream(
-          actorLoader, skeletonKernelMessage
+          actorLoader, skeletonBuilder
         ))
         val printStream = new PrintStream(kernelMessageStream)
 

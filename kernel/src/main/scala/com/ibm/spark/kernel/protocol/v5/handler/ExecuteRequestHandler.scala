@@ -24,7 +24,7 @@ import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
 import com.ibm.spark.kernel.protocol.v5.Utilities._
 import com.ibm.spark.utils._
 import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsPath, Json}
+import play.api.libs.json.JsPath
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
@@ -39,43 +39,47 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
 {
 
   override def process(km: KernelMessage): Future[_] = {
+
+    val skeletonBuilder = KMBuilder().withParent(km)
     val executionCount = ExecutionCounter.incr(km.header.session)
     val relayActor = actorLoader.load(SystemActorType.KernelMessageRelay)
-    val replySkeleton = KernelMessage(km.ids, "", null, km.header, Metadata(), null)
 
     def handleExecuteRequest(executeRequest: ExecuteRequest):
                              Future[(ExecuteReply, ExecuteResult)] = {
       //  Send an ExecuteInput to the client saying we are executing something
-      val executeInputMessage = replySkeleton.copy(
-        header = HeaderBuilder.create(MessageType.ExecuteInput.toString),
-        contentString = Json.toJson(
-          ExecuteInput(executeRequest.code, executionCount)).toString)
+      val executeInputMessage = skeletonBuilder
+        .withHeader(MessageType.ExecuteInput)
+        .withContentString(ExecuteInput(executeRequest.code, executionCount),
+                           ExecuteInput.executeInputWrites).build
+
       relayMsg(executeInputMessage, relayActor)
 
       // Construct our new set of streams
       // TODO: Add support for error streams
-      val outputStream = new KernelMessageStream(actorLoader, replySkeleton)
+      val outputStream = new KernelMessageStream(actorLoader, skeletonBuilder)
       val executeFuture = ask(
         actorLoader.load(SystemActorType.ExecuteRequestRelay),
         (executeRequest, outputStream)
       ).mapTo[(ExecuteReply, ExecuteResult)]
 
       executeFuture.onComplete {
-        case Success(replyResultTuple) =>
+        case Success(tuple) =>
+          val (executeReply, executeResult) = updateCount(tuple, executionCount)
+
           //  Send an ExecuteReply to the client
-          val executeReplyMsg = replySkeleton.copy(
-            header = HeaderBuilder.create(MessageType.ExecuteReply.toString),
-            contentString = Json.toJson(
-              replyResultTuple._1.copy(execution_count = executionCount)).toString)
+          val executeReplyMsg = skeletonBuilder
+            .withHeader(MessageType.ExecuteReply)
+            .withContentString(executeReply, ExecuteReply.executeReplyOkWrites)
+            .build
           relayMsg(executeReplyMsg, relayActor)
 
           //  Send an ExecuteResult with the result of the code execution
-          if (replyResultTuple._2.hasContent) {
-            val executeResultMsg = replySkeleton.copy(
-              ids = Seq(MessageType.ExecuteResult.toString),
-              header = HeaderBuilder.create(MessageType.ExecuteResult.toString),
-              contentString = Json.toJson(
-                replyResultTuple._2.copy(execution_count = executionCount)).toString)
+          if (executeResult.hasContent) {
+            val executeResultMsg = skeletonBuilder
+              .withIds(Seq(MessageType.ExecuteResult.toString))
+              .withHeader(MessageType.ExecuteResult)
+              .withContentString(executeResult, ExecuteResult.executeResultWrites)
+              .build
             relayMsg(executeResultMsg, relayActor)
           }
 
@@ -86,7 +90,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
             Option(error.getClass.getCanonicalName),
             Option(error.getMessage),
             Option(error.getStackTrace.map(_.toString).toList))
-          relayErrorMessages(relayActor, replyError, km.header, replySkeleton)
+          relayErrorMessages(relayActor, replyError, skeletonBuilder)
       }
       executeFuture
     }
@@ -100,7 +104,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
         Option("Error parsing fields"),
         Option(errs)
       )
-      future { relayErrorMessages(relayActor, replyError, km.header, replySkeleton) }
+      future { relayErrorMessages(relayActor, replyError, skeletonBuilder) }
     }
 
     Utilities.parseAndHandle(
@@ -110,29 +114,28 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
       errHandler = parseErrorHandler)
   }
 
+  private def updateCount(tuple: (ExecuteReply, ExecuteResult), n: Int) =
+    (tuple._1.copy(execution_count = n), tuple._2.copy(execution_count = n))
+
   /**
    * Sends an ExecuteReplyError and and Error message to the given actor.
    * @param relayActor The relay to send kernelMessages through
-   * @param replyError The reply error to build the error kernelMessages from
-   * @param headerSkeleton A skeleton for the reply headers. Everything should
-   *                       be filled in except msg_type.
-   * @param replySkeleton A skeleton to build kernelMessages from. Everything
-   *                      should be filled in except header, contentString.
+   * @param replyError The reply error to build the error kernelMessages from.
+   * @param skeletonBuilder A builder with common base KernelMessage parameters.
    */
   def relayErrorMessages(relayActor: ActorSelection,
                          replyError: ExecuteReply,
-                         headerSkeleton: Header,
-                         replySkeleton: KernelMessage) {
-    val executeReplyMsg = replySkeleton.copy(
-      header = HeaderBuilder.create(MessageType.ExecuteReply.toString),
-      contentString = replyError)
+                         skeletonBuilder: KMBuilder) {
+    val executeReplyMsg = skeletonBuilder
+      .withHeader(MessageType.ExecuteReply)
+      .withContentString(replyError).build
 
     val errorContent: ErrorContent =  ErrorContent(
       replyError.ename.get, replyError.evalue.get, replyError.traceback.get)
 
-    val errorMsg = replySkeleton.copy(
-      header = HeaderBuilder.create(MessageType.Error.toString),
-      contentString = errorContent)
+    val errorMsg = skeletonBuilder
+      .withHeader(MessageType.Error)
+      .withContentString(errorContent).build
 
     relayMsg(executeReplyMsg, relayActor)
     //  Send the Error to the client on the IOPub socket

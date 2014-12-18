@@ -26,14 +26,15 @@ import play.api.libs.json.Json
 class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {
   private def sendStatusMessage(kernelStatus: KernelStatusType, parentHeader: Header) {
     //  Create the status message and send it to the relay
-    actorLoader.load(SystemActorType.KernelMessageRelay) ! KernelMessage(
-      Seq(MessageType.Status.toString),
-      "",
-      HeaderBuilder.create(MessageType.Status.toString),
-      parentHeader,
-      Metadata(),
-      Json.toJson(KernelStatus(kernelStatus.toString)).toString
-    )
+    val km : KernelMessage = KMBuilder()
+      .withIds(Seq(MessageType.Status.toString))
+      .withSignature("")
+      .withHeader(MessageType.Status)
+      .withParentHeader(parentHeader)
+      .withContentString(KernelStatus(kernelStatus.toString),
+                         KernelStatus.executeRequestWrites).build
+
+    actorLoader.load(SystemActorType.KernelMessageRelay) ! km
   }
 
   override def receive: Receive = {

@@ -298,9 +298,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
       logger.debug("Constructing new Spark Context")
       // TODO: Inject stream redirect headers in Spark dynamically
-      val outStream = new KernelMessageStream(actorLoader, new KernelMessage(
-        Nil, "", null, null, Metadata(), ""
-      ))
+      val outStream = new KernelMessageStream(actorLoader, KMBuilder())
       GlobalStreamState.withStreams(System.in, outStream, outStream) {
         sparkContext = new SparkContext(conf)
       }

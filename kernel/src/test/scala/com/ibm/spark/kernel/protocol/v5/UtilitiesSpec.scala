@@ -73,7 +73,8 @@ class UtilitiesSpec extends FunSpec with Matchers {
 
     describe("implicit #ZMQMessageToKernelMessage") {
       it("should correctly convert a ZMQMessage to a kernel message") {
-        Utilities.ZMQMessageToKernelMessage(zmqMessage) should be (kernelMessage)
+        Utilities.ZMQMessageToKernelMessage(zmqMessage)
+          .copy(metadata = Map()) should be (kernelMessage)
       }
     }
 

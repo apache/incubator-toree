@@ -42,9 +42,10 @@ class KernelMessageStreamSpec
   //
 
   val executionCount = 3
-  val skeletonKernelMessage = new KernelMessage(
-    Nil, "", null, Header("", "", "", "", "5.0"), Metadata(), ""
-  )
+
+  val skeletonBuilder = KMBuilder()
+    .withIds(Nil).withSignature("").withContentString("")
+    .withParentHeader(Header("", "", "", "", "5.0"))
 
   before {
     // Create a mock ActorLoader for the KernelMessageStream we are testing
@@ -62,9 +63,9 @@ class KernelMessageStreamSpec
   describe("KernelMessageStream") {
     describe("#write(Int)") {
       it("should add a new byte to the internal list") {
-        Given("a kernel message stream with a skeleton kernel message")
+        Given("a kernel message stream with a skeleton kernel builder")
         val kernelMessageStream = new KernelMessageStream(
-          actorLoader, skeletonKernelMessage
+          actorLoader, skeletonBuilder
         )
 
         When("a byte is written to the stream")
@@ -80,9 +81,9 @@ class KernelMessageStreamSpec
       }
 
       it("should call flush if the byte provided is a newline") {
-        Given("a kernel message stream with a skeleton kernel message")
+        Given("a kernel message stream with a skeleton kernel builder")
         val kernelMessageStream = spy(new KernelMessageStream(
-          actorLoader, skeletonKernelMessage
+          actorLoader, skeletonBuilder
         ))
 
         When("a newline byte is written to the stream")
@@ -100,9 +101,9 @@ class KernelMessageStreamSpec
       }
 
       it("should not call flush if the byte provided is not a newline") {
-        Given("a kernel message stream with a skeleton kernel message")
+        Given("a kernel message stream with a skeleton kernel builder")
         val kernelMessageStream = spy(new KernelMessageStream(
-          actorLoader, skeletonKernelMessage
+          actorLoader, skeletonBuilder
         ))
 
         When("a non-newline byte is written to the stream")
@@ -122,9 +123,9 @@ class KernelMessageStreamSpec
       }
 
       it("should set the ids of the kernel message") {
-        Given("a kernel message stream with a skeleton kernel message")
+        Given("a kernel message stream with a skeleton kernel builder")
         val kernelMessageStream = new KernelMessageStream(
-          actorLoader, skeletonKernelMessage
+          actorLoader, skeletonBuilder
         )
 
         When("a string is written as the result and flushed")
@@ -139,9 +140,9 @@ class KernelMessageStreamSpec
       }
 
       it("should set the message type in the header of the kernel message to an execute_result") {
-        Given("a kernel message stream with a skeleton kernel message")
+        Given("a kernel message stream with a skeleton kernel builder")
         val kernelMessageStream = new KernelMessageStream(
-          actorLoader, skeletonKernelMessage
+          actorLoader, skeletonBuilder
         )
 
         When("a string is written as the result and flushed")
@@ -156,9 +157,9 @@ class KernelMessageStreamSpec
       }
 
       it("should set the content string of the kernel message") {
-        Given("a kernel message stream with a skeleton kernel message")
+        Given("a kernel message stream with a skeleton kernel builder")
         val kernelMessageStream = new KernelMessageStream(
-          actorLoader, skeletonKernelMessage
+          actorLoader, skeletonBuilder
         )
 
         When("a string is written as the result and flushed")
@@ -171,35 +172,6 @@ class KernelMessageStreamSpec
           .receiveOne(1.seconds).asInstanceOf[KernelMessage]
         val executeResult = Json.parse(message.contentString).as[StreamContent]
         executeResult.text should be (expected)
-      }
-
-      it("should make a copy of the kernel message skeleton") {
-        // TODO: After refactoring, this no longer calls parentHeader.copy
-        //       and instead invokes the HeaderBuilder object create method,
-        //       which cannot be spied/mocked -- how do we test it?
-        Given("a kernel message stream with a skeleton kernel message")
-        val mockKernelMessage = mock[KernelMessage]
-        doReturn(mockKernelMessage).when(mockKernelMessage).copy(
-          any[Seq[String]], anyString(), any[Header], any[ParentHeader],
-          any[Metadata], anyString()
-        )
-
-        val kernelMessageStream = new KernelMessageStream(
-          actorLoader, mockKernelMessage
-        )
-
-        When("a string is written as the result and flushed")
-        val expected = "some string"
-        kernelMessageStream.write(expected.getBytes)
-        kernelMessageStream.flush()
-
-        Then("the resulting message should be a copy of the skeleton message")
-        kernelMessageRelayProbe.expectMsgClass(classOf[KernelMessage])
-
-        verify(mockKernelMessage).copy(
-          any[Seq[String]], anyString(), any[Header], any[ParentHeader],
-          any[Metadata], anyString()
-        )
       }
     }
   }
