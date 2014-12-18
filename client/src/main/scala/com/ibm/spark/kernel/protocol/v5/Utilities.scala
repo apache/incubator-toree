@@ -66,8 +66,12 @@ object Utilities extends LogLike {
     )
     val metadata = Json.parse(message.frames(delimiterIndex + 4)).as[Metadata]
 
-    new KernelMessage(ids,message.frame(delimiterIndex + 1),
-      header, parentHeader, metadata, message.frame(delimiterIndex + 5))
+    KMBuilder().withIds(ids.toList)
+               .withSignature(message.frame(delimiterIndex + 1))
+               .withHeader(header)
+               .withParentHeader(parentHeader)
+               .withMetadata(metadata)
+               .withContentString(message.frame(delimiterIndex + 5)).build
   }
 
   implicit def KernelMessageToZMQMessage(kernelMessage : KernelMessage) : ZMQMessage = {
@@ -95,10 +99,10 @@ object Utilities extends LogLike {
     val id = java.util.UUID.randomUUID().toString
     val header = Header(
       id, "spark", sessionId, MessageType.ExecuteRequest.toString, "5.0")
-    KernelMessage(
-      Seq[String](), "", header, HeaderBuilder.empty,
-      Metadata(), Json.toJson(message).toString()
-    )
+
+    KMBuilder().withIds(Seq[String]()).withSignature("").withHeader(header)
+      .withParentHeader(HeaderBuilder.empty)
+      .withContentString(Json.toJson(message).toString).build
   }
 
 }
