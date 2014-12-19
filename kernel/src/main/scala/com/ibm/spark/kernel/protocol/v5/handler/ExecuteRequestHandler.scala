@@ -40,7 +40,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
 
   override def process(km: KernelMessage): Future[_] = {
 
-    val skeletonBuilder = KMBuilder().withParent(km)
+    val skeletonBuilder = KMBuilder().withParent(km).withIds(km.ids)
     val executionCount = ExecutionCounter.incr(km.header.session)
     val relayActor = actorLoader.load(SystemActorType.KernelMessageRelay)
 

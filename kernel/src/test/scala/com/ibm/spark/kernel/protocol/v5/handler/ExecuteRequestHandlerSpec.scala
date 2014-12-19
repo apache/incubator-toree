@@ -149,6 +149,26 @@ class ExecuteRequestHandlerSpec extends TestKit(
         executeInputMessage should not be(null)
       }
 
+      it("should send a message with ids equal to the incoming " +
+        "KernelMessage's ids") {
+        handlerActor ! MockExecuteRequestKernelMessage
+        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
+          case message : KernelMessage =>
+            message.ids should be(MockExecuteRequestKernelMessage.ids)
+
+        }
+      }
+
+      it("should send a message with parent header equal to the incoming " +
+        "KernelMessage's header") {
+        handlerActor ! MockExecuteRequestKernelMessage
+        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
+          case message : KernelMessage =>
+            message.parentHeader should be(MockExecuteRequestKernelMessage.header)
+
+        }
+      }
+
       // TODO: Investigate if this is still relevant at all
 //      it("should send a status busy and idle message") {
 //        handlerActor ! MockExecuteRequestKernelMessage
