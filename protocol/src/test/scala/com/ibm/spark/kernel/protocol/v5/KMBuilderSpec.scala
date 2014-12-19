@@ -134,7 +134,7 @@ class KMBuilderSpec extends FunSpec with Matchers {
         it("should produce a KMBuilder with a KernelMessage with content" +
            "containing a JSON string of the given object") {
           val sc = StreamContent("foo", "bar")
-          val builder = KMBuilder().withContentString(sc, StreamContent.inspectRequestWrites)
+          val builder = KMBuilder().withContentString(sc)
           builder.km.contentString should be (Json.toJson(sc).toString)
         }
       }

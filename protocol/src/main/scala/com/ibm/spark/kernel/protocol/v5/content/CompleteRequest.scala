@@ -16,12 +16,16 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json.Json
 
 case class CompleteRequest(
   code: String,
   cursor_pos: Int
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(CompleteRequest.completeRequestWrites).toString
+}
 
 object CompleteRequest {
   implicit val completeRequestReads = Json.reads[CompleteRequest]

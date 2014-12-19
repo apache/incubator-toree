@@ -16,15 +16,19 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json._
 
 case class KernelStatus (
   execution_state: String
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(KernelStatus.kernelStatusWrites).toString
+}
 
 object KernelStatus {
-  implicit val executeRequestReads = Json.reads[KernelStatus]
-  implicit val executeRequestWrites = Json.writes[KernelStatus]
+  implicit val kernelStatusReads = Json.reads[KernelStatus]
+  implicit val kernelStatusWrites = Json.writes[KernelStatus]
 }
 
 object KernelStatusBusy extends KernelStatus("busy") {

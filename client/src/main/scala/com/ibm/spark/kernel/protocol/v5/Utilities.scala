@@ -101,8 +101,7 @@ object Utilities extends LogLike {
       id, "spark", sessionId, MessageType.ExecuteRequest.toString, "5.0")
 
     KMBuilder().withIds(Seq[String]()).withSignature("").withHeader(header)
-      .withParentHeader(HeaderBuilder.empty)
-      .withContentString(Json.toJson(message).toString).build
+      .withParentHeader(HeaderBuilder.empty).withContentString(message).build
   }
 
 }

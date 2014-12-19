@@ -16,9 +16,13 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json._
 
-case class KernelInfoRequest()
+case class KernelInfoRequest() extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(KernelInfoRequest.kernelInfoRequestWrites).toString
+}
 
 object KernelInfoRequest{
   private val SingleInstance = KernelInfoRequest()

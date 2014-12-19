@@ -44,7 +44,7 @@ class ShellClient(socketFactory: ClientSocketFactory) extends Actor with LogLike
         logger.warn(s"No deferred execution for parent id ${parentId}")
       case Some(de) =>
         Utilities.parseAndHandle(kernelMessage.contentString,
-          ExecuteReply.executeReplyOkReads, (er: ExecuteReply) => de.resolveReply(er))
+          ExecuteReply.executeReplyReads, (er: ExecuteReply) => de.resolveReply(er))
     }
   }
 

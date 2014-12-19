@@ -51,7 +51,7 @@ class IOPubClient(socketFactory: ClientSocketFactory) extends Actor with LogLike
     val optionalDE = DeferredExecutionManager.get(parentHeaderId)
     optionalDE match {
       case Some(de) => parseAndHandle(kernelMessage.contentString,
-        StreamContent.inspectRequestReads,
+        StreamContent.streamContentReads,
         (streamContent: StreamContent) => de.emitStreamContent(streamContent))
       case None =>
         logger.warn(s"No deferred execution found for id ${parentHeaderId}")

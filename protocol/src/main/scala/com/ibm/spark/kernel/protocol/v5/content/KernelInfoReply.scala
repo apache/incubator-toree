@@ -16,6 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json.Json
 
 case class KernelInfoReply (
@@ -25,7 +26,10 @@ case class KernelInfoReply (
   language: String,
   language_version: String,
   banner: String
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(KernelInfoReply.kernelInfoReplyWrites).toString
+}
 
 object KernelInfoReply{
   implicit val kernelInfoReplyReads = Json.reads[KernelInfoReply]

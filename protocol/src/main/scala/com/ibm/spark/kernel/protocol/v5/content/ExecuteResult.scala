@@ -16,15 +16,17 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
-import com.ibm.spark.kernel.protocol.v5.{Data, Metadata}
+import com.ibm.spark.kernel.protocol.v5.{KernelMessageContent, Data, Metadata}
 import play.api.libs.json.Json
 
 case class ExecuteResult (
   execution_count: Int,
   data: Data,
   metadata: Metadata
-) {
+)  extends KernelMessageContent {
   def hasContent = data != null && data.exists(x => x._2 != null && x._2.nonEmpty)
+  override def content : String =
+    Json.toJson(this)(ExecuteResult.executeResultWrites).toString
 }
 
 object ExecuteResult {

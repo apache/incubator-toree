@@ -16,6 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json.Json
 
 
@@ -25,7 +26,10 @@ case class HistoryReply(
 
   // NOTE: Currently, only handle (String, String, String)
   history: List[String]
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(HistoryReply.historyReplyWrites).toString
+}
 
 object HistoryReply {
   implicit val historyReplyReads = Json.reads[HistoryReply]

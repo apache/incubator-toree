@@ -29,7 +29,10 @@ case class InspectReply(
   ename: Option[String],
   evalue: Option[String],
   traceback: Option[List[String]]
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(InspectReply.inspectReplyOkWrites).toString
+}
 
 object InspectReply {
   implicit val inspectReplyOkReads = Json.reads[InspectReply]

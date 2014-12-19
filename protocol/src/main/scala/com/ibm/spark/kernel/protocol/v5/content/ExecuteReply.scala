@@ -18,7 +18,7 @@ package com.ibm.spark.kernel.protocol.v5.content
 
 // External libraries
 
-import com.ibm.spark.kernel.protocol.v5.{UserExpressions, Payloads}
+import com.ibm.spark.kernel.protocol.v5.{KernelMessageContent, UserExpressions, Payloads}
 import play.api.libs.json._
 
 // Internal libraries
@@ -32,11 +32,15 @@ case class ExecuteReply(
   ename: Option[String],
   evalue: Option[String],
   traceback: Option[List[String]]
-)
+) extends KernelMessageContent {
+
+  override def content : String =
+    Json.toJson(this)(ExecuteReply.executeReplyWrites).toString
+}
 
 object ExecuteReply {
-  implicit val executeReplyOkReads = Json.reads[ExecuteReply]
-  implicit val executeReplyOkWrites = Json.writes[ExecuteReply]
+  implicit val executeReplyReads = Json.reads[ExecuteReply]
+  implicit val executeReplyWrites = Json.writes[ExecuteReply]
 
   implicit def ExecuteReplyToString(executeReply: ExecuteReply): String ={
       Json.toJson(executeReply).toString

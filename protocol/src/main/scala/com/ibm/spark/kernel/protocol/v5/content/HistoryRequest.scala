@@ -16,6 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json.Json
 
 case class HistoryRequest(
@@ -28,7 +29,10 @@ case class HistoryRequest(
   n: Int,
   pattern: String,
   unique: Boolean
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(HistoryRequest.historyRequestWrites).toString
+}
 
 object HistoryRequest {
   implicit val historyRequestReads = Json.reads[HistoryRequest]

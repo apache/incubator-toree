@@ -31,8 +31,7 @@ class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {
       .withSignature("")
       .withHeader(MessageType.Status)
       .withParentHeader(parentHeader)
-      .withContentString(KernelStatus(kernelStatus.toString),
-                         KernelStatus.executeRequestWrites).build
+      .withContentString(KernelStatus(kernelStatus.toString)).build
 
     actorLoader.load(SystemActorType.KernelMessageRelay) ! km
   }

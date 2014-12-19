@@ -19,7 +19,6 @@ package com.ibm.spark.kernel.protocol.v5
 import java.util.Calendar
 
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
-import play.api.libs.json.{Writes, Json}
 
 /**
   * A class for building KernelMessages.
@@ -74,10 +73,8 @@ case class KMBuilder(km: KernelMessage = KernelMessage(
   def withContentString(newVal: String) : KMBuilder =
     KMBuilder(this.km.copy(contentString = newVal))
 
-  def withContentString[T](newVal: T, writes: Writes[T]) : KMBuilder = {
-    val json: String = Json.toJson(newVal)(writes).toString
-    KMBuilder(this.km.copy(contentString = json))
-  }
+  def withContentString[T <: KernelMessageContent](contentMsg: T) : KMBuilder =
+    KMBuilder(this.km.copy(contentString = contentMsg.content))
 
   /**
    * Default information (e.g. timestamp) to add to the

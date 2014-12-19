@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.content
+package com.ibm.spark.kernel.protocol.v5
 
-import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
-import play.api.libs.json.Json
+trait KernelMessageContent {
 
-case class ShutdownRequest(
-  restart: Boolean
-) extends KernelMessageContent {
-  override def content : String =
-    Json.toJson(this)(ShutdownRequest.shutdownRequestWrites).toString
-}
-
-object ShutdownRequest {
-  implicit val shutdownRequestReads = Json.reads[ShutdownRequest]
-  implicit val shutdownRequestWrites = Json.writes[ShutdownRequest]
+  /**
+   * Provides the String representation of this message used
+   * in the KernelMessage's contentString field.
+   * @return representation of this message.
+   */
+  def content : String
 }

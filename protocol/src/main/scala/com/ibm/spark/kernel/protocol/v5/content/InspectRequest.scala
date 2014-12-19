@@ -16,6 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json._
 
 case class InspectRequest(
@@ -23,7 +24,10 @@ case class InspectRequest(
   cursor_pos: Int,
   detail_level: Int // TODO: This is currently either 0 or 1... should we
                     // TODO: look into enforcing that in our schema?
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(InspectRequest.inspectRequestWrites).toString
+}
 
 object InspectRequest {
   implicit val inspectRequestReads = Json.reads[InspectRequest]

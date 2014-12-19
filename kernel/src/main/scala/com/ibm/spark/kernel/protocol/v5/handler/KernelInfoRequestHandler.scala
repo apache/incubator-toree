@@ -59,8 +59,7 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader)
         .withSignature("")
         .withHeader(replyHeader)
         .withParent(kernelMessage)
-        .withContentString(kernelInfoReply, KernelInfoReply.kernelInfoReplyWrites)
-        .build
+        .withContentString(kernelInfoReply).build
 
       actorLoader.load(SystemActorType.KernelMessageRelay) ! kernelResponseMessage
     }

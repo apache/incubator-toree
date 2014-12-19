@@ -45,8 +45,7 @@ class KernelMessageStream(
     val kernelMessage = kmBuilder
       .withIds(Seq(MessageType.Stream.toString))
       .withHeader(MessageType.Stream)
-      .withContentString(streamContent, StreamContent.inspectRequestWrites)
-      .build
+      .withContentString(streamContent).build
 
     actorLoader.load(SystemActorType.KernelMessageRelay) ! kernelMessage
 

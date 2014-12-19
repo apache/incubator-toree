@@ -16,7 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
-import com.ibm.spark.kernel.protocol.v5.UserExpressions
+import com.ibm.spark.kernel.protocol.v5.{KernelMessageContent, UserExpressions}
 import play.api.libs.json._
 
 case class ExecuteRequest(
@@ -25,7 +25,10 @@ case class ExecuteRequest(
   store_history: Boolean,
   user_expressions: UserExpressions,
   allow_stdin: Boolean
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(ExecuteRequest.executeRequestWrites).toString
+}
 
 object ExecuteRequest {
   implicit val executeRequestReads = Json.reads[ExecuteRequest]

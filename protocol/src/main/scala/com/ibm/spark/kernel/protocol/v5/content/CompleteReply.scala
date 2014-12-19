@@ -16,7 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
-import com.ibm.spark.kernel.protocol.v5.Metadata
+import com.ibm.spark.kernel.protocol.v5.{KernelMessageContent, Metadata}
 import play.api.libs.json.Json
 
 case class CompleteReply (
@@ -28,9 +28,12 @@ case class CompleteReply (
   ename: Option[String],
   evalue: Option[String],
   traceback: Option[List[String]]
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(CompleteReply.completeReplyWrites).toString
+}
 
-object CompleteReply{
+object CompleteReply {
   implicit val completeReplyReads = Json.reads[CompleteReply]
   implicit val completeReplyWrites = Json.writes[CompleteReply]
 }

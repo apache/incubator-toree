@@ -49,8 +49,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
       //  Send an ExecuteInput to the client saying we are executing something
       val executeInputMessage = skeletonBuilder
         .withHeader(MessageType.ExecuteInput)
-        .withContentString(ExecuteInput(executeRequest.code, executionCount),
-                           ExecuteInput.executeInputWrites).build
+        .withContentString(ExecuteInput(executeRequest.code, executionCount)).build
 
       relayMsg(executeInputMessage, relayActor)
 
@@ -69,8 +68,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
           //  Send an ExecuteReply to the client
           val executeReplyMsg = skeletonBuilder
             .withHeader(MessageType.ExecuteReply)
-            .withContentString(executeReply, ExecuteReply.executeReplyOkWrites)
-            .build
+            .withContentString(executeReply).build
           relayMsg(executeReplyMsg, relayActor)
 
           //  Send an ExecuteResult with the result of the code execution
@@ -78,8 +76,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
             val executeResultMsg = skeletonBuilder
               .withIds(Seq(MessageType.ExecuteResult.toString))
               .withHeader(MessageType.ExecuteResult)
-              .withContentString(executeResult, ExecuteResult.executeResultWrites)
-              .build
+              .withContentString(executeResult).build
             relayMsg(executeResultMsg, relayActor)
           }
 

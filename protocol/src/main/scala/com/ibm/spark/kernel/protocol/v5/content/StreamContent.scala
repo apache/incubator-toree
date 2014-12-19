@@ -16,16 +16,20 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json._
 
 case class StreamContent(
    name: String,
    text: String
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(StreamContent.streamContentWrites).toString
+}
 
 
 object StreamContent {
-  implicit val inspectRequestReads = Json.reads[StreamContent]
-  implicit val inspectRequestWrites = Json.writes[StreamContent]
+  implicit val streamContentReads = Json.reads[StreamContent]
+  implicit val streamContentWrites = Json.writes[StreamContent]
 }
 

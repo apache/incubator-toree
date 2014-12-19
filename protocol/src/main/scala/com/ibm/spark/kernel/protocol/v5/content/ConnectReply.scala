@@ -16,6 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json.Json
 
 case class ConnectReply(
@@ -23,7 +24,10 @@ case class ConnectReply(
   iopub_port: Int,
   stdin_port: Int,
   hb_port: Int
-)
+) extends KernelMessageContent {
+  override def content : String =
+    Json.toJson(this)(ConnectReply.connectReplyWrites).toString
+}
 
 object ConnectReply {
   implicit val connectReplyReads = Json.reads[ConnectReply]

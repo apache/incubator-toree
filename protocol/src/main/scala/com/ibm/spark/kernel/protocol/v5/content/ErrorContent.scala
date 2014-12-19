@@ -16,6 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
+import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json.Json
 
 import scala.language.implicitConversions
@@ -24,7 +25,10 @@ case class ErrorContent(
   ename: String,
   evalue: String,
   traceback: List[String]
-)
+) extends KernelMessageContent{
+  override def content : String =
+    Json.toJson(this)(ErrorContent.errorContentWrites).toString
+}
 
 object ErrorContent {
   implicit val errorContentReads = Json.reads[ErrorContent]
