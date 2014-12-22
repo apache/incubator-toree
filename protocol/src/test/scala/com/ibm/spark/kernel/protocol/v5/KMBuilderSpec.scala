@@ -49,17 +49,23 @@ class KMBuilderSpec extends FunSpec with Matchers {
         KMBuilder().build.copy(metadata = Metadata()) should be(emptyKM)
       }
 
-      it("should include default metadata in built message ") {
-        class KM2 extends KMBuilder {
-          override def metadataDefaults : Metadata = {
-            Metadata("foo" -> "bar", "baos" -> "bean")
-          }
+      class KM2 extends KMBuilder {
+        override def metadataDefaults : Metadata = {
+          Metadata("foo" -> "bar", "baos" -> "bean")
         }
+      }
+      it("should include default metadata in built message by default") {
         val builder = new KM2
         val metadata = builder.build.metadata
         builder.metadataDefaults.foreach { case (k, v) =>
             assert (metadata.contains(k) && metadata(k) == v)
         }
+      }
+
+      it("should not include default metadata in built message if disabled") {
+        val builder = new KM2
+        val metadata = builder.build(includeDefaultMetadata = false).metadata
+        metadata should be(Metadata())
       }
     }
 

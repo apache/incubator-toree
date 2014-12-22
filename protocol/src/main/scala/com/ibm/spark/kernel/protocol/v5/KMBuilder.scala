@@ -87,11 +87,15 @@ case class KMBuilder(km: KernelMessage = KernelMessage(
 
   /**
    * Builds a KernelMessage using the KernelMessage held by this builder.
-   * Appends default metadata (e.g. timestamp) to the KernelMessage's metadata.
+   * @param includeDefaultMetadata appends default metadata (e.g. timestamp)
+   *                               to the KernelMessage's metadata when true.
    * @return KernelMessage held by this builder with default metadata.
    */
-  def build : KernelMessage = {
-    this.km.copy(metadata = km.metadata ++ metadataDefaults)
+  def build(implicit includeDefaultMetadata: Boolean = true) : KernelMessage = {
+    if (includeDefaultMetadata)
+      this.km.copy(metadata = km.metadata ++ metadataDefaults)
+    else
+      this.km.copy(metadata = km.metadata)
   }
 
 }

@@ -70,7 +70,7 @@ object Utilities extends LogLike {
                .withHeader(header)
                .withParentHeader(parentHeader)
                .withMetadata(metadata)
-               .withContentString(message.frame(delimiterIndex + 5)).build
+               .withContentString(message.frame(delimiterIndex + 5)).build(false)
   }
 
   implicit def KernelMessageToZMQMessage(kernelMessage : KernelMessage) : ZMQMessage = {
