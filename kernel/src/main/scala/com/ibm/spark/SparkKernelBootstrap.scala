@@ -52,13 +52,13 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   private val DefaultAppName                          = SparkKernelInfo.banner
   private val DefaultActorSystemName                  = "spark-kernel-actor-system"
 
-  private var socketFactory: ServerSocketFactory            = _
+  private var socketFactory: ServerSocketFactory      = _
   private var heartbeatActor: ActorRef                = _
   private var shellActor: ActorRef                    = _
   private var ioPubActor: ActorRef                    = _
 
   protected[spark] var interpreter: Interpreter       = _
-  protected[spark] var kernelInterpreter: Interpreter       = _
+  protected[spark] var kernelInterpreter: Interpreter = _
   protected[spark] var kernel: Kernel                 = _
 
   protected[spark] var sparkContext: SparkContext     = _
@@ -229,20 +229,23 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   }
 
   private def initializeKernelInterpreter(): Unit = {
-    val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
+    val interpreterArgs =
+      config.getStringList("interpreter_args").asScala.toList
 
-    logger.info("Constructing interpreter with arguments: " + interpreterArgs.mkString(" "))
+    // TODO: Refactor this construct to a cleaner implementation (for future
+    //       multi-interpreter design)
+    logger.info("Constructing interpreter with arguments: " +
+      interpreterArgs.mkString(" "))
     kernelInterpreter = new ScalaInterpreter(interpreterArgs, Console.out)
-
       with StandardTaskManagerProducer
       with StandardSettingsProducer
       with SparkIMainProducerLike {
-      override def newSparkIMain(
-                                  settings: Settings, out: JPrintWriter
-                                  ): SparkIMain =  {
-        interpreter.asInstanceOf[ScalaInterpreter].sparkIMain
+        override def newSparkIMain(
+          settings: Settings, out: JPrintWriter
+        ): SparkIMain =  {
+          interpreter.asInstanceOf[ScalaInterpreter].sparkIMain
+        }
       }
-    }
     logger.debug("Starting interpreter")
     kernelInterpreter.start()
   }

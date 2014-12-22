@@ -2,13 +2,10 @@ package com.ibm.spark
 
 import com.ibm.spark.interpreter._
 
-/**
- * Creatred by bburns on 11/26/14.
- */
-class Kernel (interpreter: Interpreter) {
-
+class Kernel (
+  val interpreter: Interpreter
+) {
   def eval(code: Option[String]): (Boolean, String) = {
-
     code.map(c => {
       val (success, result) = interpreter.interpret(c)
       success match {
