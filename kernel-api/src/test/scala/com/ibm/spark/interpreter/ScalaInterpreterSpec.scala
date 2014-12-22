@@ -215,12 +215,6 @@ class ScalaInterpreterSpec extends FunSpec
         verify(mockTaskManager).start()
       }
 
-      it("should initialize the SparkIMain") {
-        interpreterNoPrintStreams.start()
-
-        verify(mockSparkIMain).initializeSynchronous()
-      }
-
       // TODO: Figure out how to trigger sparkIMain.beQuietDuring { ... }
       /*it("should add an import for SparkContext._") {
         interpreterNoPrintStreams.start()
