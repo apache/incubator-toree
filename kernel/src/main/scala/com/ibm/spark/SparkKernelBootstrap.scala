@@ -38,22 +38,29 @@ import com.ibm.spark.magic.dependencies.DependencyMap
 import com.ibm.spark.security.KernelSecurityManager
 import com.ibm.spark.utils.{GlobalStreamState, LogLike}
 import com.typesafe.config.Config
+import org.apache.spark.repl.SparkIMain
 import org.apache.spark.{SparkConf, SparkContext}
 import collection.JavaConverters._
 import play.api.libs.json.Json
 import java.io.File
+
+import scala.tools.nsc.Settings
+import scala.tools.nsc.interpreter._
 
 case class SparkKernelBootstrap(config: Config) extends LogLike {
 
   private val DefaultAppName                          = SparkKernelInfo.banner
   private val DefaultActorSystemName                  = "spark-kernel-actor-system"
 
-  private var socketFactory: ServerSocketFactory            = _
+  private var socketFactory: ServerSocketFactory      = _
   private var heartbeatActor: ActorRef                = _
   private var shellActor: ActorRef                    = _
   private var ioPubActor: ActorRef                    = _
 
   protected[spark] var interpreter: Interpreter       = _
+  protected[spark] var kernelInterpreter: Interpreter = _
+  protected[spark] var kernel: Kernel                 = _
+
   protected[spark] var sparkContext: SparkContext     = _
   protected[spark] var dependencyDownloader: DependencyDownloader = _
   private var dependencyMap: DependencyMap            = _
@@ -87,6 +94,8 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     initializeKernelHandlers()
     publishStatus(KernelStatusType.Starting)
     initializeInterpreter()
+    initializeKernelInterpreter()
+    initializeKernel()
     initializeSparkContext()
     initializeDependencyDownloader()
     initializeMagicLoader()
@@ -112,6 +121,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
     logger.info("Shutting down interpreter")
     interpreter.stop()
+    kernelInterpreter.stop()
 
     logger.info("Shutting down actor system")
     actorSystem.shutdown()
@@ -218,6 +228,28 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     interpreter.start()
   }
 
+  private def initializeKernelInterpreter(): Unit = {
+    val interpreterArgs =
+      config.getStringList("interpreter_args").asScala.toList
+
+    // TODO: Refactor this construct to a cleaner implementation (for future
+    //       multi-interpreter design)
+    logger.info("Constructing interpreter with arguments: " +
+      interpreterArgs.mkString(" "))
+    kernelInterpreter = new ScalaInterpreter(interpreterArgs, Console.out)
+      with StandardTaskManagerProducer
+      with StandardSettingsProducer
+      with SparkIMainProducerLike {
+        override def newSparkIMain(
+          settings: Settings, out: JPrintWriter
+        ): SparkIMain =  {
+          interpreter.asInstanceOf[ScalaInterpreter].sparkIMain
+        }
+      }
+    logger.debug("Starting interpreter")
+    kernelInterpreter.start()
+  }
+
   private def registerInterruptHook(): Unit = {
     val self = this
 
@@ -234,6 +266,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
         if (currentTime - lastSignalReceived > MaxSignalTime) {
           logger.info("Resetting code execution!")
           interpreter.interrupt()
+          kernelInterpreter.interrupt()
 
           // TODO: Cancel group representing current code execution
           //sparkContext.cancelJobGroup()
@@ -343,6 +376,16 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     } else {
       logger.info("Running in local mode! Not adding self as dependency!")
     }
+  }
+
+  protected[spark] def initializeKernel(): Unit = {
+    //interpreter.doQuietly {
+    kernel = new Kernel(kernelInterpreter)
+    interpreter.bind(
+      "kernel", "com.ibm.spark.Kernel",
+      kernel, List( """@transient implicit""")
+    )
+    //}
   }
 
   private def initializeSystemActors(): Unit = {

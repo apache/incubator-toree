@@ -36,5 +36,10 @@ trait SparkIMainProducerLike {
 trait StandardSparkIMainProducer extends SparkIMainProducerLike {
   override def newSparkIMain(
     settings: Settings, out: JPrintWriter
-  ): SparkIMain = new SparkIMain(settings, out)
+  ): SparkIMain = {
+    val s = new SparkIMain(settings, out)
+    s.initializeSynchronous()
+
+    s
+  }
 }
