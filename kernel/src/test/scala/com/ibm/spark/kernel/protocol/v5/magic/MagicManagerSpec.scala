@@ -146,7 +146,8 @@ class MagicManagerSpec extends TestKit(
             mock[OutputStream]
           ))
 
-          expectMsg(1500.milliseconds, Left(fakeMagicReturn))
+          // TODO: Refactor timeout-based test to avoid incremental adjustment
+          expectMsg(3000.milliseconds, Left(fakeMagicReturn))
         }
       }
     }
