@@ -19,12 +19,14 @@ package com.ibm.spark.kernel.protocol.v5.content
 import com.ibm.spark.kernel.protocol.v5.{KernelMessageContent, Data, UUID}
 import play.api.libs.json.Json
 
-case class CommClose(comm_id: UUID, data: Data) extends KernelMessageContent {
+case class CommClose(comm_id: UUID, data: Data)
+  extends KernelMessageContent with CommContent
+{
   override def content : String =
-    Json.toJson(this)(CommClose.commOpenWrites).toString
+    Json.toJson(this)(CommClose.commCloseWrites).toString
 }
 
 object CommClose {
-  implicit val commOpenReads = Json.reads[CommClose]
-  implicit val commOpenWrites = Json.writes[CommClose]
+  implicit val commCloseReads = Json.reads[CommClose]
+  implicit val commCloseWrites = Json.writes[CommClose]
 }

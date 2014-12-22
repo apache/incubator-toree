@@ -20,7 +20,8 @@ import com.ibm.spark.kernel.protocol.v5.{KernelMessageContent, Data, UUID}
 import play.api.libs.json.Json
 
 case class CommOpen(comm_id: UUID, target_name: String, data: Data)
-  extends KernelMessageContent {
+  extends KernelMessageContent with CommContent
+{
   override def content : String =
     Json.toJson(this)(CommOpen.commOpenWrites).toString
 }
