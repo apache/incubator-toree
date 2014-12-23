@@ -56,7 +56,8 @@ class CommMsgHandlerSpec extends TestKit(
     mockActorLoader = mock[ActorLoader]
 
     commMsgHandler = system.actorOf(Props(
-      classOf[CommMsgHandler], mockActorLoader, mockCommStorage
+      classOf[CommMsgHandler],
+      mockActorLoader, mock[CommRegistrar], mockCommStorage
     ))
 
     // Used to intercept responses

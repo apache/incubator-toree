@@ -16,7 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import com.ibm.spark.kernel.protocol.v5.comm.{CommWriter, CommStorage}
+import com.ibm.spark.kernel.protocol.v5.comm.{CommRegistrar, CommWriter, CommStorage}
 import com.ibm.spark.kernel.protocol.v5.content.CommMsg
 import com.ibm.spark.kernel.protocol.v5.{KMBuilder, Utilities, ActorLoader, KernelMessage}
 import com.ibm.spark.utils.MessageLogSupport
@@ -27,8 +27,17 @@ import scala.concurrent.Future
 import scala.concurrent.future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CommMsgHandler(actorLoader: ActorLoader, commStorage: CommStorage)
-  extends BaseHandler(actorLoader) with MessageLogSupport
+/**
+ * Represents the handler for comm_msg messages.
+ *
+ * @param actorLoader The actor loader to use for actor communication
+ * @param commRegistrar The Comm registrar (unused)
+ * @param commStorage The Comm storage used for msg callbacks
+ */
+class CommMsgHandler(
+  actorLoader: ActorLoader, commRegistrar: CommRegistrar,
+  commStorage: CommStorage
+) extends BaseHandler(actorLoader) with MessageLogSupport
 {
   override def process(kernelMessage: KernelMessage): Future[_] = {
     logKernelMessageAction("Initiating Comm Msg for", kernelMessage)
