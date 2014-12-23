@@ -19,7 +19,6 @@ import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 
 import java.io.Writer
-import reflect.runtime.universe._
 
 /**
  * Represents a basic writer used to communicate comm-related messages.
