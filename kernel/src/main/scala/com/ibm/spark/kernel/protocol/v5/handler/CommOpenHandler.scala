@@ -27,6 +27,13 @@ import scala.concurrent.Future
 import scala.concurrent.future
 import scala.concurrent.ExecutionContext.Implicits.global
 
+/**
+ * Represents the handler for comm_open messages.
+ *
+ * @param actorLoader The actor loader to use for actor communication
+ * @param commRegistrar The Comm registrar used for linking
+ * @param commStorage The Comm storage used for open callbacks
+ */
 class CommOpenHandler(
   actorLoader: ActorLoader, commRegistrar: CommRegistrar,
   commStorage: CommStorage
