@@ -23,6 +23,7 @@ import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.comm.{CommCallbacks, CommStorage, CommRegistrar}
 import com.ibm.spark.kernel.protocol.v5.dispatch.StatusDispatch
 import com.ibm.spark.kernel.protocol.v5.handler._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
@@ -44,6 +45,7 @@ import collection.JavaConverters._
 import play.api.libs.json.Json
 import java.io.File
 
+import scala.collection.mutable
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter._
 
@@ -66,9 +68,11 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   private var dependencyMap: DependencyMap            = _
   private var builtinLoader: BuiltinLoader            = _
   private var magicLoader: MagicLoader                = _
+  protected var commRegistrar: CommRegistrar          = _
+  protected var commStorage: CommStorage              = _
 
   private var actorSystem: ActorSystem                = _
-  private var actorLoader: ActorLoader                = _
+  protected[spark] var actorLoader: ActorLoader       = _
   private var interpreterActor: ActorRef              = _
   private var kernelMessageRelayActor: ActorRef       = _
   private var executeRequestRelayActor: ActorRef      = _
@@ -91,6 +95,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
     initializeBareComponents()
     createSockets()
+    initializeCommObjects()
     initializeKernelHandlers()
     publishStatus(KernelStatusType.Starting)
     initializeInterpreter()
@@ -207,6 +212,14 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
       Props(classOf[IOPub], socketFactory),
       name = SocketType.IOPub.toString
     )
+  }
+
+  private def initializeCommObjects(): Unit = {
+    logger.debug("Constructing Comm storage")
+    commStorage = new mutable.HashMap[String, CommCallbacks]()
+
+    logger.debug("Constructing Comm registrar")
+    commRegistrar = new CommRegistrar(commStorage)
   }
 
   private def initializeDependencyDownloader(): Unit = {
@@ -439,10 +452,19 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     )
   }
 
-  private def initializeRequestHandler[T](clazz: Class[T], messageType: MessageType){
+  private def initializeRequestHandler[T](clazz: Class[T], messageType: MessageType) = {
     logger.debug("Creating %s handler".format(messageType.toString))
     actorSystem.actorOf(
       Props(clazz, actorLoader),
+      name = messageType.toString
+    )
+  }
+
+  // TODO: Figure out how to pass variable number of arguments to actor
+  private def initializeCommHandler[T](clazz: Class[T], messageType: MessageType) = {
+    logger.debug("Creating %s handler".format(messageType.toString))
+    actorSystem.actorOf(
+      Props(clazz, actorLoader, commRegistrar, commStorage),
       name = messageType.toString
     )
   }
@@ -460,16 +482,23 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     initializeRequestHandler(classOf[ExecuteRequestHandler], MessageType.ExecuteRequest )
     initializeRequestHandler(classOf[KernelInfoRequestHandler], MessageType.KernelInfoRequest )
     initializeRequestHandler(classOf[CodeCompleteHandler], MessageType.CompleteRequest )
+    initializeCommHandler(classOf[CommOpenHandler], MessageType.CommOpen)
+    initializeCommHandler(classOf[CommMsgHandler], MessageType.CommMsg)
+    initializeCommHandler(classOf[CommCloseHandler], MessageType.CommClose)
 
     //  These are handlers for messages leaving the kernel through the sockets
     initializeSocketHandler(SocketType.Shell, MessageType.KernelInfoReply)
     initializeSocketHandler(SocketType.Shell, MessageType.ExecuteReply)
     initializeSocketHandler(SocketType.Shell, MessageType.CompleteReply)
+
     initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteResult)
     initializeSocketHandler(SocketType.IOPub, MessageType.Stream)
     initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteInput)
     initializeSocketHandler(SocketType.IOPub, MessageType.Status)
     initializeSocketHandler(SocketType.IOPub, MessageType.Error)
+    initializeSocketHandler(SocketType.IOPub, MessageType.CommOpen)
+    initializeSocketHandler(SocketType.IOPub, MessageType.CommMsg)
+    initializeSocketHandler(SocketType.IOPub, MessageType.CommClose)
   }
 
   private def publishStatus(
