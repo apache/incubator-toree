@@ -16,7 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import com.ibm.spark.kernel.protocol.v5.comm.{CommStorage, CommWriter}
+import com.ibm.spark.kernel.protocol.v5.comm.{CommStorage, CommRegistrar, CommWriter}
 import com.ibm.spark.kernel.protocol.v5.content.CommOpen
 import com.ibm.spark.kernel.protocol.v5.{KMBuilder, Utilities, KernelMessage, ActorLoader}
 import com.ibm.spark.utils.MessageLogSupport
@@ -27,8 +27,10 @@ import scala.concurrent.Future
 import scala.concurrent.future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class CommOpenHandler(actorLoader: ActorLoader, commStorage: CommStorage)
-  extends BaseHandler(actorLoader) with MessageLogSupport
+class CommOpenHandler(
+  actorLoader: ActorLoader, commRegistrar: CommRegistrar,
+  commStorage: CommStorage
+) extends BaseHandler(actorLoader) with MessageLogSupport
 {
   override def process(kernelMessage: KernelMessage): Future[_] = {
     logKernelMessageAction("Initiating Comm Open for", kernelMessage)
@@ -57,6 +59,9 @@ class CommOpenHandler(actorLoader: ActorLoader, commStorage: CommStorage)
       // TODO: Should we be checking the return values? Probably not.
       commStorage(targetName).executeOpenCallbacks(
         commWriter, commId, targetName, data)
+
+      // Link the new id to the target
+      commRegistrar.link(targetName, commId)
     } else {
       logger.warn(s"Received invalid target for Comm Open: $targetName")
 
