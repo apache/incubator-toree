@@ -28,12 +28,11 @@ import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.AdditionalMatchers.{not => mockNot}
 
 class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar {
-
-  private val testTargetName = "some target name"
-  private val testCommId = UUID.randomUUID().toString
-  private val testOpenFunc: OpenCallback = (_, _, _, _) => {}
-  private val testMsgFunc: MsgCallback = (_, _, _) => {}
-  private val testCloseFunc: CloseCallback = (_, _, _) => {}
+  private val TestTargetName = "some target name"
+  private val TestCommId = UUID.randomUUID().toString
+  private val TestOpenFunc: OpenCallback = (_, _, _, _) => {}
+  private val TestMsgFunc: MsgCallback = (_, _, _) => {}
+  private val TestCloseFunc: CloseCallback = (_, _, _) => {}
 
   private def constructMocks(targetName: String, isContained: Boolean) = {
     val mockCommCallbacks = mock[CommCallbacks]
@@ -56,17 +55,17 @@ class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar {
         val mockCommStorage = mock[CommStorage]
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.register(testTargetName)
+        commRegistrar.register(TestTargetName)
 
-        verify(mockCommStorage)(mockEq(testTargetName)) = any[CommCallbacks]
+        verify(mockCommStorage)(mockEq(TestTargetName)) = any[CommCallbacks]
       }
 
       it("should return a new wrapper with the default target name set") {
         val mockCommStorage = mock[CommStorage]
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.register(testTargetName)
-          .defaultTargetName.value should be (testTargetName)
+        commRegistrar.register(TestTargetName)
+          .defaultTargetName.value should be (TestTargetName)
       }
     }
 
@@ -74,27 +73,27 @@ class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar {
       it("should create a copy of target as Comm id if target exists") {
         val mockCommCallbacks = mock[CommCallbacks]
         val mockCommStorage = mock[CommStorage]
-        doReturn(true).when(mockCommStorage).contains(testTargetName)
-        doReturn(mockCommCallbacks).when(mockCommStorage)(testTargetName)
+        doReturn(true).when(mockCommStorage).contains(TestTargetName)
+        doReturn(mockCommCallbacks).when(mockCommStorage)(TestTargetName)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.link(testTargetName, testCommId)
+        commRegistrar.link(TestTargetName, TestCommId)
 
-        verify(mockCommStorage)(testCommId) = mockCommCallbacks
+        verify(mockCommStorage)(TestCommId) = mockCommCallbacks
       }
 
       it("should create a copy of Comm id as target if Comm id exists and not target") {
         val mockCommCallbacks = mock[CommCallbacks]
         val mockCommStorage = mock[CommStorage]
-        doReturn(true).when(mockCommStorage).contains(testCommId)
-        doReturn(mockCommCallbacks).when(mockCommStorage)(testCommId)
+        doReturn(true).when(mockCommStorage).contains(TestCommId)
+        doReturn(mockCommCallbacks).when(mockCommStorage)(TestCommId)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.link(testTargetName, testCommId)
+        commRegistrar.link(TestTargetName, TestCommId)
 
-        verify(mockCommStorage)(testTargetName) = mockCommCallbacks
+        verify(mockCommStorage)(TestTargetName) = mockCommCallbacks
       }
 
       it("should do nothing if neither target nor Comm id exist") {
@@ -103,10 +102,32 @@ class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar {
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.link(testTargetName, testCommId)
+        commRegistrar.link(TestTargetName, TestCommId)
 
-        verify(mockCommStorage, never())(mockEq(testTargetName)) = any[CommCallbacks]
-        verify(mockCommStorage, never())(mockEq(testCommId)) = any[CommCallbacks]
+        verify(mockCommStorage, never())(mockEq(TestTargetName)) = any[CommCallbacks]
+        verify(mockCommStorage, never())(mockEq(TestCommId)) = any[CommCallbacks]
+      }
+    }
+
+    describe("#has") {
+      it("should return the underlying result from the storage") {
+        val mockCommStorage = mock[CommStorage]
+        val commRegistrar = new CommRegistrar(mockCommStorage)
+
+        commRegistrar.has(TestTargetName)
+
+        verify(mockCommStorage).contains(TestTargetName)
+      }
+    }
+
+    describe("#retrieve") {
+      it("should return the underlying result from the storage") {
+        val mockCommStorage = mock[CommStorage]
+        val commRegistrar = new CommRegistrar(mockCommStorage)
+
+        commRegistrar.retrieve(TestTargetName)
+
+        verify(mockCommStorage).get(TestTargetName)
       }
     }
 
@@ -115,60 +136,60 @@ class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar {
         val mockCommStorage = mock[CommStorage]
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.remove(testTargetName)
+        commRegistrar.remove(TestTargetName)
 
-        verify(mockCommStorage).remove(testTargetName)
+        verify(mockCommStorage).remove(TestTargetName)
       }
     }
 
     describe("#addOpenHandler") {
       it("should add the handler if given a specific target name") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, true)
+          constructMocks(TestTargetName, true)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.addOpenHandler(testTargetName, testOpenFunc)
+        commRegistrar.addOpenHandler(TestTargetName, TestOpenFunc)
 
-        verify(mockCommStorage)(testTargetName)
-        verify(mockCommCallbacks).addOpenCallback(testOpenFunc)
-        verify(mockCommStorage)(testTargetName) = mockCommCallbacks
+        verify(mockCommStorage)(TestTargetName)
+        verify(mockCommCallbacks).addOpenCallback(TestOpenFunc)
+        verify(mockCommStorage)(TestTargetName) = mockCommCallbacks
       }
 
       it("should create a new set of CommCallbacks if the target is missing") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, false)
+          constructMocks(TestTargetName, false)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.addOpenHandler(testTargetName, testOpenFunc)
+        commRegistrar.addOpenHandler(TestTargetName, TestOpenFunc)
 
-        verify(mockCommStorage)(mockEq(testTargetName)) =
+        verify(mockCommStorage)(mockEq(TestTargetName)) =
           mockNot(mockEq(mockCommCallbacks))
       }
 
       it("should add the handler if not given a target name but has a default") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, true)
+          constructMocks(TestTargetName, true)
 
         val commRegistrar =
-          new CommRegistrar(mockCommStorage, Some(testTargetName))
+          new CommRegistrar(mockCommStorage, Some(TestTargetName))
 
-        commRegistrar.addOpenHandler(testOpenFunc)
+        commRegistrar.addOpenHandler(TestOpenFunc)
 
-        verify(mockCommStorage)(testTargetName)
-        verify(mockCommCallbacks).addOpenCallback(testOpenFunc)
-        verify(mockCommStorage)(testTargetName) = mockCommCallbacks
+        verify(mockCommStorage)(TestTargetName)
+        verify(mockCommCallbacks).addOpenCallback(TestOpenFunc)
+        verify(mockCommStorage)(TestTargetName) = mockCommCallbacks
       }
 
       it("should fail if not given a target name and has no default") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, true)
+          constructMocks(TestTargetName, true)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
         intercept[IllegalArgumentException] {
-          commRegistrar.addOpenHandler(testOpenFunc)
+          commRegistrar.addOpenHandler(TestOpenFunc)
         }
       }
     }
@@ -176,51 +197,51 @@ class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar {
     describe("#addMsgHandler") {
       it("should add the handler if given a specific target name") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, true)
+          constructMocks(TestTargetName, true)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.addMsgHandler(testTargetName, testMsgFunc)
+        commRegistrar.addMsgHandler(TestTargetName, TestMsgFunc)
 
-        verify(mockCommStorage)(testTargetName)
-        verify(mockCommCallbacks).addMsgCallback(testMsgFunc)
-        verify(mockCommStorage)(testTargetName) = mockCommCallbacks
+        verify(mockCommStorage)(TestTargetName)
+        verify(mockCommCallbacks).addMsgCallback(TestMsgFunc)
+        verify(mockCommStorage)(TestTargetName) = mockCommCallbacks
       }
 
       it("should create a new set of CommCallbacks if the target is missing") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, false)
+          constructMocks(TestTargetName, false)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.addMsgHandler(testTargetName, testMsgFunc)
+        commRegistrar.addMsgHandler(TestTargetName, TestMsgFunc)
 
-        verify(mockCommStorage)(mockEq(testTargetName)) =
+        verify(mockCommStorage)(mockEq(TestTargetName)) =
           mockNot(mockEq(mockCommCallbacks))
       }
 
       it("should add the handler if not given a target name but has a default") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, true)
+          constructMocks(TestTargetName, true)
 
         val commRegistrar =
-          new CommRegistrar(mockCommStorage, Some(testTargetName))
+          new CommRegistrar(mockCommStorage, Some(TestTargetName))
 
-        commRegistrar.addMsgHandler(testMsgFunc)
+        commRegistrar.addMsgHandler(TestMsgFunc)
 
-        verify(mockCommStorage)(testTargetName)
-        verify(mockCommCallbacks).addMsgCallback(testMsgFunc)
-        verify(mockCommStorage)(testTargetName) = mockCommCallbacks
+        verify(mockCommStorage)(TestTargetName)
+        verify(mockCommCallbacks).addMsgCallback(TestMsgFunc)
+        verify(mockCommStorage)(TestTargetName) = mockCommCallbacks
       }
 
       it("should fail if not given a target name and has no default") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, true)
+          constructMocks(TestTargetName, true)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
         intercept[IllegalArgumentException] {
-          commRegistrar.addMsgHandler(testMsgFunc)
+          commRegistrar.addMsgHandler(TestMsgFunc)
         }
       }
     }
@@ -228,51 +249,51 @@ class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar {
     describe("#addCloseHandler") {
       it("should add the handler if given a specific target name") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, true)
+          constructMocks(TestTargetName, true)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.addCloseHandler(testTargetName, testCloseFunc)
+        commRegistrar.addCloseHandler(TestTargetName, TestCloseFunc)
 
-        verify(mockCommStorage)(testTargetName)
-        verify(mockCommCallbacks).addCloseCallback(testCloseFunc)
-        verify(mockCommStorage)(testTargetName) = mockCommCallbacks
+        verify(mockCommStorage)(TestTargetName)
+        verify(mockCommCallbacks).addCloseCallback(TestCloseFunc)
+        verify(mockCommStorage)(TestTargetName) = mockCommCallbacks
       }
 
       it("should create a new set of CommCallbacks if the target is missing") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, false)
+          constructMocks(TestTargetName, false)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
-        commRegistrar.addCloseHandler(testTargetName, testCloseFunc)
+        commRegistrar.addCloseHandler(TestTargetName, TestCloseFunc)
 
-        verify(mockCommStorage)(mockEq(testTargetName)) =
+        verify(mockCommStorage)(mockEq(TestTargetName)) =
           mockNot(mockEq(mockCommCallbacks))
       }
 
       it("should add the handler if not given a target name but has a default") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, true)
+          constructMocks(TestTargetName, true)
 
         val commRegistrar =
-          new CommRegistrar(mockCommStorage, Some(testTargetName))
+          new CommRegistrar(mockCommStorage, Some(TestTargetName))
 
-        commRegistrar.addCloseHandler(testCloseFunc)
+        commRegistrar.addCloseHandler(TestCloseFunc)
 
-        verify(mockCommStorage)(testTargetName)
-        verify(mockCommCallbacks).addCloseCallback(testCloseFunc)
-        verify(mockCommStorage)(testTargetName) = mockCommCallbacks
+        verify(mockCommStorage)(TestTargetName)
+        verify(mockCommCallbacks).addCloseCallback(TestCloseFunc)
+        verify(mockCommStorage)(TestTargetName) = mockCommCallbacks
       }
 
       it("should fail if not given a target name and has no default") {
         val (mockCommCallbacks, mockCommStorage) =
-          constructMocks(testTargetName, true)
+          constructMocks(TestTargetName, true)
 
         val commRegistrar = new CommRegistrar(mockCommStorage)
 
         intercept[IllegalArgumentException] {
-          commRegistrar.addCloseHandler(testCloseFunc)
+          commRegistrar.addCloseHandler(TestCloseFunc)
         }
       }
     }

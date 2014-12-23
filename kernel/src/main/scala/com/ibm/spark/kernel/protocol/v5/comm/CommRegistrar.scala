@@ -67,6 +67,24 @@ class CommRegistrar(
   }
 
   /**
+   * Determines whether or not the Comm storage has the specified key.
+   *
+   * @param key The target name or Comm id
+   *
+   * @return True if it exists, otherwise false
+   */
+  def has(key: String): Boolean = commStorage.contains(key)
+
+  /**
+   * Retrieves the Comm callbacks associated with a specific key.
+   *
+   * @param key The target name or Comm id associated with the callbacks
+   *
+   * @return The Comm callbacks or None if no callbacks were found
+   */
+  def retrieve(key: String): Option[CommCallbacks] = commStorage.get(key)
+
+  /**
    * Removes the specified target or id from the storage.
    *
    * @param key The target name or Comm Id to remove
