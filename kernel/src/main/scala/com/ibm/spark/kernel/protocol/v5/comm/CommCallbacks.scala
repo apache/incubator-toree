@@ -20,9 +20,9 @@ import com.ibm.spark.kernel.protocol.v5._
 import scala.util.Try
 
 object CommCallbacks {
-  type OpenCallback = (UUID, String, Data) => Unit
-  type MsgCallback = (UUID, Data) => Unit
-  type CloseCallback = (UUID, Data) => Unit
+  type OpenCallback = (CommWriter, UUID, String, Data) => Unit
+  type MsgCallback = (CommWriter, UUID, Data) => Unit
+  type CloseCallback = (CommWriter, UUID, Data) => Unit
 }
 
 import CommCallbacks._
@@ -91,34 +91,38 @@ class CommCallbacks(
   /**
    * Executes all registered open callbacks and returns a sequence of results.
    *
+   * @param commWriter The Comm Writer that can be used for responses
    * @param commId The Comm Id to pass to all open callbacks
    * @param targetName The Comm Target Name to pass to all open callbacks
    * @param data The data to pass to all open callbacks
    *
    * @return The sequence of results from trying to execute callbacks
    */
-  def executeOpenCallbacks(commId: UUID, targetName: String, data: Data) =
-    openCallbacks.map(f => Try(f(commId, targetName, data)))
+  def executeOpenCallbacks(
+    commWriter: CommWriter, commId: UUID, targetName: String, data: Data
+  ) = openCallbacks.map(f => Try(f(commWriter, commId, targetName, data)))
 
   /**
    * Executes all registered msg callbacks and returns a sequence of results.
    *
+   * @param commWriter The Comm Writer that can be used for responses
    * @param commId The Comm Id to pass to all msg callbacks
    * @param data The data to pass to all msg callbacks
    *
    * @return The sequence of results from trying to execute callbacks
    */
-  def executeMsgCallbacks(commId: UUID, data: Data) =
-    msgCallbacks.map(f => Try(f(commId, data)))
+  def executeMsgCallbacks(commWriter: CommWriter, commId: UUID, data: Data) =
+    msgCallbacks.map(f => Try(f(commWriter, commId, data)))
 
   /**
    * Executes all registered close callbacks and returns a sequence of results.
    *
+   * @param commWriter The Comm Writer that can be used for responses
    * @param commId The Comm Id to pass to all close callbacks
    * @param data The data to pass to all close callbacks
    *
    * @return The sequence of results from trying to execute callbacks
    */
-  def executeCloseCallbacks(commId: UUID, data: Data) =
-    closeCallbacks.map(f => Try(f(commId, data)))
+  def executeCloseCallbacks(commWriter: CommWriter, commId: UUID, data: Data) =
+    closeCallbacks.map(f => Try(f(commWriter, commId, data)))
 }

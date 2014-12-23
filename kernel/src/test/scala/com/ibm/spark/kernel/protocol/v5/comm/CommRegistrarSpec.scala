@@ -28,9 +28,9 @@ import org.mockito.AdditionalMatchers.{not => mockNot}
 class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar {
 
   private val testTargetName = "some target name"
-  private val testOpenFunc: OpenCallback = (_, _, _) => {}
-  private val testMsgFunc: MsgCallback = (_, _) => {}
-  private val testCloseFunc: CloseCallback = (_, _) => {}
+  private val testOpenFunc: OpenCallback = (_, _, _, _) => {}
+  private val testMsgFunc: MsgCallback = (_, _, _) => {}
+  private val testCloseFunc: CloseCallback = (_, _, _) => {}
 
   private def constructMocks(targetName: String, isContained: Boolean) = {
     val mockCommCallbacks = mock[CommCallbacks]
