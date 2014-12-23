@@ -15,6 +15,7 @@
  */
 package com.ibm.spark.kernel.protocol.v5.comm
 
+import com.ibm.spark.kernel.protocol.v5.UUID
 import com.ibm.spark.kernel.protocol.v5.comm.CommCallbacks._
 
 /**
@@ -44,6 +45,38 @@ class CommRegistrar(
     // Return new instance with default target name specified for easier
     // method chaining
     new CommRegistrar(commStorage, Some(targetName))
+  }
+
+  /**
+   * Links a target and a specific Comm Id together.
+   *
+   * @param targetName The name of the target to link
+   * @param commId The Comm Id to link
+   *
+   * @return The current registrar (for chaining methods)
+   */
+  def link(targetName: String, commId: UUID): CommRegistrar = {
+    // If target exists, copy contents to comm_id key
+    if (commStorage.contains(targetName))
+      commStorage(commId) = commStorage(targetName)
+    // If comm_id exists, copy contents to target
+    else if (commStorage.contains(commId))
+      commStorage(targetName) = commStorage(commId)
+
+    this
+  }
+
+  /**
+   * Removes the specified target or id from the storage.
+   *
+   * @param key The target name or Comm Id to remove
+   *
+   * @return The current registrar (for chaining methods)
+   */
+  def remove(key: String): CommRegistrar = {
+    commStorage.remove(key)
+
+    this
   }
 
   /**

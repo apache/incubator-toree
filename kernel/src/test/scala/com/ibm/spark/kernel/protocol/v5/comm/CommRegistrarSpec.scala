@@ -16,6 +16,8 @@
 
 package com.ibm.spark.kernel.protocol.v5.comm
 
+import java.util.UUID
+
 import com.ibm.spark.kernel.protocol.v5.comm.CommCallbacks.{CloseCallback, MsgCallback, OpenCallback}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpec}
@@ -28,6 +30,7 @@ import org.mockito.AdditionalMatchers.{not => mockNot}
 class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar {
 
   private val testTargetName = "some target name"
+  private val testCommId = UUID.randomUUID().toString
   private val testOpenFunc: OpenCallback = (_, _, _, _) => {}
   private val testMsgFunc: MsgCallback = (_, _, _) => {}
   private val testCloseFunc: CloseCallback = (_, _, _) => {}
@@ -64,6 +67,57 @@ class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar {
 
         commRegistrar.register(testTargetName)
           .defaultTargetName.value should be (testTargetName)
+      }
+    }
+
+    describe("#link") {
+      it("should create a copy of target as Comm id if target exists") {
+        val mockCommCallbacks = mock[CommCallbacks]
+        val mockCommStorage = mock[CommStorage]
+        doReturn(true).when(mockCommStorage).contains(testTargetName)
+        doReturn(mockCommCallbacks).when(mockCommStorage)(testTargetName)
+
+        val commRegistrar = new CommRegistrar(mockCommStorage)
+
+        commRegistrar.link(testTargetName, testCommId)
+
+        verify(mockCommStorage)(testCommId) = mockCommCallbacks
+      }
+
+      it("should create a copy of Comm id as target if Comm id exists and not target") {
+        val mockCommCallbacks = mock[CommCallbacks]
+        val mockCommStorage = mock[CommStorage]
+        doReturn(true).when(mockCommStorage).contains(testCommId)
+        doReturn(mockCommCallbacks).when(mockCommStorage)(testCommId)
+
+        val commRegistrar = new CommRegistrar(mockCommStorage)
+
+        commRegistrar.link(testTargetName, testCommId)
+
+        verify(mockCommStorage)(testTargetName) = mockCommCallbacks
+      }
+
+      it("should do nothing if neither target nor Comm id exist") {
+        val mockCommCallbacks = mock[CommCallbacks]
+        val mockCommStorage = mock[CommStorage]
+
+        val commRegistrar = new CommRegistrar(mockCommStorage)
+
+        commRegistrar.link(testTargetName, testCommId)
+
+        verify(mockCommStorage, never())(mockEq(testTargetName)) = any[CommCallbacks]
+        verify(mockCommStorage, never())(mockEq(testCommId)) = any[CommCallbacks]
+      }
+    }
+
+    describe("#remove") {
+      it("should remove the entry from the storage") {
+        val mockCommStorage = mock[CommStorage]
+        val commRegistrar = new CommRegistrar(mockCommStorage)
+
+        commRegistrar.remove(testTargetName)
+
+        verify(mockCommStorage).remove(testTargetName)
       }
     }
 
