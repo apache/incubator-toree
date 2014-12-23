@@ -37,7 +37,7 @@ class CommOpenHandlerSpec extends TestKit(
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter
 {
-  private val CommId = UUID.randomUUID().toString
+  private val TestCommId = UUID.randomUUID().toString
   private val TestTargetName = "some test target"
 
   private var kmBuilder: KMBuilder = _
@@ -80,7 +80,7 @@ class CommOpenHandlerSpec extends TestKit(
         // Send a comm_open message with the test target
         commOpenHandler ! kmBuilder
           .withHeader(v5.MessageType.CommOpen)
-          .withContentString(CommOpen(CommId, TestTargetName, v5.Data()))
+          .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
           .build
 
         // Should receive a busy and an idle message
@@ -98,7 +98,7 @@ class CommOpenHandlerSpec extends TestKit(
         // Send a comm_open message with the test target
         commOpenHandler ! kmBuilder
           .withHeader(v5.MessageType.CommOpen)
-          .withContentString(CommOpen(CommId, TestTargetName, v5.Data()))
+          .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
           .build
 
         // Should receive a close message as a result of the target missing
