@@ -16,7 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import com.ibm.spark.kernel.protocol.v5.comm.{CommStorage, CommRegistrar, CommWriter}
+import com.ibm.spark.comm.{CommStorage, CommRegistrar, CommWriter}
 import com.ibm.spark.kernel.protocol.v5.content.CommOpen
 import com.ibm.spark.kernel.protocol.v5.{KMBuilder, Utilities, KernelMessage, ActorLoader}
 import com.ibm.spark.utils.MessageLogSupport

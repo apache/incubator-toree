@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.protocol.v5.comm
+package com.ibm.spark.comm
 
 import com.ibm.spark.kernel.protocol.v5.UUID
-import com.ibm.spark.kernel.protocol.v5.comm.CommCallbacks._
+import com.ibm.spark.comm.CommCallbacks._
 
 /**
  * Represents a point of communication to register new Comm entities (targets)

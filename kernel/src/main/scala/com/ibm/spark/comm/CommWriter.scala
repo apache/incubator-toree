@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.protocol.v5.comm
+package com.ibm.spark.comm
 
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._

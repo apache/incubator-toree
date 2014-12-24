@@ -23,7 +23,7 @@ import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.comm.{CommCallbacks, CommStorage, CommRegistrar}
+import com.ibm.spark.comm.{CommCallbacks, CommStorage, CommRegistrar}
 import com.ibm.spark.kernel.protocol.v5.dispatch.StatusDispatch
 import com.ibm.spark.kernel.protocol.v5.handler._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor

@@ -24,7 +24,7 @@ import akka.actor.{Props, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import com.ibm.spark.kernel.protocol.v5.content.{ClearOutput, CommOpen}
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.comm._
+import com.ibm.spark.comm._
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar

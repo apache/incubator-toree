@@ -22,7 +22,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.comm._
+import com.ibm.spark.comm._
 import com.ibm.spark.kernel.protocol.v5.content.{CommMsg, ClearOutput, CommOpen}
 import org.mockito.Matchers._
 import org.mockito.Mockito._

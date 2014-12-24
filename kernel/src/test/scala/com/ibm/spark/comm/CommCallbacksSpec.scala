@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.comm
+package com.ibm.spark.comm
 
-import com.ibm.spark.kernel.protocol.v5.comm.CommCallbacks._
+import com.ibm.spark.comm.CommCallbacks._
 import com.ibm.spark.kernel.protocol.v5._
 import org.scalatest.{Matchers, FunSpec}
 

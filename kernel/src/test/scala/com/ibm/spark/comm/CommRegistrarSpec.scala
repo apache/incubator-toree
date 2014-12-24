@@ -14,11 +14,11 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.comm
+package com.ibm.spark.comm
 
 import java.util.UUID
 
-import com.ibm.spark.kernel.protocol.v5.comm.CommCallbacks.{CloseCallback, MsgCallback, OpenCallback}
+import com.ibm.spark.comm.CommCallbacks.{CloseCallback, MsgCallback, OpenCallback}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpec}
 import org.scalatest.OptionValues._
