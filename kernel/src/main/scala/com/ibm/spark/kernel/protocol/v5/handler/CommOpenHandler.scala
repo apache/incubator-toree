@@ -16,7 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import com.ibm.spark.comm.{CommStorage, CommRegistrar, CommWriter}
+import com.ibm.spark.comm.{KernelCommWriter, CommStorage, CommRegistrar, CommWriter}
 import com.ibm.spark.kernel.protocol.v5.content.CommOpen
 import com.ibm.spark.kernel.protocol.v5.{KMBuilder, Utilities, KernelMessage, ActorLoader}
 import com.ibm.spark.utils.MessageLogSupport
@@ -58,7 +58,7 @@ class CommOpenHandler(
       s"Received comm_open for target '$targetName' with id '$commId'")
 
     // TODO: Should we be reusing something from the KernelMessage?
-    val commWriter = new CommWriter(actorLoader, KMBuilder(), commId)
+    val commWriter = new KernelCommWriter(actorLoader, KMBuilder(), commId)
 
     if (commStorage.contains(targetName)) {
       logger.debug(s"Executing open callbacks for id '$commId'")

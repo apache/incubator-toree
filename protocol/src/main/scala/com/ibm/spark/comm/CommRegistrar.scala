@@ -15,8 +15,6 @@
  */
 package com.ibm.spark.comm
 
-// TODO: Move duplicate code to separate project (kernel and client)
-
 import com.ibm.spark.comm.CommCallbacks._
 import com.ibm.spark.kernel.protocol.v5.UUID
 

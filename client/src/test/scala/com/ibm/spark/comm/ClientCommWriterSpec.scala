@@ -15,8 +15,6 @@
  */
 package com.ibm.spark.comm
 
-// TODO: Move duplicate code to separate project (kernel and client)
-
 import java.util.UUID
 
 import akka.actor.{ActorSelection, ActorSystem}
@@ -32,25 +30,25 @@ import play.api.libs.json.Json
 
 import scala.concurrent.duration._
 
-object CommWriterSpec {
+object ClientCommWriterSpec {
   val config ="""
     akka {
       loglevel = "WARNING"
     }"""
 }
 
-class CommWriterSpec extends TestKit(
-  ActorSystem("CommWriterSpec",
-    ConfigFactory.parseString(CommWriterSpec.config))
+class ClientCommWriterSpec extends TestKit(
+  ActorSystem("ClientCommWriterSpec",
+    ConfigFactory.parseString(ClientCommWriterSpec.config))
 ) with FunSpecLike with Matchers with BeforeAndAfter with MockitoSugar
 {
 
   private val commId = UUID.randomUUID().toString
-  private var commWriter: CommWriter = _
+  private var clientCommWriter: ClientCommWriter = _
   private var kernelMessageBuilder: KMBuilder = _
 
   private var actorLoader: ActorLoader = _
-  private var kernelMessageRelayProbe: TestProbe = _
+  private var shellSocketProbe: TestProbe = _
 
   /**
    * Retrieves the next message available.
@@ -58,7 +56,7 @@ class CommWriterSpec extends TestKit(
    * @return The KernelMessage instance (or an error if timed out)
    */
   private def getNextMessage =
-    kernelMessageRelayProbe.receiveOne(200.milliseconds)
+    shellSocketProbe.receiveOne(200.milliseconds)
       .asInstanceOf[KernelMessage]
 
   /**
@@ -89,27 +87,27 @@ class CommWriterSpec extends TestKit(
 
     // Construct path for kernel message relay
     actorLoader = mock[ActorLoader]
-    kernelMessageRelayProbe = TestProbe()
-    val kernelMessageRelaySelection: ActorSelection =
-      system.actorSelection(kernelMessageRelayProbe.ref.path.toString)
-    doReturn(kernelMessageRelaySelection)
-      .when(actorLoader).load(SystemActorType.KernelMessageRelay)
+    shellSocketProbe = TestProbe()
+    val shellSocketSelection: ActorSelection =
+      system.actorSelection(shellSocketProbe.ref.path.toString)
+    doReturn(shellSocketSelection)
+      .when(actorLoader).load(SocketType.ShellClient)
 
     // Create a new writer to use for testing
-    commWriter = new CommWriter(actorLoader, kernelMessageBuilder, commId)
+    clientCommWriter = new ClientCommWriter(actorLoader, kernelMessageBuilder, commId)
   }
 
-  describe("CommWriter") {
+  describe("ClientCommWriter") {
     describe("#writeOpen") {
       it("should send a comm_open message to the relay") {
-        commWriter.writeOpen(anyString())
+        clientCommWriter.writeOpen(anyString())
 
         getNextMessageType should be (MessageType.CommOpen)
       }
 
       it("should include the comm_id in the message") {
         val expected = commId
-        commWriter.writeOpen(anyString())
+        clientCommWriter.writeOpen(anyString())
 
         val actual = getNextMessageContents[CommOpen].comm_id
 
@@ -118,7 +116,7 @@ class CommWriterSpec extends TestKit(
 
       it("should include the target name in the message") {
         val expected = "<TARGET_NAME>"
-        commWriter.writeOpen(expected)
+        clientCommWriter.writeOpen(expected)
 
         val actual = getNextMessageContents[CommOpen].target_name
 
@@ -127,7 +125,7 @@ class CommWriterSpec extends TestKit(
 
       it("should provide empty data in the message if no data is provided") {
         val expected = Data()
-        commWriter.writeOpen(anyString())
+        clientCommWriter.writeOpen(anyString())
 
         val actual = getNextMessageContents[CommOpen].data
 
@@ -136,7 +134,7 @@ class CommWriterSpec extends TestKit(
 
       it("should include the data in the message") {
         val expected = Data("some key" -> "some value")
-        commWriter.writeOpen(anyString(), expected)
+        clientCommWriter.writeOpen(anyString(), expected)
 
         val actual = getNextMessageContents[CommOpen].data
 
@@ -146,14 +144,14 @@ class CommWriterSpec extends TestKit(
 
     describe("#writeMsg") {
       it("should send a comm_msg message to the relay") {
-        commWriter.writeMsg(Data())
+        clientCommWriter.writeMsg(Data())
 
         getNextMessageType should be (MessageType.CommMsg)
       }
 
       it("should include the comm_id in the message") {
         val expected = commId
-        commWriter.writeMsg(Data())
+        clientCommWriter.writeMsg(Data())
 
         val actual = getNextMessageContents[CommMsg].comm_id
 
@@ -162,13 +160,13 @@ class CommWriterSpec extends TestKit(
 
       it("should fail a require if the data is null") {
         intercept[IllegalArgumentException] {
-          commWriter.writeMsg(null)
+          clientCommWriter.writeMsg(null)
         }
       }
 
       it("should include the data in the message") {
         val expected = Data("some key" -> "some value")
-        commWriter.writeMsg(expected)
+        clientCommWriter.writeMsg(expected)
 
         val actual = getNextMessageContents[CommMsg].data
 
@@ -178,14 +176,14 @@ class CommWriterSpec extends TestKit(
 
     describe("#writeClose") {
       it("should send a comm_close message to the relay") {
-        commWriter.writeClose()
+        clientCommWriter.writeClose()
 
         getNextMessageType should be (MessageType.CommClose)
       }
 
       it("should include the comm_id in the message") {
         val expected = commId
-        commWriter.writeClose()
+        clientCommWriter.writeClose()
 
         val actual = getNextMessageContents[CommClose].comm_id
 
@@ -194,7 +192,7 @@ class CommWriterSpec extends TestKit(
 
       it("should provide empty data in the message if no data is provided") {
         val expected = Data()
-        commWriter.writeClose()
+        clientCommWriter.writeClose()
 
         val actual = getNextMessageContents[CommClose].data
 
@@ -203,7 +201,7 @@ class CommWriterSpec extends TestKit(
 
       it("should include the data in the message") {
         val expected = Data("some key" -> "some value")
-        commWriter.writeClose(expected)
+        clientCommWriter.writeClose(expected)
 
         val actual = getNextMessageContents[CommClose].data
 
@@ -213,14 +211,14 @@ class CommWriterSpec extends TestKit(
 
     describe("#write") {
       it("should send a comm_msg message to the relay") {
-        commWriter.write(Array('a'), 0, 1)
+        clientCommWriter.write(Array('a'), 0, 1)
 
         getNextMessageType should be (MessageType.CommMsg)
       }
 
       it("should include the comm_id in the message") {
         val expected = commId
-        commWriter.write(Array('a'), 0, 1)
+        clientCommWriter.write(Array('a'), 0, 1)
 
         val actual = getNextMessageContents[CommMsg].comm_id
 
@@ -229,7 +227,7 @@ class CommWriterSpec extends TestKit(
 
       it("should package the string as part of the data with a 'message' key") {
         val expected = Data("message" -> "a")
-        commWriter.write(Array('a'), 0, 1)
+        clientCommWriter.write(Array('a'), 0, 1)
 
         val actual = getNextMessageContents[CommMsg].data
 
@@ -240,20 +238,20 @@ class CommWriterSpec extends TestKit(
     describe("#flush") {
       it("should do nothing") {
         // TODO: Is this test necessary? It does nothing.
-        commWriter.flush()
+        clientCommWriter.flush()
       }
     }
 
     describe("#close") {
       it("should send a comm_close message to the relay") {
-        commWriter.close()
+        clientCommWriter.close()
 
         getNextMessageType should be (MessageType.CommClose)
       }
 
       it("should include the comm_id in the message") {
         val expected = commId
-        commWriter.close()
+        clientCommWriter.close()
 
         val actual = getNextMessageContents[CommClose].comm_id
 
@@ -262,7 +260,7 @@ class CommWriterSpec extends TestKit(
 
       it("should provide empty data in the message") {
         val expected = Data()
-        commWriter.close()
+        clientCommWriter.close()
 
         val actual = getNextMessageContents[CommClose].data
 

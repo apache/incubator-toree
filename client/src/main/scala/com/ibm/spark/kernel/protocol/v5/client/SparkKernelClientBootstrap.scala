@@ -17,6 +17,7 @@
 package com.ibm.spark.kernel.protocol.v5.client
 
 import akka.actor.{ActorRef, ActorSystem, Props}
+import com.ibm.spark.comm.{CommCallbacks, CommStorage, CommRegistrar}
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SimpleActorLoader
 import com.ibm.spark.kernel.protocol.v5.client.handler.ExecuteHandler
@@ -25,6 +26,8 @@ import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.socket.SocketConfig
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
+
+import scala.collection.mutable
 
 class SparkKernelClientBootstrap(config: Config) extends LogLike {
 
@@ -39,7 +42,10 @@ class SparkKernelClientBootstrap(config: Config) extends LogLike {
    * @return an instance of a SparkKernelClient
    */
   def createClient: SparkKernelClient = {
-    val client = new SparkKernelClient(actorLoader, actorSystem)
+    val commStorage = new mutable.HashMap[String, CommCallbacks]()
+    val commRegistrar = new CommRegistrar(commStorage)
+    val client = new SparkKernelClient(
+      actorLoader, actorSystem, commRegistrar, commStorage)
     client
   }
 
@@ -52,23 +58,34 @@ class SparkKernelClientBootstrap(config: Config) extends LogLike {
   }
 
   private def initializeSystemActors(): Unit = {
-    heartbeatClientActor = Option(actorSystem.actorOf(Props(classOf[HeartbeatClient], socketFactory),
-      name = SocketType.HeartbeatClient.toString))
+    heartbeatClientActor = Option(actorSystem.actorOf(Props(
+      classOf[HeartbeatClient], socketFactory),
+      name = SocketType.HeartbeatClient.toString)
+    )
 
     actorSystem.actorOf(Props(classOf[ShellClient], socketFactory),
       name = SocketType.ShellClient.toString)
 
-    actorSystem.actorOf(Props(classOf[IOPubClient], socketFactory),
+    actorSystem.actorOf(Props(classOf[IOPubClient], socketFactory, actorLoader),
       name = SocketType.IOPubClient.toString)
   }
 
-  private def initializeRequestHandler[T](clazz: Class[T], messageType: MessageType) {
+  private def initializeRequestHandler[T](clazz: Class[T], messageType: MessageType) = {
     logger.info("Creating %s handler".format(messageType.toString))
     actorSystem.actorOf(Props(clazz, actorLoader), name = messageType.toString)
   }
 
+  private def initializeCommHandler[T](clazz: Class[T], messageType: MessageType) = {
+    logger.info("Creating %s handler".format(messageType.toString))
+    actorSystem.actorOf(Props(clazz, actorLoader/*, commRegistrar, commStorage*/),
+      name = messageType.toString)
+  }
+
   private def initializeMessageHandlers(): Unit = {
     initializeRequestHandler(classOf[ExecuteHandler], MessageType.ExecuteRequest)
+    initializeCommHandler(classOf[ExecuteHandler], MessageType.CommOpen)
+    initializeCommHandler(classOf[ExecuteHandler], MessageType.CommMsg)
+    initializeCommHandler(classOf[ExecuteHandler], MessageType.CommClose)
   }
 
   initialize()

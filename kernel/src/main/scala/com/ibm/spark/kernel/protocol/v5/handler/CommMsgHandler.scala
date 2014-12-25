@@ -16,7 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.handler
 
-import com.ibm.spark.comm.{CommRegistrar, CommWriter, CommStorage}
+import com.ibm.spark.comm.{KernelCommWriter, CommRegistrar, CommWriter, CommStorage}
 import com.ibm.spark.kernel.protocol.v5.content.CommMsg
 import com.ibm.spark.kernel.protocol.v5.{KMBuilder, Utilities, ActorLoader, KernelMessage}
 import com.ibm.spark.utils.MessageLogSupport
@@ -56,7 +56,7 @@ class CommMsgHandler(
     logger.debug(s"Received comm_msg with id '$commId'")
 
     // TODO: Should we be reusing something from the KernelMessage?
-    val commWriter = new CommWriter(actorLoader, KMBuilder(), commId)
+    val commWriter = new KernelCommWriter(actorLoader, KMBuilder(), commId)
 
     if (commStorage.contains(commId)) {
       logger.debug(s"Executing msg callbacks for id '$commId'")

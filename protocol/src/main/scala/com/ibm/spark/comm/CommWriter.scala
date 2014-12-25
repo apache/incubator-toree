@@ -15,8 +15,6 @@
  */
 package com.ibm.spark.comm
 
-// TODO: Move duplicate code to separate project (kernel and client)
-
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 
@@ -25,15 +23,11 @@ import java.io.Writer
 /**
  * Represents a basic writer used to communicate comm-related messages.
  *
- * @param actorLoader The actor loader to use for loading actors responsible for
- *                    communication
- * @param kmBuilder The kernel message builder used to construct kernel messages
- * @param commId The comm id associated with this writer
+ * @param commId The comm id associated with this writer (defaults to a
+ *               random UUID)
  */
-class CommWriter(
-  private val actorLoader: ActorLoader,
-  private val kmBuilder: KMBuilder,
-  private val commId: UUID
+abstract class CommWriter(
+  private val commId: UUID = java.util.UUID.randomUUID().toString
 ) extends Writer {
 
   private val MessageFieldName = "message"
@@ -107,16 +101,7 @@ class CommWriter(
    *
    * @tparam T Either CommOpen, CommMsg, or CommClose
    */
-  private def sendCommKernelMessage[
+  protected[comm] def sendCommKernelMessage[
     T <: KernelMessageContent with CommContent
-  ](commContent: T) = {
-    val messageType = commContent match {
-      case _: CommOpen  => MessageType.CommOpen
-      case _: CommMsg   => MessageType.CommMsg
-      case _: CommClose => MessageType.CommClose
-      case _            => throw new Throwable("Invalid kernel message type!")
-    }
-    actorLoader.load(SystemActorType.KernelMessageRelay) !
-      kmBuilder.withHeader(messageType).withContentString(commContent).build
-  }
+  ](commContent: T)
 }
