@@ -19,11 +19,12 @@ package com.ibm.spark
 import akka.actor.{Props, ActorSystem, ActorRef}
 import com.ibm.spark.dependencies.{IvyDependencyDownloader, DependencyDownloader}
 import com.ibm.spark.interpreter._
+import com.ibm.spark.kernel.api.Kernel
 import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.comm.{CommCallbacks, CommStorage, CommRegistrar}
+import com.ibm.spark.comm._
 import com.ibm.spark.kernel.protocol.v5.dispatch.StatusDispatch
 import com.ibm.spark.kernel.protocol.v5.handler._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
@@ -59,9 +60,10 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
   private var shellActor: ActorRef                    = _
   private var ioPubActor: ActorRef                    = _
 
+  protected[spark] var kernel: Kernel                 = _
   protected[spark] var interpreter: Interpreter       = _
   protected[spark] var kernelInterpreter: Interpreter = _
-  protected[spark] var kernel: Kernel                 = _
+  protected[spark] var commManager: CommManager       = _
 
   protected[spark] var sparkContext: SparkContext     = _
   protected[spark] var dependencyDownloader: DependencyDownloader = _
@@ -220,6 +222,9 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
     logger.debug("Constructing Comm registrar")
     commRegistrar = new CommRegistrar(commStorage)
+
+    logger.debug("Constructing Comm manager")
+    commManager = new KernelCommManager(actorLoader, KMBuilder(), commRegistrar)
   }
 
   private def initializeDependencyDownloader(): Unit = {
@@ -393,9 +398,9 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
   protected[spark] def initializeKernel(): Unit = {
     //interpreter.doQuietly {
-    kernel = new Kernel(kernelInterpreter)
+    kernel = new Kernel(kernelInterpreter, commManager)
     interpreter.bind(
-      "kernel", "com.ibm.spark.Kernel",
+      "kernel", "com.ibm.spark.kernel.api.Kernel",
       kernel, List( """@transient implicit""")
     )
     //}

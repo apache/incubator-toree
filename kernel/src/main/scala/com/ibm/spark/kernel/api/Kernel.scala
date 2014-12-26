@@ -1,10 +1,18 @@
-package com.ibm.spark
+package com.ibm.spark.kernel.api
 
+import com.ibm.spark.comm.CommManager
 import com.ibm.spark.interpreter._
 
+/**
+ * Represents the main kernel API to be used for interaction.
+ *
+ * @param interpreter The interpreter to expose in this instance
+ * @param comm The Comm manager to expose in this instance
+ */
 class Kernel (
-  val interpreter: Interpreter
-) {
+  val interpreter: Interpreter,
+  val comm: CommManager
+) extends KernelLike {
   def eval(code: Option[String]): (Boolean, String) = {
     code.map(c => {
       val (success, result) = interpreter.interpret(c)
