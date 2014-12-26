@@ -28,6 +28,12 @@ class KernelInfoRequestSpec extends FunSpec with Matchers {
   val kernelInfoRequest: KernelInfoRequest = KernelInfoRequest()
 
   describe("KernelInfoRequest") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        KernelInfoRequest.toTypeString should be ("kernel_info_request")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a KernelInfoRequest instance") {
         // This is the least safe way to convert as an error is thrown if it fails

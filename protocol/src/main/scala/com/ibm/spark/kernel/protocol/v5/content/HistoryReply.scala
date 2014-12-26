@@ -31,7 +31,14 @@ case class HistoryReply(
     Json.toJson(this)(HistoryReply.historyReplyWrites).toString
 }
 
-object HistoryReply {
+object HistoryReply extends TypeString {
   implicit val historyReplyReads = Json.reads[HistoryReply]
   implicit val historyReplyWrites = Json.writes[HistoryReply]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "history_reply"
 }

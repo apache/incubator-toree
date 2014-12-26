@@ -23,18 +23,24 @@ import play.api.libs.json._
 case class ClearOutput (
   //  We cannot use _wait as a field because it is a method defined on all objects
   _wait: Boolean
-) extends KernelMessageContent{
+) extends KernelMessageContent {
   override def content : String =
     Json.toJson(this)(ClearOutput.clearOutputWrites).toString
 }
 
 //  Single property fields are not well supported by play, this is a little funky workaround founde here:
 //  https://groups.google.com/forum/?fromgroups=#!starred/play-framework/hGrveOkbJ6U
-object ClearOutput{
+object ClearOutput extends TypeString {
   implicit val clearOutputReads: Reads[ClearOutput] = (
     (JsPath \ "wait").read[Boolean].map(ClearOutput(_)))
   implicit val clearOutputWrites: Writes[ClearOutput] = (
     (JsPath \ "wait").write[Boolean].contramap((c : ClearOutput) => c._wait)
     )
 
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "clear_output"
 }

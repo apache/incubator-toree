@@ -37,6 +37,12 @@ class DisplayDataSpec extends FunSpec with Matchers {
   )
 
   describe("DisplayData") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        DisplayData.toTypeString should be ("display_data")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a displayData instance") {
         // This is the least safe way to convert as an error is thrown if it fails

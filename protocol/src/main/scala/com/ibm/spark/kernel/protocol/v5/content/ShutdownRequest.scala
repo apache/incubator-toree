@@ -26,7 +26,14 @@ case class ShutdownRequest(
     Json.toJson(this)(ShutdownRequest.shutdownRequestWrites).toString
 }
 
-object ShutdownRequest {
+object ShutdownRequest extends TypeString {
   implicit val shutdownRequestReads = Json.reads[ShutdownRequest]
   implicit val shutdownRequestWrites = Json.writes[ShutdownRequest]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "shutdown_request"
 }

@@ -26,7 +26,14 @@ case class CommMsg(comm_id: UUID, data: Data)
     Json.toJson(this)(CommMsg.commMsgWrites).toString
 }
 
-object CommMsg {
+object CommMsg extends TypeString {
   implicit val commMsgReads = Json.reads[CommMsg]
   implicit val commMsgWrites = Json.writes[CommMsg]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "comm_msg"
 }

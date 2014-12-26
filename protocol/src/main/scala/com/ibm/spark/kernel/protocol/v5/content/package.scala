@@ -73,9 +73,4 @@ package object content {
     _: List[String], _: Int, _: Int, _: Metadata, "error", _: Option[String],
     _: Option[String], _: Option[List[String]]
   )
-
-  // ShutdownReply message is exactly the same format as ShutdownRequest
-  type ShutdownReply = ShutdownRequest
-  val ShutdownReply = ShutdownRequest
-
 }

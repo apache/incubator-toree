@@ -32,6 +32,12 @@ class ShutdownReplySpec extends FunSpec with Matchers {
   )
 
   describe("ShutdownReply") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        ShutdownReply.toTypeString should be ("shutdown_reply")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a ShutdownReply instance") {
         // This is the least safe way to convert as an error is thrown if it fails

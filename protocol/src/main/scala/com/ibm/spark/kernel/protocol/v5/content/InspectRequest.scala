@@ -29,8 +29,15 @@ case class InspectRequest(
     Json.toJson(this)(InspectRequest.inspectRequestWrites).toString
 }
 
-object InspectRequest {
+object InspectRequest extends TypeString {
   implicit val inspectRequestReads = Json.reads[InspectRequest]
   implicit val inspectRequestWrites = Json.writes[InspectRequest]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "inspect_request"
 }
 

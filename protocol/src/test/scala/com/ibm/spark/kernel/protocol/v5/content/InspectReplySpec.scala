@@ -34,6 +34,12 @@ class InspectReplySpec extends FunSpec with Matchers {
   )
 
   describe("InspectReply") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        InspectReply.toTypeString should be ("inspect_reply")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a InspectReply instance") {
         // This is the least safe way to convert as an error is thrown if it fails

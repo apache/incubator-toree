@@ -30,9 +30,16 @@ case class ExecuteRequest(
     Json.toJson(this)(ExecuteRequest.executeRequestWrites).toString
 }
 
-object ExecuteRequest {
+object ExecuteRequest extends TypeString {
   implicit val executeRequestReads = Json.reads[ExecuteRequest]
   implicit val executeRequestWrites = Json.writes[ExecuteRequest]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "execute_request"
 }
 
 /* LEFT FOR REFERENCE IN CREATING CUSTOM READ/WRITE

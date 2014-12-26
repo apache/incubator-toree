@@ -32,6 +32,12 @@ class ErrorContentSpec extends FunSpec with Matchers {
   val error = ErrorContent("<STRING>", "<STRING>", List("<STRING>"))
   
   describe("ErrorContent") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        ErrorContent.toTypeString should be ("error_content")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a ErrorContent instance") {
         // This is the least safe way to convert as an error is thrown if it fails

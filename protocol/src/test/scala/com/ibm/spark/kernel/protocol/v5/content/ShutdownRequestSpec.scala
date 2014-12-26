@@ -32,6 +32,12 @@ class ShutdownRequestSpec extends FunSpec with Matchers {
   )
 
   describe("ShutdownRequest") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        ShutdownRequest.toTypeString should be ("shutdown_request")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a ShutdownRequest instance") {
         // This is the least safe way to convert as an error is thrown if it fails

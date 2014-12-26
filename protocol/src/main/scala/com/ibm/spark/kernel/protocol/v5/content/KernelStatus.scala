@@ -26,9 +26,16 @@ case class KernelStatus (
     Json.toJson(this)(KernelStatus.kernelStatusWrites).toString
 }
 
-object KernelStatus {
+object KernelStatus extends TypeString {
   implicit val kernelStatusReads = Json.reads[KernelStatus]
   implicit val kernelStatusWrites = Json.writes[KernelStatus]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "status"
 }
 
 object KernelStatusBusy extends KernelStatus("busy") {

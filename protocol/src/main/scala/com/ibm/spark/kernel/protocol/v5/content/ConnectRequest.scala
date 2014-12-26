@@ -24,7 +24,7 @@ case class ConnectRequest() extends KernelMessageContent {
     Json.toJson(this)(ConnectRequest.connectRequestWrites).toString
 }
 
-object ConnectRequest {
+object ConnectRequest extends TypeString {
   private val SingleInstance = ConnectRequest()
   private val EmptyJsonObj = Json.obj()
 
@@ -37,4 +37,11 @@ object ConnectRequest {
   implicit val connectRequestWrites = new Writes[ConnectRequest] {
     override def writes(req: ConnectRequest): JsValue = EmptyJsonObj
   }
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "connect_request"
 }

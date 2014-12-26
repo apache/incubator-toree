@@ -29,7 +29,14 @@ case class ExecuteResult (
     Json.toJson(this)(ExecuteResult.executeResultWrites).toString
 }
 
-object ExecuteResult {
+object ExecuteResult extends TypeString {
   implicit val executeResultReads = Json.reads[ExecuteResult]
   implicit val executeResultWrites = Json.writes[ExecuteResult]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "execute_result"
 }

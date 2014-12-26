@@ -33,6 +33,12 @@ class ClearOutputSpec extends FunSpec with Matchers {
   )
 
   describe("ClearOutput") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        ClearOutput.toTypeString should be ("clear_output")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a ClearOutput instance") {
         // This is the least safe way to convert as an error is thrown if it fails

@@ -36,6 +36,12 @@ class ExecuteResultSpec extends FunSpec with Matchers {
   )
 
   describe("ExecuteResult") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        ExecuteResult.toTypeString should be ("execute_result")
+      }
+    }
+
     describe("#hasContent") {
       it("should be true when data has a non-empty text/plain field") {
         executeResult.hasContent should be (true)
