@@ -27,7 +27,7 @@ import java.io.Writer
  *               random UUID)
  */
 abstract class CommWriter(
-  private val commId: UUID = java.util.UUID.randomUUID().toString
+  private[comm] val commId: UUID = java.util.UUID.randomUUID().toString
 ) extends Writer {
 
   private val MessageFieldName = "message"

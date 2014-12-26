@@ -32,7 +32,7 @@ import com.ibm.spark.kernel.protocol.v5._
 class KernelCommWriter(
   private val actorLoader: ActorLoader,
   private val kmBuilder: KMBuilder,
-  private val commId: v5.UUID = java.util.UUID.randomUUID().toString
+  override private[comm] val commId: v5.UUID
 )  extends CommWriter(commId) {
   /**
    * Sends the comm message (open/msg/close) to the actor responsible for

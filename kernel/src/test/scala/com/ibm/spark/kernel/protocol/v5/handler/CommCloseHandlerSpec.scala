@@ -40,7 +40,7 @@ class CommCloseHandlerSpec extends TestKit(
   private val TestTargetName = "some test target"
 
   private var kmBuilder: KMBuilder = _
-  private var mockCommStorage: CommStorage = _
+  private var spyCommStorage: CommStorage = _
   private var mockCommCallbacks: CommCallbacks = _
   private var mockCommRegistrar: CommRegistrar = _
   private var mockActorLoader: ActorLoader = _
@@ -51,15 +51,14 @@ class CommCloseHandlerSpec extends TestKit(
   before {
     kmBuilder = KMBuilder()
     mockCommCallbacks = mock[CommCallbacks]
-    mockCommStorage = mock[CommStorage]
-    doReturn(mockCommCallbacks).when(mockCommStorage)(TestCommId)
+    spyCommStorage = spy(new CommStorage())
     mockCommRegistrar = mock[CommRegistrar]
 
     mockActorLoader = mock[ActorLoader]
 
     commCloseHandler = system.actorOf(Props(
       classOf[CommCloseHandler],
-      mockActorLoader, mockCommRegistrar, mockCommStorage
+      mockActorLoader, mockCommRegistrar, spyCommStorage
     ))
 
     // Used to intercept responses
@@ -77,7 +76,8 @@ class CommCloseHandlerSpec extends TestKit(
     describe("#process") {
       it("should execute close callbacks if the id is registered") {
         // Mark our id as registered
-        doReturn(true).when(mockCommStorage).contains(TestCommId)
+        doReturn(Some(mockCommCallbacks)).when(spyCommStorage)
+          .getCommIdCallbacks(TestCommId)
 
         // Send a comm_open message with the test target
         commCloseHandler ! kmBuilder
@@ -93,26 +93,9 @@ class CommCloseHandlerSpec extends TestKit(
           any[CommWriter], any[v5.UUID], any[v5.Data])
       }
 
-      it("should unlink the target and Comm id if the id exists") {
-        // Mark our target as registered
-        doReturn(true).when(mockCommStorage).contains(TestCommId)
-
-        // Send a comm_open message with the test target
-        commCloseHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommClose)
-          .withContentString(CommClose(TestCommId, v5.Data()))
-          .build
-
-        // Should receive a busy and an idle message
-        statusDispatchProbe.receiveN(2, 200.milliseconds)
-
-        // Verify that the target and Comm id were unlinked
-        verify(mockCommRegistrar).remove(TestCommId)
-      }
-
       it("should not execute close callbacks if the id is not registered") {
         // Mark our target as not registered
-        doReturn(false).when(mockCommStorage).contains(TestCommId)
+        doReturn(None).when(spyCommStorage).getCommIdCallbacks(TestCommId)
 
         // Send a comm_msg message with the test id
         commCloseHandler ! kmBuilder

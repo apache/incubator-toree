@@ -40,7 +40,7 @@ class CommMsgHandlerSpec extends TestKit(
   private val TestTargetName = "some test target"
 
   private var kmBuilder: KMBuilder = _
-  private var mockCommStorage: CommStorage = _
+  private var spyCommStorage: CommStorage = _
   private var mockCommCallbacks: CommCallbacks = _
   private var mockActorLoader: ActorLoader = _
   private var commMsgHandler: ActorRef = _
@@ -50,14 +50,13 @@ class CommMsgHandlerSpec extends TestKit(
   before {
     kmBuilder = KMBuilder()
     mockCommCallbacks = mock[CommCallbacks]
-    mockCommStorage = mock[CommStorage]
-    doReturn(mockCommCallbacks).when(mockCommStorage)(TestCommId)
+    spyCommStorage = spy(new CommStorage())
 
     mockActorLoader = mock[ActorLoader]
 
     commMsgHandler = system.actorOf(Props(
       classOf[CommMsgHandler],
-      mockActorLoader, mock[CommRegistrar], mockCommStorage
+      mockActorLoader, mock[CommRegistrar], spyCommStorage
     ))
 
     // Used to intercept responses
@@ -75,7 +74,8 @@ class CommMsgHandlerSpec extends TestKit(
     describe("#process") {
       it("should execute msg callbacks if the id is registered") {
         // Mark our id as registered
-        doReturn(true).when(mockCommStorage).contains(TestCommId)
+        doReturn(Some(mockCommCallbacks)).when(spyCommStorage)
+          .getCommIdCallbacks(TestCommId)
 
         // Send a comm_open message with the test target
         commMsgHandler ! kmBuilder
@@ -93,7 +93,7 @@ class CommMsgHandlerSpec extends TestKit(
 
       it("should not execute msg callbacks if the id is not registered") {
         // Mark our target as not registered
-        doReturn(false).when(mockCommStorage).contains(TestCommId)
+        doReturn(None).when(spyCommStorage).getCommIdCallbacks(TestCommId)
 
         // Send a comm_msg message with the test id
         commMsgHandler ! kmBuilder

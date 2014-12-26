@@ -41,7 +41,7 @@ class CommOpenHandlerSpec extends TestKit(
   private val TestTargetName = "some test target"
 
   private var kmBuilder: KMBuilder = _
-  private var mockCommStorage: CommStorage = _
+  private var spyCommStorage: CommStorage = _
   private var mockCommCallbacks: CommCallbacks = _
   private var mockCommRegistrar: CommRegistrar = _
   private var mockActorLoader: ActorLoader = _
@@ -52,15 +52,14 @@ class CommOpenHandlerSpec extends TestKit(
   before {
     kmBuilder = KMBuilder()
     mockCommCallbacks = mock[CommCallbacks]
-    mockCommStorage = mock[CommStorage]
-    doReturn(mockCommCallbacks).when(mockCommStorage)(TestTargetName)
+    spyCommStorage = spy(new CommStorage())
     mockCommRegistrar = mock[CommRegistrar]
 
     mockActorLoader = mock[ActorLoader]
 
     commOpenHandler = system.actorOf(Props(
       classOf[CommOpenHandler],
-      mockActorLoader, mockCommRegistrar, mockCommStorage
+      mockActorLoader, mockCommRegistrar, spyCommStorage
     ))
 
     // Used to intercept responses
@@ -78,7 +77,8 @@ class CommOpenHandlerSpec extends TestKit(
     describe("#process") {
       it("should execute open callbacks if the target exists") {
         // Mark our target as registered
-        doReturn(true).when(mockCommStorage).contains(TestTargetName)
+        doReturn(Some(mockCommCallbacks)).when(spyCommStorage)
+          .getTargetCallbacks(TestTargetName)
 
         // Send a comm_open message with the test target
         commOpenHandler ! kmBuilder
@@ -94,26 +94,9 @@ class CommOpenHandlerSpec extends TestKit(
           any[CommWriter], any[v5.UUID], anyString(), any[v5.Data])
       }
 
-      it("should link the target and Comm id if the target exists") {
-        // Mark our target as registered
-        doReturn(true).when(mockCommStorage).contains(TestTargetName)
-
-        // Send a comm_open message with the test target
-        commOpenHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommOpen)
-          .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
-          .build
-
-        // Should receive a busy and an idle message
-        statusDispatchProbe.receiveN(2, 200.milliseconds)
-
-        // Verify that the target and Comm id were linked
-        verify(mockCommRegistrar).link(TestTargetName, TestCommId)
-      }
-
       it("should close the comm connection if the target does not exist") {
         // Mark our target as not registered
-        doReturn(false).when(mockCommStorage).contains(TestTargetName)
+        doReturn(None).when(spyCommStorage).getTargetCallbacks(TestTargetName)
 
         // Send a comm_open message with the test target
         commOpenHandler ! kmBuilder

@@ -32,7 +32,7 @@ import com.ibm.spark.kernel.protocol.v5._
 class ClientCommWriter(
   private val actorLoader: ActorLoader,
   private val kmBuilder: KMBuilder,
-  private val commId: v5.UUID
+  override private[comm] val commId: v5.UUID
 ) extends CommWriter(commId) {
 
   /**

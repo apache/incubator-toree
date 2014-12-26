@@ -58,16 +58,14 @@ class CommCloseHandler(
     // TODO: Should we be reusing something from the KernelMessage?
     val commWriter = new KernelCommWriter(actorLoader, KMBuilder(), commId)
 
-    if (commStorage.contains(commId)) {
-      logger.debug(s"Executing close callbacks for id '$commId'")
+    commStorage.getCommIdCallbacks(commId) match {
+      case None             =>
+        logger.warn(s"Received invalid id for Comm Close: $commId")
+      case Some(callbacks)  =>
+        logger.debug(s"Executing close callbacks for id '$commId'")
 
-      // TODO: Should we be checking the return values? Probably not.
-      commStorage(commId).executeCloseCallbacks(commWriter, commId, data)
-
-      // Unlink the id with the target
-      commRegistrar.remove(commId)
-    } else {
-      logger.warn(s"Received invalid id for Comm Close: $commId")
+        // TODO: Should we be checking the return values? Probably not.
+        callbacks.executeCloseCallbacks(commWriter, commId, data)
     }
   }
 

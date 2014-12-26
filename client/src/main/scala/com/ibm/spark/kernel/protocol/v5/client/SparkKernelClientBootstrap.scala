@@ -42,10 +42,10 @@ class SparkKernelClientBootstrap(config: Config) extends LogLike {
    * @return an instance of a SparkKernelClient
    */
   def createClient: SparkKernelClient = {
-    val commStorage = new mutable.HashMap[String, CommCallbacks]()
+    val commStorage = new CommStorage()
     val commRegistrar = new CommRegistrar(commStorage)
     val client = new SparkKernelClient(
-      actorLoader, actorSystem, commRegistrar, commStorage)
+      actorLoader, actorSystem, commRegistrar)
     client
   }
 

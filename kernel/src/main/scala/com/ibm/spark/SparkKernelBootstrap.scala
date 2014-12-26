@@ -216,7 +216,7 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
   private def initializeCommObjects(): Unit = {
     logger.debug("Constructing Comm storage")
-    commStorage = new mutable.HashMap[String, CommCallbacks]()
+    commStorage = new CommStorage()
 
     logger.debug("Constructing Comm registrar")
     commRegistrar = new CommRegistrar(commStorage)

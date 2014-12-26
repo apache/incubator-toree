@@ -16,7 +16,9 @@
 package com.ibm.spark.comm
 
 import com.ibm.spark.comm.CommCallbacks._
-import com.ibm.spark.kernel.protocol.v5.UUID
+import com.ibm.spark.kernel.protocol.v5
+
+import scala.collection.immutable
 
 /**
  * Represents a point of communication to register new Comm entities (targets)
@@ -39,8 +41,9 @@ class CommRegistrar(
    * @return The current registrar (for chaining methods)
    */
   def register(targetName: String): CommRegistrar = {
-    if (!commStorage.contains(targetName))
-      commStorage(targetName) = new CommCallbacks() // Mark as registered
+    // Mark as registered if not already
+    if (!commStorage.hasTargetCallbacks(targetName))
+      commStorage.setTargetCallbacks(targetName, new CommCallbacks())
 
     // Return new instance with default target name specified for easier
     // method chaining
@@ -48,51 +51,47 @@ class CommRegistrar(
   }
 
   /**
-   * Links a target and a specific Comm Id together.
+   * Links a target and a specific Comm id together.
    *
    * @param targetName The name of the target to link
    * @param commId The Comm Id to link
    *
    * @return The current registrar (for chaining methods)
    */
-  def link(targetName: String, commId: UUID): CommRegistrar = {
-    // If target exists, copy contents to comm_id key
-    if (commStorage.contains(targetName))
-      commStorage(commId) = commStorage(targetName)
-    // If comm_id exists, copy contents to target
-    else if (commStorage.contains(commId))
-      commStorage(targetName) = commStorage(commId)
+  def link(targetName: String, commId: v5.UUID): CommRegistrar =
+    linkImpl(targetName)(commId)
+
+  /**
+   * Links a target and a specific Comm id together.
+   *
+   * @param commId The Comm Id to link
+   *
+   * @return The current registrar (for chaining methods)
+   */
+  def link(commId: v5.UUID): CommRegistrar = {
+    require(defaultTargetName.nonEmpty, "No default target name provided!")
+
+    linkImpl(defaultTargetName.get)(commId)
+  }
+
+  private def linkImpl(targetName: String)(commId: v5.UUID) = {
+    val commIds = commStorage.getCommIdsFromTarget(targetName)
+      .getOrElse(immutable.Vector.empty[v5.UUID])
+
+    commStorage.setTargetCommIds(targetName, commIds :+ commId)
 
     this
   }
 
   /**
-   * Determines whether or not the Comm storage has the specified key.
+   * Unlinks a target and a specific Comm id based on the provided id.
    *
-   * @param key The target name or Comm id
-   *
-   * @return True if it exists, otherwise false
-   */
-  def has(key: String): Boolean = commStorage.contains(key)
-
-  /**
-   * Retrieves the Comm callbacks associated with a specific key.
-   *
-   * @param key The target name or Comm id associated with the callbacks
-   *
-   * @return The Comm callbacks or None if no callbacks were found
-   */
-  def retrieve(key: String): Option[CommCallbacks] = commStorage.get(key)
-
-  /**
-   * Removes the specified target or id from the storage.
-   *
-   * @param key The target name or Comm Id to remove
+   * @param commId The id of the Comm instance to unlink from its target
    *
    * @return The current registrar (for chaining methods)
    */
-  def remove(key: String): CommRegistrar = {
-    commStorage.remove(key)
+  def unlink(commId: v5.UUID): CommRegistrar = {
+    commStorage.removeCommIdFromTarget(commId)
 
     this
   }
@@ -123,10 +122,10 @@ class CommRegistrar(
 
   private def addOpenHandlerImpl(targetName: String)(func: OpenCallback) = {
     val commCallbacks =
-      if (commStorage.contains(targetName)) commStorage(targetName)
-      else new CommCallbacks()
+      commStorage.getTargetCallbacks(targetName).getOrElse(new CommCallbacks())
 
-    commStorage(targetName) = commCallbacks.addOpenCallback(func)
+    commStorage.setTargetCallbacks(
+      targetName, commCallbacks.addOpenCallback(func))
 
     this
   }
@@ -157,10 +156,10 @@ class CommRegistrar(
 
   private def addMsgHandlerImpl(targetName: String)(func: MsgCallback) = {
     val commCallbacks =
-      if (commStorage.contains(targetName)) commStorage(targetName)
-      else new CommCallbacks()
+      commStorage.getTargetCallbacks(targetName).getOrElse(new CommCallbacks())
 
-    commStorage(targetName) = commCallbacks.addMsgCallback(func)
+    commStorage.setTargetCallbacks(
+      targetName, commCallbacks.addMsgCallback(func))
 
     this
   }
@@ -191,10 +190,10 @@ class CommRegistrar(
 
   private def addCloseHandlerImpl(targetName: String)(func: CloseCallback) = {
     val commCallbacks =
-      if (commStorage.contains(targetName)) commStorage(targetName)
-      else new CommCallbacks()
+      commStorage.getTargetCallbacks(targetName).getOrElse(new CommCallbacks())
 
-    commStorage(targetName) = commCallbacks.addCloseCallback(func)
+    commStorage.setTargetCallbacks(
+      targetName, commCallbacks.addCloseCallback(func))
 
     this
   }

@@ -90,11 +90,13 @@ class IOPubClient(
         val targetName = commOpen.target_name
         val commId = commOpen.comm_id
 
-        if (commStorage.contains(targetName)) {
-          val commWriter = new ClientCommWriter(actorLoader, KMBuilder(), commId)
-          commStorage(targetName).executeOpenCallbacks(
-            commWriter, commId, targetName, commOpen.data)
-          commRegistrar.link(targetName, commId)
+        commStorage.getTargetCallbacks(targetName) match {
+          case None             =>
+          case Some(callbacks)  =>
+            val commWriter = new ClientCommWriter(
+              actorLoader, KMBuilder(), commId)
+            callbacks.executeOpenCallbacks(
+              commWriter, commId, targetName, commOpen.data)
         }
       }
     )
@@ -109,9 +111,12 @@ class IOPubClient(
       (commMsg: CommMsg) => {
         val commId = commMsg.comm_id
 
-        if (commStorage.contains(commId)) {
-          val commWriter = new ClientCommWriter(actorLoader, KMBuilder(), commId)
-          commStorage(commId).executeMsgCallbacks(commWriter, commId, commMsg.data)
+        commStorage.getCommIdCallbacks(commId) match {
+          case None             =>
+          case Some(callbacks)  =>
+            val commWriter = new ClientCommWriter(
+              actorLoader, KMBuilder(), commId)
+            callbacks.executeMsgCallbacks(commWriter, commId, commMsg.data)
         }
       }
     )
@@ -126,11 +131,12 @@ class IOPubClient(
       (commClose: CommClose) => {
         val commId = commClose.comm_id
 
-        if (commStorage.contains(commId)) {
-          val commWriter = new ClientCommWriter(actorLoader, KMBuilder(), commId)
-          commStorage(commId).executeCloseCallbacks(
-            commWriter, commId, commClose.data)
-          commRegistrar.remove(commId)
+        commStorage.getCommIdCallbacks(commId) match {
+          case None             =>
+          case Some(callbacks)  =>
+            val commWriter = new ClientCommWriter(
+              actorLoader, KMBuilder(), commId)
+            callbacks.executeCloseCallbacks(commWriter, commId, commClose.data)
         }
       }
     )

@@ -58,13 +58,14 @@ class CommMsgHandler(
     // TODO: Should we be reusing something from the KernelMessage?
     val commWriter = new KernelCommWriter(actorLoader, KMBuilder(), commId)
 
-    if (commStorage.contains(commId)) {
-      logger.debug(s"Executing msg callbacks for id '$commId'")
+    commStorage.getCommIdCallbacks(commId) match {
+      case None             =>
+        logger.warn(s"Received invalid id for Comm Msg: $commId")
+      case Some(callbacks)  =>
+        logger.debug(s"Executing msg callbacks for id '$commId'")
 
-      // TODO: Should we be checking the return values? Probably not.
-      commStorage(commId).executeMsgCallbacks(commWriter, commId, data)
-    } else {
-      logger.warn(s"Received invalid id for Comm Msg: $commId")
+        // TODO: Should we be checking the return values? Probably not.
+        callbacks.executeMsgCallbacks(commWriter, commId, data)
     }
   }
 

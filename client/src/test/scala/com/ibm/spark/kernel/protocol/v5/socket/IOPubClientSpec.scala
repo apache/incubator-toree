@@ -62,7 +62,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
   private var mockClientSocketFactory: ClientSocketFactory = _
   private var mockActorLoader: ActorLoader = _
   private var mockCommRegistrar: CommRegistrar = _
-  private var mockCommStorage: CommStorage = _
+  private var spyCommStorage: CommStorage = _
   private var mockCommCallbacks: CommCallbacks = _
   private var ioPubClient: ActorRef = _
 
@@ -77,8 +77,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
     mockCommCallbacks = mock[CommCallbacks]
     mockCommRegistrar = mock[CommRegistrar]
 
-    mockCommStorage = mock[CommStorage]
-    doReturn(mockCommCallbacks).when(mockCommStorage)(anyString())
+    spyCommStorage = spy(new CommStorage())
 
     clientSocketProbe = TestProbe()
     mockActorLoader = mock[ActorLoader]
@@ -91,7 +90,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
     //  Construct the object we will test against
     ioPubClient = system.actorOf(Props(
       classOf[IOPubClient], mockClientSocketFactory, mockActorLoader,
-      mockCommRegistrar, mockCommStorage
+      mockCommRegistrar, spyCommStorage
     ))
   }
 
@@ -104,7 +103,8 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           .build
 
         // Mark as target being provided
-        doReturn(true).when(mockCommStorage).contains(anyString())
+        doReturn(Some(mockCommCallbacks)).when(spyCommStorage)
+          .getTargetCallbacks(anyString())
 
         // Simulate receiving a message from the kernel
         ioPubClient ! message
@@ -114,7 +114,6 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           verify(mockCommCallbacks).executeOpenCallbacks(
             any[CommWriter], mockEq(TestCommId),
             mockEq(TestTargetName), any[v5.Data])
-          verify(mockCommRegistrar).link(TestTargetName, TestCommId)
         }
       }
 
@@ -125,7 +124,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           .build
 
         // Mark as target NOT being provided
-        doReturn(false).when(mockCommStorage).contains(anyString())
+        doReturn(None).when(spyCommStorage).getTargetCallbacks(anyString())
 
         // Simulate receiving a message from the kernel
         ioPubClient ! message
@@ -133,7 +132,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
         // Check to see if "eventually" the callback is NOT triggered
         eventually {
           // Check that we have checked if the target exists
-          verify(mockCommStorage).contains(TestTargetName)
+          verify(spyCommStorage).getTargetCallbacks(TestTargetName)
 
           verify(mockCommCallbacks, never()).executeOpenCallbacks(
             any[CommWriter], mockEq(TestCommId),
@@ -149,7 +148,8 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           .build
 
         // Mark as target being provided
-        doReturn(true).when(mockCommStorage).contains(anyString())
+        doReturn(Some(mockCommCallbacks)).when(spyCommStorage)
+          .getCommIdCallbacks(any[v5.UUID])
 
         // Simulate receiving a message from the kernel
         ioPubClient ! message
@@ -168,7 +168,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           .build
 
         // Mark as target NOT being provided
-        doReturn(false).when(mockCommStorage).contains(anyString())
+        doReturn(None).when(spyCommStorage).getCommIdCallbacks(any[v5.UUID])
 
         // Simulate receiving a message from the kernel
         ioPubClient ! message
@@ -176,7 +176,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
         // Check to see if "eventually" the callback is NOT triggered
         eventually {
           // Check that we have checked if the target exists
-          verify(mockCommStorage).contains(TestCommId)
+          verify(spyCommStorage).getCommIdCallbacks(TestCommId)
 
           verify(mockCommCallbacks, never()).executeMsgCallbacks(
             any[CommWriter], mockEq(TestCommId), any[v5.Data])
@@ -190,7 +190,8 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           .build
 
         // Mark as target being provided
-        doReturn(true).when(mockCommStorage).contains(anyString())
+        doReturn(Some(mockCommCallbacks)).when(spyCommStorage)
+          .getCommIdCallbacks(any[v5.UUID])
 
         // Simulate receiving a message from the kernel
         ioPubClient ! message
@@ -209,7 +210,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           .build
 
         // Mark as target NOT being provided
-        doReturn(false).when(mockCommStorage).contains(anyString())
+        doReturn(None).when(spyCommStorage).getCommIdCallbacks(any[v5.UUID])
 
         // Simulate receiving a message from the kernel
         ioPubClient ! message
@@ -217,7 +218,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
         // Check to see if "eventually" the callback is NOT triggered
         eventually {
           // Check that we have checked if the target exists
-          verify(mockCommStorage).contains(TestCommId)
+          verify(spyCommStorage).getCommIdCallbacks(TestCommId)
 
           verify(mockCommCallbacks, never()).executeCloseCallbacks(
             any[CommWriter], mockEq(TestCommId), any[v5.Data])

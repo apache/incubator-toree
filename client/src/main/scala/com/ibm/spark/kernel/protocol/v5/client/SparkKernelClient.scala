@@ -21,7 +21,7 @@ import java.util.UUID
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
-import com.ibm.spark.comm.{CommStorage, CommRegistrar, ClientCommWriter, CommCallbacks}
+import com.ibm.spark.comm._
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, ExecuteRequestTuple}
@@ -42,8 +42,9 @@ import scala.util.{Failure, Success}
  * The actorSystem parameter allows shutdown of this client's ActorSystem.
  */
 class SparkKernelClient(
-  actorLoader: ActorLoader, actorSystem: ActorSystem,
-  commRegistrar: CommRegistrar, commStorage: CommStorage
+  private val actorLoader: ActorLoader,
+  private val actorSystem: ActorSystem,
+  private val commRegistrar: CommRegistrar
 ) extends LogLike {
   implicit val timeout = Timeout(21474835.seconds)
 
@@ -108,43 +109,11 @@ class SparkKernelClient(
   /**
    * Represents the exposed interface for Comm communication with the kernel.
    */
-  val comm = new {
-    /**
-     * The public Comm registrar used for callback registration.
-     */
-    val registrar = commRegistrar
-
-    /**
-     * Establishes a new Comm connection with the kernel.
-     *
-     * @param targetName The name of the target on the kernel
-     * @param data The data to send with the open communication
-     * @param callbacks The optional collection of callbacks to execute
-     *                  specifically for messages tied to this specific Comm
-     *
-     * @return The writer representing the Comm connection
-     */
-    def open(targetName: String, data: v5.Data = v5.Data(),
-             callbacks: Option[CommCallbacks] = None) =
-    {
-      val commId = UUID.randomUUID().toString
-
-      // Attach the callbacks as a single "link" without a target name
-      callbacks match {
-        case Some(c)  => commStorage(commId) = c
-        case None     =>
-      }
-
-      // Create the new writer tied to this open
-      val commWriter = new ClientCommWriter(actorLoader, KMBuilder(), commId)
-
-      // Send the open message
-      commWriter.writeOpen(targetName, data)
-
-      // Return the writer for chaining
-      commWriter
-    }
-  }
+  val Comm = new ClientCommManager(
+    actorLoader = actorLoader,
+    kmBuilder = KMBuilder(),
+    commRegistrar = commRegistrar
+  )
 
   // TODO: hide this? just heartbeat to see if kernel is reachable?
   def heartbeat(failure: () => Unit): Unit = {

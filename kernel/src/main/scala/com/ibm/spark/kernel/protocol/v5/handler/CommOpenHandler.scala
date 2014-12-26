@@ -60,19 +60,16 @@ class CommOpenHandler(
     // TODO: Should we be reusing something from the KernelMessage?
     val commWriter = new KernelCommWriter(actorLoader, KMBuilder(), commId)
 
-    if (commStorage.contains(targetName)) {
-      logger.debug(s"Executing open callbacks for id '$commId'")
+    commStorage.getTargetCallbacks(targetName) match {
+      case None             =>
+        logger.warn(s"Received invalid target for Comm Open: $targetName")
 
-      // TODO: Should we be checking the return values? Probably not.
-      commStorage(targetName).executeOpenCallbacks(
-        commWriter, commId, targetName, data)
+        commWriter.close()
+      case Some(callbacks)  =>
+        logger.debug(s"Executing open callbacks for id '$commId'")
 
-      // Link the new id to the target
-      commRegistrar.link(targetName, commId)
-    } else {
-      logger.warn(s"Received invalid target for Comm Open: $targetName")
-
-      commWriter.close()
+        // TODO: Should we be checking the return values? Probably not.
+        callbacks.executeOpenCallbacks(commWriter, commId, targetName, data)
     }
   }
 
