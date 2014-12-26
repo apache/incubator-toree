@@ -25,6 +25,7 @@ import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.comm._
+import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen}
 import com.ibm.spark.kernel.protocol.v5.dispatch.StatusDispatch
 import com.ibm.spark.kernel.protocol.v5.handler._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
@@ -160,7 +161,17 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
     logger.debug("Creating kernel message relay actor")
     kernelMessageRelayActor = actorSystem.actorOf(
       Props(
-        classOf[KernelMessageRelay], actorLoader, true
+        classOf[KernelMessageRelay], actorLoader, true,
+        Map(
+          CommOpen.toTypeString -> MessageType.Incoming.CommOpen,
+          CommMsg.toTypeString -> MessageType.Incoming.CommMsg,
+          CommClose.toTypeString -> MessageType.Incoming.CommClose
+        ),
+        Map(
+          CommOpen.toTypeString -> MessageType.Outgoing.CommOpen,
+          CommMsg.toTypeString -> MessageType.Outgoing.CommMsg,
+          CommClose.toTypeString -> MessageType.Outgoing.CommClose
+        )
       ),
       name = SystemActorType.KernelMessageRelay.toString
     )
