@@ -98,7 +98,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
     describe("#receive") {
       it("should execute all Comm open callbacks on comm_open message") {
         val message: ZMQMessage = kmBuilder
-          .withHeader(MessageType.CommOpen)
+          .withHeader(CommOpen.toTypeString)
           .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
           .build
 
@@ -119,7 +119,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 
       it("should not execute Comm open callbacks if the target is not found") {
         val message: ZMQMessage = kmBuilder
-          .withHeader(MessageType.CommOpen)
+          .withHeader(CommOpen.toTypeString)
           .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
           .build
 
@@ -143,7 +143,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 
       it("should execute all Comm msg callbacks on comm_msg message") {
         val message: ZMQMessage = kmBuilder
-          .withHeader(MessageType.CommMsg)
+          .withHeader(CommMsg.toTypeString)
           .withContentString(CommMsg(TestCommId, v5.Data()))
           .build
 
@@ -163,7 +163,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 
       it("should not execute Comm msg callbacks if the Comm id is not found") {
         val message: ZMQMessage = kmBuilder
-          .withHeader(MessageType.CommMsg)
+          .withHeader(CommMsg.toTypeString)
           .withContentString(CommMsg(TestCommId, v5.Data()))
           .build
 
@@ -185,7 +185,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 
       it("should execute all Comm close callbacks on comm_close message") {
         val message: ZMQMessage = kmBuilder
-          .withHeader(MessageType.CommClose)
+          .withHeader(CommClose.toTypeString)
           .withContentString(CommClose(TestCommId, v5.Data()))
           .build
 
@@ -205,7 +205,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 
       it("should not execute Comm close callbacks if Comm id is not found") {
         val message: ZMQMessage = kmBuilder
-          .withHeader(MessageType.CommClose)
+          .withHeader(CommClose.toTypeString)
           .withContentString(CommClose(TestCommId, v5.Data()))
           .build
 
@@ -227,9 +227,10 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 
       it("should call a registered callback on stream message") {
         val result = StreamContent("foo", "bar")
-        val header = Header(id, "spark", id, MessageType.Stream.toString, "5.0")
+        val header = Header(id, "spark", id,
+          MessageType.Outgoing.Stream.toString, "5.0")
         val parentHeader = Header(id, "spark", id,
-          MessageType.ExecuteRequest.toString, "5.0")
+          MessageType.Incoming.ExecuteRequest.toString, "5.0")
 
         val kernelMessage = new KernelMessage(
           Seq[String](),
@@ -262,7 +263,8 @@ class IOPubClientSpec extends TestKit(ActorSystem(
       it("should not invoke callback when stream message's parent header is null") {
         // Construct the kernel message
         val result = StreamContent("foo", "bar")
-        val header = Header(id, "spark", id, MessageType.Stream.toString, "5.0")
+        val header = Header(id, "spark", id,
+          MessageType.Outgoing.Stream.toString, "5.0")
 
         val kernelMessage = new KernelMessage(
           Seq[String](),

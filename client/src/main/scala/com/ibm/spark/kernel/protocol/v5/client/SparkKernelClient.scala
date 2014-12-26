@@ -102,7 +102,7 @@ class SparkKernelClient(
   def execute(code: String): DeferredExecution = {
     val request = ExecuteRequest(code, false, true, UserExpressions(), true)
     val de = new DeferredExecution
-    actorLoader.load(MessageType.ExecuteRequest) ! ExecuteRequestTuple(request, de)
+    actorLoader.load(MessageType.Incoming.ExecuteRequest) ! ExecuteRequestTuple(request, de)
     de
   }
 

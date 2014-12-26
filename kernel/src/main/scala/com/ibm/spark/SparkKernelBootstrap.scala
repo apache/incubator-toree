@@ -484,26 +484,32 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
 
   private def initializeKernelHandlers(): Unit = {
     //  These are the handlers for messages coming into the
-    initializeRequestHandler(classOf[ExecuteRequestHandler], MessageType.ExecuteRequest )
-    initializeRequestHandler(classOf[KernelInfoRequestHandler], MessageType.KernelInfoRequest )
-    initializeRequestHandler(classOf[CodeCompleteHandler], MessageType.CompleteRequest )
-    initializeCommHandler(classOf[CommOpenHandler], MessageType.CommOpen)
-    initializeCommHandler(classOf[CommMsgHandler], MessageType.CommMsg)
-    initializeCommHandler(classOf[CommCloseHandler], MessageType.CommClose)
+    initializeRequestHandler(classOf[ExecuteRequestHandler],
+      MessageType.Incoming.ExecuteRequest)
+    initializeRequestHandler(classOf[KernelInfoRequestHandler],
+      MessageType.Incoming.KernelInfoRequest )
+    initializeRequestHandler(classOf[CodeCompleteHandler],
+      MessageType.Incoming.CompleteRequest )
+    initializeCommHandler(classOf[CommOpenHandler],
+      MessageType.Incoming.CommOpen)
+    initializeCommHandler(classOf[CommMsgHandler],
+      MessageType.Incoming.CommMsg)
+    initializeCommHandler(classOf[CommCloseHandler],
+      MessageType.Incoming.CommClose)
 
     //  These are handlers for messages leaving the kernel through the sockets
-    initializeSocketHandler(SocketType.Shell, MessageType.KernelInfoReply)
-    initializeSocketHandler(SocketType.Shell, MessageType.ExecuteReply)
-    initializeSocketHandler(SocketType.Shell, MessageType.CompleteReply)
+    initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.KernelInfoReply)
+    initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.ExecuteReply)
+    initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.CompleteReply)
 
-    initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteResult)
-    initializeSocketHandler(SocketType.IOPub, MessageType.Stream)
-    initializeSocketHandler(SocketType.IOPub, MessageType.ExecuteInput)
-    initializeSocketHandler(SocketType.IOPub, MessageType.Status)
-    initializeSocketHandler(SocketType.IOPub, MessageType.Error)
-    initializeSocketHandler(SocketType.IOPub, MessageType.CommOpen)
-    initializeSocketHandler(SocketType.IOPub, MessageType.CommMsg)
-    initializeSocketHandler(SocketType.IOPub, MessageType.CommClose)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.ExecuteResult)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.Stream)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.ExecuteInput)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.Status)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.Error)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.CommOpen)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.CommMsg)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.CommClose)
   }
 
   private def publishStatus(

@@ -46,9 +46,9 @@ class KernelCommWriter(
     T <: KernelMessageContent with CommContent
   ](commContent: T): Unit = {
     val messageType = commContent match {
-      case _: CommOpen  => MessageType.CommOpen
-      case _: CommMsg   => MessageType.CommMsg
-      case _: CommClose => MessageType.CommClose
+      case _: CommOpen  => CommOpen.toTypeString
+      case _: CommMsg   => CommMsg.toTypeString
+      case _: CommClose => CommClose.toTypeString
       case _            => throw new Throwable("Invalid kernel message type!")
     }
     actorLoader.load(SystemActorType.KernelMessageRelay) !

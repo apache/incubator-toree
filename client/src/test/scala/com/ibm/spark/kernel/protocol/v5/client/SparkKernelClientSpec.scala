@@ -45,7 +45,7 @@ class SparkKernelClientSpec
     mockCommRegistrar = mock[CommRegistrar]
 
     executeRequestProbe = TestProbe()
-    when(mockActorLoader.load(MessageType.ExecuteRequest))
+    when(mockActorLoader.load(MessageType.Incoming.ExecuteRequest))
       .thenReturn(system.actorSelection(executeRequestProbe.ref.path.toString))
 
     shellClientProbe = TestProbe()

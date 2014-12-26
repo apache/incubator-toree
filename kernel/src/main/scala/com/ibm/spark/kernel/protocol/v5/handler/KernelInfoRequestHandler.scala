@@ -50,7 +50,7 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader)
         java.util.UUID.randomUUID.toString,
         "",
         java.util.UUID.randomUUID.toString,
-        MessageType.KernelInfoReply.toString,
+        MessageType.Outgoing.KernelInfoReply.toString,
         kernelInfo.protocolVersion
       )
 

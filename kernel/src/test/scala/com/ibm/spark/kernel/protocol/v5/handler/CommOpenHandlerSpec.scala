@@ -22,7 +22,7 @@ import com.ibm.spark.kernel.protocol.v5
 
 import akka.actor.{Props, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import com.ibm.spark.kernel.protocol.v5.content.{ClearOutput, CommOpen}
+import com.ibm.spark.kernel.protocol.v5.content.{CommClose, ClearOutput, CommOpen}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.comm._
 import org.mockito.Mockito._
@@ -82,7 +82,7 @@ class CommOpenHandlerSpec extends TestKit(
 
         // Send a comm_open message with the test target
         commOpenHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommOpen)
+          .withHeader(CommOpen.toTypeString)
           .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
           .build
 
@@ -100,22 +100,21 @@ class CommOpenHandlerSpec extends TestKit(
 
         // Send a comm_open message with the test target
         commOpenHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommOpen)
+          .withHeader(CommOpen.toTypeString)
           .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
           .build
 
         // Should receive a close message as a result of the target missing
         kernelMessageRelayProbe.expectMsgPF(200.milliseconds) {
           case KernelMessage(_, _, header, _, _, _) =>
-            v5.MessageType.withName(header.msg_type) should be
-              v5.MessageType.CommClose
+            header.msg_type should be (CommClose.toTypeString)
         }
       }
 
       it("should do nothing if there is a parsing error") {
         // Send a comm_open message with an invalid content string
         commOpenHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommOpen)
+          .withHeader(CommOpen.toTypeString)
           .withContentString(ClearOutput(_wait = true))
           .build
 

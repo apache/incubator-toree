@@ -71,7 +71,8 @@ object Common {
       "-deprecation", "-unchecked", "-feature",
       //"-Xlint", // Scala 2.11.x only
       "-Xfatal-warnings",
-      "-Ywarn-all"
+      "-Ywarn-all",
+      "-language:reflectiveCalls"
     ),
 
     // Java-based options for compilation

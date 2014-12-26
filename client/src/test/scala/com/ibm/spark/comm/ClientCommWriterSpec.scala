@@ -64,8 +64,7 @@ class ClientCommWriterSpec extends TestKit(
    *
    * @return The type of the message (pulled from message header)
    */
-  private def getNextMessageType =
-    MessageType.withName(getNextMessage.header.msg_type)
+  private def getNextMessageType = getNextMessage.header.msg_type
 
   /**
    * Retrieves the next message available and parses the content string.
@@ -102,7 +101,7 @@ class ClientCommWriterSpec extends TestKit(
       it("should send a comm_open message to the relay") {
         clientCommWriter.writeOpen(anyString())
 
-        getNextMessageType should be (MessageType.CommOpen)
+        getNextMessageType should be (CommOpen.toTypeString)
       }
 
       it("should include the comm_id in the message") {
@@ -146,7 +145,7 @@ class ClientCommWriterSpec extends TestKit(
       it("should send a comm_msg message to the relay") {
         clientCommWriter.writeMsg(Data())
 
-        getNextMessageType should be (MessageType.CommMsg)
+        getNextMessageType should be (CommMsg.toTypeString)
       }
 
       it("should include the comm_id in the message") {
@@ -178,7 +177,7 @@ class ClientCommWriterSpec extends TestKit(
       it("should send a comm_close message to the relay") {
         clientCommWriter.writeClose()
 
-        getNextMessageType should be (MessageType.CommClose)
+        getNextMessageType should be (CommClose.toTypeString)
       }
 
       it("should include the comm_id in the message") {
@@ -213,7 +212,7 @@ class ClientCommWriterSpec extends TestKit(
       it("should send a comm_msg message to the relay") {
         clientCommWriter.write(Array('a'), 0, 1)
 
-        getNextMessageType should be (MessageType.CommMsg)
+        getNextMessageType should be (CommMsg.toTypeString)
       }
 
       it("should include the comm_id in the message") {
@@ -246,7 +245,7 @@ class ClientCommWriterSpec extends TestKit(
       it("should send a comm_close message to the relay") {
         clientCommWriter.close()
 
-        getNextMessageType should be (MessageType.CommClose)
+        getNextMessageType should be (CommClose.toTypeString)
       }
 
       it("should include the comm_id in the message") {

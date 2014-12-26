@@ -43,5 +43,5 @@ object ErrorContent extends TypeString {
    *
    * @return The type as a string
    */
-  override def toTypeString: String = "error_content"
+  override def toTypeString: String = "error"
 }

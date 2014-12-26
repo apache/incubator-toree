@@ -29,19 +29,21 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     describe("#load( MessageType )"){
       it("should load an ActorSelection that has been loaded into the system"){
         val testProbe: TestProbe = TestProbe()
-        system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), MessageType.ClearOutput.toString)
+        system.actorOf(Props(classOf[TestProbeProxyActor], testProbe),
+          MessageType.Outgoing.ClearOutput.toString)
         val actorLoader: ActorLoader = SimpleActorLoader(system)
-        actorLoader.load(MessageType.ClearOutput) ! "<Test Message>"
+        actorLoader.load(MessageType.Outgoing.ClearOutput) ! "<Test Message>"
         testProbe.expectMsg("<Test Message>")
       }
 
       it("should expect no message when there is no actor"){
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
-        actorLoader.load(MessageType.CompleteReply) ! "<Test Message>"
+        actorLoader.load(MessageType.Outgoing.CompleteReply) ! "<Test Message>"
         testProbe.expectNoMsg(25.millis)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
-        system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), MessageType.CompleteReply.toString)
+        system.actorOf(Props(classOf[TestProbeProxyActor], testProbe),
+          MessageType.Outgoing.CompleteReply.toString)
         testProbe.expectNoMsg(25.millis)
       }
     }

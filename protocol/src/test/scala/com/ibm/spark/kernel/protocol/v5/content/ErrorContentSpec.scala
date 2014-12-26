@@ -34,7 +34,7 @@ class ErrorContentSpec extends FunSpec with Matchers {
   describe("ErrorContent") {
     describe("#toTypeString") {
       it("should return correct type") {
-        ErrorContent.toTypeString should be ("error_content")
+        ErrorContent.toTypeString should be ("error")
       }
     }
 

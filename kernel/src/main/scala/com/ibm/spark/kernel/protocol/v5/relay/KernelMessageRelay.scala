@@ -21,16 +21,26 @@ import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, MessageType, _}
 import com.ibm.spark.utils.MessageLogSupport
+import scala.collection.immutable.HashMap
 import scala.concurrent.duration._
 import scala.util.{Random, Failure, Success}
 
 /**
- * This class is meant to be a relay for send KernelMessages through kernel system.
- * @param actorLoader The ActorLoader used by this class for finding actors for relaying messages
+ * This class is meant to be a relay for send KernelMessages through kernel
+ * system.
+ * @param actorLoader The ActorLoader used by this class for finding actors for
+ *                    relaying messages
+ * @param incomingSpecialCases The special cases for incoming messages
+ * @param outgoingSpecialCases The special cases for outgoing messages
+ * @param useSignatureManager Whether or not to use signature verification and
+ *                            generation
  */
 case class KernelMessageRelay(
   actorLoader: ActorLoader,
-  useSignatureManager: Boolean) extends OrderedSupport with MessageLogSupport  {
+  useSignatureManager: Boolean,
+  incomingSpecialCases: Map[String, String] = new HashMap[String, String](),
+  outgoingSpecialCases: Map[String, String] = new HashMap[String, String]()
+) extends OrderedSupport with MessageLogSupport  {
   // NOTE: Required to provide the execution context for futures with akka
   import context._
 
@@ -44,13 +54,39 @@ case class KernelMessageRelay(
     this(actorLoader, true)
 
   /**
-   * Relays a KernelMessage to a specific actor to handle that message
+   * Relays a KernelMessage to a specific actor to handle that message.
+   *
+   * @param messageType The enumeration representing the message type
    * @param kernelMessage The message to relay
    */
-  private def relay(kernelMessage: KernelMessage) = {
+  private def relay(messageType: MessageType, kernelMessage: KernelMessage) = {
     val messageType: MessageType = MessageType.withName(kernelMessage.header.msg_type)
     logKernelMessageAction("Relaying", kernelMessage)
     actorLoader.load(messageType) ! kernelMessage
+  }
+
+  private def incomingRelay(kernelMessage: KernelMessage) = {
+    var messageTypeString = kernelMessage.header.msg_type
+
+    // If this is a special case, transform the message type accordingly
+    if (incomingSpecialCases.contains(messageTypeString)) {
+      logger.debug(s"$messageTypeString is a special incoming case!")
+      messageTypeString = incomingSpecialCases(messageTypeString)
+    }
+
+    relay(MessageType.withName(messageTypeString), kernelMessage)
+  }
+
+  private def outgoingRelay(kernelMessage: KernelMessage) = {
+    var messageTypeString = kernelMessage.header.msg_type
+
+    // If this is a special case, transform the message type accordingly
+    if (outgoingSpecialCases.contains(messageTypeString)) {
+      logger.debug(s"$messageTypeString is a special outgoing case!")
+      messageTypeString = outgoingSpecialCases(messageTypeString)
+    }
+
+    relay(MessageType.withName(messageTypeString), kernelMessage)
   }
 
 
@@ -89,7 +125,7 @@ case class KernelMessageRelay(
 
         signatureVerificationFuture.mapTo[Boolean].onComplete {
           case Success(true) =>
-            relay(kernelMessage)
+            incomingRelay(kernelMessage)
             finishedProcessing()
           case Success(false) =>
             // TODO: Figure out what the failure message structure should be!
@@ -103,7 +139,7 @@ case class KernelMessageRelay(
       } else {
         logger.debug(s"Relaying incoming message " +
           s"${kernelMessage.header.msg_id} without SignatureManager")
-        relay(kernelMessage)
+        incomingRelay(kernelMessage)
         finishedProcessing()
       }
 
@@ -118,12 +154,12 @@ case class KernelMessageRelay(
 
         // TODO: Handle error case for mapTo and non-present onFailure
         signatureInsertFuture.mapTo[KernelMessage] onSuccess {
-          case message => relay(message)
+          case message => outgoingRelay(message)
         }
       } else {
         logger.debug(s"Relaying outgoing message " +
           s"${kernelMessage.header.msg_id} without SignatureManager")
-        relay(kernelMessage)
+        outgoingRelay(kernelMessage)
       }
   }
 

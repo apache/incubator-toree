@@ -48,7 +48,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
                              Future[(ExecuteReply, ExecuteResult)] = {
       //  Send an ExecuteInput to the client saying we are executing something
       val executeInputMessage = skeletonBuilder
-        .withHeader(MessageType.ExecuteInput)
+        .withHeader(MessageType.Outgoing.ExecuteInput)
         .withContentString(ExecuteInput(executeRequest.code, executionCount)).build
 
       relayMsg(executeInputMessage, relayActor)
@@ -67,15 +67,15 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
 
           //  Send an ExecuteReply to the client
           val executeReplyMsg = skeletonBuilder
-            .withHeader(MessageType.ExecuteReply)
+            .withHeader(MessageType.Outgoing.ExecuteReply)
             .withContentString(executeReply).build
           relayMsg(executeReplyMsg, relayActor)
 
           //  Send an ExecuteResult with the result of the code execution
           if (executeResult.hasContent) {
             val executeResultMsg = skeletonBuilder
-              .withIds(Seq(MessageType.ExecuteResult.toString))
-              .withHeader(MessageType.ExecuteResult)
+              .withIds(Seq(MessageType.Outgoing.ExecuteResult.toString))
+              .withHeader(MessageType.Outgoing.ExecuteResult)
               .withContentString(executeResult).build
             relayMsg(executeResultMsg, relayActor)
           }
@@ -124,14 +124,14 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
                          replyError: ExecuteReply,
                          skeletonBuilder: KMBuilder) {
     val executeReplyMsg = skeletonBuilder
-      .withHeader(MessageType.ExecuteReply)
+      .withHeader(MessageType.Outgoing.ExecuteReply)
       .withContentString(replyError).build
 
     val errorContent: ErrorContent =  ErrorContent(
       replyError.ename.get, replyError.evalue.get, replyError.traceback.get)
 
     val errorMsg = skeletonBuilder
-      .withHeader(MessageType.Error)
+      .withHeader(MessageType.Outgoing.Error)
       .withContentString(errorContent).build
 
     relayMsg(executeReplyMsg, relayActor)

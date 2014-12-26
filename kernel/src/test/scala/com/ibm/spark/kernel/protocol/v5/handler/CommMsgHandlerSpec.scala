@@ -79,7 +79,7 @@ class CommMsgHandlerSpec extends TestKit(
 
         // Send a comm_open message with the test target
         commMsgHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommMsg)
+          .withHeader(CommMsg.toTypeString)
           .withContentString(CommMsg(TestCommId, v5.Data()))
           .build
 
@@ -97,7 +97,7 @@ class CommMsgHandlerSpec extends TestKit(
 
         // Send a comm_msg message with the test id
         commMsgHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommMsg)
+          .withHeader(CommMsg.toTypeString)
           .withContentString(CommMsg(TestCommId, v5.Data()))
           .build
 
@@ -112,7 +112,7 @@ class CommMsgHandlerSpec extends TestKit(
       it("should do nothing if there is a parsing error") {
         // Send a comm_open message with an invalid content string
         commMsgHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommMsg)
+          .withHeader(CommMsg.toTypeString)
           .withContentString(ClearOutput(_wait = true))
           .build
 

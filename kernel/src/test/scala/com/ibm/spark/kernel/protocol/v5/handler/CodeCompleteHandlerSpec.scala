@@ -77,7 +77,8 @@ class CodeCompleteHandlerSpec extends TestKit(
       // Set to 500ms because of a timing issue with the test
       kernelMessageRelayProbe.receiveWhile(500.milliseconds) {
         case message : KernelMessage =>
-          if(message.header.msg_type == MessageType.CompleteReply.toString)
+          val messageType = message.header.msg_type
+          if (messageType == MessageType.Outgoing.CompleteReply.toString)
             completeReplyMessage = message
       }
       completeReplyMessage should not be (null)

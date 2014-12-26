@@ -81,7 +81,7 @@ class CommCloseHandlerSpec extends TestKit(
 
         // Send a comm_open message with the test target
         commCloseHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommClose)
+          .withHeader(CommClose.toTypeString)
           .withContentString(CommClose(TestCommId, v5.Data()))
           .build
 
@@ -99,7 +99,7 @@ class CommCloseHandlerSpec extends TestKit(
 
         // Send a comm_msg message with the test id
         commCloseHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommClose)
+          .withHeader(CommClose.toTypeString)
           .withContentString(CommClose(TestCommId, v5.Data()))
           .build
 
@@ -114,7 +114,7 @@ class CommCloseHandlerSpec extends TestKit(
       it("should do nothing if there is a parsing error") {
         // Send a comm_open message with an invalid content string
         commCloseHandler ! kmBuilder
-          .withHeader(v5.MessageType.CommClose)
+          .withHeader(CommClose.toTypeString)
           .withContentString(ClearOutput(_wait = true))
           .build
 

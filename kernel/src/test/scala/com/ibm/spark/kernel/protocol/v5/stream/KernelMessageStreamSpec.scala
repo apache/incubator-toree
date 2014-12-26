@@ -136,7 +136,7 @@ class KernelMessageStreamSpec
         Then("the ids should be set to execute_result")
         val message = kernelMessageRelayProbe
           .receiveOne(1.seconds).asInstanceOf[KernelMessage]
-        message.ids should be (Seq(MessageType.Stream.toString))
+        message.ids should be (Seq(MessageType.Outgoing.Stream.toString))
       }
 
       it("should set the message type in the header of the kernel message to an execute_result") {
@@ -153,7 +153,7 @@ class KernelMessageStreamSpec
         Then("the msg_type in the header should be execute_result")
         val message = kernelMessageRelayProbe
           .receiveOne(1.seconds).asInstanceOf[KernelMessage]
-        message.header.msg_type should be (MessageType.Stream.toString)
+        message.header.msg_type should be (MessageType.Outgoing.Stream.toString)
       }
 
       it("should set the content string of the kernel message") {

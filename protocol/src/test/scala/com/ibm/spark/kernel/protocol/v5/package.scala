@@ -24,10 +24,10 @@ import play.api.libs.json.Json
 package object v5Test {
   //  The header for the message
   val MockHeader : Header = Header("<UUID>","<USER>","<SESSION>",
-    MessageType.ClearOutput.toString, "<VERSION>")
+    MessageType.Outgoing.ClearOutput.toString, "<VERSION>")
   //  The parent header for the message
   val MockParenHeader: Header = Header("<PARENT-UUID>","<PARENT-USER>","<PARENT-SESSION>",
-    MessageType.ClearOutput.toString, "<PARENT-VERSION>")
+    MessageType.Outgoing.ClearOutput.toString, "<PARENT-VERSION>")
   //  The actual kernel message
   val MockKernelMessage : KernelMessage = KernelMessage(Seq("<ID>"), "<SIGNATURE>", MockHeader,
     MockParenHeader, Metadata(), "<CONTENT>")

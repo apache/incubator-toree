@@ -82,10 +82,14 @@ class SparkKernelClientBootstrap(config: Config) extends LogLike {
   }
 
   private def initializeMessageHandlers(): Unit = {
-    initializeRequestHandler(classOf[ExecuteHandler], MessageType.ExecuteRequest)
-    initializeCommHandler(classOf[ExecuteHandler], MessageType.CommOpen)
-    initializeCommHandler(classOf[ExecuteHandler], MessageType.CommMsg)
-    initializeCommHandler(classOf[ExecuteHandler], MessageType.CommClose)
+    initializeRequestHandler(classOf[ExecuteHandler],
+      MessageType.Incoming.ExecuteRequest)
+    initializeCommHandler(classOf[ExecuteHandler],
+      MessageType.Incoming.CommOpen)
+    initializeCommHandler(classOf[ExecuteHandler],
+      MessageType.Incoming.CommMsg)
+    initializeCommHandler(classOf[ExecuteHandler],
+      MessageType.Incoming.CommClose)
   }
 
   initialize()

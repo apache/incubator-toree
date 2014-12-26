@@ -40,6 +40,32 @@ class IOPubClient(
   private val socket = socketFactory.IOPubClient(context.system, self)
   logger.info("Created IOPub socket")
 
+  /**
+   * Constructs and returns a map directing message types to functions.
+   *
+   * @param kernelMessage The kernel message used to generate the map
+   *
+   * @return The map of
+   */
+  private def getMessageMap(kernelMessage: KernelMessage) = Map[String, () => Unit](
+    ExecuteResult.toTypeString -> { () =>
+      receiveKernelMessage(kernelMessage, receiveExecuteResult(_, kernelMessage))
+    },
+    StreamContent.toTypeString -> { () =>
+      receiveKernelMessage(kernelMessage, receiveStreamMessage(_, kernelMessage))
+    },
+    CommOpen.toTypeString -> { () =>
+      receiveKernelMessage(kernelMessage, receiveCommOpen(_, kernelMessage))
+    },
+    CommMsg.toTypeString -> { () =>
+      receiveKernelMessage(kernelMessage, receiveCommMsg(_, kernelMessage))
+    },
+    CommClose.toTypeString -> { () =>
+      receiveKernelMessage(kernelMessage, receiveCommClose(_, kernelMessage))
+    }
+  )
+
+
   private def receiveKernelMessage(
     kernelMessage: KernelMessage, func: (String) => Unit
   ): Unit = {
@@ -148,22 +174,14 @@ class IOPubClient(
       logger.debug("Received IOPub kernel message.")
       val kernelMessage: KernelMessage = message
       logger.trace(s"Kernel message is $kernelMessage")
-      val messageType: MessageType =
-        MessageType.withName(kernelMessage.header.msg_type)
+      val messageTypeString = kernelMessage.header.msg_type
 
-      messageType match {
-        case MessageType.ExecuteResult => receiveKernelMessage(
-          kernelMessage, receiveExecuteResult(_, kernelMessage))
-        case MessageType.Stream => receiveKernelMessage(
-          kernelMessage, receiveStreamMessage(_, kernelMessage))
-        case MessageType.CommOpen => receiveKernelMessage(
-          kernelMessage, receiveCommOpen(_, kernelMessage))
-        case MessageType.CommMsg => receiveKernelMessage(
-          kernelMessage, receiveCommMsg(_, kernelMessage))
-        case MessageType.CommClose => receiveKernelMessage(
-          kernelMessage, receiveCommClose(_, kernelMessage))
-        case any =>
-          logger.warn(s"Received unhandled MessageType $any")
+      val messageMap = getMessageMap(kernelMessage)
+
+      if (messageMap.contains(messageTypeString)) {
+        messageMap(messageTypeString)()
+      } else {
+        logger.warn(s"Received unhandled MessageType $messageTypeString")
       }
   }
 }

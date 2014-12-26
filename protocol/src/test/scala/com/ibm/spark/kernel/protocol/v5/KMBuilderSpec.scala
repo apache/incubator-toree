@@ -16,7 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5
 
-import com.ibm.spark.kernel.protocol.v5.content.StreamContent
+import com.ibm.spark.kernel.protocol.v5.content.{CommOpen, StreamContent}
 import org.scalatest.{Matchers, FunSpec}
 import play.api.libs.json._
 
@@ -94,8 +94,15 @@ class KMBuilderSpec extends FunSpec with Matchers {
         }
         it("should produce a KMBuilder with a KernelMessage with header set " +
           "to a header for the given message type") {
-          val msgType = MessageType.ExecuteResult
+          val msgType = MessageType.Outgoing.ExecuteResult
           val header = HeaderBuilder.create(msgType.toString).copy(msg_id = "")
+          val builder = KMBuilder().withHeader(msgType)
+          builder.km.header.copy(msg_id = "") should be (header)
+        }
+        it("should produce a KMBuilder with a KernelMessage with header set " +
+          "to a header for the given string message type") {
+          val msgType = CommOpen.toTypeString
+          val header = HeaderBuilder.create(msgType).copy(msg_id = "")
           val builder = KMBuilder().withHeader(msgType)
           builder.km.header.copy(msg_id = "") should be (header)
         }
