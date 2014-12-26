@@ -163,14 +163,14 @@ case class SparkKernelBootstrap(config: Config) extends LogLike {
       Props(
         classOf[KernelMessageRelay], actorLoader, true,
         Map(
-          CommOpen.toTypeString -> MessageType.Incoming.CommOpen,
-          CommMsg.toTypeString -> MessageType.Incoming.CommMsg,
-          CommClose.toTypeString -> MessageType.Incoming.CommClose
+          CommOpen.toTypeString -> MessageType.Incoming.CommOpen.toString,
+          CommMsg.toTypeString -> MessageType.Incoming.CommMsg.toString,
+          CommClose.toTypeString -> MessageType.Incoming.CommClose.toString
         ),
         Map(
-          CommOpen.toTypeString -> MessageType.Outgoing.CommOpen,
-          CommMsg.toTypeString -> MessageType.Outgoing.CommMsg,
-          CommClose.toTypeString -> MessageType.Outgoing.CommClose
+          CommOpen.toTypeString -> MessageType.Outgoing.CommOpen.toString,
+          CommMsg.toTypeString -> MessageType.Outgoing.CommMsg.toString,
+          CommClose.toTypeString -> MessageType.Outgoing.CommClose.toString
         )
       ),
       name = SystemActorType.KernelMessageRelay.toString

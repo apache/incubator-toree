@@ -60,7 +60,7 @@ case class KernelMessageRelay(
    * @param kernelMessage The message to relay
    */
   private def relay(messageType: MessageType, kernelMessage: KernelMessage) = {
-    val messageType: MessageType = MessageType.withName(kernelMessage.header.msg_type)
+    logger.debug("Relaying message type of " + messageType.toString)
     logKernelMessageAction("Relaying", kernelMessage)
     actorLoader.load(messageType) ! kernelMessage
   }
