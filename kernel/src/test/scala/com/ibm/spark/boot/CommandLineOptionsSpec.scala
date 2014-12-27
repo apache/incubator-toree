@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package com.ibm.spark
+package com.ibm.spark.boot
 
 import java.io.File
 
 import com.typesafe.config.Config
 import joptsimple.OptionException
-import org.scalatest.{Matchers, FunSpec}
-import collection.JavaConverters._
+import org.scalatest.{FunSpec, Matchers}
 
-class SparkKernelOptionsSpec extends FunSpec with Matchers {
+import scala.collection.JavaConverters._
 
-  describe("SparkKernelOptions") {
+class CommandLineOptionsSpec extends FunSpec with Matchers {
+
+  describe("CommandLineOptions") {
     describe("when received --help") {
       it("should report the help message and exit") {
-        val options = new SparkKernelOptions("--help" :: Nil)
+        val options = new CommandLineOptions("--help" :: Nil)
 
         options.help should be (true)
       }
@@ -36,7 +37,7 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
 
     describe("when not received --help") {
       it("should set the help flag to false") {
-        val options = new SparkKernelOptions(Nil)
+        val options = new CommandLineOptions(Nil)
 
         options.help should be (false)
       }
@@ -45,21 +46,21 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
     describe("when received --master=<value>") {
       it("should error if value is not set") {
         intercept[OptionException] {
-          new SparkKernelOptions(Seq("--master"))
+          new CommandLineOptions(Seq("--master"))
         }
       }
 
       describe("#toConfig") {
         it("should set master to specified value") {
           val expected = "test"
-          val options = new SparkKernelOptions(s"--master=${expected}" :: Nil)
+          val options = new CommandLineOptions(s"--master=${expected}" :: Nil)
           val config: Config = options.toConfig
 
           config.getString("spark.master") should be(expected)
         }
 
         it("should set master to local[*]") {
-          val options = new SparkKernelOptions(Nil)
+          val options = new CommandLineOptions(Nil)
           val config: Config = options.toConfig
 
           config.getString("spark.master") should be("local[*]")
@@ -70,7 +71,7 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
     describe("when received --profile=<path>") {
       it("should error if path is not set") {
         intercept[OptionException] {
-          new SparkKernelOptions(Seq("--profile"))
+          new CommandLineOptions(Seq("--profile"))
         }
       }
 
@@ -78,7 +79,7 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
         it("should include values specified in file") {
 
           val pathToProfileFixture: String = new File(getClass.getResource("/fixtures/profile.json").toURI).getAbsolutePath
-          val options = new SparkKernelOptions(Seq("--profile="+pathToProfileFixture))
+          val options = new CommandLineOptions(Seq("--profile="+pathToProfileFixture))
 
           val config: Config = options.toConfig
 
@@ -95,26 +96,26 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
     describe("when received --<protocol port name>=<value>"){
       it("should error if value is not set") {
         intercept[OptionException] {
-          new SparkKernelOptions(Seq("--stdin-port"))
+          new CommandLineOptions(Seq("--stdin-port"))
         }
         intercept[OptionException] {
-          new SparkKernelOptions(Seq("--shell-port"))
+          new CommandLineOptions(Seq("--shell-port"))
         }
         intercept[OptionException] {
-          new SparkKernelOptions(Seq("--iopub-port"))
+          new CommandLineOptions(Seq("--iopub-port"))
         }
         intercept[OptionException] {
-          new SparkKernelOptions(Seq("--control-port"))
+          new CommandLineOptions(Seq("--control-port"))
         }
         intercept[OptionException] {
-          new SparkKernelOptions(Seq("--heartbeat-port"))
+          new CommandLineOptions(Seq("--heartbeat-port"))
         }
       }
 
       describe("#toConfig") {
         it("should return config with commandline option values") {
 
-          val options = new SparkKernelOptions(List(
+          val options = new CommandLineOptions(List(
             "--stdin-port", "99999",
             "--shell-port", "88888",
             "--iopub-port", "77777",
@@ -139,7 +140,7 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
         it("should return config with <protocol port> argument value") {
 
           val pathToProfileFixture: String = (new File(getClass.getResource("/fixtures/profile.json").toURI)).getAbsolutePath
-          val options = new SparkKernelOptions(List("--profile", pathToProfileFixture, "--stdin-port", "99999", "--shell-port", "88888"))
+          val options = new CommandLineOptions(List("--profile", pathToProfileFixture, "--stdin-port", "99999", "--shell-port", "88888"))
 
           val config: Config = options.toConfig
 
@@ -157,7 +158,7 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
       describe("#toConfig") {
         it("should read default value set in reference.conf") {
 
-          val options = new SparkKernelOptions(Nil)
+          val options = new CommandLineOptions(Nil)
 
           val config: Config = options.toConfig
           config.getInt("stdin_port") should be(48691)
@@ -172,7 +173,7 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
       describe("#toConfig") {
         it("should return interpreter_args config property when there are args before --") {
 
-          val options = new SparkKernelOptions(List("--stdin-port", "99999", "--shell-port", "88888", "--", "someArg1", "someArg2", "someArg3"))
+          val options = new CommandLineOptions(List("--stdin-port", "99999", "--shell-port", "88888", "--", "someArg1", "someArg2", "someArg3"))
 
           val config: Config = options .toConfig
 
@@ -182,7 +183,7 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
 
         it("should return interpreter_args config property when args is at the beginning") {
 
-          val options = new SparkKernelOptions(List("--", "someArg1", "someArg2", "someArg3"))
+          val options = new CommandLineOptions(List("--", "someArg1", "someArg2", "someArg3"))
 
           val config: Config = options .toConfig
 
@@ -192,7 +193,7 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
 
         it("should return interpreter_args config property as empty list when there is nothing after --") {
 
-          val options = new SparkKernelOptions(List("--stdin-port", "99999", "--shell-port", "88888", "--"))
+          val options = new CommandLineOptions(List("--stdin-port", "99999", "--shell-port", "88888", "--"))
 
           val config: Config = options .toConfig
 
@@ -205,21 +206,21 @@ class SparkKernelOptionsSpec extends FunSpec with Matchers {
     describe("when received --ip=<value>") {
       it("should error if value is not set") {
         intercept[OptionException] {
-          new SparkKernelOptions(Seq("--ip"))
+          new CommandLineOptions(Seq("--ip"))
         }
       }
 
       describe("#toConfig") {
         it("should set ip to specified value") {
           val expected = "1.2.3.4"
-          val options = new SparkKernelOptions(s"--ip=${expected}" :: Nil)
+          val options = new CommandLineOptions(s"--ip=${expected}" :: Nil)
           val config: Config = options.toConfig
 
           config.getString("ip") should be(expected)
         }
 
         it("should set master to local[*]") {
-          val options = new SparkKernelOptions(Nil)
+          val options = new CommandLineOptions(Nil)
           val config: Config = options.toConfig
 
           config.getString("ip") should be("127.0.0.1")

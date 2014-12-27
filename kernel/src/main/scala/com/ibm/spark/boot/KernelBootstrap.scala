@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package com.ibm.spark
+package com.ibm.spark.boot
 
-import akka.actor.{Props, ActorSystem, ActorRef}
-import com.ibm.spark.dependencies.{IvyDependencyDownloader, DependencyDownloader}
+import java.io.File
+
+import akka.actor.{ActorRef, ActorSystem, Props}
+import com.ibm.spark.comm._
+import com.ibm.spark.dependencies.{DependencyDownloader, IvyDependencyDownloader}
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.api.Kernel
 import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.comm._
 import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen}
 import com.ibm.spark.kernel.protocol.v5.dispatch.StatusDispatch
 import com.ibm.spark.kernel.protocol.v5.handler._
@@ -43,15 +45,13 @@ import com.ibm.spark.utils.{GlobalStreamState, LogLike}
 import com.typesafe.config.Config
 import org.apache.spark.repl.SparkIMain
 import org.apache.spark.{SparkConf, SparkContext}
-import collection.JavaConverters._
 import play.api.libs.json.Json
-import java.io.File
 
-import scala.collection.mutable
+import scala.collection.JavaConverters._
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter._
 
-case class SparkKernelBootstrap(config: Config) extends LogLike {
+case class KernelBootstrap(config: Config) extends LogLike {
 
   private val DefaultAppName                          = SparkKernelInfo.banner
   private val DefaultActorSystemName                  = "spark-kernel-actor-system"

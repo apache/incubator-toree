@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package com.ibm.spark
+package com.ibm.spark.boot
 
 import com.ibm.spark.interpreter.Interpreter
 import com.typesafe.config.Config
-import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.{SparkConf, SparkContext}
 import org.mockito.ArgumentCaptor
-import org.scalatest.{Matchers, FunSpec}
-import org.scalatest.mock.MockitoSugar
-import org.mockito.Mockito._
 import org.mockito.Matchers._
+import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.{FunSpec, Matchers}
 
-class SparkKernelBootstrapSpec extends FunSpec with Matchers with MockitoSugar {
-  describe("SparkKernelBootstrap") {
+class KernelBootstrapSpec extends FunSpec with Matchers with MockitoSugar {
+  describe("KernelBootstrap") {
     describe("when spark.master is set in config") {
       it("should set spark.master in SparkConf") {
         val config = mock[Config]
         val expectedVal: String = "expected val"
-        val bootstrap = spy(new SparkKernelBootstrap(config))
+        val bootstrap = spy(new KernelBootstrap(config))
         val captor = ArgumentCaptor.forClass(classOf[SparkConf])
 
         //  Mocking
@@ -48,7 +48,7 @@ class SparkKernelBootstrapSpec extends FunSpec with Matchers with MockitoSugar {
       it("should not add ourselves as a jar if spark.master is not local") {
         val config = mock[Config]
         val sparkMaster: String = "local[*]"
-        val bootstrap = spy(new SparkKernelBootstrap(config))
+        val bootstrap = spy(new KernelBootstrap(config))
         val captor = ArgumentCaptor.forClass(classOf[SparkConf])
 
         //  Mocking
@@ -66,7 +66,7 @@ class SparkKernelBootstrapSpec extends FunSpec with Matchers with MockitoSugar {
       it("should add ourselves as a jar if spark.master is not local") {
         val config = mock[Config]
         val sparkMaster: String = "notlocal"
-        val bootstrap = spy(new SparkKernelBootstrap(config))
+        val bootstrap = spy(new KernelBootstrap(config))
         val captor = ArgumentCaptor.forClass(classOf[SparkConf])
 
         //  Mocking

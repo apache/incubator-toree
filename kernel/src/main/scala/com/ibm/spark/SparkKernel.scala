@@ -16,14 +16,16 @@
 
 package com.ibm.spark
 
+import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
+
 object SparkKernel extends App {
 
-  private val options = new SparkKernelOptions(args)
+  private val options = new CommandLineOptions(args)
 
   if (options.help) {
     options.printHelpOn(System.out)
   } else {
-    SparkKernelBootstrap(options.toConfig)
+    KernelBootstrap(options.toConfig)
       .initialize()
       .waitForTermination()
       .shutdown()
