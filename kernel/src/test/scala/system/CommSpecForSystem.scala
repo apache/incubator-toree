@@ -43,21 +43,34 @@ class CommSpecForSystem
   import test.utils.SparkKernelDeployer._
 
   private def waitForExecuteReply(
-    shell: TestProbe, maxTime: Duration = MaxFishTime
+    shell: TestProbe, headerId: v5.UUID, maxTime: Duration = MaxFishTime
   ): Unit =
     shell.fishForMessage(maxTime) {
-      case KernelMessage(_, _, header, _, _, _)
-        if header.msg_type == ExecuteReply.toTypeString => true
+      case KernelMessage(_, _, header, parentHeader, _, _)
+        if header.msg_type == ExecuteReply.toTypeString &&
+          parentHeader.msg_id == headerId=> true
       case _ => false
     }
 
   private def waitForBusyStatus(
-    ioPub: TestProbe, maxTime: Duration = MaxFishTime
+    ioPub: TestProbe, headerId: v5.UUID, maxTime: Duration = MaxFishTime
   ): Unit =
     ioPub.fishForMessage(maxTime) {
-      case KernelMessage(_, _, header, _, _, contentString)
-        if header.msg_type == KernelStatus.toTypeString =>
+      case KernelMessage(_, _, header, parentHeader, _, contentString)
+        if header.msg_type == KernelStatus.toTypeString &&
+          parentHeader.msg_id == headerId =>
         Json.parse(contentString).as[KernelStatus].execution_state == "busy"
+      case _ => false
+    }
+
+  private def waitForIdleStatus(
+    ioPub: TestProbe, headerId: v5.UUID, maxTime: Duration = MaxFishTime
+  ): Unit =
+    ioPub.fishForMessage(maxTime) {
+      case KernelMessage(_, _, header, parentHeader, _, contentString)
+        if header.msg_type == KernelStatus.toTypeString &&
+          parentHeader.msg_id == headerId =>
+        Json.parse(contentString).as[KernelStatus].execution_state == "idle"
       case _ => false
     }
 
@@ -73,15 +86,15 @@ class CommSpecForSystem
 
     // Set up a callback (using stream messages as indicator)
     val codeRequest = s"""
-      |val out = System.out
+      |val out = Console.out
       |kernel.comm.register("$targetName").$callbackFunc {
       |    $callbackArgs => out.println("$expectedMessage")
       |}
     """.stripMargin.trim
-    actorLoader.load(SocketType.Shell) !
-      buildZMQExecuteRequest(codeRequest)
+    val (messageId, message) = buildZMQExecuteRequest(codeRequest)
+    actorLoader.load(SocketType.Shell) ! message
 
-    waitForExecuteReply(shell)
+    waitForExecuteReply(shell, messageId)
   }
 
   private def testForCallback(
@@ -98,50 +111,62 @@ class CommSpecForSystem
     }
   }
 
-  private def buildZMQExecuteRequest(codeRequest: String): ZMQMessage =
-    KMBuilder()
+  private def buildZMQExecuteRequest(codeRequest: String): (v5.UUID, ZMQMessage) = {
+    val kernelMessage = KMBuilder()
       .withHeader(ExecuteRequest.toTypeString)
       .withContentString(ExecuteRequest(
-        code              = codeRequest,
-        silent            = false,
-        store_history     = false,
-        user_expressions  = v5.UserExpressions(),
-        allow_stdin       = true
-      )).build
+      code = codeRequest,
+      silent = false,
+      store_history = false,
+      user_expressions = v5.UserExpressions(),
+      allow_stdin = true
+    )).build
+
+    (kernelMessage.header.msg_id, kernelMessage)
+  }
 
   // Not using TestCommId to avoid problems if previous comm using that
   // id in tests was not properly closed
   private def buildZMQCommOpen(
     targetName: String, data: v5.Data,
     commId: v5.UUID = java.util.UUID.randomUUID().toString
-  ): ZMQMessage =
-    KMBuilder()
+  ): (v5.UUID, ZMQMessage) = {
+    val kernelMessage = KMBuilder()
       .withHeader(CommOpen.toTypeString)
       .withContentString(CommOpen(
-        comm_id = commId,
-        target_name = targetName,
-        data = data
-      )).build
+      comm_id = commId,
+      target_name = targetName,
+      data = data
+    )).build
+
+    (kernelMessage.header.msg_id, kernelMessage)
+  }
 
   // Not using TestCommId to avoid problems if previous comm using that
   // id in tests was not properly closed
-  private def buildZMQCommMsg(commId: v5.UUID, data: v5.Data): ZMQMessage =
-    KMBuilder()
+  private def buildZMQCommMsg(commId: v5.UUID, data: v5.Data): (v5.UUID, ZMQMessage) = {
+    val kernelMessage = KMBuilder()
       .withHeader(CommMsg.toTypeString)
       .withContentString(CommMsg(
       comm_id = commId,
       data = data
     )).build
 
+    (kernelMessage.header.msg_id, kernelMessage)
+  }
+
   // Not using TestCommId to avoid problems if previous comm using that
   // id in tests was not properly closed
-  private def buildZMQCommClose(commId: v5.UUID, data: v5.Data): ZMQMessage =
-    KMBuilder()
+  private def buildZMQCommClose(commId: v5.UUID, data: v5.Data): (v5.UUID, ZMQMessage) = {
+    val kernelMessage = KMBuilder()
       .withHeader(CommClose.toTypeString)
       .withContentString(CommClose(
       comm_id = commId,
       data = data
     )).build
+
+    (kernelMessage.header.msg_id, kernelMessage)
+  }
 
   describe("Comm for System") {
     describe("executing Comm API to open a new comm") {
@@ -154,8 +179,8 @@ class CommSpecForSystem
             """.stripMargin.trim
 
           // Send our code to trigger the Comm API
-          actorLoader.load(SocketType.Shell) !
-            buildZMQExecuteRequest(codeRequest)
+          val (_, message) = buildZMQExecuteRequest(codeRequest)
+          actorLoader.load(SocketType.Shell) ! message
 
           // Should discover an outgoing kernel message for comm_open
           ioPub.fishForMessage(MaxFishTime) {
@@ -178,8 +203,8 @@ class CommSpecForSystem
             """.stripMargin.trim
 
           // Send our code to trigger the Comm API
-          actorLoader.load(SocketType.Shell) !
-            buildZMQExecuteRequest(codeRequest)
+          val (_, message) = buildZMQExecuteRequest(codeRequest)
+          actorLoader.load(SocketType.Shell) ! message
 
           // Should discover an outgoing kernel message for comm_msg
           ioPub.fishForMessage(MaxFishTime) {
@@ -203,8 +228,8 @@ class CommSpecForSystem
             """.stripMargin.trim
 
           // Send our code to trigger the Comm API
-          actorLoader.load(SocketType.Shell) !
-            buildZMQExecuteRequest(codeRequest)
+          val (_, message) = buildZMQExecuteRequest(codeRequest)
+          actorLoader.load(SocketType.Shell) ! message
 
           // Should discover an outgoing kernel message for comm_close
           ioPub.fishForMessage(MaxFishTime) {
@@ -222,8 +247,8 @@ class CommSpecForSystem
           val testTargetName = java.util.UUID.randomUUID().toString
 
           // Send a comm_open (as if a client did it)
-          actorLoader.load(SocketType.Shell) !
-            buildZMQCommOpen(testTargetName, v5.Data())
+          val (_, message) = buildZMQCommOpen(testTargetName, v5.Data())
+          actorLoader.load(SocketType.Shell) ! message
 
           // Should discover an outgoing kernel message for comm_close
           ioPub.fishForMessage(MaxFishTime) {
@@ -243,8 +268,9 @@ class CommSpecForSystem
               testTargetName, expectedMessage)
 
             // Send a comm_open (as if a client did it) with wrong target
-            actorLoader.load(SocketType.Shell) !
+            val (_, message) =
               buildZMQCommOpen(testTargetName + "wrong", v5.Data())
+            actorLoader.load(SocketType.Shell) ! message
 
             // Throws an assertion error when a timeout occurs
             intercept[AssertionError] {
@@ -262,18 +288,18 @@ class CommSpecForSystem
             testTargetName, expectedMessage)
 
           // Send a comm_open (as if a client did it)
-          actorLoader.load(SocketType.Shell) !
-            buildZMQCommOpen(testTargetName, v5.Data())
+          val (_, message) = buildZMQCommOpen(testTargetName, v5.Data())
+          actorLoader.load(SocketType.Shell) ! message
 
           testForCallback(ioPub, expectedMessage)
         }
       }
 
-      ignore("should link the target and Comm id if the target is found") {
+      // Tested through other tests
+      /*ignore("should link the target and Comm id if the target is found") {
         withNoArgSparkKernel { (actorLoader, heartbeat, shell, ioPub) =>
-          // TODO: Determine if this test is needed
         }
-      }
+      }*/
     }
 
     describe("receiving Comm API message from a client") {
@@ -284,15 +310,19 @@ class CommSpecForSystem
           val expectedMessage = "callback" + testTargetName
 
           setupCallback(actorLoader, shell, "addMsgHandler",
-            testCommId, expectedMessage)
+            testTargetName, expectedMessage)
 
           // Set up the Comm id prior so we have a proper link
-          actorLoader.load(SocketType.Shell) !
+          val (openId, openMessage) =
             buildZMQCommOpen(testTargetName, v5.Data(), testCommId)
+          actorLoader.load(SocketType.Shell) ! openMessage
+
+          waitForIdleStatus(ioPub, openId)
 
           // Send a comm_msg (as if a client did it) with wrong id
-          actorLoader.load(SocketType.Shell) !
+          val (msgId, msgMessage) =
             buildZMQCommMsg(testCommId + "wrong", v5.Data())
+          actorLoader.load(SocketType.Shell) ! msgMessage
 
           // Throws an assertion error when a timeout occurs
           intercept[AssertionError] {
@@ -308,15 +338,19 @@ class CommSpecForSystem
           val expectedMessage = "callback" + testTargetName
 
           setupCallback(actorLoader, shell, "addMsgHandler",
-            testCommId, expectedMessage)
+            testTargetName, expectedMessage)
 
           // Set up the Comm id prior so we have a proper link
-          actorLoader.load(SocketType.Shell) !
+          val (openId, openMessage) =
             buildZMQCommOpen(testTargetName, v5.Data(), testCommId)
+          actorLoader.load(SocketType.Shell) ! openMessage
+
+          waitForIdleStatus(ioPub, openId)
 
           // Send a comm_msg (as if a client did it)
-          actorLoader.load(SocketType.Shell) !
+          val (msgId, msgMessage) =
             buildZMQCommMsg(testCommId, v5.Data())
+          actorLoader.load(SocketType.Shell) ! msgMessage
 
           testForCallback(ioPub, expectedMessage)
         }
@@ -334,12 +368,16 @@ class CommSpecForSystem
             testTargetName, expectedMessage)
 
           // Set up the Comm id prior so we have a proper link
-          actorLoader.load(SocketType.Shell) !
+          val (openId, openMessage) =
             buildZMQCommOpen(testTargetName, v5.Data(), testCommId)
+          actorLoader.load(SocketType.Shell) ! openMessage
+
+          waitForIdleStatus(ioPub, openId)
 
           // Send a comm_close (as if a client did it) with wrong id
-          actorLoader.load(SocketType.Shell) !
+          val (closeId, closeMessage) =
             buildZMQCommClose(testCommId + "wrong", v5.Data())
+          actorLoader.load(SocketType.Shell) ! closeMessage
 
           // Throws an assertion error when a timeout occurs
           intercept[AssertionError] {
@@ -358,20 +396,52 @@ class CommSpecForSystem
             testTargetName, expectedMessage)
 
           // Set up the Comm id prior so we have a proper link
-          actorLoader.load(SocketType.Shell) !
+          val (openId, openMessage) =
             buildZMQCommOpen(testTargetName, v5.Data(), testCommId)
+          actorLoader.load(SocketType.Shell) ! openMessage
+
+          waitForIdleStatus(ioPub, openId)
 
           // Send a comm_close (as if a client did it)
-          actorLoader.load(SocketType.Shell) !
+          val (closeId, closeMessage) =
             buildZMQCommClose(testCommId, v5.Data())
+          actorLoader.load(SocketType.Shell) ! closeMessage
 
           testForCallback(ioPub, expectedMessage)
         }
       }
 
-      ignore("should unlink the Comm id from the target if the Comm id is found") {
+      it("should unlink the Comm id from the target if the Comm id is found") {
         withNoArgSparkKernel { (actorLoader, heartbeat, shell, ioPub) =>
-          // TODO: Determine if this test is needed
+          val testTargetName = java.util.UUID.randomUUID().toString
+          val testCommId = java.util.UUID.randomUUID().toString
+          val expectedMessage = "callback" + testTargetName
+
+          setupCallback(actorLoader, shell, "addCloseHandler",
+            testTargetName, expectedMessage)
+
+          // Set up the Comm id prior so we have a proper link
+          val (openId, openMessage) =
+            buildZMQCommOpen(testTargetName, v5.Data(), testCommId)
+          actorLoader.load(SocketType.Shell) ! openMessage
+
+          waitForIdleStatus(ioPub, openId)
+
+          // Send a comm_close (as if a client did it)
+          val (closeId, closeMessage) =
+            buildZMQCommClose(testCommId, v5.Data())
+          actorLoader.load(SocketType.Shell) ! closeMessage
+
+          testForCallback(ioPub, expectedMessage)
+
+          // Send a comm_close (again) with the expectation that nothing happens
+          val (closeId2, closeMessage2) =
+            buildZMQCommClose(testCommId, v5.Data())
+          actorLoader.load(SocketType.Shell) ! closeMessage2
+
+          intercept[AssertionError] {
+            testForCallback(ioPub, expectedMessage)
+          }
         }
       }
     }
