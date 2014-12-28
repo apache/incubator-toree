@@ -21,7 +21,6 @@ import akka.testkit.TestProbe
 
 class TestProbeProxyActor(probe: TestProbe) extends Actor {
   override def receive = {
-    case m =>
-      probe.ref ! m
+    case m => probe.ref.forward(m)
   }
 }

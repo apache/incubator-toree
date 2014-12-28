@@ -54,26 +54,32 @@ trait StandardBareInitialization extends BareInitialization { this: LogLike =>
    * @param actorSystemName The name to use for the actor system
    */
   def initializeBare(config: Config, actorSystemName: String) = {
-    val (actorSystem, actorLoader, kernelMessageRelayActor, _, statusDispatch) =
-      initializeBareComponents(config, actorSystemName)
+    val actorSystem = createActorSystem(actorSystemName)
+    val actorLoader = createActorLoader(actorSystem)
+    val (kernelMessageRelayActor, _, statusDispatch) =
+      initializeCoreActors(config, actorSystem, actorLoader)
     createSockets(config, actorSystem, actorLoader)
 
     (actorSystem, actorLoader, kernelMessageRelayActor, statusDispatch)
+  }
+
+  protected def createActorSystem(actorSystemName: String): ActorSystem = {
+    logger.info("Initializing internal actor system")
+    ActorSystem(actorSystemName)
+  }
+
+  protected def createActorLoader(actorSystem: ActorSystem): ActorLoader = {
+    logger.debug("Creating Simple Actor Loader")
+    SimpleActorLoader(actorSystem)
   }
 
   /**
    * Does minimal setup in order to send the "starting" status message over
    * the IOPub socket
    */
-  private def initializeBareComponents(
-    config: Config, actorSystemName: String
+  protected def initializeCoreActors(
+    config: Config, actorSystem: ActorSystem, actorLoader: ActorLoader
   ) = {
-    logger.info("Initializing internal actor system")
-    val actorSystem = ActorSystem(actorSystemName)
-
-    logger.debug("Creating Simple Actor Loader")
-    val actorLoader = SimpleActorLoader(actorSystem)
-
     logger.debug("Creating kernel message relay actor")
     val kernelMessageRelayActor = actorSystem.actorOf(
       Props(
@@ -110,11 +116,10 @@ trait StandardBareInitialization extends BareInitialization { this: LogLike =>
       name = SystemActorType.StatusDispatch.toString
     )
 
-    (actorSystem, actorLoader, kernelMessageRelayActor, signatureManagerActor,
-      statusDispatch)
+    (kernelMessageRelayActor, signatureManagerActor, statusDispatch)
   }
 
-  private def createSockets(
+  protected def createSockets(
     config: Config, actorSystem: ActorSystem, actorLoader: ActorLoader
   ) = {
     logger.debug("Creating sockets")

@@ -39,7 +39,7 @@ class KernelBootstrap(config: Config) extends LogLike {
   private var statusDispatch: ActorRef          = _
 
   private var sparkContext: SparkContext        = _
-  private var interpreters: Seq[Interpreter]    = _
+  private var interpreters: Seq[Interpreter]    = Nil
 
   /**
    * Initializes all kernel systems.
