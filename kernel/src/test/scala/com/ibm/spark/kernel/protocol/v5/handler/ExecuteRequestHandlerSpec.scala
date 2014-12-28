@@ -67,7 +67,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
    */
   def replyToHandlerWithOkAndResult() = {
     //  This stubs the behaviour of the interpreter executing code
-    val expectedClass = classOf[(ExecuteRequest, OutputStream)]
+    val expectedClass = classOf[(ExecuteRequest, KernelMessage, OutputStream)]
     executeRequestRelayProbe.expectMsgClass(expectedClass)
     executeRequestRelayProbe.reply((
       ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
@@ -77,7 +77,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
   
   def replyToHandlerWithOk() = {
     //  This stubs the behaviour of the interpreter executing code
-    val expectedClass = classOf[(ExecuteRequest, OutputStream)]
+    val expectedClass = classOf[(ExecuteRequest, KernelMessage, OutputStream)]
     executeRequestRelayProbe.expectMsgClass(expectedClass)
     executeRequestRelayProbe.reply((
       ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
@@ -91,7 +91,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
    */
   def replyToHandlerWithErrorAndResult() = {
     //  This stubs the behaviour of the interpreter executing code
-    val expectedClass = classOf[(ExecuteRequest, OutputStream)]
+    val expectedClass = classOf[(ExecuteRequest, KernelMessage, OutputStream)]
     executeRequestRelayProbe.expectMsgClass(expectedClass)
     executeRequestRelayProbe.reply((
       ExecuteReplyError(1, Some(""), Some(""), Some(Nil)),

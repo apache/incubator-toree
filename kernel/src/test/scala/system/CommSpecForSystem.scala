@@ -86,9 +86,8 @@ class CommSpecForSystem
 
     // Set up a callback (using stream messages as indicator)
     val codeRequest = s"""
-      |val out = Console.out
       |kernel.comm.register("$targetName").$callbackFunc {
-      |    $callbackArgs => out.println("$expectedMessage")
+      |    $callbackArgs => kernel.out.println("$expectedMessage")
       |}
     """.stripMargin.trim
     val (messageId, message) = buildZMQExecuteRequest(codeRequest)

@@ -22,6 +22,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.{ask, pipe}
 import akka.util.Timeout
 import com.ibm.spark.interpreter.Interpreter
+import com.ibm.spark.kernel.protocol.v5.KernelMessage
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.interpreter._
@@ -68,8 +69,9 @@ class InterpreterActor(
   }
 
   override def receive: Receive = {
-    case (executeRequest: ExecuteRequest, outputStream: OutputStream) =>
-      val data = (executeRequest, outputStream)
+    case (executeRequest: ExecuteRequest, parentMessage: KernelMessage,
+      outputStream: OutputStream) =>
+      val data = (executeRequest, parentMessage, outputStream)
       (executeRequestTask ? data) recover {
         case ex: Throwable =>
           logger.error(s"Could not execute code ${executeRequest.code} because "

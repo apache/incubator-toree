@@ -58,7 +58,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
       val outputStream = new KernelMessageStream(actorLoader, skeletonBuilder)
       val executeFuture = ask(
         actorLoader.load(SystemActorType.ExecuteRequestRelay),
-        (executeRequest, outputStream)
+        (executeRequest, km, outputStream)
       ).mapTo[(ExecuteReply, ExecuteResult)]
 
       executeFuture.onComplete {

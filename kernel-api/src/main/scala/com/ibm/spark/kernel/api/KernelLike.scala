@@ -16,6 +16,8 @@
 
 package com.ibm.spark.kernel.api
 
+import java.io.{PrintStream, InputStream, OutputStream}
+
 /**
  * Interface for the kernel API. This does not include exposed variables.
  */
@@ -29,4 +31,30 @@ trait KernelLike {
    *         string
    */
   def eval(code: Option[String]): (Boolean, String)
+
+  /**
+   * Returns a print stream to be used for communication back to clients
+   * via standard out.
+   *
+   * @return The print stream instance or an error if the stream info is
+   *         not found
+   */
+  def out(implicit streamInfo: StreamInfo): PrintStream
+
+  /**
+   * Returns a print stream to be used for communication back to clients
+   * via standard error.
+   *
+   * @return The print stream instance or an error if the stream info is
+   *         not found
+   */
+  def err(implicit streamInfo: StreamInfo): PrintStream
+
+  /**
+   * Returns an input stream to be used to receive information from the client.
+   *
+   * @return The input stream instance or an error if the stream info is
+   *         not found
+   */
+  def in(implicit streamInfo: StreamInfo): InputStream = ??? // Not implemented
 }

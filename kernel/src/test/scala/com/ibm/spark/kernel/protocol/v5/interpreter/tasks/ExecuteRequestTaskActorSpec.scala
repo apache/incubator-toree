@@ -61,7 +61,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         val executeRequest = (ExecuteRequest(
           "val x = 3", false, false,
           UserExpressions(), false
-        ), mock[OutputStream])
+        ), mock[KernelMessage], mock[OutputStream])
 
         executeRequestTask ! executeRequest
 
@@ -87,7 +87,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         val executeRequest = (ExecuteRequest(
           "val x = 3", false, false,
           UserExpressions(), false
-        ), mock[OutputStream])
+        ), mock[KernelMessage], mock[OutputStream])
 
         executeRequestTask ! executeRequest
 
@@ -113,7 +113,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         val executeRequest = (ExecuteRequest(
           "val x = 3", false, false,
           UserExpressions(), false
-        ), mock[OutputStream])
+        ), mock[KernelMessage], mock[OutputStream])
 
         executeRequestTask ! executeRequest
 
@@ -139,7 +139,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         val executeRequest = (ExecuteRequest(
           "(1 + 2", false, false,
           UserExpressions(), false
-        ), mock[OutputStream])
+        ), mock[KernelMessage], mock[OutputStream])
 
         executeRequestTask ! executeRequest
 
@@ -165,7 +165,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         val executeRequest = (ExecuteRequest(
           "   ", false, false,
           UserExpressions(), false
-        ), mock[OutputStream])
+        ), mock[KernelMessage], mock[OutputStream])
 
         executeRequestTask ! executeRequest
 

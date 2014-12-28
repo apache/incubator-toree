@@ -98,7 +98,8 @@ class InterpreterActorSpecForIntegration extends TestKit(
           UserExpressions(), false
         )
 
-        interpreterActor ! ((executeRequest, mock[OutputStream]))
+        interpreterActor !
+          ((executeRequest, mock[KernelMessage], mock[OutputStream]))
 
         val result =
           receiveOne(5.seconds)
@@ -120,7 +121,8 @@ class InterpreterActorSpecForIntegration extends TestKit(
           UserExpressions(), false
         )
 
-        interpreterActor ! ((executeRequest, mock[OutputStream]))
+        interpreterActor !
+          ((executeRequest, mock[KernelMessage], mock[OutputStream]))
 
         val result =
           receiveOne(5.seconds)
