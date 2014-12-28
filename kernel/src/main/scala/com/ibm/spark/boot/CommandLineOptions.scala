@@ -23,7 +23,7 @@ import joptsimple.{OptionParser, OptionSpec}
 
 import scala.collection.JavaConverters._
 
-case class CommandLineOptions(args: Seq[String]) {
+class CommandLineOptions(args: Seq[String]) {
   private val parser = new OptionParser()
   parser.allowsUnrecognizedOptions()
 

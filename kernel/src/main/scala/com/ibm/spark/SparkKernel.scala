@@ -16,6 +16,7 @@
 
 package com.ibm.spark
 
+import com.ibm.spark.boot.layer._
 import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
 
 object SparkKernel extends App {
@@ -25,7 +26,11 @@ object SparkKernel extends App {
   if (options.help) {
     options.printHelpOn(System.out)
   } else {
-    KernelBootstrap(options.toConfig)
+    (new KernelBootstrap(options.toConfig)
+      with StandardBareInitialization
+      with StandardComponentInitialization
+      with StandardHandlerInitialization
+      with StandardHookInitialization)
       .initialize()
       .waitForTermination()
       .shutdown()
