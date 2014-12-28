@@ -39,7 +39,7 @@ class CommCloseHandler(
   commStorage: CommStorage
 ) extends BaseHandler(actorLoader) with MessageLogSupport
 {
-  override def process(kernelMessage: KernelMessage): Future[_] = {
+  override def process(kernelMessage: KernelMessage): Future[_] = future {
     logKernelMessageAction("Initiating Comm Close for", kernelMessage)
     Utilities.parseAndHandle(
       kernelMessage.contentString,
@@ -49,7 +49,7 @@ class CommCloseHandler(
     )
   }
 
-  private def handleCommClose(commClose: CommClose) = future {
+  private def handleCommClose(commClose: CommClose) = {
     val commId = commClose.comm_id
     val data = commClose.data
 
@@ -69,11 +69,10 @@ class CommCloseHandler(
     }
   }
 
-  private def handleParseError(invalid: Seq[(JsPath, Seq[ValidationError])]) =
-    future {
-      // TODO: Determine proper response for a parse failure
-      logger.warn("Parse error for Comm Close! Not responding!")
-    }
+  private def handleParseError(invalid: Seq[(JsPath, Seq[ValidationError])]) = {
+    // TODO: Determine proper response for a parse failure
+    logger.warn("Parse error for Comm Close! Not responding!")
+  }
 
 }
 

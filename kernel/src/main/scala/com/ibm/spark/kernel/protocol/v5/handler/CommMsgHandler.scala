@@ -39,7 +39,7 @@ class CommMsgHandler(
   commStorage: CommStorage
 ) extends BaseHandler(actorLoader) with MessageLogSupport
 {
-  override def process(kernelMessage: KernelMessage): Future[_] = {
+  override def process(kernelMessage: KernelMessage): Future[_] = future {
     logKernelMessageAction("Initiating Comm Msg for", kernelMessage)
     Utilities.parseAndHandle(
       kernelMessage.contentString,
@@ -49,7 +49,7 @@ class CommMsgHandler(
     )
   }
 
-  private def handleCommMsg(commMsg: CommMsg) = future {
+  private def handleCommMsg(commMsg: CommMsg) = {
     val commId = commMsg.comm_id
     val data = commMsg.data
 
@@ -69,11 +69,10 @@ class CommMsgHandler(
     }
   }
 
-  private def handleParseError(invalid: Seq[(JsPath, Seq[ValidationError])]) =
-    future {
-      // TODO: Determine proper response for a parse failure
-      logger.warn("Parse error for Comm Msg! Not responding!")
-    }
+  private def handleParseError(invalid: Seq[(JsPath, Seq[ValidationError])]) = {
+    // TODO: Determine proper response for a parse failure
+    logger.warn("Parse error for Comm Msg! Not responding!")
+  }
 
 }
 
