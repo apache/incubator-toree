@@ -20,6 +20,14 @@ class Kernel (
   val interpreter: Interpreter,
   val comm: CommManager
 ) extends KernelLike {
+  /**
+   * Executes a block of code represented as a string and returns the result.
+   *
+   * @param code The code as an option to execute
+   *
+   * @return A tuple containing the result (true/false) and the output as a
+   *         string
+   */
   def eval(code: Option[String]): (Boolean, String) = {
     code.map(c => {
       val (success, result) = interpreter.interpret(c)
