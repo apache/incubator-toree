@@ -31,7 +31,11 @@ object Build extends Build with Settings with SubProjects with TestTasks {
       base = file("."),
       settings = fullSettings
     ).settings(
-      scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand"
+      scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand",
+
+      // Do not publish the root project (it just serves as an aggregate)
+      publishArtifact := false,
+      publishLocal := {}
     )
   ).aggregate(client, kernel, kernel_api, protocol, macros)
 }
