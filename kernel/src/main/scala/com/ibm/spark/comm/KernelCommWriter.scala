@@ -16,6 +16,7 @@
 
 package com.ibm.spark.comm
 
+import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.content.{CommMsg, CommOpen, CommClose, CommContent}
 import com.ibm.spark.kernel.protocol.v5._
@@ -29,6 +30,7 @@ import com.ibm.spark.kernel.protocol.v5._
  * @param commId The comm id associated with this writer (defaults to a
  *               random UUID)
  */
+@Experimental
 class KernelCommWriter(
   private val actorLoader: ActorLoader,
   private val kmBuilder: KMBuilder,

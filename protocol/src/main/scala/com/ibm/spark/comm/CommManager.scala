@@ -18,6 +18,7 @@ package com.ibm.spark.comm
 
 import java.util.UUID
 
+import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommCallbacks.{CloseCallback, OpenCallback}
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.{Data, KernelMessageContent}
@@ -29,6 +30,7 @@ import com.ibm.spark.kernel.protocol.v5.content.CommContent
  *
  * @param commRegistrar The registrar to use for callback registration
  */
+@Experimental
 abstract class CommManager(private val commRegistrar: CommRegistrar) {
   /**
    * The base function to call that performs a link given the target name and

@@ -16,6 +16,7 @@
 
 package com.ibm.spark.comm
 
+import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.kernel.protocol.v5.{KMBuilder, ActorLoader, UUID}
 
 /**
@@ -26,6 +27,7 @@ import com.ibm.spark.kernel.protocol.v5.{KMBuilder, ActorLoader, UUID}
  * @param kmBuilder The KMBuilder to use with the ClientCommWriter
  * @param commRegistrar The registrar to use for callback registration
  */
+@Experimental
 class ClientCommManager(
   private val actorLoader: ActorLoader,
   private val kmBuilder: KMBuilder,

@@ -15,10 +15,12 @@
  */
 package com.ibm.spark.comm
 
+import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.kernel.protocol.v5._
 
 import scala.util.Try
 
+@Experimental
 object CommCallbacks {
   type OpenCallback = (CommWriter, UUID, String, Data) => Unit
   type MsgCallback = (CommWriter, UUID, Data) => Unit
@@ -35,6 +37,7 @@ import com.ibm.spark.comm.CommCallbacks._
  * @param msgCallbacks The sequence of msg callbacks
  * @param closeCallbacks The sequence of close callbacks
  */
+@Experimental
 class CommCallbacks(
   private[comm] val openCallbacks: Seq[CommCallbacks.OpenCallback] = Nil,
   private[comm] val msgCallbacks: Seq[CommCallbacks.MsgCallback] = Nil,

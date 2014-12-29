@@ -15,6 +15,7 @@
  */
 package com.ibm.spark.comm
 
+import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 
@@ -26,6 +27,7 @@ import java.io.Writer
  * @param commId The comm id associated with this writer (defaults to a
  *               random UUID)
  */
+@Experimental
 abstract class CommWriter(
   private[comm] val commId: UUID = java.util.UUID.randomUUID().toString
 ) extends Writer {

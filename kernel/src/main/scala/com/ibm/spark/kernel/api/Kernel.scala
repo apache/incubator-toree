@@ -2,6 +2,7 @@ package com.ibm.spark.kernel.api
 
 import java.io.{PrintStream, OutputStream}
 
+import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommManager
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5
@@ -13,6 +14,7 @@ import com.ibm.spark.kernel.protocol.v5
  * @param comm The Comm manager to expose in this instance
  * @param actorLoader The actor loader to use for message relaying
  */
+@Experimental
 class Kernel (
   private val actorLoader: v5.ActorLoader,
   val interpreter: Interpreter,

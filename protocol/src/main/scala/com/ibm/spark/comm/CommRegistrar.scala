@@ -15,6 +15,7 @@
  */
 package com.ibm.spark.comm
 
+import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommCallbacks._
 import com.ibm.spark.kernel.protocol.v5
 
@@ -28,6 +29,7 @@ import scala.collection.immutable
  * @param commStorage The storage used to save/load callbacks
  * @param defaultTargetName The default target name to use for functions
  */
+@Experimental
 class CommRegistrar(
   private val commStorage: CommStorage,
   private[comm] val defaultTargetName: Option[String] = None
