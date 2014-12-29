@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package com.ibm.spark
+package com.ibm.spark.boot
 
 import java.io.{File, OutputStream}
 
-import com.typesafe.config.{ConfigFactory, Config}
-import joptsimple.{OptionSpec, OptionParser}
+import com.typesafe.config.{Config, ConfigFactory}
+import joptsimple.{OptionParser, OptionSpec}
 
 import scala.collection.JavaConverters._
-import java.net.URL
 
-case class SparkKernelOptions(args: Seq[String]) {
+class CommandLineOptions(args: Seq[String]) {
   private val parser = new OptionParser()
   parser.allowsUnrecognizedOptions()
 

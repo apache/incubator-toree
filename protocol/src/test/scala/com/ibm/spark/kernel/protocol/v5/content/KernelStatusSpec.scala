@@ -30,6 +30,12 @@ class KernelStatusSpec extends FunSpec with Matchers {
   val kernelStatus: KernelStatus = KernelStatus("<STRING>")
 
   describe("KernelStatus") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        KernelStatus.toTypeString should be ("status")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a kernelStatus instance") {
         // This is the least safe way to convert as an error is thrown if it fails

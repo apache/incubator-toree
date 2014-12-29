@@ -31,7 +31,11 @@ object Build extends Build with Settings with SubProjects with TestTasks {
       base = file("."),
       settings = fullSettings
     ).settings(
-      scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand"
+      scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand",
+
+      // Do not publish the root project (it just serves as an aggregate)
+      publishArtifact := false,
+      publishLocal := {}
     )
   ).aggregate(client, kernel, kernel_api, protocol, macros)
 }
@@ -62,6 +66,7 @@ trait SubProjects extends Settings with TestTasks {
     base = file("client"),
     settings = fullSettings
   )) dependsOn(
+    macros % "test->test;compile->compile",
     protocol % "test->test;compile->compile"
   )
 
@@ -76,6 +81,7 @@ trait SubProjects extends Settings with TestTasks {
         packMain := Map("sparkkernel" -> "com.ibm.spark.SparkKernel")
       )
   )) dependsOn(
+    macros % "test->test;compile->compile",
     protocol % "test->test;compile->compile",
     kernel_api % "test->test;compile->compile"
   )
@@ -98,7 +104,7 @@ trait SubProjects extends Settings with TestTasks {
     id = "protocol",
     base = file("protocol"),
     settings = fullSettings ++ packSettings
-  ))
+  )) dependsOn(macros % "test->test;compile->compile")
 
   /**
    * Project representing macros in Scala that must be compiled separately from

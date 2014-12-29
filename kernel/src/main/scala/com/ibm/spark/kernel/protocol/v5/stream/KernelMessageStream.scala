@@ -25,9 +25,18 @@ import play.api.libs.json.Json
 
 import scala.collection.mutable.ListBuffer
 
+/**
+ * Represents an OutputStream that sends data back to the clients connect to the
+ * kernel instance.
+ *
+ * @param actorLoader The actor loader used to access the message relay
+ * @param kmBuilder The KMBuilder used to construct outgoing kernel messages
+ * @param streamType The type of stream (stdout/stderr)
+ */
 class KernelMessageStream(
   actorLoader: ActorLoader,
-  kmBuilder: KMBuilder
+  kmBuilder: KMBuilder,
+  streamType: String = "stdout"
 ) extends OutputStream {
   private val EncodingType = Charset.forName("UTF-8")
   private var internalBytes: ListBuffer[Byte] = ListBuffer()
@@ -39,12 +48,12 @@ class KernelMessageStream(
   override def flush(): Unit = {
     val contents = new String(internalBytes.toArray, EncodingType)
     val streamContent = StreamContent(
-      "stdout", contents
+      streamType, contents
     )
 
     val kernelMessage = kmBuilder
-      .withIds(Seq(MessageType.Stream.toString))
-      .withHeader(MessageType.Stream)
+      .withIds(Seq(MessageType.Outgoing.Stream.toString))
+      .withHeader(MessageType.Outgoing.Stream)
       .withContentString(streamContent).build
 
     actorLoader.load(SystemActorType.KernelMessageRelay) ! kernelMessage

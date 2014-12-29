@@ -20,6 +20,7 @@ import java.io.OutputStream
 
 import akka.actor.{Props, Actor}
 import com.ibm.spark.interpreter.{ExecuteAborted, Results, ExecuteError, Interpreter}
+import com.ibm.spark.kernel.api.StreamInfo
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.security.KernelSecurityManager
@@ -34,7 +35,8 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
   require(interpreter != null)
 
   override def receive: Receive = {
-    case (executeRequest: ExecuteRequest, outputStream: OutputStream) =>
+    case (executeRequest: ExecuteRequest, parentMessage: KernelMessage,
+      outputStream: OutputStream) =>
       // If the cell is not empty, then interpret.
       if(executeRequest.code.trim != "") {
         //interpreter.updatePrintStreams(System.in, outputStream, outputStream)
@@ -46,14 +48,30 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
           GlobalStreamState.withStreams(
             newInputStream, newOutputStream, newErrorStream
           ) {
-            // TODO: Think of a cleaner wrapper to handle updating the Console
-            //       input and output streams
-            interpreter.interpret(
-              """
+            // Add our parent message with StreamInfo type included
+            interpreter.doQuietly {
+              interpreter.bind(
+                "$streamInfo",
+                "com.ibm.spark.kernel.api.StreamInfo",
+                new KernelMessage(
+                  ids = parentMessage.ids,
+                  signature = parentMessage.signature,
+                  header = parentMessage.header,
+                  parentHeader = parentMessage.parentHeader,
+                  metadata = parentMessage.metadata,
+                  contentString = parentMessage.contentString
+                ) with StreamInfo,
+                List( """@transient""", """implicit""")
+              )
+              // TODO: Think of a cleaner wrapper to handle updating the Console
+              //       input and output streams
+              interpreter.interpret(
+                """
                 Console.setIn(System.in)
                 Console.setOut(System.out)
                 Console.setErr(System.err)
               """)
+            }
             interpreter.interpret(executeRequest.code)
           }
 

@@ -34,6 +34,12 @@ class CommCloseSpec extends FunSpec with Matchers {
   )
 
   describe("CommClose") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        CommClose.toTypeString should be ("comm_close")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a CommClose instance") {
         // This is the least safe way to convert as an error is thrown if it fails

@@ -38,6 +38,12 @@ class ConnectReplySpec extends FunSpec with Matchers {
   val connectReply: ConnectReply = ConnectReply(11111,22222,33333,44444)
 
   describe("ConnectReply") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        ConnectReply.toTypeString should be ("connect_reply")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a ConnectReply instance") {
         // This is the least safe way to convert as an error is thrown if it fails

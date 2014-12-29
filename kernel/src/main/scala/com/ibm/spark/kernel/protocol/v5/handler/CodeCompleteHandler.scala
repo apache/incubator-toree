@@ -48,10 +48,11 @@ class CodeCompleteHandler(actorLoader: ActorLoader)
       case Success(tuple) =>
         val reply = CompleteReplyOk(tuple._2, cr.cursor_pos,
                                     tuple._1, Metadata())
+        val completeReplyType = MessageType.Outgoing.CompleteReply.toString
         logKernelMessageAction("Sending code complete reply for", km)
         actorLoader.load(SystemActorType.KernelMessageRelay) !
           km.copy(
-            header = HeaderBuilder.create(MessageType.CompleteReply.toString),
+            header = HeaderBuilder.create(completeReplyType),
             parentHeader = km.header,
             contentString = Json.toJson(reply).toString
           )

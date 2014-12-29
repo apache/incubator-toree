@@ -27,9 +27,9 @@ class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {
   private def sendStatusMessage(kernelStatus: KernelStatusType, parentHeader: Header) {
     //  Create the status message and send it to the relay
     val km : KernelMessage = KMBuilder()
-      .withIds(Seq(MessageType.Status.toString))
+      .withIds(Seq(MessageType.Outgoing.Status.toString))
       .withSignature("")
-      .withHeader(MessageType.Status)
+      .withHeader(MessageType.Outgoing.Status)
       .withParentHeader(parentHeader)
       .withContentString(KernelStatus(kernelStatus.toString)).build
 

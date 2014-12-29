@@ -61,6 +61,11 @@ case class KMBuilder(km: KernelMessage = KernelMessage(
     KMBuilder(this.km.copy(header = header))
   }
 
+  def withHeader(msgTypeString: String) : KMBuilder = {
+    val header = HeaderBuilder.create(msgTypeString)
+    KMBuilder(this.km.copy(header = header))
+  }
+
   def withParent(parent: KernelMessage) : KMBuilder =
     KMBuilder(this.km.copy(parentHeader = parent.header))
 

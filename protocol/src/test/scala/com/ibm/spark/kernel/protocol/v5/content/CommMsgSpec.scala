@@ -34,6 +34,12 @@ class CommMsgSpec extends FunSpec with Matchers {
   )
 
   describe("CommMsg") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        CommMsg.toTypeString should be ("comm_msg")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a CommMsg instance") {
         // This is the least safe way to convert as an error is thrown if it fails

@@ -29,7 +29,14 @@ case class ConnectReply(
     Json.toJson(this)(ConnectReply.connectReplyWrites).toString
 }
 
-object ConnectReply {
+object ConnectReply extends TypeString {
   implicit val connectReplyReads = Json.reads[ConnectReply]
   implicit val connectReplyWrites = Json.writes[ConnectReply]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "connect_reply"
 }

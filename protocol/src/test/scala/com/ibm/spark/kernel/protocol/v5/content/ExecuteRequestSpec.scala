@@ -37,6 +37,12 @@ class ExecuteRequestSpec extends FunSpec with Matchers {
   )
 
   describe("ExecuteRequest") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        ExecuteRequest.toTypeString should be ("execute_request")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a executeRequest instance") {
         // This is the least safe way to convert as an error is thrown if it fails

@@ -73,7 +73,8 @@ case class ExecuteRequestRelay(actorLoader: ActorLoader)
   }
 
   override def receive: Receive = {
-    case (executeRequest: ExecuteRequest, outputStream: OutputStream) =>
+    case (executeRequest: ExecuteRequest, parentMessage: KernelMessage,
+      outputStream: OutputStream) =>
       val magicManager = actorLoader.load(SystemActorType.MagicManager)
       val futureIsMagic =
         magicManager ? ValidateMagicMessage(executeRequest.code)
@@ -95,7 +96,7 @@ case class ExecuteRequestRelay(actorLoader: ActorLoader)
         case false =>
           val interpreterActor = actorLoader.load(SystemActorType.Interpreter)
           val future =
-            (interpreterActor ? ((executeRequest, outputStream)))
+            (interpreterActor ? ((executeRequest, parentMessage, outputStream)))
               .mapTo[Either[ExecuteOutput, ExecuteFailure]]
 
           packageFutureResponse(future) pipeTo oldSender

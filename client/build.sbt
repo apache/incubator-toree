@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// Update compiler options to allow reflective calls
+scalacOptions += "-language:reflectiveCalls"
+
 // Main library dependencies to function
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.3.4",

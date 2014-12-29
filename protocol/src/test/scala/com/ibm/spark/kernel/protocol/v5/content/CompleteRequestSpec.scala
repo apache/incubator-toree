@@ -33,6 +33,12 @@ class CompleteRequestSpec extends FunSpec with Matchers {
   )
 
   describe("CompleteRequest") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        CompleteRequest.toTypeString should be ("complete_request")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a CompleteRequest instance") {
         // This is the least safe way to convert as an error is thrown if it fails

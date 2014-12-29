@@ -48,7 +48,7 @@ class ShellClientSpec extends TestKit(ActorSystem("ShellActorSpec"))
         )
         val header = Header(
           UUID.randomUUID().toString, "spark",
-          UUID.randomUUID().toString, MessageType.ExecuteRequest.toString,
+          UUID.randomUUID().toString, MessageType.Incoming.ExecuteRequest.toString,
           "5.0"
         )
         val kernelMessage = KernelMessage(

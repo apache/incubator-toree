@@ -28,6 +28,12 @@ class ConnectRequestSpec extends FunSpec with Matchers {
   val connectRequest: ConnectRequest = ConnectRequest()
 
   describe("ConnectRequest") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        ConnectRequest.toTypeString should be ("connect_request")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a ConnectRequest instance") {
         // This is the least safe way to convert as an error is thrown if it fails

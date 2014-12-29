@@ -24,7 +24,7 @@ case class KernelInfoRequest() extends KernelMessageContent {
     Json.toJson(this)(KernelInfoRequest.kernelInfoRequestWrites).toString
 }
 
-object KernelInfoRequest{
+object KernelInfoRequest extends TypeString {
   private val SingleInstance = KernelInfoRequest()
   private val EmptyJsonObj = Json.obj()
 
@@ -37,4 +37,11 @@ object KernelInfoRequest{
   implicit val kernelInfoRequestWrites = new Writes[KernelInfoRequest] {
     override def writes(req: KernelInfoRequest): JsValue = EmptyJsonObj
   }
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "kernel_info_request"
 }

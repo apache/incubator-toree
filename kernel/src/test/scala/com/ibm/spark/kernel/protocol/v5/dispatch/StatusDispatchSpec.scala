@@ -49,7 +49,7 @@ with FunSpecLike with Matchers with MockitoSugar with BeforeAndAfter{
         statusDispatchRef ! KernelStatusType.Busy
         //  Check the kernel message is the correct type
         val statusMessage: KernelMessage = relayProbe.receiveOne(500.milliseconds).asInstanceOf[KernelMessage]
-        statusMessage.header.msg_type should be (MessageType.Status.toString)
+        statusMessage.header.msg_type should be (MessageType.Outgoing.Status.toString)
         //  Check the status is what we sent
         val status: KernelStatus = Json.parse(statusMessage.contentString).as[KernelStatus]
          status.execution_state should be (KernelStatusType.Busy.toString)
@@ -62,7 +62,7 @@ with FunSpecLike with Matchers with MockitoSugar with BeforeAndAfter{
         statusDispatchRef ! tuple
         //  Check the kernel message is the correct type
         val statusMessage: KernelMessage = relayProbe.receiveOne(500.milliseconds).asInstanceOf[KernelMessage]
-        statusMessage.header.msg_type should be (MessageType.Status.toString)
+        statusMessage.header.msg_type should be (MessageType.Outgoing.Status.toString)
         //  Check the status is what we sent
         val status: KernelStatus = Json.parse(statusMessage.contentString).as[KernelStatus]
         status.execution_state should be (KernelStatusType.Busy.toString)

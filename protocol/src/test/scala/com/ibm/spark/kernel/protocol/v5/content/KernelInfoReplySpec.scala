@@ -37,6 +37,12 @@ class KernelInfoReplySpec extends FunSpec with Matchers {
   )
 
   describe("KernelInfoReply") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        KernelInfoReply.toTypeString should be ("kernel_info_reply")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a kernelInfoReply instance") {
         // This is the least safe way to convert as an error is thrown if it fails

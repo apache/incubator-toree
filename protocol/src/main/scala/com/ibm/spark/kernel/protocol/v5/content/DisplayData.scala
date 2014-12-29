@@ -28,7 +28,14 @@ case class DisplayData(
     Json.toJson(this)(DisplayData.displayDataWrites).toString
 }
 
-object DisplayData {
+object DisplayData extends TypeString {
   implicit val displayDataReads = Json.reads[DisplayData]
   implicit val displayDataWrites = Json.writes[DisplayData]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "display_data"
 }

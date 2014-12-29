@@ -34,6 +34,12 @@ class HistoryReplySpec extends FunSpec with Matchers {
   )
 
   describe("HistoryReply") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        HistoryReply.toTypeString should be ("history_reply")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a HistoryReply instance") {
         // This is the least safe way to convert as an error is thrown if it fails

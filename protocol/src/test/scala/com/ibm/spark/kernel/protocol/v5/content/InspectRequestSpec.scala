@@ -34,6 +34,12 @@ class InspectRequestSpec extends FunSpec with Matchers {
   )
 
   describe("InspectRequest") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        InspectRequest.toTypeString should be ("inspect_request")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a InspectRequest instance") {
         // This is the least safe way to convert as an error is thrown if it fails

@@ -28,7 +28,6 @@ import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import org.mockito.Matchers.{eq => mockEq}
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import scala.concurrent.duration._
-import com.ibm.spark.kernel.protocol.v5.MessageType._
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
 import akka.zeromq.ZMQMessage
 import scala.concurrent._
@@ -39,8 +38,8 @@ import ExecutionContext.Implicits.global
 class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter with ScalaFutures {
-  private val IncomingMessageType = CompleteRequest.toString
-  private val OutgoingMessageType = CompleteReply.toString
+  private val IncomingMessageType = MessageType.Incoming.CompleteRequest.toString
+  private val OutgoingMessageType = MessageType.Outgoing.CompleteReply.toString
 
   private val header: Header = Header("<UUID>", "<USER>", "<SESSION>",
     "<TYPE>", "<VERSION>")
@@ -82,11 +81,13 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
       .thenReturn(captureSelection)
 
     relayWithoutSignatureManager = system.actorOf(Props(
-      classOf[KernelMessageRelay], actorLoader, false
+      classOf[KernelMessageRelay], actorLoader, false,
+      mock[Map[String, String]], mock[Map[String, String]]
     ))
 
     relayWithSignatureManager = system.actorOf(Props(
-      classOf[KernelMessageRelay], actorLoader, true
+      classOf[KernelMessageRelay], actorLoader, true,
+      mock[Map[String, String]], mock[Map[String, String]]
     ))
   }
 
@@ -164,12 +165,14 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
           //  Setup the base actor system and the relay
           val actorLoader = mock[ActorLoader]
           val kernelMessageRelay = system.actorOf(Props(
-            classOf[KernelMessageRelay], actorLoader, true
+            classOf[KernelMessageRelay], actorLoader, true,
+            mock[Map[String, String]], mock[Map[String, String]]
           ))
           //  Where all of the messages are relayed to, otherwise NPE
           val captureProbe = TestProbe()
           val captureSelection = system.actorSelection(captureProbe.ref.path.toString)
-          when(actorLoader.load(CompleteRequest)).thenReturn(captureSelection)
+          when(actorLoader.load(MessageType.Incoming.CompleteRequest))
+            .thenReturn(captureSelection)
 
 
           val n = 5

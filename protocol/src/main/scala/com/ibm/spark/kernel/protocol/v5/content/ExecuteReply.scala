@@ -38,13 +38,20 @@ case class ExecuteReply(
     Json.toJson(this)(ExecuteReply.executeReplyWrites).toString
 }
 
-object ExecuteReply {
+object ExecuteReply extends TypeString {
   implicit val executeReplyReads = Json.reads[ExecuteReply]
   implicit val executeReplyWrites = Json.writes[ExecuteReply]
 
   implicit def ExecuteReplyToString(executeReply: ExecuteReply): String ={
       Json.toJson(executeReply).toString
   }
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "execute_reply"
 }
 
 

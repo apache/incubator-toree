@@ -33,6 +33,12 @@ class ExecuteInputSpec extends FunSpec with Matchers {
   )
 
   describe("ExecuteInput") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        ExecuteInput.toTypeString should be ("execute_input")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a executeInput instance") {
         // This is the least safe way to convert as an error is thrown if it fails

@@ -58,26 +58,23 @@ object Common {
     libraryDependencies := buildLibraryDependencies,
     isSnapshot := snapshot,
 
-    // Force artifact name of
-    // ibm-spark-<artifact>_<scala version>-<build version>.jar
-    artifactName := {
-      (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
-        artifactPrefix + "-" + artifact.name + "_" + sv.binary + "-" +
-          module.revision + "." + artifact.extension
-    },
-
     // Scala-based options for compilation
     scalacOptions ++= Seq(
       "-deprecation", "-unchecked", "-feature",
       //"-Xlint", // Scala 2.11.x only
       "-Xfatal-warnings",
-      "-Ywarn-all"
+      "-Ywarn-all",
+      "-language:reflectiveCalls"
     ),
 
-    // Java-based options for compilation
-    javacOptions ++= Seq(
-      "-Xlint", // Enable all Java-based warnings
-      "-Xlint:-path" // Suppress path warnings since we get tons of them
+    // Java-based options for compilation (all tasks)
+    javacOptions in Compile ++= Seq(""),
+
+    // Java-based options for just the compile task
+    javacOptions in (Compile, compile) ++= Seq(
+      "-Xlint:all",   // Enable all Java-based warnings
+      "-Xlint:-path", // Suppress path warnings since we get tons of them
+      "-Werror"       // Treat warnings as errors
     ),
 
     // Add additional test option to show time taken per test

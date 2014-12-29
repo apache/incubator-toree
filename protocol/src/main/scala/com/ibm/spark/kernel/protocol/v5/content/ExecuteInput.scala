@@ -27,7 +27,14 @@ case class ExecuteInput(
     Json.toJson(this)(ExecuteInput.executeInputWrites).toString
 }
 
-object ExecuteInput {
+object ExecuteInput extends TypeString {
   implicit val executeInputReads = Json.reads[ExecuteInput]
   implicit val executeInputWrites = Json.writes[ExecuteInput]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "execute_input"
 }

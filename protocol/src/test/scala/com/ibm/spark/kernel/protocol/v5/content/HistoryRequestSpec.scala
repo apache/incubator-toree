@@ -40,6 +40,12 @@ class HistoryRequestSpec extends FunSpec with Matchers {
   )
 
   describe("HistoryRequest") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        HistoryRequest.toTypeString should be ("history_request")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a HistoryRequest instance") {
         // This is the least safe way to convert as an error is thrown if it fails

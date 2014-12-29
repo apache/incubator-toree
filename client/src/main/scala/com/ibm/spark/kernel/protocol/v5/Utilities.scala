@@ -98,7 +98,7 @@ object Utilities extends LogLike {
     // construct a kernel message whose content is an ExecuteRequest
     val id = java.util.UUID.randomUUID().toString
     val header = Header(
-      id, "spark", sessionId, MessageType.ExecuteRequest.toString, "5.0")
+      id, "spark", sessionId, MessageType.Incoming.ExecuteRequest.toString, "5.0")
 
     KMBuilder().withIds(Seq[String]()).withSignature("").withHeader(header)
       .withParentHeader(HeaderBuilder.empty).withContentString(message).build

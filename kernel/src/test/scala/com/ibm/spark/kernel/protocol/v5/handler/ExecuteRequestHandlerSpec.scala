@@ -48,7 +48,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
     // Add our handler and mock interpreter to the actor system
     handlerActor = system.actorOf(Props(classOf[ExecuteRequestHandler], actorLoader))
 
-    kernelMessageRelayProbe = TestProbe()
+    kernelMessageRelayProbe = new TestProbe(system)
     when(actorLoader.load(SystemActorType.KernelMessageRelay))
       .thenReturn(system.actorSelection(kernelMessageRelayProbe.ref.path.toString))
 
@@ -67,7 +67,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
    */
   def replyToHandlerWithOkAndResult() = {
     //  This stubs the behaviour of the interpreter executing code
-    val expectedClass = classOf[(ExecuteRequest, OutputStream)]
+    val expectedClass = classOf[(ExecuteRequest, KernelMessage, OutputStream)]
     executeRequestRelayProbe.expectMsgClass(expectedClass)
     executeRequestRelayProbe.reply((
       ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
@@ -77,7 +77,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
   
   def replyToHandlerWithOk() = {
     //  This stubs the behaviour of the interpreter executing code
-    val expectedClass = classOf[(ExecuteRequest, OutputStream)]
+    val expectedClass = classOf[(ExecuteRequest, KernelMessage, OutputStream)]
     executeRequestRelayProbe.expectMsgClass(expectedClass)
     executeRequestRelayProbe.reply((
       ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
@@ -91,7 +91,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
    */
   def replyToHandlerWithErrorAndResult() = {
     //  This stubs the behaviour of the interpreter executing code
-    val expectedClass = classOf[(ExecuteRequest, OutputStream)]
+    val expectedClass = classOf[(ExecuteRequest, KernelMessage, OutputStream)]
     executeRequestRelayProbe.expectMsgClass(expectedClass)
     executeRequestRelayProbe.reply((
       ExecuteReplyError(1, Some(""), Some(""), Some(Nil)),
@@ -108,7 +108,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         var executeResultMessage: KernelMessage = null
         kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
           case message : KernelMessage =>
-            if(message.header.msg_type == MessageType.ExecuteResult.toString)
+            if(message.header.msg_type == ExecuteResult.toTypeString)
               executeResultMessage = message
         }
         executeResultMessage should not be(null)
@@ -120,7 +120,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         var executeResultMessage: KernelMessage = null
         kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
           case message : KernelMessage =>
-            if(message.header.msg_type == MessageType.ExecuteResult.toString)
+            if(message.header.msg_type == ExecuteResult.toTypeString)
               executeResultMessage = message
         }
         executeResultMessage should be(null)
@@ -132,7 +132,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         var executeReplyMessage: KernelMessage = null
         kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
           case message : KernelMessage =>
-            if(message.header.msg_type == MessageType.ExecuteReply.toString)
+            if(message.header.msg_type == ExecuteReply.toTypeString)
               executeReplyMessage = message
         }
         executeReplyMessage should not be(null)
@@ -143,7 +143,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         var executeInputMessage: KernelMessage = null
         kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
           case message : KernelMessage =>
-            if(message.header.msg_type == MessageType.ExecuteInput.toString)
+            if(message.header.msg_type == ExecuteInput.toTypeString)
               executeInputMessage = message
         }
         executeInputMessage should not be(null)
@@ -195,38 +195,25 @@ class ExecuteRequestHandlerSpec extends TestKit(
     describe("#receive( KernelMessage with bad JSON content )"){
       it("should respond with an execute_reply with status error")    {
         handlerActor ! MockKernelMessageWithBadExecuteRequest
-        var executeReplyMessage: Option[KernelMessage] = None
-        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
-          case message: KernelMessage =>
-            if(message.header.msg_type == MessageType.ExecuteReply.toString)
-              executeReplyMessage = Option(message)
-        }
 
-        executeReplyMessage match {
-          case None =>
-            fail("Expected an ExecuteReply message from KernelMessageRelay")
-          case Some(message) =>
-            message.header.msg_type should be(MessageType.ExecuteReply.toString)
-            val reply = Json.parse(message.contentString).as[ExecuteReply]
-            reply.status should be("error")
+        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+          // Only mark as successful if this specific message was received
+          case KernelMessage(_, _, header, _, _, contentString)
+            if header.msg_type == ExecuteReply.toTypeString =>
+            val reply = Json.parse(contentString).as[ExecuteReply]
+            reply.status == "error"
+          case _ => false
         }
       }
 
       it("should send error message to relay") {
         handlerActor ! MockKernelMessageWithBadExecuteRequest
-        var errorContentMessage: Option[KernelMessage] = None
 
-        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
-          case message: KernelMessage =>
-            if(message.header.msg_type == MessageType.Error.toString)
-              errorContentMessage = Option(message)
-        }
-
-        errorContentMessage match {
-          case None =>
-            fail("Expected an ExecuteReply message from KernelMessageRelay")
-          case Some(err) =>
-            err.header.msg_type should be("error")
+        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+          // Only mark as successful if this specific message was received
+          case KernelMessage(_, _, header, _, _, contentString)
+            if header.msg_type == ErrorContent.toTypeString => true
+          case _ => false
         }
       }
 

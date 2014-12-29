@@ -33,7 +33,14 @@ case class CompleteReply (
     Json.toJson(this)(CompleteReply.completeReplyWrites).toString
 }
 
-object CompleteReply {
+object CompleteReply extends TypeString {
   implicit val completeReplyReads = Json.reads[CompleteReply]
   implicit val completeReplyWrites = Json.writes[CompleteReply]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "complete_reply"
 }

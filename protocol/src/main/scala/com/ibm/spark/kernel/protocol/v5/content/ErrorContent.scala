@@ -30,11 +30,18 @@ case class ErrorContent(
     Json.toJson(this)(ErrorContent.errorContentWrites).toString
 }
 
-object ErrorContent {
+object ErrorContent extends TypeString {
   implicit val errorContentReads = Json.reads[ErrorContent]
   implicit val errorContentWrites = Json.writes[ErrorContent]
 
   implicit def ErrorContentToString(errorContent: ErrorContent): String ={
     Json.toJson(errorContent).toString
   }
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "error"
 }

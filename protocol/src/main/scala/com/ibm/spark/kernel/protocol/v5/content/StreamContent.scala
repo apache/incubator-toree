@@ -28,8 +28,15 @@ case class StreamContent(
 }
 
 
-object StreamContent {
+object StreamContent extends TypeString {
   implicit val streamContentReads = Json.reads[StreamContent]
   implicit val streamContentWrites = Json.writes[StreamContent]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "stream"
 }
 

@@ -34,6 +34,12 @@ class ExecuteReplySpec extends FunSpec with Matchers {
   )
 
   describe("ExecuteReply") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        ExecuteReply.toTypeString should be ("execute_reply")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a executeReply instance") {
         // This is the least safe way to convert as an error is thrown if it fails

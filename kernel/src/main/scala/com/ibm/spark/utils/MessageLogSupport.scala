@@ -52,19 +52,23 @@ trait MessageLogSupport extends LogLike {
       s"of type ${km.header.msg_type}")
   }
 
+  // TODO: Migrate this to a helper method in MessageType.Incoming
   /**
    * This method is used to determine if a message is being received by the
    * kernel or being sent from the kernel.
    * @return true if the message is received by the kernel, false otherwise.
    */
   private def isIncomingMessage(messageType: String): Boolean ={
-    MessageType.CompleteRequest.toString.equals(messageType) ||
-      MessageType.ConnectRequest.toString.equals(messageType) ||
-      MessageType.ExecuteRequest.toString.equals(messageType) ||
-      MessageType.HistoryRequest.toString.equals(messageType) ||
-      MessageType.InspectRequest.toString.equals(messageType) ||
-      MessageType.ShutdownRequest.toString.equals(messageType)||
-      MessageType.KernelInfoRequest.toString.equals(messageType)
+    MessageType.Incoming.CompleteRequest.toString.equals(messageType) ||
+      MessageType.Incoming.ConnectRequest.toString.equals(messageType) ||
+      MessageType.Incoming.ExecuteRequest.toString.equals(messageType) ||
+      MessageType.Incoming.HistoryRequest.toString.equals(messageType) ||
+      MessageType.Incoming.InspectRequest.toString.equals(messageType) ||
+      MessageType.Incoming.ShutdownRequest.toString.equals(messageType)||
+      MessageType.Incoming.KernelInfoRequest.toString.equals(messageType) ||
+      MessageType.Incoming.CommOpen.toString.equals(messageType) ||
+      MessageType.Incoming.CommMsg.toString.equals(messageType) ||
+      MessageType.Incoming.CommClose.toString.equals(messageType)
   }
 
 }

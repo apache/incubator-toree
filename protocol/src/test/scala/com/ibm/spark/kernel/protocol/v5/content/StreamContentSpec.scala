@@ -31,6 +31,12 @@ class StreamContentSpec extends FunSpec with Matchers {
   val stream = StreamContent("<STRING>", "<STRING>")
 
   describe("StreamContent") {
+    describe("#toTypeString") {
+      it("should return correct type") {
+        StreamContent.toTypeString should be ("stream")
+      }
+    }
+
     describe("implicit conversions") {
       it("should implicitly convert from valid json to a StreamContent instance") {
         // This is the least safe way to convert as an error is thrown if it fails

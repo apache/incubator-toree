@@ -36,14 +36,15 @@ class SimpleActorLoaderSpec extends TestKit(ActorSystem("SimpleActorLoaderSpecSy
         //  Add an actor to the system to send a message to
         system.actorOf(
           Props(classOf[TestProbeProxyActor], messageTypeProbe),
-          name = MessageType.ExecuteInput.toString
+          name = MessageType.Outgoing.ExecuteInput.toString
         )
 
         //  Create the ActorLoader with our test system
         val actorLoader: SimpleActorLoader = SimpleActorLoader(system)
 
         //  Get the actor and send it a message
-        val loadedMessageActor: ActorSelection = actorLoader.load(MessageType.ExecuteInput)
+        val loadedMessageActor: ActorSelection =
+          actorLoader.load(MessageType.Outgoing.ExecuteInput)
 
         loadedMessageActor ! testMessage
 

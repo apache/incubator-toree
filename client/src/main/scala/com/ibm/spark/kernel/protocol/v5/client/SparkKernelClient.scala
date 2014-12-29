@@ -16,9 +16,13 @@
 
 package com.ibm.spark.kernel.protocol.v5.client
 
+import java.util.UUID
+
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
+import com.ibm.spark.comm._
+import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, ExecuteRequestTuple}
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
@@ -28,6 +32,7 @@ import scala.concurrent.duration._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
+
 /**
  * Client API for Spark Kernel.
  *
@@ -36,7 +41,11 @@ import scala.util.{Failure, Success}
  *
  * The actorSystem parameter allows shutdown of this client's ActorSystem.
  */
-class SparkKernelClient(actorLoader: ActorLoader, actorSystem: ActorSystem) extends LogLike {
+class SparkKernelClient(
+  private val actorLoader: ActorLoader,
+  private val actorSystem: ActorSystem,
+  private val commRegistrar: CommRegistrar
+) extends LogLike {
   implicit val timeout = Timeout(21474835.seconds)
 
   /**
@@ -93,9 +102,18 @@ class SparkKernelClient(actorLoader: ActorLoader, actorSystem: ActorSystem) exte
   def execute(code: String): DeferredExecution = {
     val request = ExecuteRequest(code, false, true, UserExpressions(), true)
     val de = new DeferredExecution
-    actorLoader.load(MessageType.ExecuteRequest) ! ExecuteRequestTuple(request, de)
+    actorLoader.load(MessageType.Incoming.ExecuteRequest) ! ExecuteRequestTuple(request, de)
     de
   }
+
+  /**
+   * Represents the exposed interface for Comm communication with the kernel.
+   */
+  val comm = new ClientCommManager(
+    actorLoader = actorLoader,
+    kmBuilder = KMBuilder(),
+    commRegistrar = commRegistrar
+  )
 
   // TODO: hide this? just heartbeat to see if kernel is reachable?
   def heartbeat(failure: () => Unit): Unit = {

@@ -66,33 +66,51 @@ package object v5 {
   object MessageType extends Enumeration {
     type MessageType    = Value
 
-    //  Shell Router/Dealer Messages
-    val CompleteRequest = Value("complete_request")
-    val CompleteReply   = Value("complete_reply")
-    val ConnectRequest  = Value("connect_request")
-    val ConnectReply    = Value("connect_reply")
-    val ExecuteRequest  = Value("execute_request")
-    val ExecuteReply    = Value("execute_reply")
-    val HistoryRequest  = Value("history_request")
-    val HistoryReply    = Value("history_reply")
-    val InspectRequest  = Value("inspect_request")
-    val InspectReply    = Value("inspect_reply")
-    val KernelInfoRequest  = Value("kernel_info_request")
-    val KernelInfoReply    = Value("kernel_info_reply")
-    val ShutdownRequest = Value("shutdown_request")
-    val ShutdownReply   = Value("shutdown_reply")
+    /**
+     * Represents all incoming messages.
+     */
+    val Incoming = new {
+      val CompleteRequest = Value("complete_request")
+      val ConnectRequest  = Value("connect_request")
+      val ExecuteRequest  = Value("execute_request")
+      val HistoryRequest  = Value("history_request")
+      val InspectRequest  = Value("inspect_request")
+      val KernelInfoRequest  = Value("kernel_info_request")
+      val ShutdownRequest = Value("shutdown_request")
 
-    //  Pub/Sub Messages
-    val ClearOutput     = Value("clear_output")
-    val DisplayData     = Value("display_data")
-    val Error           = Value("error")
-    val ExecuteInput    = Value("execute_input")
-    val ExecuteResult   = Value("execute_result")
-    val Status          = Value("status")
-    val Stream          = Value("stream")
-    val CommOpen        = Value("comm_open")
-    val CommMsg         = Value("comm_msg")
-    val CommClose       = Value("comm_close")
+      // NOTE: These are not consistent with the type as they would conflict
+      val CommOpen        = Value("incoming_comm_open")
+      val CommMsg         = Value("incoming_comm_msg")
+      val CommClose       = Value("incoming_comm_close")
+    }
+
+    /**
+     * Represents all outgoing messages.
+     */
+    val Outgoing = new {
+      //  Shell Router/Dealer Messages
+      val CompleteReply   = Value("complete_reply")
+      val ConnectReply    = Value("connect_reply")
+      val ExecuteReply    = Value("execute_reply")
+      val HistoryReply    = Value("history_reply")
+      val InspectReply    = Value("inspect_reply")
+      val KernelInfoReply    = Value("kernel_info_reply")
+      val ShutdownReply   = Value("shutdown_reply")
+
+      //  Pub/Sub Messages
+      val ClearOutput     = Value("clear_output")
+      val DisplayData     = Value("display_data")
+      val Error           = Value("error")
+      val ExecuteInput    = Value("execute_input")
+      val ExecuteResult   = Value("execute_result")
+      val Status          = Value("status")
+      val Stream          = Value("stream")
+
+      // NOTE: These are not consistent with the type as they would conflict
+      val CommOpen        = Value("outgoing_comm_open")
+      val CommMsg         = Value("outgoing_comm_msg")
+      val CommClose       = Value("outgoing_comm_close")
+    }
   }
 
   object HandlerType extends Enumeration {

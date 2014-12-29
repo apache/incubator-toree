@@ -47,7 +47,7 @@ abstract class BaseHandler(actorLoader: ActorLoader) extends OrderedSupport
       processFuture onComplete {
         case _ =>
           actorLoader.load(SystemActorType.StatusDispatch) !
-            Tuple2(KernelStatusType.Idle, kernelMessage.parentHeader)
+            Tuple2(KernelStatusType.Idle, kernelMessage.header)
           finishedProcessing()
       }
   }

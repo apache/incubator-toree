@@ -31,7 +31,14 @@ case class KernelInfoReply (
     Json.toJson(this)(KernelInfoReply.kernelInfoReplyWrites).toString
 }
 
-object KernelInfoReply{
+object KernelInfoReply extends TypeString {
   implicit val kernelInfoReplyReads = Json.reads[KernelInfoReply]
   implicit val kernelInfoReplyWrites = Json.writes[KernelInfoReply]
+
+  /**
+   * Returns the type string associated with this object.
+   *
+   * @return The type as a string
+   */
+  override def toTypeString: String = "kernel_info_reply"
 }
