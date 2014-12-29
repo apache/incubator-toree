@@ -34,7 +34,7 @@ import test.utils.SparkKernelDeployer
  *       kernel instance (to avoid death by slowness) and it is not guaranteed
  *       that previous tests will do proper cleanup!
  */
-class CommSpecForSystem
+class KernelCommSpecForSystem
   extends TestKit(SparkKernelDeployer.getNoArgSparkKernelActorSystem)
   with FunSpecLike with Matchers with BeforeAndAfterAll
 {
@@ -167,7 +167,7 @@ class CommSpecForSystem
     (kernelMessage.header.msg_id, kernelMessage)
   }
 
-  describe("Comm for System") {
+  describe("Comm for Kernel System") {
     describe("executing Comm API to open a new comm") {
       it("should correctly send comm_open to socket") {
         withNoArgSparkKernel { (actorLoader, heartbeat, shell, ioPub) =>

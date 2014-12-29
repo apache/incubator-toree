@@ -65,6 +65,12 @@ abstract class CommManager(private val commRegistrar: CommRegistrar) {
       commWriter.writeClose(data)
     }
 
+    // Overridden to unlink before sending close message
+    override def close(): Unit = {
+      unlinkFunc(this, this.commId, null)
+      commWriter.close()
+    }
+
     // Overriden to link before sending open message
     override def writeOpen(targetName: String, data: Data): Unit = {
       linkFunc(this, this.commId, targetName, data)
@@ -75,7 +81,6 @@ abstract class CommManager(private val commRegistrar: CommRegistrar) {
     override def write(cbuf: Array[Char], off: Int, len: Int): Unit =
       commWriter.write(cbuf, off, len)
     override def flush(): Unit = commWriter.flush()
-    override def close(): Unit = commWriter.close()
   }
 
   /**

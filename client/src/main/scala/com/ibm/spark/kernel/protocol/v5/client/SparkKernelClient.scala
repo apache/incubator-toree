@@ -109,7 +109,7 @@ class SparkKernelClient(
   /**
    * Represents the exposed interface for Comm communication with the kernel.
    */
-  val Comm = new ClientCommManager(
+  val comm = new ClientCommManager(
     actorLoader = actorLoader,
     kmBuilder = KMBuilder(),
     commRegistrar = commRegistrar

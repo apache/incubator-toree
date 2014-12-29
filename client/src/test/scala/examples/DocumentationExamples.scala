@@ -17,7 +17,8 @@
 package examples
 
 import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.kernel.protocol.v5.client.SparkKernelClientBootstrap
+import com.ibm.spark.kernel.protocol.v5.client.boot.ClientBootstrap
+import com.ibm.spark.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.typesafe.config.{Config, ConfigFactory}
 
@@ -40,7 +41,9 @@ object DocumentationExamples extends App {
   }
   """.stripMargin
   val config: Config = ConfigFactory.parseString(profileJSON)
-  val client = new SparkKernelClientBootstrap(config).createClient
+  val client = (new ClientBootstrap(config)
+      with StandardSystemInitialization
+      with StandardHandlerInitialization).createClient
 
   /********************
   *   Executing Code  *

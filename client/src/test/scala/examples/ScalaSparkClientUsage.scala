@@ -18,7 +18,8 @@ package examples
 
 import java.io.File
 import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.kernel.protocol.v5.client.SparkKernelClientBootstrap
+import com.ibm.spark.kernel.protocol.v5.client.boot.ClientBootstrap
+import com.ibm.spark.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
 import com.ibm.spark.kernel.protocol.v5.content.{ExecuteResult}
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.typesafe.config.{ConfigFactory, Config}
@@ -33,7 +34,9 @@ object ScalaSparkClientUsage extends App {
   val profile: File = new File(getClass.getResource("/kernel-profiles/IOPubIntegrationProfile.json").toURI)
   val config: Config = ConfigFactory.parseFile(profile)
   //  Setup
-  val client = new SparkKernelClientBootstrap(config).createClient
+  val client = (new ClientBootstrap(config)
+    with StandardSystemInitialization
+    with StandardHandlerInitialization).createClient
 
   def printStreamContent(content:StreamContent) = {
     println(s"Stream content on channel ${content.name} was: ${content.text}")

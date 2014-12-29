@@ -1,0 +1,158 @@
+/*
+ * Copyright 2014 IBM Corp.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+package test.utils
+
+import akka.actor.{Actor, Props, ActorRef, ActorSystem}
+import akka.testkit.{TestProbe, TestActorRef}
+import com.ibm.spark.comm.{CommRegistrar, CommStorage}
+import com.ibm.spark.kernel.protocol.v5.client.SparkKernelClient
+import com.ibm.spark.kernel.protocol.v5.client.boot.ClientBootstrap
+import com.ibm.spark.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
+import com.ibm.spark.kernel.protocol.v5.{SocketType, ActorLoader}
+import com.ibm.spark.kernel.protocol.v5.socket._
+import com.ibm.spark.utils.LogLike
+import com.typesafe.config.{ConfigFactory, Config}
+
+/**
+ * Represents an object that can deploy a singleton Spark Client for tests,
+ * providing access to the actors used for socket communication.
+ */
+object SparkClientDeployer {
+
+  private val profileJson: String = """
+    {
+        "stdin_port":   48691,
+        "control_port": 40544,
+        "hb_port":      43462,
+        "shell_port":   44808,
+        "iopub_port":   49691,
+        "ip": "127.0.0.1",
+        "transport": "tcp",
+        "signature_scheme": "hmac-sha256",
+        "key": ""
+    }
+  """.stripMargin
+
+  private var testActorSystem: ActorSystem = _
+  private var testActorLoader: ActorLoader = _
+  private var heartbeatProbe: TestProbe = _
+  private var shellProbe: TestProbe = _
+  private var ioPubProbe: TestProbe = _
+
+  private class ActorInterceptor(testProbe: TestProbe, actor: ActorRef)
+    extends Actor
+  {
+    override def receive: Receive = {
+      case m =>
+        testProbe.ref.forward(m)
+        actor ! m
+    }
+  }
+
+  /**
+   * Runs system initialization, wrapping socket actors with test logic to
+   * intercept messages.
+   */
+  private trait ExposedSystemInitialization
+    extends StandardSystemInitialization with LogLike
+  {
+    override def initializeSystem(
+      actorSystem: ActorSystem, actorLoader: ActorLoader,
+      socketFactory: ClientSocketFactory):
+    (ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage) = {
+      val commStorage = new CommStorage()
+      val commRegistrar = new CommRegistrar(commStorage)
+
+      heartbeatProbe = new TestProbe(actorSystem)
+      val heartbeatClient = actorSystem.actorOf(
+        Props(classOf[HeartbeatClient], socketFactory)
+      )
+      val heartbeatInterceptor = actorSystem.actorOf(
+        Props(new ActorInterceptor(heartbeatProbe, heartbeatClient)),
+        name = SocketType.HeartbeatClient.toString
+      )
+
+      shellProbe = new TestProbe(actorSystem)
+      val shellClient = actorSystem.actorOf(
+        Props(classOf[ShellClient], socketFactory)
+      )
+      val shellInterceptor = actorSystem.actorOf(
+        Props(new ActorInterceptor(shellProbe, shellClient)),
+        name = SocketType.ShellClient.toString
+      )
+
+      ioPubProbe = new TestProbe(actorSystem)
+      val ioPubClient = actorSystem.actorOf(
+        Props(classOf[IOPubClient], socketFactory, actorLoader,
+          commRegistrar, commStorage)
+      )
+      val ioPubInterceptor = actorSystem.actorOf(
+        Props(new ActorInterceptor(ioPubProbe, ioPubClient)),
+        name = SocketType.IOPubClient.toString
+      )
+
+      testActorSystem = actorSystem
+      testActorLoader = actorLoader
+
+      (heartbeatInterceptor, shellInterceptor, ioPubInterceptor,
+        commRegistrar, commStorage)
+    }
+  }
+
+  /**
+   * Represents the internal singleton ClientBootstrap instance that does not
+   * receive any external commandline arguments.
+   */
+  private lazy val client = {
+    // TODO: Use proper logging?
+    // Print out a message to indicate this fixture is being created
+    println("Creating 'no external args' Spark Client through Client Bootstrap")
+
+    val clientBootstrap =
+      new ClientBootstrap(ConfigFactory.parseString(profileJson))
+        with ExposedSystemInitialization
+        with StandardHandlerInitialization
+
+    println("Finished initializing Client Bootstrap! Testing can now start!")
+
+    clientBootstrap.createClient
+  }
+
+  /**
+   * Provides a gateway for tests to receive the ClientBootstrap through a
+   * client and socket test probes.
+   *
+   * @param testCode The test code to execute
+   *
+   * @return The results from the test code
+   */
+  def withSparkClient(
+    testCode: (SparkKernelClient, ActorLoader, TestProbe, TestProbe,
+      TestProbe) => Any
+  ) = testCode(client, testActorLoader, heartbeatProbe, shellProbe, ioPubProbe)
+
+
+  /**
+   * Retrieves the actor system for the ClientBootstrap instance. Will
+   * initialize the ClientBootstrap if the actor system is not ready.
+   *
+   * @return The actor system of ClientBootstrap
+   */
+  def getClientActorSystem: ActorSystem =
+    if (testActorSystem == null) { client; testActorSystem }
+    else testActorSystem
+}

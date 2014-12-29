@@ -115,12 +115,15 @@ class IOPubClient(
       (commOpen: CommOpen) => {
         val targetName = commOpen.target_name
         val commId = commOpen.comm_id
+        val commWriter = new ClientCommWriter(
+          actorLoader, KMBuilder(), commId)
 
         commStorage.getTargetCallbacks(targetName) match {
+          // Unexpected target (does not exist on this side), so send close
           case None             =>
+            commWriter.close()
+          // Found target, so execute callbacks
           case Some(callbacks)  =>
-            val commWriter = new ClientCommWriter(
-              actorLoader, KMBuilder(), commId)
             callbacks.executeOpenCallbacks(
               commWriter, commId, targetName, commOpen.data)
         }
