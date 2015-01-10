@@ -52,8 +52,8 @@ if ! flag_is_set CORE_DEPS; then
 fi
 
 # Install IPython and ZeroMQ
-COMMIT="d3858463c9cd284508ac2deff9a2cde0281d20d3"
-SUBMODULE="1968f4f78d7e8cd227d0b3f4cc3183591969b52a"
+COMMIT="de9fe06e571ed3990600bf7c1badf071b1178b67"
+SUBMODULE="692ab15089220f91156a7761913e7c77bb834d2f"
 
 # Alternatively
 # COMMIT="4ad9a496424fea42f5f25891701fd94d9b925b33"
@@ -107,7 +107,7 @@ mkdir -p /home/vagrant/.ipython/kernels/spark
 cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
 {
     "display_name": "Spark 1.1.0 (Scala 2.10.4)",
-    "language": "scala",
+    "language_info": { "name": "scala" },
     "argv": [
         "/home/vagrant/local/bin/sparkkernel",
         "--profile",

@@ -23,11 +23,11 @@ case class KernelInfoReply (
   protocol_version: String,
   implementation: String,
   implementation_version: String,
-  language: String,
+  language_info: Map[String, String],
   language_version: String,
   banner: String
 ) extends KernelMessageContent {
-  override def content : String =
+  override def content: String =
     Json.toJson(this)(KernelInfoReply.kernelInfoReplyWrites).toString
 }
 

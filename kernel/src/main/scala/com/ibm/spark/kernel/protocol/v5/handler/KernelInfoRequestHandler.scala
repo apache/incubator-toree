@@ -40,7 +40,7 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader)
         kernelInfo.protocolVersion,
         kernelInfo.implementation,
         kernelInfo.implementationVersion,
-        kernelInfo.language,
+        kernelInfo.language_info,
         kernelInfo.languageVersion,
         kernelInfo.banner
       )

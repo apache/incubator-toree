@@ -26,14 +26,14 @@ class KernelInfoReplySpec extends FunSpec with Matchers {
     "protocol_version": "x.y.z",
     "implementation": "<name>",
     "implementation_version": "z.y.x",
-    "language": "<some language>",
+    "language_info": { "name": "<some language>" },
     "language_version": "a.b.c",
     "banner": "<some banner>"
   }
   """)
 
   val kernelInfoReply: KernelInfoReply = KernelInfoReply(
-    "x.y.z", "<name>", "z.y.x", "<some language>", "a.b.c", "<some banner>"
+    "x.y.z", "<name>", "z.y.x", Map("name" -> "<some language>"), "a.b.c", "<some banner>"
   )
 
   describe("KernelInfoReply") {
