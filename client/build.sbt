@@ -21,6 +21,5 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.3.4",
   "com.typesafe.akka" %% "akka-zeromq" % "2.3.4",
   "com.typesafe.akka" %% "akka-slf4j" % "2.3.4",
-  "com.typesafe.akka" %% "akka-testkit" % "2.3.4" % "test",
-  "org.slf4j" % "slf4j-api" % "1.7.7"
+  "com.typesafe.akka" %% "akka-testkit" % "2.3.4" % "test"
 )

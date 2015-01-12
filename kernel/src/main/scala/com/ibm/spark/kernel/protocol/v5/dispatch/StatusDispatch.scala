@@ -20,6 +20,7 @@ import akka.actor.Actor
 import com.ibm.spark.kernel.protocol.v5.KernelStatusType.KernelStatusType
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.KernelStatus
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.utils.LogLike
 import play.api.libs.json.Json
 

@@ -21,8 +21,10 @@ resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/release
 //
 // JSON DEPENDENCIES
 //
-libraryDependencies +=
-  "com.typesafe.play" %% "play-json" % "2.3.6" // Apache v2
+libraryDependencies ++= Seq(
+  "com.typesafe.play" %% "play-json" % "2.3.6", // Apache v2
+  "org.slf4j" % "slf4j-api" % "1.7.5" // MIT
+)
 
 //
 // TEST DEPENDENCIES

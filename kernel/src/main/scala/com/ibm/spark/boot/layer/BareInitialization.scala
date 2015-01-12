@@ -18,8 +18,9 @@ package com.ibm.spark.boot.layer
 
 import akka.actor.{ActorRef, Props, ActorSystem}
 import com.ibm.spark.kernel.protocol.v5.dispatch.StatusDispatch
+import com.ibm.spark.kernel.protocol.v5.kernel.{SimpleActorLoader, ActorLoader}
 import com.ibm.spark.kernel.protocol.v5.security.SignatureManagerActor
-import com.ibm.spark.kernel.protocol.v5.socket._
+import com.ibm.spark.kernel.protocol.v5.kernel.socket._
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen}
 import com.ibm.spark.kernel.protocol.v5.relay.KernelMessageRelay
@@ -129,7 +130,7 @@ trait StandardBareInitialization extends BareInitialization { this: LogLike =>
       + Json.prettyPrint(Json.toJson(socketConfig)))
 
     logger.debug("Constructing ServerSocketFactory")
-    val socketFactory = new ServerSocketFactory(socketConfig)
+    val socketFactory = new SocketFactory(socketConfig)
 
     logger.debug("Initializing Heartbeat on port " +
       socketConfig.hb_port)

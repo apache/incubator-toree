@@ -18,7 +18,8 @@ package com.ibm.spark.kernel.protocol.v5.handler
 
 import com.ibm.spark.comm.{KernelCommWriter, CommStorage, CommRegistrar, CommWriter}
 import com.ibm.spark.kernel.protocol.v5.content.CommOpen
-import com.ibm.spark.kernel.protocol.v5.{KMBuilder, Utilities, KernelMessage, ActorLoader}
+import com.ibm.spark.kernel.protocol.v5.kernel.{Utilities, ActorLoader}
+import com.ibm.spark.kernel.protocol.v5.{KMBuilder, KernelMessage}
 import com.ibm.spark.utils.MessageLogSupport
 import play.api.data.validation.ValidationError
 import play.api.libs.json.JsPath

@@ -16,14 +16,11 @@
 
 package com.ibm.spark.kernel.protocol.v5.client.boot
 
-import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.actor.ActorSystem
 import com.ibm.spark.comm.{CommRegistrar, CommStorage}
-import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.client.boot.layers._
-import com.ibm.spark.kernel.protocol.v5.{SimpleActorLoader, _}
-import com.ibm.spark.kernel.protocol.v5.client.SparkKernelClient
-import com.ibm.spark.kernel.protocol.v5.client.handler.ExecuteHandler
-import com.ibm.spark.kernel.protocol.v5.socket.{SocketConfig, _}
+import com.ibm.spark.kernel.protocol.v5.client.socket.{SocketConfig, SocketFactory}
+import com.ibm.spark.kernel.protocol.v5.client.{SimpleActorLoader, SparkKernelClient}
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 
@@ -34,7 +31,7 @@ class ClientBootstrap(config: Config) extends LogLike {
   private val actorSystem = ActorSystem("spark-client-actor-system")
   private val actorLoader = SimpleActorLoader(actorSystem)
   private val socketFactory =
-    new ClientSocketFactory(SocketConfig.fromConfig(config))
+    new SocketFactory(SocketConfig.fromConfig(config))
 
   // TODO: All clients share the same storage (for testing purposes), this needs
   //       to be updated in the future

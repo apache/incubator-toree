@@ -22,6 +22,7 @@ import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.StreamContent
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
 import org.mockito.Mockito._
 import org.scalatest._

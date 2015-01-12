@@ -18,7 +18,8 @@ package com.ibm.spark.boot.layer
 
 import com.ibm.spark.boot.KernelBootstrap
 import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.kernel.protocol.v5.{KMBuilder, ActorLoader}
+import com.ibm.spark.kernel.protocol.v5.KMBuilder
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 import org.apache.spark.{SparkConf, SparkContext}

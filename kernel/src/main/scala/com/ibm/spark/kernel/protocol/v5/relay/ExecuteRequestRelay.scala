@@ -24,6 +24,7 @@ import akka.util.Timeout
 import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError, ExecuteFailure, ExecuteOutput}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.magic.{ValidateMagicMessage, ExecuteMagicMessage}
 import com.ibm.spark.magic.MagicOutput
 import com.ibm.spark.utils.LogLike

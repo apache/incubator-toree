@@ -20,8 +20,9 @@ import akka.actor.ActorSelection
 import akka.pattern.ask
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
+import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
-import com.ibm.spark.kernel.protocol.v5.Utilities._
+import Utilities._
 import com.ibm.spark.utils._
 import play.api.data.validation.ValidationError
 import play.api.libs.json.JsPath

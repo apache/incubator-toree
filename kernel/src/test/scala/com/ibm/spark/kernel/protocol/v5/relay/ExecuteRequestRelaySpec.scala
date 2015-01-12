@@ -22,6 +22,7 @@ import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError}
 import com.ibm.spark.kernel.protocol.v5.content.{ExecuteResult, ExecuteRequest}
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.magic.{ValidateMagicMessage, ExecuteMagicMessage}
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._

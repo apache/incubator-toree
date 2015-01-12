@@ -22,7 +22,8 @@ import com.ibm.spark.comm.{CommManager, KernelCommManager, CommRegistrar, CommSt
 import com.ibm.spark.dependencies.{DependencyDownloader, IvyDependencyDownloader}
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.api.Kernel
-import com.ibm.spark.kernel.protocol.v5.{ActorLoader, KMBuilder}
+import com.ibm.spark.kernel.protocol.v5.KMBuilder
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader

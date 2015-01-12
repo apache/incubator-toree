@@ -17,7 +17,8 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
 import akka.actor.Actor
-import com.ibm.spark.kernel.protocol.v5.{ActorLoader, KernelMessage}
+import com.ibm.spark.kernel.protocol.v5.KernelMessage
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.utils.{MessageLogSupport, LogLike}
 
 /**

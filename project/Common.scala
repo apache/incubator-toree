@@ -58,6 +58,14 @@ object Common {
     libraryDependencies := buildLibraryDependencies,
     isSnapshot := snapshot,
 
+    scalacOptions in (Compile, doc) ++= Seq(
+      // Ignore packages (for Scaladoc) not from our project
+      "-skip-packages", Seq(
+        "akka",
+        "scala"
+      ).mkString(":")
+    ),
+
     // Scala-based options for compilation
     scalacOptions ++= Seq(
       "-deprecation", "-unchecked", "-feature",

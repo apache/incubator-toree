@@ -22,8 +22,9 @@ import akka.testkit.{TestProbe, TestActorRef}
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.boot.layer._
 import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
-import com.ibm.spark.kernel.protocol.v5.{SocketType, ActorLoader}
-import com.ibm.spark.kernel.protocol.v5.socket._
+import com.ibm.spark.kernel.protocol.v5.SocketType
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import com.ibm.spark.kernel.protocol.v5.kernel.socket._
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 import play.api.libs.json.Json
@@ -71,7 +72,7 @@ object SparkKernelDeployer {
         + Json.prettyPrint(Json.toJson(socketConfig)))
 
       logger.debug("Constructing ServerSocketFactory")
-      val socketFactory = new ServerSocketFactory(socketConfig)
+      val socketFactory = new SocketFactory(socketConfig)
 
       logger.debug("Initializing Heartbeat on port " +
         socketConfig.hb_port)

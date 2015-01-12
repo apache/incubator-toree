@@ -5,6 +5,7 @@ import java.io.PrintStream
 import com.ibm.spark.comm.CommManager
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}

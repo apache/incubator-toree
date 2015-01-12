@@ -22,6 +22,7 @@ import com.ibm.spark.kernel.protocol.v5.KernelStatusType
 import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
 import com.ibm.spark.kernel.protocol.v5.content.CompleteRequest
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5Test._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers}

@@ -19,7 +19,8 @@ package com.ibm.spark.kernel.protocol.v5.handler
 import akka.actor.{ActorRef, ActorSelection, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import com.ibm.spark.kernel.protocol.v5.content.KernelInfoReply
-import com.ibm.spark.kernel.protocol.v5.{SystemActorType, ActorLoader, Header, KernelMessage}
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import com.ibm.spark.kernel.protocol.v5.{SystemActorType, Header, KernelMessage}
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import org.mockito.Matchers.{eq => mockEq}
 import com.typesafe.config.ConfigFactory

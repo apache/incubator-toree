@@ -18,6 +18,7 @@ package com.ibm.spark.comm
 
 import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.kernel.protocol.v5
+import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen, CommContent}
 import com.ibm.spark.kernel.protocol.v5._
 

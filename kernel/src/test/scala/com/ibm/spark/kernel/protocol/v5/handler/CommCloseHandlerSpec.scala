@@ -22,7 +22,8 @@ import akka.actor.{Props, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.content.{ClearOutput, CommClose}
-import com.ibm.spark.kernel.protocol.v5.{SystemActorType, ActorLoader, KMBuilder}
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import com.ibm.spark.kernel.protocol.v5.{SystemActorType, KMBuilder}
 import com.ibm.spark.comm.{CommRegistrar, CommWriter, CommCallbacks, CommStorage}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}

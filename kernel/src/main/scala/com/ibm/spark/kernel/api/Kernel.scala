@@ -6,6 +6,7 @@ import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommManager
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 
 /**
  * Represents the main kernel API to be used for interaction.
@@ -16,7 +17,7 @@ import com.ibm.spark.kernel.protocol.v5
  */
 @Experimental
 class Kernel (
-  private val actorLoader: v5.ActorLoader,
+  private val actorLoader: ActorLoader,
   val interpreter: Interpreter,
   val comm: CommManager
 ) extends KernelLike {
