@@ -23,6 +23,7 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5.KernelStatusType.KernelStatusType
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5Test._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar

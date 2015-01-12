@@ -19,6 +19,7 @@ package com.ibm.spark.comm
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.CommContent
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.Matchers._

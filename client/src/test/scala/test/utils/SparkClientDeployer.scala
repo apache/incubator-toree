@@ -17,15 +17,15 @@
 package test.utils
 
 import akka.actor.{Actor, Props, ActorRef, ActorSystem}
-import akka.testkit.{TestProbe, TestActorRef}
+import akka.testkit.TestProbe
 import com.ibm.spark.comm.{CommRegistrar, CommStorage}
-import com.ibm.spark.kernel.protocol.v5.client.SparkKernelClient
+import com.ibm.spark.kernel.protocol.v5.client.socket.{IOPubClient, ShellClient, SocketFactory, HeartbeatClient}
+import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, SparkKernelClient}
 import com.ibm.spark.kernel.protocol.v5.client.boot.ClientBootstrap
 import com.ibm.spark.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
-import com.ibm.spark.kernel.protocol.v5.{SocketType, ActorLoader}
-import com.ibm.spark.kernel.protocol.v5.socket._
+import com.ibm.spark.kernel.protocol.v5.SocketType
 import com.ibm.spark.utils.LogLike
-import com.typesafe.config.{ConfigFactory, Config}
+import com.typesafe.config.ConfigFactory
 
 /**
  * Represents an object that can deploy a singleton Spark Client for tests,
@@ -72,7 +72,7 @@ object SparkClientDeployer {
   {
     override def initializeSystem(
       actorSystem: ActorSystem, actorLoader: ActorLoader,
-      socketFactory: ClientSocketFactory):
+      socketFactory: SocketFactory):
     (ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage) = {
       val commStorage = new CommStorage()
       val commRegistrar = new CommRegistrar(commStorage)

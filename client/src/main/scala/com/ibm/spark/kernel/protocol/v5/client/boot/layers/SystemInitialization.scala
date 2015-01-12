@@ -18,8 +18,9 @@ package com.ibm.spark.kernel.protocol.v5.client.boot.layers
 
 import akka.actor.{Props, ActorRef, ActorSystem}
 import com.ibm.spark.comm.{CommRegistrar, CommStorage}
-import com.ibm.spark.kernel.protocol.v5.{ActorLoader, SocketType}
-import com.ibm.spark.kernel.protocol.v5.socket.{IOPubClient, ShellClient, HeartbeatClient, ClientSocketFactory}
+import com.ibm.spark.kernel.protocol.v5.SocketType
+import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
+import com.ibm.spark.kernel.protocol.v5.client.socket._
 
 /**
  * Represents the system-related initialization such as socket actors.
@@ -37,7 +38,7 @@ trait SystemInitialization {
    */
   def initializeSystem(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
-    socketFactory: ClientSocketFactory
+    socketFactory: SocketFactory
   ): (ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage)
 }
 
@@ -56,7 +57,7 @@ trait StandardSystemInitialization extends SystemInitialization {
    */
   override def initializeSystem(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
-    socketFactory: ClientSocketFactory
+    socketFactory: SocketFactory
   ): (ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage) = {
     val commStorage = new CommStorage()
     val commRegistrar = new CommRegistrar(commStorage)
@@ -74,7 +75,7 @@ trait StandardSystemInitialization extends SystemInitialization {
 
   private def initializeSystemActors(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
-    socketFactory: ClientSocketFactory, commRegistrar: CommRegistrar,
+    socketFactory: SocketFactory, commRegistrar: CommRegistrar,
     commStorage: CommStorage
   ) = {
     val heartbeatClient = actorSystem.actorOf(

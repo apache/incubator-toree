@@ -20,6 +20,7 @@ import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.content.{CommMsg, CommOpen, CommClose, CommContent}
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 
 /**
  * Represents a CommWriter to send messages from the Kernel to the Client.

@@ -19,6 +19,7 @@ package com.ibm.spark.kernel.protocol.v5.relay
 import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, MessageType, _}
 import com.ibm.spark.utils.MessageLogSupport
 import scala.collection.immutable.HashMap

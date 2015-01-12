@@ -16,17 +16,14 @@
 
 package com.ibm.spark.kernel.protocol.v5.client
 
-import java.util.UUID
-
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.comm._
-import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, ExecuteRequestTuple}
+import com.ibm.spark.kernel.protocol.v5.client.socket.HeartbeatMessage
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
-import com.ibm.spark.kernel.protocol.v5.socket._
 import com.ibm.spark.utils.LogLike
 import scala.concurrent.duration._
 

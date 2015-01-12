@@ -17,7 +17,8 @@
 package com.ibm.spark.kernel.protocol.v5.client.boot.layers
 
 import akka.actor.{ActorSystem, Props}
-import com.ibm.spark.kernel.protocol.v5.{ActorLoader, MessageType}
+import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
+import com.ibm.spark.kernel.protocol.v5.MessageType
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.client.handler.ExecuteHandler
 import com.ibm.spark.utils.LogLike

@@ -24,6 +24,7 @@ import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.comm._
 import com.ibm.spark.kernel.protocol.v5.content.{CommMsg, ClearOutput, CommOpen}
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar

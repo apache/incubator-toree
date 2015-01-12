@@ -21,6 +21,7 @@ import com.ibm.spark.boot.layer._
 import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.security.KernelSecurityManager
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config

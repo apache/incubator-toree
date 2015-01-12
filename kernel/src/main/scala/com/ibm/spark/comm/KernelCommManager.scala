@@ -17,7 +17,8 @@
 package com.ibm.spark.comm
 
 import com.ibm.spark.annotations.Experimental
-import com.ibm.spark.kernel.protocol.v5.{ActorLoader, KMBuilder, UUID}
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import com.ibm.spark.kernel.protocol.v5.{KMBuilder, UUID}
 
 /**
  * Represents a CommManager that uses a KernelCommWriter for its underlying

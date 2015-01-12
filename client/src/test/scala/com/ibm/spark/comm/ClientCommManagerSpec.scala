@@ -16,11 +16,9 @@
 
 package com.ibm.spark.comm
 
-import akka.actor.ActorRef
 import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
-import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.content.CommContent
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._

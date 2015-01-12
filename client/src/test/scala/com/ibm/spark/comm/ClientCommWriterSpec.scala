@@ -20,6 +20,7 @@ import java.util.UUID
 import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
@@ -93,7 +94,8 @@ class ClientCommWriterSpec extends TestKit(
       .when(actorLoader).load(SocketType.ShellClient)
 
     // Create a new writer to use for testing
-    clientCommWriter = new ClientCommWriter(actorLoader, kernelMessageBuilder, commId)
+    clientCommWriter =
+      new ClientCommWriter(actorLoader, kernelMessageBuilder, commId)
   }
 
   describe("ClientCommWriter") {

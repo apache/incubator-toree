@@ -19,6 +19,7 @@ package com.ibm.spark.kernel.protocol.v5.client.handler
 import akka.actor.Actor
 import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, Utilities}
 import com.ibm.spark.kernel.protocol.v5.client.execution.{ExecuteRequestTuple, DeferredExecutionManager}
 import com.ibm.spark.utils.LogLike
 import scala.concurrent.duration._

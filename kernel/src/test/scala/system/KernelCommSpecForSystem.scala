@@ -18,9 +18,10 @@ package system
 
 import akka.testkit.{TestProbe, TestKit}
 import akka.zeromq.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.Utilities._
+import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
+import Utilities._
 import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.{ActorLoader, KernelMessage, SocketType, KMBuilder}
+import com.ibm.spark.kernel.protocol.v5.{KernelMessage, SocketType, KMBuilder}
 import com.ibm.spark.kernel.protocol.v5.content._
 import org.scalatest.{FunSpecLike, BeforeAndAfterAll, Matchers}
 import play.api.libs.json.Json
