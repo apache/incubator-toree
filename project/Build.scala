@@ -30,7 +30,7 @@ object Build extends Build with Settings with SubProjects with TestTasks {
       id = "root",
       base = file("."),
       settings = fullSettings
-    ).settings(
+    ).settings(unidocSettings: _*).settings(
       scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand",
 
       // Do not publish the root project (it just serves as an aggregate)
@@ -50,8 +50,7 @@ trait Settings {
       // Enable syntax highlighting (disabled due to bugs in sbt)
       ScoverageKeys.highlighting := true
     ) ++
-    net.virtualvoid.sbt.graph.Plugin.graphSettings ++
-    unidocSettings
+    net.virtualvoid.sbt.graph.Plugin.graphSettings
 }
 
 /**
