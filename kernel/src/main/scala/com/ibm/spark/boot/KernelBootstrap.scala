@@ -54,6 +54,8 @@ class KernelBootstrap(config: Config) extends LogLike {
     // E.G. System.setOut(customPrintStream) ... all new threads will have
     //      customPrintStream as their initial Console.out value
     //
+    
+    displayVersionInfo
 
     // Initialize the bare minimum to report a starting message
     val (actorSystem, actorLoader, kernelMessageRelayActor, statusDispatch) =
@@ -140,6 +142,11 @@ class KernelBootstrap(config: Config) extends LogLike {
       case Some(header) => statusDispatch ! ((status, header))
       case None         => statusDispatch ! status
     }
+  }
+
+  private def displayVersionInfo() = {
+    logger.info("Kernel version: " + SparkKernelInfo.implementationVersion)
+    logger.info("Scala version: " + SparkKernelInfo.languageVersion)
   }
 }
 

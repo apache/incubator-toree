@@ -36,3 +36,5 @@ addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.6.1")
 
 //  Provides the ability to package our project as a docker image
 addSbtPlugin("se.marcuslonnberg" % "sbt-docker" % "0.5.2")
+
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.3.2")

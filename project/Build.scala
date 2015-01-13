@@ -16,6 +16,7 @@
 
 import sbt.Keys._
 import sbt._
+import sbtbuildinfo.Plugin._
 import sbtunidoc.Plugin.UnidocKeys._
 import sbtunidoc.Plugin._
 import scoverage.ScoverageSbtPlugin._
@@ -67,7 +68,7 @@ trait SubProjects extends Settings with TestTasks {
   )) dependsOn(
     macros % "test->test;compile->compile",
     protocol % "test->test;compile->compile"
-  )
+    )
 
   /**
    * Project representing the kernel code for the Spark Kernel backend.
@@ -96,13 +97,25 @@ trait SubProjects extends Settings with TestTasks {
   )) dependsOn(macros % "test->test;compile->compile")
 
   /**
+   * Required by the sbt-buildinfo plugin. Defines the following:
+   * version: Current kernel version (see buildVersion in Common.scala).
+   * scalaVersion: Current Scala version (see buildScalaVersion in Common.scala).
+   * sparkVersion: Current Spark version.
+   */
+  lazy val buildSettings = Seq(
+    sourceGenerators in Compile <+= buildInfo,
+    buildInfoKeys ++= Seq[BuildInfoKey](version, scalaVersion, "sparkVersion" -> Common.sparkVersion),
+    buildInfoPackage := "buildinfo"
+  )
+
+  /**
    * Project representing the IPython kernel message protocol in Scala. Used
    * by the client and kernel implementations.
    */
   lazy val protocol = addTestTasksToProject(Project(
     id = "protocol",
     base = file("protocol"),
-    settings = fullSettings ++ packSettings
+    settings = fullSettings ++ buildInfoSettings ++ buildSettings ++ packSettings
   )) dependsOn(macros % "test->test;compile->compile")
 
   /**

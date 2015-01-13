@@ -16,6 +16,8 @@
 
 package com.ibm.spark.kernel.protocol.v5
 
+import buildinfo.BuildInfo
+
 object SparkKernelInfo {
   /**
    * Represents the protocol version (IPython) supported by this kernel.
@@ -30,7 +32,7 @@ object SparkKernelInfo {
   /**
    * Represents the kernel version.
    */
-  val implementationVersion   = "0.1.0"
+  val implementationVersion   = BuildInfo.version
 
   /**
    * Represents the language supported by the kernel.
@@ -40,7 +42,7 @@ object SparkKernelInfo {
   /**
    * Represents the language version supported by the kernel.
    */
-  val languageVersion         = "2.10.4"
+  val languageVersion         = BuildInfo.scalaVersion
 
   /**
    * Represents the displayed name of the kernel.
