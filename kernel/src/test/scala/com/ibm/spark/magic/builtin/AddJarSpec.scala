@@ -31,8 +31,9 @@ import org.mockito.Matchers._
 
 class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
   describe("AddJar"){
-    describe("#executeCell") {
-      it("should call addJar on the provided SparkContext and addJars on the provided interpreter") {
+    describe("#execute") {
+      it("should call addJar on the provided SparkContext and addJars on the " +
+         "provided interpreter") {
         val mockSparkContext = mock[SparkContext]
         val mockInterpreter = mock[Interpreter]
         val mockOutputStream = mock[OutputStream]
@@ -49,36 +50,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
             new URL("file://someFile") // Cannot mock URL
         }
 
-        addJarMagic.executeCell(Seq(
-          """http://www.example.com/someJar.jar""",
-          """http://www.example.com/someJar.jar""",
-          """http://www.example.com/someJar.jar"""
-        ))
-
-        verify(mockSparkContext, times(3)).addJar(anyString())
-        verify(mockInterpreter, times(3)).addJars(any[URL])
-      }
-    }
-
-    describe("#executeLine") {
-      it("should call addJar on the provided SparkContext and addJars on the provided interpreter") {
-        val mockSparkContext = mock[SparkContext]
-        val mockInterpreter = mock[Interpreter]
-        val mockOutputStream = mock[OutputStream]
-
-        val addJarMagic = new AddJar
-          with IncludeSparkContext
-          with IncludeInterpreter
-          with IncludeOutputStream
-        {
-          override val sparkContext: SparkContext = mockSparkContext
-          override val interpreter: Interpreter = mockInterpreter
-          override val outputStream: OutputStream = mockOutputStream
-          override def downloadFile(fileUrl: URL, destinationUrl: URL): URL =
-            new URL("file://someFile") // Cannot mock URL
-        }
-
-        addJarMagic.executeLine("""http://www.example.com/someJar.jar""")
+        addJarMagic.execute("""http://www.example.com/someJar.jar""")
 
         verify(mockSparkContext).addJar(anyString())
         verify(mockInterpreter).addJars(any[URL])
@@ -112,7 +84,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           ".jar"
         )
 
-        addJarMagic.executeLine(
+        addJarMagic.execute(
           """http://www.example.com/""" + tmpFilePath.getFileName)
 
         tmpFilePath.toFile.delete()
@@ -150,14 +122,38 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           ".jar"
         )
 
-        addJarMagic.executeLine(
-          """--force http://www.example.com/""" + tmpFilePath.getFileName)
+        addJarMagic.execute(
+          """-f http://www.example.com/""" + tmpFilePath.getFileName)
 
         tmpFilePath.toFile.delete()
 
         downloadFileCalled should be (true)
         verify(mockSparkContext).addJar(anyString())
         verify(mockInterpreter).addJars(any[URL])
+      }
+
+      it("asdf") {
+        val mockSparkContext = mock[SparkContext]
+        val mockInterpreter = mock[Interpreter]
+        val mockOutputStream = mock[OutputStream]
+        val addJarMagic = new AddJar
+          with IncludeSparkContext
+          with IncludeInterpreter
+          with IncludeOutputStream
+        {
+          override val sparkContext: SparkContext = mockSparkContext
+          override val interpreter: Interpreter = mockInterpreter
+          override val outputStream: OutputStream = mockOutputStream
+        }
+
+        // Create a temporary file representing our jar to fake the cache
+        val tmpFilePath = Files.createTempFile(
+          FileSystems.getDefault.getPath(addJarMagic.JarStorageLocation),
+          "someJar",
+          ".jar"
+        )
+
+        addJarMagic.execute("-f")
       }
     }
   }

@@ -25,29 +25,44 @@ import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError, ExecuteFailure, 
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.magic.{ValidateMagicMessage, ExecuteMagicMessage}
-import com.ibm.spark.magic.MagicOutput
+import com.ibm.spark.kernel.protocol.v5.magic.{PostProcessor, MagicParser}
+import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.utils.LogLike
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-case class ExecuteRequestRelay(actorLoader: ActorLoader)
+case class ExecuteRequestRelay(
+  actorLoader: ActorLoader,
+  magicLoader: MagicLoader,
+  magicParser: MagicParser,
+  postProcessor: PostProcessor
+)
   extends Actor with LogLike
 {
   import context._
   implicit val timeout = Timeout(100000.days)
 
+  /**
+   * Takes an ExecuteFailure and (ExecuteReply, ExecuteResult) with contents
+   * dictated by the type of failure (either an error or an abort).
+   * @param failure the failure
+   * @return (ExecuteReply, ExecuteResult)
+   */
   private def failureMatch(failure: ExecuteFailure) =
     failure match {
-      case error: ExecuteError =>
-        (
-          ExecuteReplyError(1, Some(error.name), Some(error.value),
-            Some(error.stackTrace)),
-          ExecuteResult(1, Data(MIMEType.PlainText -> error.toString), Metadata())
-          )
+      case err: ExecuteError =>
+        val error = ExecuteReplyError(
+          1, Some(err.name), Some(err.value), Some(err.stackTrace)
+        )
+        val result =
+          ExecuteResult(1, Data(MIMEType.PlainText -> err.toString), Metadata())
+        (error, result)
+
       case _: ExecuteAborted =>
-        (ExecuteReplyAbort(1), ExecuteResult(1, Data(), Metadata()))
+        val abort = ExecuteReplyAbort(1)
+        val result = ExecuteResult(1, Data(), Metadata())
+        (abort, result)
     }
 
   /**
@@ -56,14 +71,11 @@ case class ExecuteRequestRelay(actorLoader: ActorLoader)
    * @return The tuple representing the proper response
    */
   private def packageFutureResponse(
-    future: Future[Either[AnyRef, ExecuteFailure]]
-  ) = future.map { value =>
+    future: Future[Either[ExecuteOutput, ExecuteFailure]]
+  ): Future[(ExecuteReply, ExecuteResult)] = future.map { value =>
     if (value.isLeft) {
       val output = value.left.get
-      val data = output match {
-        case out: MagicOutput => out
-        case out: ExecuteOutput => Data(MIMEType.PlainText -> out)
-      }
+      val data = postProcessor.process(output)
       (
         ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
         ExecuteResult(1, data, Metadata())
@@ -76,31 +88,28 @@ case class ExecuteRequestRelay(actorLoader: ActorLoader)
   override def receive: Receive = {
     case (executeRequest: ExecuteRequest, parentMessage: KernelMessage,
       outputStream: OutputStream) =>
-      val magicManager = actorLoader.load(SystemActorType.MagicManager)
-      val futureIsMagic =
-        magicManager ? ValidateMagicMessage(executeRequest.code)
+      val interpreterActor = actorLoader.load(SystemActorType.Interpreter)
 
       // Store our old sender so we don't lose it in the callback
       // NOTE: Should point back to our KernelMessageRelay
       val oldSender = sender
 
-      // TODO: Investigate how to use the success to set the future ask
-      //       destination without running duplicate code
-      futureIsMagic.onSuccess {
-        case true =>
-          val magicMessage = ExecuteMagicMessage(executeRequest.code)
-          val future  =
-            (magicManager ? ((magicMessage, outputStream)))
-              .mapTo[Either[MagicOutput, ExecuteFailure]]
+      // Sets the outputStream for this particular ExecuteRequest
+      magicLoader.dependencyMap.setOutputStream(outputStream)
 
-          packageFutureResponse(future) pipeTo oldSender
-        case false =>
-          val interpreterActor = actorLoader.load(SystemActorType.Interpreter)
-          val future =
-            (interpreterActor ? ((executeRequest, parentMessage, outputStream)))
-              .mapTo[Either[ExecuteOutput, ExecuteFailure]]
+      // Parse the code for magics before sending it to the interpreter and
+      // pipe the response to sender
+      (magicParser.parse(executeRequest.code) match {
+        case Left(code) =>
+          val parsedRequest =
+            (executeRequest.copy(code = code), parentMessage, outputStream)
+          val interpreterFuture = (interpreterActor ? parsedRequest)
+            .mapTo[Either[ExecuteOutput, ExecuteFailure]]
+          packageFutureResponse(interpreterFuture)
 
-          packageFutureResponse(future) pipeTo oldSender
-      }
+        case Right(error) =>
+          val failure = ExecuteError("Error parsing magics!", error, Nil)
+          Future { failureMatch(failure) }
+      }) pipeTo oldSender
   }
 }

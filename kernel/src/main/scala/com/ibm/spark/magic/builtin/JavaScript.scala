@@ -25,25 +25,21 @@ import com.ibm.spark.magic.dependencies.IncludeOutputStream
 import com.ibm.spark.utils.ArgumentParsingSupport
 import org.slf4j.LoggerFactory
 
-class JavaScript extends MagicTemplate with ArgumentParsingSupport
+class JavaScript extends CellMagic with ArgumentParsingSupport
   with IncludeOutputStream {
 
   // Lazy because the outputStream is not provided at construction
   private lazy val printStream = new PrintStream(outputStream)
 
-  override def executeCell(code: Seq[String]): MagicOutput = {
-    MagicOutput(MIMEType.ApplicationJavaScript -> code.mkString("\n"))
-  }
-
-  override def executeLine(code: String): MagicOutput = {
-    def printHelpAndReturn: MagicOutput = {
+  override def execute(code: String): CellMagicOutput = {
+    def printHelpAndReturn: CellMagicOutput = {
       printHelp(printStream, """%JavaScript <string_code>""")
-      MagicOutput()
+      CellMagicOutput()
     }
 
     Strings.isNullOrEmpty(code) match {
       case true => printHelpAndReturn
-      case false => MagicOutput(MIMEType.ApplicationJavaScript -> code)
+      case false => CellMagicOutput(MIMEType.ApplicationJavaScript -> code)
     }
   }
 }

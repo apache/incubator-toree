@@ -16,11 +16,11 @@
 
 package com.ibm.spark.magic.dependencies
 
-import com.ibm.spark.magic.MagicTemplate
+import com.ibm.spark.magic.Magic
 import org.apache.spark.SparkContext
 
 trait IncludeSparkContext {
-  this: MagicTemplate =>
+  this: Magic =>
 
   //val sparkContext: SparkContext
   private var _sparkContext: SparkContext = _

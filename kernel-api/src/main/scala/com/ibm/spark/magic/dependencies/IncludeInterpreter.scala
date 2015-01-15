@@ -17,10 +17,10 @@
 package com.ibm.spark.magic.dependencies
 
 import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.magic.MagicTemplate
+import com.ibm.spark.magic.Magic
 
 trait IncludeInterpreter {
-  this: MagicTemplate =>
+  this: Magic =>
 
   //val interpreter: Interpreter
   private var _interpreter: Interpreter = _

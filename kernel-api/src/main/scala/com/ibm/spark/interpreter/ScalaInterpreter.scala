@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutionException
 
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
 import com.ibm.spark.utils.{TaskManager, MultiOutputStream}
+import org.apache.spark.repl
 import org.apache.spark.repl.{SparkJLineCompletion, SparkIMain}
 import org.slf4j.LoggerFactory
 import scala.concurrent.{Await, Future}
@@ -252,6 +253,7 @@ class ScalaInterpreter(
     sparkIMain =
       newSparkIMain(settings, new JPrintWriter(multiOutputStream, true))
 
+
     //logger.debug("Initializing interpreter")
     //sparkIMain.initializeSynchronous()
 
@@ -332,6 +334,11 @@ class ScalaInterpreter(
     val variable = sparkIMain.valueOfTerm(variableName)
     if (variable == null || variable.isEmpty) None
     else variable
+  }
+
+  override def mostRecentVar: String = {
+    require(sparkIMain != null)
+    sparkIMain.mostRecentVar
   }
 
   override def completion(code: String, pos: Int): (Int, List[String]) = {

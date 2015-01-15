@@ -35,33 +35,14 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
   with GivenWhenThen
 {
   describe("AddDeps"){
-    describe("#executeCell") {
-      it("should invoke executeLine per line of code") {
-        Given("Add Dependency Magic")
-        val addDepsMagic = spy(new AddDeps)
-        doReturn(Map()).when(addDepsMagic).executeLine(anyString())
-
-        When("executeCell is invoked with strings")
-        val expected = "one" :: "two" :: "three" :: Nil
-        addDepsMagic.executeCell(expected)
-
-        Then("executeLine should be called once per string")
-        expected.foreach(s => verify(addDepsMagic).executeLine(s))
-      }
-
-      it("should return an empty MagicOutput on success") {
-        val addDepsMagic = spy(new AddDeps)
-        val expected = MagicOutput()
-
-        addDepsMagic.executeCell(Nil) should be (expected)
-      }
-    }
-
-    describe("#executeLine") {
+    describe("#execute") {
       it("should print out the help message if the input is invalid") {
         val byteArrayOutputStream = new ByteArrayOutputStream()
-
+        val mockIntp = mock[Interpreter]
+        val mockSC = mock[SparkContext]
+        val mockDownloader = mock[DependencyDownloader]
         var printHelpWasRun = false
+
         val addDepsMagic = new AddDeps
           with IncludeSparkContext
           with IncludeInterpreter
@@ -69,20 +50,25 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           with IncludeDependencyDownloader
           with ArgumentParsingSupport
         {
-          override val sparkContext: SparkContext = mock[SparkContext]
-          override val interpreter: Interpreter = mock[Interpreter]
+          override val sparkContext: SparkContext = mockSC
+          override val interpreter: Interpreter = mockIntp
           override val dependencyDownloader: DependencyDownloader =
-            mock[DependencyDownloader]
+            mockDownloader
           override val outputStream: OutputStream = byteArrayOutputStream
 
-          override def printHelp(outputStream: OutputStream, usage: String): Unit =
-            printHelpWasRun = true
+          override def printHelp(
+            outputStream: OutputStream, usage: String
+          ): Unit = printHelpWasRun = true
         }
 
-        val expected = MagicOutput()
-        val actual = addDepsMagic.executeLine("notvalid")
+        val expected = LineMagicOutput
+        val actual = addDepsMagic.execute("notvalid")
 
         printHelpWasRun should be (true)
+        verify(mockIntp, times(0)).addJars(any())
+        verify(mockIntp, times(0)).bind(any(), any(), any(), any())
+        verify(mockSC, times(0)).addJar(any())
+        verify(mockDownloader, times(0)).retrieve(any(), any(), any(), any())
         actual should be (expected)
       }
 
@@ -106,7 +92,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         }
 
         val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: "--transitive" :: Nil
-        addDepsMagic.executeLine(expected.mkString(" "))
+        addDepsMagic.execute(expected.mkString(" "))
 
         verify(mockDependencyDownloader).retrieve(
           expected(0), expected(1), expected(2), true)
@@ -132,7 +118,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         }
 
         val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: Nil
-        addDepsMagic.executeLine(expected.mkString(" "))
+        addDepsMagic.execute(expected.mkString(" "))
 
         verify(mockDependencyDownloader).retrieve(
           expected(0), expected(1), expected(2), false)
@@ -159,7 +145,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         }
 
         val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: Nil
-        addDepsMagic.executeLine(expected.mkString(" "))
+        addDepsMagic.execute(expected.mkString(" "))
 
         verify(mockInterpreter).addJars(any[URL])
       }
@@ -188,58 +174,9 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         }
 
         val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: Nil
-        addDepsMagic.executeLine(expected.mkString(" "))
+        addDepsMagic.execute(expected.mkString(" "))
 
         verify(mockSparkContext, times(3)).addJar(anyString())
-      }
-
-      it("should return an empty MagicOutput if the input is invalid") {
-        val mockDependencyDownloader = mock[DependencyDownloader]
-        doReturn(Nil).when(mockDependencyDownloader).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
-
-        val addDepsMagic = new AddDeps
-          with IncludeSparkContext
-          with IncludeInterpreter
-          with IncludeOutputStream
-          with IncludeDependencyDownloader
-          with ArgumentParsingSupport
-        {
-          override val sparkContext: SparkContext = mock[SparkContext]
-          override val interpreter: Interpreter = mock[Interpreter]
-          override val dependencyDownloader: DependencyDownloader =
-            mockDependencyDownloader
-          override val outputStream: OutputStream = mock[OutputStream]
-        }
-
-        val expected = MagicOutput()
-        val actual = addDepsMagic.executeLine((Nil).mkString(" "))
-        actual should be (expected)
-      }
-
-      it("should return an empty MagicOutput on success") {
-        val mockDependencyDownloader = mock[DependencyDownloader]
-        doReturn(Nil).when(mockDependencyDownloader).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
-
-        val addDepsMagic = new AddDeps
-          with IncludeSparkContext
-          with IncludeInterpreter
-          with IncludeOutputStream
-          with IncludeDependencyDownloader
-          with ArgumentParsingSupport
-        {
-          override val sparkContext: SparkContext = mock[SparkContext]
-          override val interpreter: Interpreter = mock[Interpreter]
-          override val dependencyDownloader: DependencyDownloader =
-            mockDependencyDownloader
-          override val outputStream: OutputStream = mock[OutputStream]
-        }
-
-        val expected = MagicOutput()
-        val actual = addDepsMagic.executeLine((
-          "com.ibm.spark" :: "kernel" :: "1.0" :: Nil).mkString(" "))
-        actual should be (expected)
       }
     }
   }

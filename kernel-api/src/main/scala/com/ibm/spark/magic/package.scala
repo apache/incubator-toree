@@ -24,6 +24,9 @@ package object magic {
   //       a type/val that can be translated into a specific protocol via
   //       implicits - or some other transformation - to separate this from
   //       the protocol type
-  type MagicOutput = Map[String, String]
-  val MagicOutput = Map
+  type CellMagicOutput = Map[String, String]
+  val CellMagicOutput = Map
+  
+  type LineMagicOutput = Unit
+  val LineMagicOutput : LineMagicOutput = ()
 }

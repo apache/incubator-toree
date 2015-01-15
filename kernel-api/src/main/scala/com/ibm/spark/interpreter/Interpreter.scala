@@ -103,4 +103,10 @@ trait Interpreter {
    * @return The cursor position and list of possible completions
    */
   def completion(code: String, pos: Int): (Int, List[String] )
+
+  /**
+   * Returns the most recent variable name.
+   * @return the String name
+   */
+  def mostRecentVar : String
 }

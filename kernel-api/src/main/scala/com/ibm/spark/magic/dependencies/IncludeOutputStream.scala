@@ -18,10 +18,10 @@ package com.ibm.spark.magic.dependencies
 
 import java.io.OutputStream
 
-import com.ibm.spark.magic.MagicTemplate
+import com.ibm.spark.magic.Magic
 
 trait IncludeOutputStream {
-  this: MagicTemplate =>
+  this: Magic =>
 
   //val outputStream: OutputStream
   private var _outputStream: OutputStream = _

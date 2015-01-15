@@ -27,7 +27,7 @@ import org.apache.spark.sql.SchemaRDD
 /**
  * Temporary magic to show an RDD as JSON
  */
-class RDD extends MagicTemplate with IncludeInterpreter with LogLike {
+class RDD extends CellMagic with IncludeInterpreter with LogLike {
 
   private def convertToJson(code: String) = {
     val (_, message) = interpreter.interpret(code)
@@ -39,14 +39,14 @@ class RDD extends MagicTemplate with IncludeInterpreter with LogLike {
         val matchData = rddRegex.findFirstMatchIn(result).get
         try {
           val rdd = interpreter.read(matchData.group(2)).get.asInstanceOf[SchemaRDD]
-          MagicOutput(MIMEType.ApplicationJson -> RddToJson.convert(rdd))
+          CellMagicOutput(MIMEType.ApplicationJson -> RddToJson.convert(rdd))
         } catch {
             case e: Exception =>
               logger.error(e.getMessage, e)
-              MagicOutput(MIMEType.PlainText ->
+              CellMagicOutput(MIMEType.PlainText ->
                 ("An error occurred converting RDD to JSON.\n"+e.getMessage))
         }
-      } else MagicOutput(MIMEType.PlainText -> result)
+      } else CellMagicOutput(MIMEType.PlainText -> result)
 
     // NOTE: Forced to construct and throw exception to trigger proper reporting
     // TODO: Refactor to potentially have interpreter throw exception
@@ -60,8 +60,6 @@ class RDD extends MagicTemplate with IncludeInterpreter with LogLike {
     //else MagicOutput(MIMEType.PlainText -> message.right.get.toString)
   }
 
-  override def executeLine(code: String): MagicOutput = convertToJson(code)
-
-  override def executeCell(code: Seq[String]): MagicOutput =
-    convertToJson(code.mkString("\n"))
+  override def execute(code: String): CellMagicOutput =
+    convertToJson(code)
 }

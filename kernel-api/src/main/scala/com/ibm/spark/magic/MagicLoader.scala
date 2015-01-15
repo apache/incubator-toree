@@ -30,19 +30,47 @@ class MagicLoader(
   parentLoader: ClassLoader = null
 ) extends URLClassLoader(urls, parentLoader)
 {
-  val magicPackage = "com.ibm.spark.magic.builtin"
+  private val magicPackage = "com.ibm.spark.magic.builtin"
 
-  def hasMagic(name: String): Boolean = {
-    val className = lowercaseClassMap(magicClassNames)
-      .getOrElse(name.toLowerCase, name)
+  /**
+   * Checks whether a magic with a given name, implementing a given interface,
+   * exists.
+   * @param name case insensitive magic name
+   * @param interface interface
+   * @return true if a magic with the given name and interface exists
+   */
+  private def hasSpecificMagic(name: String, interface: Class[_]) : Boolean = {
+    val className = magicClassName(name)
     try {
-      this.loadClass(className) // Checks parent loadClass first
-      true
+      val clazz = loadClass(className)
+      clazz.getInterfaces.contains(interface)
     } catch {
       case _: Throwable => false
     }
   }
 
+  /**
+   * Checks whether a line magic exists.
+   * @param name case insensitive line magic name
+   * @return true if the line magic exists
+   */
+  def hasLineMagic(name: String): Boolean =
+    hasSpecificMagic(name, classOf[LineMagic])
+
+  /**
+   * Checks whether a cell magic exists.
+   * @param name case insensitive cell magic name
+   * @return true if the cell magic exists
+   */
+  def hasCellMagic(name: String): Boolean =
+    hasSpecificMagic(name, classOf[CellMagic])
+
+  /**
+   * Attempts to load a class with a given name from a package.
+   * @param name the name of the class
+   * @param resolve whether to resolve the class or not
+   * @return the class if found
+   */
   override def loadClass(name: String, resolve: Boolean): Class[_] =
     try {
       super.loadClass(magicPackage + "." + name, resolve)
@@ -57,8 +85,9 @@ class MagicLoader(
    * @param query a magic name, e.g. jAvasCRipt
    * @return the queried magic name's corresponding class, e.g. JavaScript
    */
-  def magicClassName(query: String): String =
+  def magicClassName(query: String): String = {
     lowercaseClassMap(magicClassNames).getOrElse(query.toLowerCase, query)
+  }
 
   /**
    * @return list of magic class names in magicPackage.
@@ -77,12 +106,15 @@ class MagicLoader(
     names.map(n => (n.toLowerCase, n)).toMap
   }
 
-  protected def createMagicInstance(name: String) = {
+  /**
+   * Creates a instance of the specified magic with dependencies added.
+   * @param name name of magic class
+   * @return instance of the Magic corresponding to the given name
+   */
+  protected[magic] def createMagicInstance(name: String): Any = {
     val magicClass = loadClass(name) // Checks parent loadClass first
 
     val runtimeMirror = runtimeUniverse.runtimeMirror(this)
-    //val runtimeMirror = runtimeUniverse.runtimeMirror(magicClass.getClassLoader)
-
     val classSymbol = runtimeMirror.staticClass(magicClass.getCanonicalName)
     val classMirror = runtimeMirror.reflectClass(classSymbol)
     val selfType = classSymbol.selfType
@@ -96,19 +128,9 @@ class MagicLoader(
 
     // Add all of our dependencies to the new instance
     dependencyMap.internalMap.filter(selfType <:< _._1).values.foreach(
-      _(magicInstance.asInstanceOf[MagicTemplate])
+      _(magicInstance.asInstanceOf[Magic])
     )
 
     magicInstance
-  }
-
-  def executeMagic(name: String, code: String, isCell: Boolean): MagicOutput = {
-    val magicInstance = createMagicInstance(name).asInstanceOf[MagicTemplate]
-
-    if (isCell) {
-      magicInstance.executeCell(code.split("\n"))
-    } else {
-      magicInstance.executeLine(code)
-    }
   }
 }

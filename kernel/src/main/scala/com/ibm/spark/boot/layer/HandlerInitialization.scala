@@ -17,17 +17,17 @@
 package com.ibm.spark.boot.layer
 
 import akka.actor.{ActorSystem, Props}
-import com.ibm.spark.comm.{CommStorage, CommRegistrar}
+import com.ibm.spark.comm.{CommRegistrar, CommStorage}
 import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.{SocketType, MessageType, SystemActorType}
 import com.ibm.spark.kernel.protocol.v5.handler._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
-import com.ibm.spark.kernel.protocol.v5.magic.MagicManager
+import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import com.ibm.spark.kernel.protocol.v5.magic.{MagicParser, PostProcessor}
 import com.ibm.spark.kernel.protocol.v5.relay.ExecuteRequestRelay
+import com.ibm.spark.kernel.protocol.v5.{MessageType, SocketType, SystemActorType}
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.utils.LogLike
 
@@ -90,15 +90,13 @@ trait StandardHandlerInitialization extends HandlerInitialization {
     )
 
     logger.debug("Creating execute request relay actor")
+    val postProcessor = new PostProcessor(interpreter)
+    val magicParser = new MagicParser(magicLoader)
     val executeRequestRelayActor = actorSystem.actorOf(
-      Props(classOf[ExecuteRequestRelay], actorLoader),
+      Props(classOf[ExecuteRequestRelay],
+        actorLoader, magicLoader, magicParser, postProcessor
+      ),
       name = SystemActorType.ExecuteRequestRelay.toString
-    )
-
-    logger.info("Creating magic manager actor")
-    val magicManagerActor = actorSystem.actorOf(
-      Props(classOf[MagicManager], magicLoader),
-      name = SystemActorType.MagicManager.toString
     )
   }
 

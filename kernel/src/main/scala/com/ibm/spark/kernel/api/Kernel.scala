@@ -1,12 +1,14 @@
 package com.ibm.spark.kernel.api
 
-import java.io.{PrintStream, OutputStream}
+import java.io.PrintStream
 
 import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommManager
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import com.ibm.spark.magic.{MagicLoader, MagicExecutor}
+import scala.language.dynamics
 
 /**
  * Represents the main kernel API to be used for interaction.
@@ -19,8 +21,12 @@ import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 class Kernel (
   private val actorLoader: ActorLoader,
   val interpreter: Interpreter,
-  val comm: CommManager
-) extends KernelLike {
+  val comm: CommManager,
+  val magicLoader: MagicLoader
+) extends Dynamic with KernelLike {
+
+  val magics = new MagicExecutor(magicLoader)
+
   /**
    * Executes a block of code represented as a string and returns the result.
    *

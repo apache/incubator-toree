@@ -6,6 +6,7 @@ import com.ibm.spark.comm.CommManager
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import com.ibm.spark.magic.MagicLoader
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
@@ -23,6 +24,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
   private var mockActorLoader: ActorLoader = _
   private var mockInterpreter: Interpreter = _
   private var mockCommManager: CommManager = _
+  private var mockMagicLoader: MagicLoader = _
   private var kernel: KernelLike = _
 
   before {
@@ -36,8 +38,11 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
 
     mockCommManager = mock[CommManager]
     mockActorLoader = mock[ActorLoader]
+    mockMagicLoader = mock[MagicLoader]
 
-    kernel = new Kernel(mockActorLoader, mockInterpreter, mockCommManager)
+    kernel = new Kernel(
+      mockActorLoader, mockInterpreter, mockCommManager, mockMagicLoader
+    )
   }
 
   describe("Kernel") {

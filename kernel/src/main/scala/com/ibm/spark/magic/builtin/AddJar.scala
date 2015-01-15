@@ -25,7 +25,7 @@ import com.ibm.spark.magic.dependencies.{IncludeInterpreter, IncludeOutputStream
 import com.ibm.spark.utils.{ArgumentParsingSupport, DownloadSupport}
 
 class AddJar
-  extends MagicTemplate with IncludeInterpreter with IncludeSparkContext
+  extends LineMagic with IncludeInterpreter with IncludeSparkContext
   with IncludeOutputStream with DownloadSupport with ArgumentParsingSupport
 {
   // TODO: Figure out where to put this AND a better location as /tmp does not
@@ -34,25 +34,13 @@ class AddJar
 
   private val HtmlJarRegex = """.*?\/([^\/]*?)$""".r
 
-  // Option to mark redownloading of jars
+  // Option to mark re-downloading of jars
   private val _force =
-    parser.accepts("force", "forces redownload of specified jar")
+    parser.accepts("f", "forces re-download of specified jar")
+      .withOptionalArg().ofType(classOf[Boolean]).defaultsTo(false)
 
   // Lazy because the outputStream is not provided at construction
   private lazy val printStream = new PrintStream(outputStream)
-
-  /**
-   * Downloads and adds the specified jars to the
-   * interpreter/compiler/cluster classpaths.
-   *
-   * @param code The lines containing the locations of the jars,
-   *             separated by newline
-   */
-  override def executeCell(code: Seq[String]): MagicOutput = {
-    code.foreach(executeLine)
-
-    MagicOutput() // No output needed
-  }
 
   /**
    * Downloads and adds the specified jar to the
@@ -60,22 +48,21 @@ class AddJar
    *
    * @param code The line containing the location of the jar
    */
-  override def executeLine(code: String): MagicOutput = {
+  override def execute(code: String): Unit = {
     val nonOptionArgs = parseArgs(code.trim)
 
     // Check valid arguments
     if (nonOptionArgs.length != 1) {
       printHelp(printStream, """%AddJar <jar_url>""")
-      return MagicOutput()
+      return
     }
 
     // Check if the jar we want to download is valid
     val jarRemoteLocation = nonOptionArgs(0)
-    if (jarRemoteLocation.isEmpty)
-      return MagicOutput(
-        MIMEType.PlainText ->
-          s"%AddJar '$jarRemoteLocation' is invalid!"
-      )
+    if (jarRemoteLocation.isEmpty) {
+      printHelp(printStream, """%AddJar <jar_url>""")
+      return
+    }
 
     // Get the destination of the jar
     val HtmlJarRegex(jarName) = jarRemoteLocation
@@ -105,11 +92,10 @@ class AddJar
     //       using the SparkContext (after this) has issues with some sort of
     //       bad type of
     //       org.apache.spark.org.apache.spark.org.apache.spark.SparkContext
-    interpreter.bind(
-      "sc", "org.apache.spark.SparkContext",
-      sparkContext, List("@transient")
-    )
-
-    MagicOutput() // No output needed
+    interpreter.doQuietly(
+      interpreter.bind(
+        "sc", "org.apache.spark.SparkContext",
+        sparkContext, List("@transient")
+    ))
   }
 }

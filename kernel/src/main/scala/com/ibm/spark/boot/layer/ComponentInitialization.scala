@@ -75,13 +75,13 @@ trait StandardComponentInitialization extends ComponentInitialization {
       initializeCommObjects(actorLoader)
     val interpreter = initializeInterpreter(config)
     val kernelInterpreter = initializeKernelInterpreter(config, interpreter)
-    val kernel = initializeKernel(
-      actorLoader, interpreter, kernelInterpreter, commManager)
     val sparkContext = initializeSparkContext(
       config, appName, actorLoader, interpreter)
     val dependencyDownloader = initializeDependencyDownloader(config)
     val magicLoader = initializeMagicLoader(
       config, interpreter, sparkContext, dependencyDownloader)
+    val kernel = initializeKernel(
+      actorLoader, interpreter, kernelInterpreter, commManager, magicLoader)
 
     (commStorage, commRegistrar, commManager, interpreter, kernelInterpreter,
       kernel, sparkContext, dependencyDownloader, magicLoader)
@@ -255,10 +255,13 @@ trait StandardComponentInitialization extends ComponentInitialization {
     actorLoader: ActorLoader,
     interpreterToDoBinding: Interpreter,
     interpreterToBind: Interpreter,
-    commManager: CommManager
+    commManager: CommManager,
+    magicLoader: MagicLoader
   ) = {
     //interpreter.doQuietly {
-    val kernel = new Kernel(actorLoader, interpreterToBind, commManager)
+    val kernel = new Kernel(
+      actorLoader, interpreterToBind, commManager, magicLoader
+    )
     interpreterToDoBinding.bind(
       "kernel", "com.ibm.spark.kernel.api.Kernel",
       kernel, List( """@transient implicit""")

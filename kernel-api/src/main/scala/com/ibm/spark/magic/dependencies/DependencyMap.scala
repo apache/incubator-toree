@@ -19,7 +19,7 @@ package com.ibm.spark.magic.dependencies
 import java.io.OutputStream
 
 import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.magic.MagicTemplate
+import com.ibm.spark.magic.Magic
 import org.apache.spark.SparkContext
 
 import scala.reflect.runtime.universe._
@@ -32,7 +32,7 @@ import com.ibm.spark.dependencies.DependencyDownloader
  */
 class DependencyMap {
   val internalMap =
-    scala.collection.mutable.Map[Type, PartialFunction[MagicTemplate, Unit]]()
+    scala.collection.mutable.Map[Type, PartialFunction[Magic, Unit]]()
 
   /**
    * Sets the Interpreter for this map.
@@ -40,7 +40,7 @@ class DependencyMap {
    */
   def setInterpreter(interpreter: Interpreter) = {
     internalMap(typeOf[IncludeInterpreter]) =
-      PartialFunction[MagicTemplate, Unit](
+      PartialFunction[Magic, Unit](
         magic =>
           magic.asInstanceOf[IncludeInterpreter].interpreter_=(interpreter)
       )
@@ -54,7 +54,7 @@ class DependencyMap {
    */
   def setSparkContext(sparkContext: SparkContext) = {
     internalMap(typeOf[IncludeSparkContext]) =
-      PartialFunction[MagicTemplate, Unit](
+      PartialFunction[Magic, Unit](
         magic =>
           magic.asInstanceOf[IncludeSparkContext].sparkContext_=(sparkContext)
       )
@@ -68,7 +68,7 @@ class DependencyMap {
    */
   def setOutputStream(outputStream: OutputStream) = {
     internalMap(typeOf[IncludeOutputStream]) =
-      PartialFunction[MagicTemplate, Unit](
+      PartialFunction[Magic, Unit](
         magic =>
           magic.asInstanceOf[IncludeOutputStream].outputStream_=(outputStream)
       )
@@ -82,7 +82,7 @@ class DependencyMap {
    */
   def setDependencyDownloader(dependencyDownloader: DependencyDownloader) = {
     internalMap(typeOf[IncludeDependencyDownloader]) =
-      PartialFunction[MagicTemplate, Unit](
+      PartialFunction[Magic, Unit](
         magic =>
           magic.asInstanceOf[IncludeDependencyDownloader]
             .dependencyDownloader=(dependencyDownloader)
