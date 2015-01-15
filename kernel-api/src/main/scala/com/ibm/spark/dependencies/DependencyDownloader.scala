@@ -27,11 +27,16 @@ abstract class DependencyDownloader(repositoryUrl: String, baseDir: String) {
    * @param groupId The group id associated with the main dependency
    * @param artifactId The id of the dependency artifact
    * @param version The version of the main dependency
+   * @param transitive If true, downloads all dependencies of the specified
+   *                   dependency
+   * @param excludeBaseDependencies If true, will exclude any dependencies
+   *                                included in the build of the kernel
    *
    * @return The sequence of strings pointing to the retrieved dependency jars
    */
   def retrieve(
-    groupId: String, artifactId: String, version: String, transitive: Boolean
+    groupId: String, artifactId: String, version: String,
+    transitive: Boolean = true, excludeBaseDependencies: Boolean = true
   ): Seq[URL]
 
   /**

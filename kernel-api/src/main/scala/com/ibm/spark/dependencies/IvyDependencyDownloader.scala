@@ -79,7 +79,8 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
   }
 
   override def retrieve(
-    groupId: String, artifactId: String, version: String, transitive: Boolean
+    groupId: String, artifactId: String, version: String,
+    transitive: Boolean = true, excludeBaseDependencies: Boolean = true
   ): Seq[URL] = {
     // Start building the ivy.xml file
     val ivyFile = File.createTempFile("ivy-custom", ".xml")
@@ -125,14 +126,17 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
     md.addExcludeRule(javadocExclusion)
     md.addExcludeRule(scalaCompilerExclusion)
 
-    getBaseDependencies.foreach(dep => {
-      val depRevId = dep.getDependencyRevisionId
-      val moduleId = new ModuleId(depRevId.getOrganisation, depRevId.getName)
-      val artifactId = new ArtifactId(moduleId, "*", "*", "*")
-      val excludeRule = new DefaultExcludeRule(
-        artifactId, new RegexpPatternMatcher(), null)
-      md.addExcludeRule(excludeRule)
-    })
+    // Exclude our base dependencies if marked to do so
+    if (excludeBaseDependencies) {
+      getBaseDependencies.foreach(dep => {
+        val depRevId = dep.getDependencyRevisionId
+        val moduleId = new ModuleId(depRevId.getOrganisation, depRevId.getName)
+        val artifactId = new ArtifactId(moduleId, "*", "*", "*")
+        val excludeRule = new DefaultExcludeRule(
+          artifactId, new RegexpPatternMatcher(), null)
+        md.addExcludeRule(excludeRule)
+      })
+    }
 
     // Creates our ivy configuration file
     XmlModuleDescriptorWriter.write(md, ivyFile)

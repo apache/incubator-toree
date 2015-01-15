@@ -89,7 +89,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
       it("should set the retrievals transitive to true if provided") {
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean())
+          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
 
         val addDepsMagic = new AddDeps
           with IncludeSparkContext
@@ -115,7 +115,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
       it("should set the retrieval's transitive to false if not provided") {
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean())
+          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
 
         val addDepsMagic = new AddDeps
           with IncludeSparkContext
@@ -141,7 +141,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
       it("should add retrieved artifacts to the interpreter") {
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean())
+          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
         val mockInterpreter = mock[Interpreter]
 
         val addDepsMagic = new AddDeps
@@ -169,7 +169,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         val fakeUrl = new URL("file:/foo")
         doReturn(fakeUrl :: fakeUrl :: fakeUrl :: Nil)
           .when(mockDependencyDownloader).retrieve(
-            anyString(), anyString(), anyString(), anyBoolean()
+            anyString(), anyString(), anyString(), anyBoolean(), anyBoolean()
           )
         val mockSparkContext = mock[SparkContext]
 
@@ -196,7 +196,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
       it("should return an empty MagicOutput if the input is invalid") {
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean())
+          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
 
         val addDepsMagic = new AddDeps
           with IncludeSparkContext
@@ -220,7 +220,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
       it("should return an empty MagicOutput on success") {
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean())
+          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
 
         val addDepsMagic = new AddDeps
           with IncludeSparkContext
