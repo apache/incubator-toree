@@ -37,7 +37,6 @@ class AddJar
   // Option to mark re-downloading of jars
   private val _force =
     parser.accepts("f", "forces re-download of specified jar")
-      .withOptionalArg().ofType(classOf[Boolean]).defaultsTo(false)
 
   // Lazy because the outputStream is not provided at construction
   private lazy val printStream = new PrintStream(outputStream)

@@ -131,30 +131,6 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         verify(mockSparkContext).addJar(anyString())
         verify(mockInterpreter).addJars(any[URL])
       }
-
-      it("asdf") {
-        val mockSparkContext = mock[SparkContext]
-        val mockInterpreter = mock[Interpreter]
-        val mockOutputStream = mock[OutputStream]
-        val addJarMagic = new AddJar
-          with IncludeSparkContext
-          with IncludeInterpreter
-          with IncludeOutputStream
-        {
-          override val sparkContext: SparkContext = mockSparkContext
-          override val interpreter: Interpreter = mockInterpreter
-          override val outputStream: OutputStream = mockOutputStream
-        }
-
-        // Create a temporary file representing our jar to fake the cache
-        val tmpFilePath = Files.createTempFile(
-          FileSystems.getDefault.getPath(addJarMagic.JarStorageLocation),
-          "someJar",
-          ".jar"
-        )
-
-        addJarMagic.execute("-f")
-      }
     }
   }
 }

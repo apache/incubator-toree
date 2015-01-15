@@ -68,7 +68,8 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         verify(mockIntp, times(0)).addJars(any())
         verify(mockIntp, times(0)).bind(any(), any(), any(), any())
         verify(mockSC, times(0)).addJar(any())
-        verify(mockDownloader, times(0)).retrieve(any(), any(), any(), any())
+        verify(mockDownloader, times(0)).retrieve(
+          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
         actual should be (expected)
       }
 

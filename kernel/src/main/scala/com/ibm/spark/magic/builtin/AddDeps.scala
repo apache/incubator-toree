@@ -31,7 +31,6 @@ class AddDeps extends LineMagic with IncludeInterpreter
 
   val _transitive =
     parser.accepts("transitive", "retrieve dependencies recursively")
-    .withOptionalArg().ofType(classOf[Boolean]).defaultsTo(true)
 
   /**
    * Execute a magic representing a line magic.
