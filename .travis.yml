@@ -5,4 +5,7 @@ jdk:
     - oraclejdk7
     - openjdk7
     - openjdk6
+before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get install -y libzmq-dev
 
