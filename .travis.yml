@@ -8,4 +8,6 @@ before_install:
     - sudo apt-get update -qq
     - sudo apt-get remove -y libzmq3
     - sudo apt-get install -y libzmq-dev
+script: "sbt clean coverage test"
+after_success: "sbt coveralls"
 
