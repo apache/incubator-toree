@@ -7,5 +7,6 @@ jdk:
     - openjdk6
 before_install:
     - sudo apt-get update -qq
+    - sudo apt-get remove -y libzmq3
     - sudo apt-get install -y libzmq-dev
 
