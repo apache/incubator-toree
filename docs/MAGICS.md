@@ -111,12 +111,9 @@ the following to compile and make available the Spark Kernel modules:
 
 The following is a barebones example of a _Magic_ in the Spark Kernel.
 
-    class HelloWorld extends MagicTemplate {
-        override def executeLine(code: String): MagicOutput = 
-            MagicOutput(MIMEType.PlainText -> "Hello Line!")
-
-        override def executeCell(code: Seq[String]): MagicOutput =
-            MagicOutput(MIMEType.PlainText -> "Hello Cell!")
+    class HelloWorld extends LineMagic {
+        override def execute(code: String): LineMagicOutput =
+            println("Hello World!")
     }
 
 This merely demonstrates implementing line and cell magic functionality and
@@ -153,7 +150,7 @@ As dependencies are injected, there is no guarantee that referencing a
 dependency outside of a method will work. Instead, mark referencing code as
 either _lazy_ or as a helper method.
 
-    class HelloWorld extends MagicTemplate with IncludeOutputStream {
+    class HelloWorld extends LineMagic with IncludeOutputStream {
         val printStream = new PrintStream(outputStream)
 
         // ...
@@ -161,7 +158,7 @@ either _lazy_ or as a helper method.
 
 should become
 
-    class HelloWorld extends MagicTemplate with IncludeOutputStream {
+    class HelloWorld extends LineMagic with IncludeOutputStream {
         lazy val printStream = new PrintStream(outputStream)
 
         // ...
