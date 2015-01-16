@@ -82,7 +82,6 @@ trait StandardComponentInitialization extends ComponentInitialization {
       config, interpreter, sparkContext, dependencyDownloader)
     val kernel = initializeKernel(
       actorLoader, interpreter, kernelInterpreter, commManager, magicLoader)
-
     (commStorage, commRegistrar, commManager, interpreter, kernelInterpreter,
       kernel, sparkContext, dependencyDownloader, magicLoader)
   }
@@ -267,6 +266,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
       kernel, List( """@transient implicit""")
     )
     //}
+    magicLoader.dependencyMap.setKernel(kernel)
 
     kernel
   }

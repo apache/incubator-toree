@@ -19,6 +19,7 @@ package com.ibm.spark.magic.dependencies
 import java.io.OutputStream
 
 import com.ibm.spark.interpreter.Interpreter
+import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.magic.Magic
 import org.apache.spark.SparkContext
 
@@ -86,6 +87,21 @@ class DependencyMap {
         magic =>
           magic.asInstanceOf[IncludeDependencyDownloader]
             .dependencyDownloader=(dependencyDownloader)
+      )
+
+    this
+  }  
+  
+  /**
+   * Sets the Kernel Object for this map.
+   * @param kernel The new Kernel
+   */
+  def setKernel(kernel: KernelLike) = {
+    internalMap(typeOf[IncludeKernel]) =
+      PartialFunction[Magic, Unit](
+        magic =>
+          magic.asInstanceOf[IncludeKernel]
+            .kernel=(kernel)
       )
 
     this

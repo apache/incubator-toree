@@ -21,12 +21,13 @@ import java.net.URL
 
 import com.ibm.spark.kernel.protocol.v5.MIMEType
 import com.ibm.spark.magic._
-import com.ibm.spark.magic.dependencies.{IncludeInterpreter, IncludeOutputStream, IncludeSparkContext}
+import com.ibm.spark.magic.dependencies.{IncludeKernel, IncludeInterpreter, IncludeOutputStream, IncludeSparkContext}
 import com.ibm.spark.utils.{ArgumentParsingSupport, DownloadSupport}
 
 class AddJar
   extends LineMagic with IncludeInterpreter with IncludeSparkContext
   with IncludeOutputStream with DownloadSupport with ArgumentParsingSupport
+  with IncludeKernel
 {
   // TODO: Figure out where to put this AND a better location as /tmp does not
   //       keep the jars around forever.
@@ -95,6 +96,11 @@ class AddJar
       interpreter.bind(
         "sc", "org.apache.spark.SparkContext",
         sparkContext, List("@transient")
-    ))
+      ))
+
+    interpreter.doQuietly(
+      interpreter.bind(
+        "kernel", "com.ibm.spark.kernel.api.Kernel", kernel, List("@transient")
+      ))
   }
 }

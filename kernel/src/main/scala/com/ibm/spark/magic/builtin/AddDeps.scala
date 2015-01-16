@@ -19,12 +19,12 @@ package com.ibm.spark.magic.builtin
 import java.io.PrintStream
 
 import com.ibm.spark.magic._
-import com.ibm.spark.magic.dependencies.{IncludeDependencyDownloader, IncludeInterpreter, IncludeOutputStream, IncludeSparkContext}
+import com.ibm.spark.magic.dependencies._
 import com.ibm.spark.utils.ArgumentParsingSupport
 
 class AddDeps extends LineMagic with IncludeInterpreter
   with IncludeOutputStream with IncludeSparkContext with ArgumentParsingSupport
-  with IncludeDependencyDownloader
+  with IncludeDependencyDownloader with IncludeKernel
 {
 
   private lazy val printStream = new PrintStream(outputStream)
@@ -62,6 +62,11 @@ class AddDeps extends LineMagic with IncludeInterpreter
           "sc", "org.apache.spark.SparkContext",
           sparkContext, List("@transient")
       ))
+
+      interpreter.doQuietly(
+        interpreter.bind(
+          "kernel", "com.ibm.spark.kernel.api.Kernel", kernel, List("@transient")
+        ))
 
       // TODO: report issues, etc, to the user or is the ivy output enough?
     } else {
