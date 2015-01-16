@@ -8,7 +8,7 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpec, Matchers}
 
-class PostProcessorTest extends FunSpec with Matchers with MockitoSugar{
+class PostProcessorSpec extends FunSpec with Matchers with MockitoSugar{
   describe("#matchCellMagic") {
     it("should return the cell magic output when the Left contains a " +
        "CellMagicOutput") {
