@@ -37,7 +37,6 @@ object Build extends Build with Settings with SubProjects with TestTasks {
     ).settings(unidocSettings: _*)
      .settings(site.settings ++ ghpages.settings: _*)
      .settings(
-        name := "foo",
         site.addMappingsToSiteDir(
           mappings in (ScalaUnidoc, packageDoc), "latest/api"
         ),
