@@ -17,6 +17,8 @@ logLevel := Level.Warn
 
 resolvers += Classpaths.sbtPluginReleases
 
+resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven"
+
 // Provides the ability to create an IntelliJ project using `sbt gen-idea`
 addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 
@@ -42,4 +44,10 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.2")
 
 // Provides coveralls integration (for use with Travis-ci)
 addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0.BETA1")
+
+// Provides site generation functionality
+addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.8.1")
+
+// Provides auto-generating and publishing a gh-pages site
+addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.2")
 
