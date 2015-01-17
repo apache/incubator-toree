@@ -19,6 +19,7 @@ import sbt._
 import sbtbuildinfo.Plugin._
 import sbtunidoc.Plugin.UnidocKeys._
 import sbtunidoc.Plugin._
+import scoverage.ScoverageSbtPlugin
 import xerial.sbt.Pack._
 
 object Build extends Build with Settings with SubProjects with TestTasks {
@@ -45,7 +46,9 @@ object Build extends Build with Settings with SubProjects with TestTasks {
  */
 trait Settings {
   lazy val fullSettings =
-    Common.settings ++
+    Common.settings ++ Seq(
+      ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := false
+    ) ++
     net.virtualvoid.sbt.graph.Plugin.graphSettings
 }
 
