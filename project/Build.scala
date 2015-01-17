@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import com.typesafe.sbt.SbtGhPages.ghpages
+import com.typesafe.sbt.SbtSite.site
 import sbt.Keys._
 import sbt._
 import sbtbuildinfo.Plugin._
@@ -21,6 +23,7 @@ import sbtunidoc.Plugin.UnidocKeys._
 import sbtunidoc.Plugin._
 import scoverage.ScoverageSbtPlugin
 import xerial.sbt.Pack._
+import com.typesafe.sbt.SbtGit.{GitKeys => git}
 
 object Build extends Build with Settings with SubProjects with TestTasks {
   /**
@@ -31,13 +34,21 @@ object Build extends Build with Settings with SubProjects with TestTasks {
       id = "root",
       base = file("."),
       settings = fullSettings
-    ).settings(unidocSettings: _*).settings(
-      scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand",
+    ).settings(unidocSettings: _*)
+     .settings(site.settings ++ ghpages.settings: _*)
+     .settings(
+        site.addMappingsToSiteDir(
+          mappings in (ScalaUnidoc, packageDoc), "latest/api"
+        ),
+        git.gitRemoteRepo := "git@github.com:ibm-et/spark-kernel.git"
+     )
+     .settings(
+        scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand",
 
-      // Do not publish the root project (it just serves as an aggregate)
-      publishArtifact := false,
-      publishLocal := {}
-    )
+        // Do not publish the root project (it just serves as an aggregate)
+        publishArtifact := false,
+        publishLocal := {}
+      )
   ).aggregate(client, kernel, kernel_api, protocol, macros)
 }
 
