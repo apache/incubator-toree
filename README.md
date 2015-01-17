@@ -1,8 +1,10 @@
 Spark Kernel
 ============
 
-[![Build Status](https://travis-ci.org/ibm-et/spark-kernel.svg?branch=master)](https://travis-ci.org/ibm-et/spark-kernel)
-[![Coverage Status](https://coveralls.io/repos/ibm-et/spark-kernel/badge.svg?branch=master)](https://coveralls.io/r/ibm-et/spark-kernel?branch=master)
+[![Build Status][build-badge]][build-url]
+[![Coverage Status][coverage-badge]][coverage-url]
+[![Scaladoc][scaladoc-badge]][scaladoc-url]
+[![License][license-badge]][license-url]
 
 The Spark Kernel has one main goal: provide the foundation for interactive applications to connect and use [Apache Spark][1].
 
@@ -44,3 +46,12 @@ __For bug reporting and feature requests, please visit the [Spark Kernel issue l
 [4]: https://github.com/ibm-et/spark-kernel/wiki/Getting-Started-with-the-Spark-Kernel
 [5]: https://github.com/ibm-et/spark-kernel/wiki
 [6]: https://github.com/ibm-et/spark-kernel/issues
+
+[build-badge]: https://travis-ci.org/ibm-et/spark-kernel.svg?branch=master
+[build-url]: https://travis-ci.org/ibm-et/spark-kernel
+[coverage-badge]: https://coveralls.io/repos/ibm-et/spark-kernel/badge.svg?branch=master
+[coverage-url]: https://coveralls.io/r/ibm-et/spark-kernel?branch=master
+[scaladoc-badge]: https://img.shields.io/badge/Scaladoc-Latest-34B6A8.svg?style=flat
+[scaladoc-url]: http://ibm-et.github.io/spark-kernel/latest/api
+[license-badge]: https://img.shields.io/badge/License-Apache%202-blue.svg?style=flat
+[license-url]: LICENSE
