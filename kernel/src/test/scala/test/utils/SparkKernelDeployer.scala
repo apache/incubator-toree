@@ -120,16 +120,18 @@ object SparkKernelDeployer {
 
     override protected def createActorSystem(actorSystemName: String) = {
       // Grab the created actor system so we can use it with TestKit
-      actorSystem = super.createActorSystem(actorSystemName)
+      require(actorSystem != null,
+        "Actor System not initialized before bootstrap!")
+      //actorSystem = super.createActorSystem(actorSystemName)
       actorSystem
     }
   }
 
   /**
-   * Represents the internal singleton KernelBootstrap instance that does not
+   * Represents the singleton KernelBootstrap instance that does not
    * receive any external commandline arguments.
    */
-  private lazy val noArgKernelBootstrap = {
+  lazy val noArgKernelBootstrap = {
     // TODO: Use proper logging?
     // Print out a message to indicate this fixture is being created
     println("Creating 'no external args' Spark Kernel through Kernel Bootstrap")
@@ -167,6 +169,8 @@ object SparkKernelDeployer {
    * @return The actor system of KernelBootstrap
    */
   def getNoArgSparkKernelActorSystem: ActorSystem =
-    if (actorSystem == null) { noArgKernelBootstrap; actorSystem }
+    //if (actorSystem == null) { noArgKernelBootstrap; actorSystem }
+    //else actorSystem
+    if (actorSystem == null) { actorSystem = ActorSystem(); actorSystem }
     else actorSystem
 }
