@@ -121,7 +121,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
 
       it("should be zero when the only task is currently being executed") {
-        taskManager.add { Thread.sleep(10000) }
+        taskManager.add { while (true) { Thread.sleep(1000) } }
 
         taskManager.start()
 
@@ -147,7 +147,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
 
       it("should be false when the only task is currently being executed") {
-        taskManager.add { Thread.sleep(10000) }
+        taskManager.add { while (true) { Thread.sleep(1000) } }
 
         taskManager.start()
 
@@ -164,7 +164,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
     describe("#isExecutingTask") {
       it("should be true when a task is being executed") {
         taskManager.start()
-        taskManager.add { Thread.sleep(10000) }
+        taskManager.add { while (true) { Thread.sleep(1000) } }
 
         // Wait until task is being executed to check
         while (taskManager.hasTaskInQueue) Thread.sleep(1)
@@ -202,7 +202,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
 
       it("should be Some(...) when a task is being executed") {
-        taskManager.add { Thread.sleep(10000) }
+        taskManager.add { while (true) { Thread.sleep(1000) } }
         taskManager.start()
 
         // Wait until executing task
@@ -275,7 +275,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
 
     describe("#stop") {
       it("should attempt to interrupt the currently-running task") {
-        val f = taskManager.add { Thread.sleep(10000) }
+        val f = taskManager.add { while (true) { Thread.sleep(1000) } }
         taskManager.start()
 
         // Wait for the task to start
