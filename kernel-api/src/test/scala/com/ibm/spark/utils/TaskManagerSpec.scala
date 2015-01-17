@@ -19,9 +19,9 @@ package com.ibm.spark.utils
 import java.util.concurrent.ExecutionException
 
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
-import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.time.{Seconds, Span}
+import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 import test.utils.UncaughtExceptionSuppression
 
@@ -30,8 +30,13 @@ import scala.runtime.BoxedUnit
 
 class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
   with BeforeAndAfter with ScalaFutures with UncaughtExceptionSuppression
+  with Eventually
 {
   private var taskManager: TaskManager = _
+  implicit override val patienceConfig = PatienceConfig(
+    timeout = scaled(Span(200, Milliseconds)),
+    interval = scaled(Span(5, Milliseconds))
+  )
 
   before {
     taskManager = new TaskManager
@@ -121,7 +126,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
 
       it("should be zero when the only task is currently being executed") {
-        taskManager.add { Thread.sleep(10000) }
+        taskManager.add { while (true) { Thread.sleep(1000) } }
 
         taskManager.start()
 
@@ -147,7 +152,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
 
       it("should be false when the only task is currently being executed") {
-        taskManager.add { Thread.sleep(10000) }
+        taskManager.add { while (true) { Thread.sleep(1000) } }
 
         taskManager.start()
 
@@ -164,12 +169,11 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
     describe("#isExecutingTask") {
       it("should be true when a task is being executed") {
         taskManager.start()
-        taskManager.add { Thread.sleep(10000) }
+        taskManager.add { while (true) { Thread.sleep(1000) } }
 
-        // Wait until task is being executed to check
-        while (taskManager.hasTaskInQueue) Thread.sleep(1)
-
-        taskManager.isExecutingTask should be (true)
+        eventually {
+          taskManager.isExecutingTask should be (true)
+        }
 
         taskManager.stop()
       }
@@ -202,7 +206,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
 
       it("should be Some(...) when a task is being executed") {
-        taskManager.add { Thread.sleep(10000) }
+        taskManager.add { while (true) { Thread.sleep(1000) } }
         taskManager.start()
 
         // Wait until executing task
@@ -275,7 +279,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
 
     describe("#stop") {
       it("should attempt to interrupt the currently-running task") {
-        val f = taskManager.add { Thread.sleep(10000) }
+        val f = taskManager.add { while (true) { Thread.sleep(1000) } }
         taskManager.start()
 
         // Wait for the task to start

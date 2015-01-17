@@ -2,6 +2,7 @@ Spark Kernel
 ============
 
 [![Build Status](https://travis-ci.org/ibm-et/spark-kernel.svg?branch=master)](https://travis-ci.org/ibm-et/spark-kernel)
+[![Coverage Status](https://coveralls.io/repos/ibm-et/spark-kernel/badge.svg?branch=master)](https://coveralls.io/r/ibm-et/spark-kernel?branch=master)
 
 The Spark Kernel has one main goal: provide the foundation for interactive applications to connect and use [Apache Spark][1].
 

@@ -55,7 +55,7 @@ object Common {
     version := buildVersion,
     scalaVersion := buildScalaVersion,
     sbtVersion := buildSbtVersion,
-    libraryDependencies := buildLibraryDependencies,
+    libraryDependencies ++= buildLibraryDependencies,
     isSnapshot := snapshot,
 
     scalacOptions in (Compile, doc) ++= Seq(

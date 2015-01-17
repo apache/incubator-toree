@@ -16,17 +16,18 @@
 
 package system
 
-import akka.testkit.{TestProbe, TestKit}
+import akka.testkit.{TestProbe}
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import Utilities._
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, SocketType, KMBuilder}
 import com.ibm.spark.kernel.protocol.v5.content._
-import org.scalatest.{FunSpecLike, BeforeAndAfterAll, Matchers}
+import org.scalatest._
 import play.api.libs.json.Json
 import scala.concurrent.duration._
-import test.utils.SparkKernelDeployer
+import test.utils.{NoArgSparkKernelTestKit}
+
 
 /**
  * Used for system-wide (entire Spark Kernel) tests relating to Comm usage.
@@ -36,8 +37,8 @@ import test.utils.SparkKernelDeployer
  *       that previous tests will do proper cleanup!
  */
 class KernelCommSpecForSystem
-  extends TestKit(SparkKernelDeployer.getNoArgSparkKernelActorSystem)
-  with FunSpecLike with Matchers with BeforeAndAfterAll
+  extends NoArgSparkKernelTestKit
+  with FunSpecLike with Matchers
 {
   private val MaxFishTime = 5.seconds
 
@@ -446,4 +447,5 @@ class KernelCommSpecForSystem
       }
     }
   }
+
 }
