@@ -15,8 +15,6 @@ import xerial.sbt.Pack._
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-fork := true // http://www.scala-sbt.org/0.13/docs/Running-Project-Code.html#Deserialization+and+class+loading
-
 pack <<= pack dependsOn (rebuildIvyXml dependsOn deliverLocal)
 
 packArchive <<= packArchive dependsOn (rebuildIvyXml dependsOn deliverLocal)
