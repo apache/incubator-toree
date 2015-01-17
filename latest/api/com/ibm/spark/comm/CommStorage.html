@@ -1,0 +1,617 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>CommStorage - com.ibm.spark.comm.CommStorage</title>
+          <meta name="description" content="CommStorage - com.ibm.spark.comm.CommStorage" />
+          <meta name="keywords" content="CommStorage com.ibm.spark.comm.CommStorage" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../index.html';
+            var hash = 'com.ibm.spark.comm.CommStorage';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="type">
+      <div id="definition">
+        <img src="../../../../lib/class_big.png" />
+        <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.ibm">ibm</a>.<a href="../package.html" class="extype" name="com.ibm.spark">spark</a>.<a href="package.html" class="extype" name="com.ibm.spark.comm">comm</a></p>
+        <h1>CommStorage</h1>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <span class="name">CommStorage</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Represents the storage structure for Comm-related data.
+</p></div><dl class="attributes block"> <dt>Annotations</dt><dd>
+                <span class="name">@<a href="../annotations/Experimental.html" class="extype" name="com.ibm.spark.annotations.Experimental">Experimental</a></span><span class="args">()</span>
+              
+        </dd></dl><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="com.ibm.spark.comm.CommStorage"><span>CommStorage</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show all</span></li>
+            </ol>
+            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="com.ibm.spark.comm.CommStorage#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(callbackStorage:scala.collection.mutable.Map[String,com.ibm.spark.comm.CommCallbacks],linkStorage:scala.collection.mutable.Map[String,scala.collection.immutable.IndexedSeq[com.ibm.spark.kernel.protocol.v5.UUID]]):com.ibm.spark.comm.CommStorage"></a>
+      <a id="&lt;init&gt;:CommStorage"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">CommStorage</span><span class="params">(<span name="callbackStorage">callbackStorage: <span class="extype" name="scala.collection.mutable.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="CommCallbacks.html" class="extype" name="com.ibm.spark.comm.CommCallbacks">CommCallbacks</a>] = <span class="defval" name="new scala.collection.mutable.HashMap[String,com.ibm.spark.comm.CommCallbacks]()">...</span></span>, <span name="linkStorage">linkStorage: <span class="extype" name="scala.collection.mutable.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.collection.immutable.IndexedSeq">IndexedSeq</span>[<a href="../kernel/protocol/v5/package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a>]] = <span class="defval" name="new scala.collection.mutable.HashMap[String,scala.collection.immutable.IndexedSeq[com.ibm.spark.kernel.protocol.v5.UUID]]()">...</span></span>)</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">callbackStorage</dt><dd class="cmt"><p>The structure used to connect targets with callbacks</p></dd><dt class="param">linkStorage</dt><dd class="cmt"><p>The structure used to connect targets to specific ids
+</p></dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="!=(x$1:AnyRef):Boolean"></a>
+      <a id="!=(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="!=(x$1:Any):Boolean"></a>
+      <a id="!=(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="##():Int"></a>
+      <a id="##():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="==(x$1:AnyRef):Boolean"></a>
+      <a id="==(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="==(x$1:Any):Boolean"></a>
+      <a id="==(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <a id="asInstanceOf[T0]:T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="clone():Object"></a>
+      <a id="clone():AnyRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eq(x$1:AnyRef):Boolean"></a>
+      <a id="eq(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(x$1:Any):Boolean"></a>
+      <a id="equals(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="finalize():Unit"></a>
+      <a id="finalize():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClass():Class[_]"></a>
+      <a id="getClass():Class[_]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#getCommIdCallbacks" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getCommIdCallbacks(commId:com.ibm.spark.kernel.protocol.v5.UUID):Option[com.ibm.spark.comm.CommCallbacks]"></a>
+      <a id="getCommIdCallbacks(UUID):Option[CommCallbacks]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getCommIdCallbacks</span><span class="params">(<span name="commId">commId: <a href="../kernel/protocol/v5/package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="CommCallbacks.html" class="extype" name="com.ibm.spark.comm.CommCallbacks">CommCallbacks</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Retrieves the current Comm callbacks for the specified Comm id.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieves the current Comm callbacks for the specified Comm id.
+</p></div><dl class="paramcmts block"><dt class="param">commId</dt><dd class="cmt"><p>The id of the Comm whose callbacks to retrieve
+</p></dd><dt>returns</dt><dd class="cmt"><p>Some CommCallbacks if Comm id found, otherwise None
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#getCommIdsFromTarget" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getCommIdsFromTarget(targetName:String):Option[scala.collection.immutable.IndexedSeq[com.ibm.spark.kernel.protocol.v5.UUID]]"></a>
+      <a id="getCommIdsFromTarget(String):Option[IndexedSeq[UUID]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getCommIdsFromTarget</span><span class="params">(<span name="targetName">targetName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.collection.immutable.IndexedSeq">IndexedSeq</span>[<a href="../kernel/protocol/v5/package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Retrieves the current sequence of Comm ids for the specified target.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieves the current sequence of Comm ids for the specified target.
+</p></div><dl class="paramcmts block"><dt class="param">targetName</dt><dd class="cmt"><p>The name of the target whose Comm ids to get
+</p></dd><dt>returns</dt><dd class="cmt"><p>Some sequence of Comm ids if found, otherwise None
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#getTargetCallbacks" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getTargetCallbacks(targetName:String):Option[com.ibm.spark.comm.CommCallbacks]"></a>
+      <a id="getTargetCallbacks(String):Option[CommCallbacks]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getTargetCallbacks</span><span class="params">(<span name="targetName">targetName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="CommCallbacks.html" class="extype" name="com.ibm.spark.comm.CommCallbacks">CommCallbacks</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Retrieves the current Comm callbacks for the specified target.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieves the current Comm callbacks for the specified target.
+</p></div><dl class="paramcmts block"><dt class="param">targetName</dt><dd class="cmt"><p>The name of the target whose callbacks to get
+</p></dd><dt>returns</dt><dd class="cmt"><p>Some CommCallbacks if found, otherwise None
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#getTargetFromCommId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getTargetFromCommId(commId:com.ibm.spark.kernel.protocol.v5.UUID):Option[String]"></a>
+      <a id="getTargetFromCommId(UUID):Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getTargetFromCommId</span><span class="params">(<span name="commId">commId: <a href="../kernel/protocol/v5/package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Retrieves the current target for the specified Comm id.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieves the current target for the specified Comm id.
+</p></div><dl class="paramcmts block"><dt class="param">commId</dt><dd class="cmt"><p>The Comm id whose target to get
+</p></dd><dt>returns</dt><dd class="cmt"><p>Some target name if found, otherwise None
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#hasTargetCallbacks" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hasTargetCallbacks(targetName:String):Boolean"></a>
+      <a id="hasTargetCallbacks(String):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hasTargetCallbacks</span><span class="params">(<span name="targetName">targetName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Determines if the specified target has any callbacks.</p><div class="fullcomment"><div class="comment cmt"><p>Determines if the specified target has any callbacks.
+</p></div><dl class="paramcmts block"><dt class="param">targetName</dt><dd class="cmt"><p>The name of the target
+</p></dd><dt>returns</dt><dd class="cmt"><p>True if a CommCallbacks instance is found, otherwise false
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#hasTargetCommIds" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hasTargetCommIds(targetName:String):Boolean"></a>
+      <a id="hasTargetCommIds(String):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hasTargetCommIds</span><span class="params">(<span name="targetName">targetName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Determines if the specified target has any linked Comm ids.</p><div class="fullcomment"><div class="comment cmt"><p>Determines if the specified target has any linked Comm ids.
+</p></div><dl class="paramcmts block"><dt class="param">targetName</dt><dd class="cmt"><p>The name of the target
+</p></dd><dt>returns</dt><dd class="cmt"><p>True if a sequence of Comm ids is found, otherwise false
+</p></dd></dl></div>
+    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hashCode():Int"></a>
+      <a id="hashCode():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ne(x$1:AnyRef):Boolean"></a>
+      <a id="ne(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notify():Unit"></a>
+      <a id="notify():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notifyAll():Unit"></a>
+      <a id="notifyAll():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#removeCommIdFromTarget" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="removeCommIdFromTarget(commId:com.ibm.spark.kernel.protocol.v5.UUID):Option[com.ibm.spark.kernel.protocol.v5.UUID]"></a>
+      <a id="removeCommIdFromTarget(UUID):Option[UUID]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">removeCommIdFromTarget</span><span class="params">(<span name="commId">commId: <a href="../kernel/protocol/v5/package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="../kernel/protocol/v5/package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Removes the specified Comm id from the first target with a match.</p><div class="fullcomment"><div class="comment cmt"><p>Removes the specified Comm id from the first target with a match.
+</p></div><dl class="paramcmts block"><dt class="param">commId</dt><dd class="cmt"><p>The Comm id to remove
+</p></dd><dt>returns</dt><dd class="cmt"><p>Some name of target linked to Comm id if removed, otherwise None
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#removeTargetCallbacks" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="removeTargetCallbacks(targetName:String):Option[com.ibm.spark.comm.CommCallbacks]"></a>
+      <a id="removeTargetCallbacks(String):Option[CommCallbacks]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">removeTargetCallbacks</span><span class="params">(<span name="targetName">targetName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="CommCallbacks.html" class="extype" name="com.ibm.spark.comm.CommCallbacks">CommCallbacks</a>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Removes the Comm callbacks from the specified target.</p><div class="fullcomment"><div class="comment cmt"><p>Removes the Comm callbacks from the specified target.
+</p></div><dl class="paramcmts block"><dt class="param">targetName</dt><dd class="cmt"><p>The name of the target whose callbacks to remove
+</p></dd><dt>returns</dt><dd class="cmt"><p>Some CommCallbacks if removed, otherwise None
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#removeTargetCommIds" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="removeTargetCommIds(targetName:String):Option[scala.collection.immutable.IndexedSeq[com.ibm.spark.kernel.protocol.v5.UUID]]"></a>
+      <a id="removeTargetCommIds(String):Option[IndexedSeq[UUID]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">removeTargetCommIds</span><span class="params">(<span name="targetName">targetName: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.collection.immutable.IndexedSeq">IndexedSeq</span>[<a href="../kernel/protocol/v5/package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a>]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Removes the Comm ids associated with the specified target.</p><div class="fullcomment"><div class="comment cmt"><p>Removes the Comm ids associated with the specified target.
+</p></div><dl class="paramcmts block"><dt class="param">targetName</dt><dd class="cmt"><p>The name of the target whose Comm ids to remove
+</p></dd><dt>returns</dt><dd class="cmt"><p>Some sequence of Comm ids if removed, otherwise None
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#setTargetCallbacks" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setTargetCallbacks(targetName:String,commCallbacks:com.ibm.spark.comm.CommCallbacks):Unit"></a>
+      <a id="setTargetCallbacks(String,CommCallbacks):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setTargetCallbacks</span><span class="params">(<span name="targetName">targetName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="commCallbacks">commCallbacks: <a href="CommCallbacks.html" class="extype" name="com.ibm.spark.comm.CommCallbacks">CommCallbacks</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Sets the Comm callbacks for the specified target.</p><div class="fullcomment"><div class="comment cmt"><p>Sets the Comm callbacks for the specified target.
+</p></div><dl class="paramcmts block"><dt class="param">targetName</dt><dd class="cmt"><p>The name of the target whose callbacks to set</p></dd><dt class="param">commCallbacks</dt><dd class="cmt"><p>The new callbacks for the target
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.comm.CommStorage#setTargetCommIds" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setTargetCommIds(targetName:String,links:scala.collection.immutable.IndexedSeq[com.ibm.spark.kernel.protocol.v5.UUID]):Unit"></a>
+      <a id="setTargetCommIds(String,IndexedSeq[UUID]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setTargetCommIds</span><span class="params">(<span name="targetName">targetName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="links">links: <span class="extype" name="scala.collection.immutable.IndexedSeq">IndexedSeq</span>[<a href="../kernel/protocol/v5/package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Sets the Comm ids associated with the specified target.</p><div class="fullcomment"><div class="comment cmt"><p>Sets the Comm ids associated with the specified target.
+</p></div><dl class="paramcmts block"><dt class="param">targetName</dt><dd class="cmt"><p>The name of the target whose Comm ids to set</p></dd><dt class="param">links</dt><dd class="cmt"><p>The sequence of Comm ids to attach to the target
+</p></dd></dl></div>
+    </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
+      <a id="synchronized[T0](⇒T0):T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toString():String"></a>
+      <a id="toString():String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait():Unit"></a>
+      <a id="wait():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long,x$2:Int):Unit"></a>
+      <a id="wait(Long,Int):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long):Unit"></a>
+      <a id="wait(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../../lib/template.js"></script>
+    </body>
+      </html>

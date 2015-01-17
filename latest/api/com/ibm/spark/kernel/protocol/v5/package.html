@@ -1,0 +1,577 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>v5 - com.ibm.spark.kernel.protocol.v5</title>
+          <meta name="description" content="v5 - com.ibm.spark.kernel.protocol.v5" />
+          <meta name="keywords" content="v5 com.ibm.spark.kernel.protocol.v5" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../../index.html';
+            var hash = 'com.ibm.spark.kernel.protocol.v5.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../../package.html" class="extype" name="com">com</a>.<a href="../../../../package.html" class="extype" name="com.ibm">ibm</a>.<a href="../../../package.html" class="extype" name="com.ibm.spark">spark</a>.<a href="../../package.html" class="extype" name="com.ibm.spark.kernel">kernel</a>.<a href="../package.html" class="extype" name="com.ibm.spark.kernel.protocol">protocol</a></p>
+        <h1>v5</h1>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">v5</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="com.ibm.spark.kernel.protocol.v5"><span>v5</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show all</span></li>
+            </ol>
+            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="com.ibm.spark.kernel.protocol.v5.Data" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Data=Map[com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType,String]"></a>
+      <a id="Data:Data"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Data</span><span class="result"> = <span class="extype" name="scala.collection.immutable.Map">Map</span>[<a href="package$$MIMEType$.html#MIMEType=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType">MIMEType</a>, <span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.Header" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HeaderextendsProductwithSerializable"></a>
+      <a id="Header:Header"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="Header.html"><span class="name">Header</span></a><span class="params">(<span name="msg_id">msg_id: <a href="#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a></span>, <span name="username">username: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="session">session: <a href="#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a></span>, <span name="msg_type">msg_type: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="version">version: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.KMBuilder" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KMBuilderextendsProductwithSerializable"></a>
+      <a id="KMBuilder:KMBuilder"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KMBuilder.html"><span class="name">KMBuilder</span></a><span class="params">(<span name="km">km: <a href="KernelMessage.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessage">KernelMessage</a> = <span class="defval" name="KernelMessage.apply(collection.this.Seq.apply[Nothing](), &quot;&quot;, HeaderBuilder.empty, HeaderBuilder.empty, v5.this.`package`.Metadata.apply[String, Nothing](), &quot;&quot;)">...</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">A class for building KernelMessages.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.KernelMessage" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelMessageextendsProductwithSerializable"></a>
+      <a id="KernelMessage:KernelMessage"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelMessage.html"><span class="name">KernelMessage</span></a><span class="params">(<span name="ids">ids: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="signature">signature: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="header">header: <a href="Header.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.Header">Header</a></span>, <span name="parentHeader">parentHeader: <a href="#ParentHeader=com.ibm.spark.kernel.protocol.v5.Header" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.ParentHeader">ParentHeader</a></span>, <span name="metadata">metadata: <a href="#Metadata=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Metadata">Metadata</a></span>, <span name="contentString">contentString: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="KernelMessageContentextendsAnyRef"></a>
+      <a id="KernelMessageContent:KernelMessageContent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelMessageContent.html"><span class="name">KernelMessageContent</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.Metadata" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Metadata=Map[String,String]"></a>
+      <a id="Metadata:Metadata"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Metadata</span><span class="result"> = <span class="extype" name="scala.collection.immutable.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.OrderedSupport" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="OrderedSupportextendsActorwithStashwithLogLike"></a>
+      <a id="OrderedSupport:OrderedSupport"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="OrderedSupport.html"><span class="name">OrderedSupport</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <span class="extype" name="akka.actor.Stash">Stash</span> with <a href="../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">A trait to enforce ordered processing for messages of particular types.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.ParentHeader" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ParentHeader=com.ibm.spark.kernel.protocol.v5.Header"></a>
+      <a id="ParentHeader:ParentHeader"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ParentHeader</span><span class="result"> = <a href="Header.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.Header">Header</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.Payloads" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Payloads=List[Map[String,String]]"></a>
+      <a id="Payloads:Payloads"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Payloads</span><span class="result"> = <span class="extype" name="scala.collection.immutable.List">List</span>[<span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]]</span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.UUID" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="UUID=String"></a>
+      <a id="UUID:UUID"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">UUID</span><span class="result"> = <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.UserExpressions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="UserExpressions=Map[String,String]"></a>
+      <a id="UserExpressions:UserExpressions"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">UserExpressions</span><span class="result"> = <span class="extype" name="scala.collection.immutable.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="com.ibm.spark.kernel.protocol.v5.package#Data" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Data:scala.collection.immutable.Map.type"></a>
+      <a id="Data:Map.type"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Data</span><span class="result">: <span class="extype" name="scala.collection.immutable.Map">Map</span>.type</span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.HandlerType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HandlerType"></a>
+      <a id="HandlerType:HandlerType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="package$$HandlerType$.html"><span class="name">HandlerType</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.Header" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Header"></a>
+      <a id="Header:Header"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Header$.html"><span class="name">Header</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.HeaderBuilder" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HeaderBuilder"></a>
+      <a id="HeaderBuilder:HeaderBuilder"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HeaderBuilder$.html"><span class="name">HeaderBuilder</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.KernelStatusType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelStatusType"></a>
+      <a id="KernelStatusType:KernelStatusType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="package$$KernelStatusType$.html"><span class="name">KernelStatusType</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.MIMEType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MIMEType"></a>
+      <a id="MIMEType:MIMEType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="package$$MIMEType$.html"><span class="name">MIMEType</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.MessageType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MessageType"></a>
+      <a id="MessageType:MessageType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="package$$MessageType$.html"><span class="name">MessageType</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.package#Metadata" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Metadata:scala.collection.immutable.Map.type"></a>
+      <a id="Metadata:Map.type"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Metadata</span><span class="result">: <span class="extype" name="scala.collection.immutable.Map">Map</span>.type</span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.package#ParentHeader" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ParentHeader:com.ibm.spark.kernel.protocol.v5.Header.type"></a>
+      <a id="ParentHeader:Header.type"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ParentHeader</span><span class="result">: <a href="Header$.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.Header">Header</a>.type</span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.package#Payloads" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Payloads:scala.collection.immutable.List.type"></a>
+      <a id="Payloads:List.type"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Payloads</span><span class="result">: <span class="extype" name="scala.collection.immutable.List">List</span>.type</span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.SocketType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SocketType"></a>
+      <a id="SocketType:SocketType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="package$$SocketType$.html"><span class="name">SocketType</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.SparkKernelInfo" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SparkKernelInfo"></a>
+      <a id="SparkKernelInfo:SparkKernelInfo"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="SparkKernelInfo$.html"><span class="name">SparkKernelInfo</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.SystemActorType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SystemActorType"></a>
+      <a id="SystemActorType:SystemActorType"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="package$$SystemActorType$.html"><span class="name">SystemActorType</span></a><span class="result"> extends <span class="extype" name="scala.Enumeration">Enumeration</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.package#UserExpressions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="UserExpressions:scala.collection.immutable.Map.type"></a>
+      <a id="UserExpressions:Map.type"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">UserExpressions</span><span class="result">: <span class="extype" name="scala.collection.immutable.Map">Map</span>.type</span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="client"></a>
+      <a id="client:client"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="client/package.html"><span class="name">client</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="content"></a>
+      <a id="content:content"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="content/package.html"><span class="name">content</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.dispatch" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="dispatch"></a>
+      <a id="dispatch:dispatch"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="dispatch/package.html"><span class="name">dispatch</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.handler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="handler"></a>
+      <a id="handler:handler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="handler/package.html"><span class="name">handler</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.interpreter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="interpreter"></a>
+      <a id="interpreter:interpreter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="interpreter/package.html"><span class="name">interpreter</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.kernel" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="kernel"></a>
+      <a id="kernel:kernel"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="kernel/package.html"><span class="name">kernel</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.magic" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="magic"></a>
+      <a id="magic:magic"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="magic/package.html"><span class="name">magic</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.relay" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="relay"></a>
+      <a id="relay:relay"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="relay/package.html"><span class="name">relay</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.security" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="security"></a>
+      <a id="security:security"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="security/package.html"><span class="name">security</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.stream" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="stream"></a>
+      <a id="stream:stream"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="stream/package.html"><span class="name">stream</span></a>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../../../../lib/template.js"></script>
+    </body>
+      </html>

@@ -1,0 +1,982 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>content - com.ibm.spark.kernel.protocol.v5.content</title>
+          <meta name="description" content="content - com.ibm.spark.kernel.protocol.v5.content" />
+          <meta name="keywords" content="content com.ibm.spark.kernel.protocol.v5.content" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../../../index.html';
+            var hash = 'com.ibm.spark.kernel.protocol.v5.content.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../../../package.html" class="extype" name="com">com</a>.<a href="../../../../../package.html" class="extype" name="com.ibm">ibm</a>.<a href="../../../../package.html" class="extype" name="com.ibm.spark">spark</a>.<a href="../../../package.html" class="extype" name="com.ibm.spark.kernel">kernel</a>.<a href="../../package.html" class="extype" name="com.ibm.spark.kernel.protocol">protocol</a>.<a href="../package.html" class="extype" name="com.ibm.spark.kernel.protocol.v5">v5</a></p>
+        <h1>content</h1>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">content</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="com.ibm.spark.kernel.protocol.v5.content"><span>content</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show all</span></li>
+            </ol>
+            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="com.ibm.spark.kernel.protocol.v5.content.ClearOutput" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ClearOutputextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="ClearOutput:ClearOutput"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ClearOutput.html"><span class="name">ClearOutput</span></a><span class="params">(<span name="_wait">_wait: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CommClose" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommCloseextendsKernelMessageContentwithCommContentwithProductwithSerializable"></a>
+      <a id="CommClose:CommClose"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="CommClose.html"><span class="name">CommClose</span></a><span class="params">(<span name="comm_id">comm_id: <a href="../package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a></span>, <span name="data">data: <a href="../package.html#Data=Map[com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Data">Data</a></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <a href="CommContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.CommContent">CommContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CommContent" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="CommContentextendsAnyRef"></a>
+      <a id="CommContent:CommContent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="CommContent.html"><span class="name">CommContent</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Represents a series of subclasses of KernelMessageContent that embodies the
+Comm content types.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CommMsg" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommMsgextendsKernelMessageContentwithCommContentwithProductwithSerializable"></a>
+      <a id="CommMsg:CommMsg"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="CommMsg.html"><span class="name">CommMsg</span></a><span class="params">(<span name="comm_id">comm_id: <a href="../package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a></span>, <span name="data">data: <a href="../package.html#Data=Map[com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Data">Data</a></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <a href="CommContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.CommContent">CommContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CommOpen" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommOpenextendsKernelMessageContentwithCommContentwithProductwithSerializable"></a>
+      <a id="CommOpen:CommOpen"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="CommOpen.html"><span class="name">CommOpen</span></a><span class="params">(<span name="comm_id">comm_id: <a href="../package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a></span>, <span name="target_name">target_name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="data">data: <a href="../package.html#Data=Map[com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Data">Data</a></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <a href="CommContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.CommContent">CommContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CompleteReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CompleteReplyextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="CompleteReply:CompleteReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="CompleteReply.html"><span class="name">CompleteReply</span></a><span class="params">(<span name="matches">matches: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="cursor_start">cursor_start: <span class="extype" name="scala.Int">Int</span></span>, <span name="cursor_end">cursor_end: <span class="extype" name="scala.Int">Int</span></span>, <span name="metadata">metadata: <a href="../package.html#Metadata=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Metadata">Metadata</a></span>, <span name="status">status: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="ename">ename: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="evalue">evalue: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="traceback">traceback: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CompleteReplyError" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CompleteReplyError=com.ibm.spark.kernel.protocol.v5.content.CompleteReply"></a>
+      <a id="CompleteReplyError:CompleteReplyError"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">CompleteReplyError</span><span class="result"> = <a href="CompleteReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.CompleteReply">CompleteReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CompleteReplyOk" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CompleteReplyOk=com.ibm.spark.kernel.protocol.v5.content.CompleteReply"></a>
+      <a id="CompleteReplyOk:CompleteReplyOk"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">CompleteReplyOk</span><span class="result"> = <a href="CompleteReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.CompleteReply">CompleteReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CompleteRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CompleteRequestextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="CompleteRequest:CompleteRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="CompleteRequest.html"><span class="name">CompleteRequest</span></a><span class="params">(<span name="code">code: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cursor_pos">cursor_pos: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ConnectReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ConnectReplyextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="ConnectReply:ConnectReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ConnectReply.html"><span class="name">ConnectReply</span></a><span class="params">(<span name="shell_port">shell_port: <span class="extype" name="scala.Int">Int</span></span>, <span name="iopub_port">iopub_port: <span class="extype" name="scala.Int">Int</span></span>, <span name="stdin_port">stdin_port: <span class="extype" name="scala.Int">Int</span></span>, <span name="hb_port">hb_port: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ConnectRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ConnectRequestextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="ConnectRequest:ConnectRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ConnectRequest.html"><span class="name">ConnectRequest</span></a><span class="params">()</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.DisplayData" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DisplayDataextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="DisplayData:DisplayData"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="DisplayData.html"><span class="name">DisplayData</span></a><span class="params">(<span name="source">source: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="data">data: <a href="../package.html#Data=Map[com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Data">Data</a></span>, <span name="metadata">metadata: <a href="../package.html#Metadata=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Metadata">Metadata</a></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ErrorContent" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ErrorContentextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="ErrorContent:ErrorContent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ErrorContent.html"><span class="name">ErrorContent</span></a><span class="params">(<span name="ename">ename: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="evalue">evalue: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="traceback">traceback: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteInput" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteInputextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="ExecuteInput:ExecuteInput"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteInput.html"><span class="name">ExecuteInput</span></a><span class="params">(<span name="code">code: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="execution_count">execution_count: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteReplyextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="ExecuteReply:ExecuteReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteReply.html"><span class="name">ExecuteReply</span></a><span class="params">(<span name="status">status: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="execution_count">execution_count: <span class="extype" name="scala.Int">Int</span></span>, <span name="payload">payload: <span class="extype" name="scala.Option">Option</span>[<a href="../package.html#Payloads=List[Map[String,String]]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Payloads">Payloads</a>]</span>, <span name="user_expressions">user_expressions: <span class="extype" name="scala.Option">Option</span>[<a href="../package.html#UserExpressions=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UserExpressions">UserExpressions</a>]</span>, <span name="ename">ename: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="evalue">evalue: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="traceback">traceback: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReplyAbort" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteReplyAbort=com.ibm.spark.kernel.protocol.v5.content.ExecuteReply"></a>
+      <a id="ExecuteReplyAbort:ExecuteReplyAbort"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ExecuteReplyAbort</span><span class="result"> = <a href="ExecuteReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReply">ExecuteReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReplyError" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteReplyError=com.ibm.spark.kernel.protocol.v5.content.ExecuteReply"></a>
+      <a id="ExecuteReplyError:ExecuteReplyError"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ExecuteReplyError</span><span class="result"> = <a href="ExecuteReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReply">ExecuteReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReplyOk" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteReplyOk=com.ibm.spark.kernel.protocol.v5.content.ExecuteReply"></a>
+      <a id="ExecuteReplyOk:ExecuteReplyOk"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ExecuteReplyOk</span><span class="result"> = <a href="ExecuteReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReply">ExecuteReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteRequestextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="ExecuteRequest:ExecuteRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteRequest.html"><span class="name">ExecuteRequest</span></a><span class="params">(<span name="code">code: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="silent">silent: <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="store_history">store_history: <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="user_expressions">user_expressions: <a href="../package.html#UserExpressions=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UserExpressions">UserExpressions</a></span>, <span name="allow_stdin">allow_stdin: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteResult" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteResultextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="ExecuteResult:ExecuteResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteResult.html"><span class="name">ExecuteResult</span></a><span class="params">(<span name="execution_count">execution_count: <span class="extype" name="scala.Int">Int</span></span>, <span name="data">data: <a href="../package.html#Data=Map[com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Data">Data</a></span>, <span name="metadata">metadata: <a href="../package.html#Metadata=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Metadata">Metadata</a></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.HistoryReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HistoryReplyextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="HistoryReply:HistoryReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="HistoryReply.html"><span class="name">HistoryReply</span></a><span class="params">(<span name="history">history: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.HistoryRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HistoryRequestextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="HistoryRequest:HistoryRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="HistoryRequest.html"><span class="name">HistoryRequest</span></a><span class="params">(<span name="output">output: <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="ras">ras: <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="hist_access_type">hist_access_type: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="session">session: <span class="extype" name="scala.Int">Int</span></span>, <span name="start">start: <span class="extype" name="scala.Int">Int</span></span>, <span name="stop">stop: <span class="extype" name="scala.Int">Int</span></span>, <span name="n">n: <span class="extype" name="scala.Int">Int</span></span>, <span name="pattern">pattern: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="unique">unique: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.InspectReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="InspectReplyextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="InspectReply:InspectReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="InspectReply.html"><span class="name">InspectReply</span></a><span class="params">(<span name="status">status: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="data">data: <a href="../package.html#Data=Map[com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Data">Data</a></span>, <span name="metadata">metadata: <a href="../package.html#Metadata=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Metadata">Metadata</a></span>, <span name="ename">ename: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="evalue">evalue: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="traceback">traceback: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.InspectReplyError" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="InspectReplyError=com.ibm.spark.kernel.protocol.v5.content.InspectReply"></a>
+      <a id="InspectReplyError:InspectReplyError"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">InspectReplyError</span><span class="result"> = <a href="InspectReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.InspectReply">InspectReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.InspectReplyOk" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="InspectReplyOk=com.ibm.spark.kernel.protocol.v5.content.InspectReply"></a>
+      <a id="InspectReplyOk:InspectReplyOk"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">InspectReplyOk</span><span class="result"> = <a href="InspectReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.InspectReply">InspectReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.InspectRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="InspectRequestextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="InspectRequest:InspectRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="InspectRequest.html"><span class="name">InspectRequest</span></a><span class="params">(<span name="code">code: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="cursor_pos">cursor_pos: <span class="extype" name="scala.Int">Int</span></span>, <span name="detail_level">detail_level: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.KernelInfoReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelInfoReplyextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="KernelInfoReply:KernelInfoReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelInfoReply.html"><span class="name">KernelInfoReply</span></a><span class="params">(<span name="protocol_version">protocol_version: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="implementation">implementation: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="implementation_version">implementation_version: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="language_info">language_info: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="language_version">language_version: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="banner">banner: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.KernelInfoRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelInfoRequestextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="KernelInfoRequest:KernelInfoRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelInfoRequest.html"><span class="name">KernelInfoRequest</span></a><span class="params">()</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.KernelStatus" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelStatusextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="KernelStatus:KernelStatus"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelStatus.html"><span class="name">KernelStatus</span></a><span class="params">(<span name="execution_state">execution_state: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ShutdownReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ShutdownReplyextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="ShutdownReply:ShutdownReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ShutdownReply.html"><span class="name">ShutdownReply</span></a><span class="params">(<span name="restart">restart: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ShutdownRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ShutdownRequestextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="ShutdownRequest:ShutdownRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ShutdownRequest.html"><span class="name">ShutdownRequest</span></a><span class="params">(<span name="restart">restart: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.StreamContent" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StreamContentextendsKernelMessageContentwithProductwithSerializable"></a>
+      <a id="StreamContent:StreamContent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="StreamContent.html"><span class="name">StreamContent</span></a><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <a href="../KernelMessageContent.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.KernelMessageContent">KernelMessageContent</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.TypeString" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="TypeStringextendsAnyRef"></a>
+      <a id="TypeString:TypeString"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="TypeString.html"><span class="name">TypeString</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Indicates that the implementation contains a method to return the type
+string representing the object.</p>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="com.ibm.spark.kernel.protocol.v5.content.ClearOutput" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ClearOutput"></a>
+      <a id="ClearOutput:ClearOutput"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ClearOutput$.html"><span class="name">ClearOutput</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CommClose" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommClose"></a>
+      <a id="CommClose:CommClose"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CommClose$.html"><span class="name">CommClose</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CommMsg" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommMsg"></a>
+      <a id="CommMsg:CommMsg"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CommMsg$.html"><span class="name">CommMsg</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CommOpen" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommOpen"></a>
+      <a id="CommOpen:CommOpen"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CommOpen$.html"><span class="name">CommOpen</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CompleteReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CompleteReply"></a>
+      <a id="CompleteReply:CompleteReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CompleteReply$.html"><span class="name">CompleteReply</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.package#CompleteReplyError" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CompleteReplyError:(List[String],Int,Int,com.ibm.spark.kernel.protocol.v5.Metadata,Option[String],Option[String],Option[List[String]])=&gt;com.ibm.spark.kernel.protocol.v5.content.CompleteReply"></a>
+      <a id="CompleteReplyError:(List[String],Int,Int,Metadata,Option[String],Option[String],Option[List[String]])⇒CompleteReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">CompleteReplyError</span><span class="result">: (<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Int">Int</span>, <a href="../package.html#Metadata=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Metadata">Metadata</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]]) ⇒ <a href="CompleteReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.CompleteReply">CompleteReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.package#CompleteReplyOk" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CompleteReplyOk:(List[String],Int,Int,com.ibm.spark.kernel.protocol.v5.Metadata)=&gt;com.ibm.spark.kernel.protocol.v5.content.CompleteReply"></a>
+      <a id="CompleteReplyOk:(List[String],Int,Int,Metadata)⇒CompleteReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">CompleteReplyOk</span><span class="result">: (<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Int">Int</span>, <a href="../package.html#Metadata=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Metadata">Metadata</a>) ⇒ <a href="CompleteReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.CompleteReply">CompleteReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.CompleteRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CompleteRequest"></a>
+      <a id="CompleteRequest:CompleteRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="CompleteRequest$.html"><span class="name">CompleteRequest</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ConnectReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ConnectReply"></a>
+      <a id="ConnectReply:ConnectReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ConnectReply$.html"><span class="name">ConnectReply</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ConnectRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ConnectRequest"></a>
+      <a id="ConnectRequest:ConnectRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ConnectRequest$.html"><span class="name">ConnectRequest</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.DisplayData" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DisplayData"></a>
+      <a id="DisplayData:DisplayData"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DisplayData$.html"><span class="name">DisplayData</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ErrorContent" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ErrorContent"></a>
+      <a id="ErrorContent:ErrorContent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ErrorContent$.html"><span class="name">ErrorContent</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteInput" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteInput"></a>
+      <a id="ExecuteInput:ExecuteInput"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteInput$.html"><span class="name">ExecuteInput</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteReply"></a>
+      <a id="ExecuteReply:ExecuteReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteReply$.html"><span class="name">ExecuteReply</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.package#ExecuteReplyAbort" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteReplyAbort:Int=&gt;com.ibm.spark.kernel.protocol.v5.content.ExecuteReply"></a>
+      <a id="ExecuteReplyAbort:(Int)⇒ExecuteReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ExecuteReplyAbort</span><span class="result">: (<span class="extype" name="scala.Int">Int</span>) ⇒ <a href="ExecuteReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReply">ExecuteReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.package#ExecuteReplyError" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteReplyError:(Int,Option[String],Option[String],Option[List[String]])=&gt;com.ibm.spark.kernel.protocol.v5.content.ExecuteReply"></a>
+      <a id="ExecuteReplyError:(Int,Option[String],Option[String],Option[List[String]])⇒ExecuteReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ExecuteReplyError</span><span class="result">: (<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]]) ⇒ <a href="ExecuteReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReply">ExecuteReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.package#ExecuteReplyOk" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteReplyOk:(Int,Option[com.ibm.spark.kernel.protocol.v5.Payloads],Option[com.ibm.spark.kernel.protocol.v5.UserExpressions])=&gt;com.ibm.spark.kernel.protocol.v5.content.ExecuteReply"></a>
+      <a id="ExecuteReplyOk:(Int,Option[Payloads],Option[UserExpressions])⇒ExecuteReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ExecuteReplyOk</span><span class="result">: (<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Option">Option</span>[<a href="../package.html#Payloads=List[Map[String,String]]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Payloads">Payloads</a>], <span class="extype" name="scala.Option">Option</span>[<a href="../package.html#UserExpressions=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UserExpressions">UserExpressions</a>]) ⇒ <a href="ExecuteReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReply">ExecuteReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteRequest"></a>
+      <a id="ExecuteRequest:ExecuteRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteRequest$.html"><span class="name">ExecuteRequest</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ExecuteResult" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteResult"></a>
+      <a id="ExecuteResult:ExecuteResult"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteResult$.html"><span class="name">ExecuteResult</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.HistoryReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HistoryReply"></a>
+      <a id="HistoryReply:HistoryReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HistoryReply$.html"><span class="name">HistoryReply</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.HistoryRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HistoryRequest"></a>
+      <a id="HistoryRequest:HistoryRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HistoryRequest$.html"><span class="name">HistoryRequest</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.InspectReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="InspectReply"></a>
+      <a id="InspectReply:InspectReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="InspectReply$.html"><span class="name">InspectReply</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.package#InspectReplyError" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="InspectReplyError:(com.ibm.spark.kernel.protocol.v5.Data,com.ibm.spark.kernel.protocol.v5.Metadata,Option[String],Option[String],Option[List[String]])=&gt;com.ibm.spark.kernel.protocol.v5.content.InspectReply"></a>
+      <a id="InspectReplyError:(Data,Metadata,Option[String],Option[String],Option[List[String]])⇒InspectReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">InspectReplyError</span><span class="result">: (<a href="../package.html#Data=Map[com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Data">Data</a>, <a href="../package.html#Metadata=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Metadata">Metadata</a>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]]) ⇒ <a href="InspectReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.InspectReply">InspectReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.package#InspectReplyOk" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="InspectReplyOk:(com.ibm.spark.kernel.protocol.v5.Data,com.ibm.spark.kernel.protocol.v5.Metadata)=&gt;com.ibm.spark.kernel.protocol.v5.content.InspectReply"></a>
+      <a id="InspectReplyOk:(Data,Metadata)⇒InspectReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">InspectReplyOk</span><span class="result">: (<a href="../package.html#Data=Map[com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Data">Data</a>, <a href="../package.html#Metadata=Map[String,String]" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.Metadata">Metadata</a>) ⇒ <a href="InspectReply.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.InspectReply">InspectReply</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.InspectRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="InspectRequest"></a>
+      <a id="InspectRequest:InspectRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="InspectRequest$.html"><span class="name">InspectRequest</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.KernelInfoReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelInfoReply"></a>
+      <a id="KernelInfoReply:KernelInfoReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelInfoReply$.html"><span class="name">KernelInfoReply</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.KernelInfoRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelInfoRequest"></a>
+      <a id="KernelInfoRequest:KernelInfoRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelInfoRequest$.html"><span class="name">KernelInfoRequest</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.KernelStatus" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelStatus"></a>
+      <a id="KernelStatus:KernelStatus"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelStatus$.html"><span class="name">KernelStatus</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.KernelStatusBusy" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelStatusBusy"></a>
+      <a id="KernelStatusBusy:KernelStatusBusy"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelStatusBusy$.html"><span class="name">KernelStatusBusy</span></a><span class="result"> extends <a href="KernelStatus.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.KernelStatus">KernelStatus</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.KernelStatusIdle" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelStatusIdle"></a>
+      <a id="KernelStatusIdle:KernelStatusIdle"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelStatusIdle$.html"><span class="name">KernelStatusIdle</span></a><span class="result"> extends <a href="KernelStatus.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.KernelStatus">KernelStatus</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ShutdownReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ShutdownReply"></a>
+      <a id="ShutdownReply:ShutdownReply"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ShutdownReply$.html"><span class="name">ShutdownReply</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.ShutdownRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ShutdownRequest"></a>
+      <a id="ShutdownRequest:ShutdownRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ShutdownRequest$.html"><span class="name">ShutdownRequest</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.content.StreamContent" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StreamContent"></a>
+      <a id="StreamContent:StreamContent"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="StreamContent$.html"><span class="name">StreamContent</span></a><span class="result"> extends <a href="TypeString.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.TypeString">TypeString</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../../../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../../../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../../../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../../../../../lib/template.js"></script>
+    </body>
+      </html>
