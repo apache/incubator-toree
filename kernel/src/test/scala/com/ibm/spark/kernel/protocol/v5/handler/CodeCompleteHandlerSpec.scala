@@ -73,8 +73,8 @@ class CodeCompleteHandlerSpec extends TestKit(
       handlerActor ! MockCompleteRequestKernelMessage
       replyToHandlerWithOkAndResult()
       kernelMessageRelayProbe.fishForMessage(500.milliseconds) {
-        case KernelMessage(_, _, header, parentHeader, _, contentString) =>
-          header.msg_type == (MessageType.Outgoing.CompleteReply.toString)
+        case KernelMessage(_, _, header, _, _, _) =>
+          header.msg_type == MessageType.Outgoing.CompleteReply.toString
       }
     }
 
@@ -96,7 +96,7 @@ class CodeCompleteHandlerSpec extends TestKit(
         replyToHandlerWithOkAndBadResult()
       }
       catch {
-        case error: Exception => error.getMessage() should be ("Parse error in CodeCompleteHandler")
+        case error: Exception => error.getMessage should be ("Parse error in CodeCompleteHandler")
       }
     }
 

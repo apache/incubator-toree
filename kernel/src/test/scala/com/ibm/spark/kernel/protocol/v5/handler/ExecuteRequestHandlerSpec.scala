@@ -25,6 +25,7 @@ import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5Test._
+import org.apache.spark.sql.catalyst.expressions.IsNull
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
@@ -106,67 +107,54 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should send an execute result message if the result is not empty") {
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandlerWithOkAndResult()
-        var executeResultMessage: KernelMessage = null
-        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
-          case message : KernelMessage =>
-            if(message.header.msg_type == ExecuteResult.toTypeString)
-              executeResultMessage = message
+        kernelMessageRelayProbe.fishForMessage(100.milliseconds) {
+          case KernelMessage(_, _, header, _, _, _) =>
+            header.msg_type == ExecuteResult.toTypeString
         }
-        executeResultMessage should not be(null)
       }
 
       it("should not send an execute result message if there is no result") {
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandlerWithOk()
-        var executeResultMessage: KernelMessage = null
-        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
-          case message : KernelMessage =>
-            if(message.header.msg_type == ExecuteResult.toTypeString)
-              executeResultMessage = message
+        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+          case KernelMessage(_, _, header, _, _, _) =>
+            header.msg_type != ExecuteResult.toTypeString
         }
-        executeResultMessage should be(null)
+
       }
 
       it("should send an execute reply message") {
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandlerWithOkAndResult()
-        var executeReplyMessage: KernelMessage = null
-        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
-          case message : KernelMessage =>
-            if(message.header.msg_type == ExecuteReply.toTypeString)
-              executeReplyMessage = message
+        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+          case KernelMessage(_, _, header, _, _, _) =>
+            header.msg_type == ExecuteResult.toTypeString
         }
-        executeReplyMessage should not be(null)
       }
 
       it("should send an execute input message") {
         handlerActor ! MockExecuteRequestKernelMessage
-        var executeInputMessage: KernelMessage = null
-        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
-          case message : KernelMessage =>
-            if(message.header.msg_type == ExecuteInput.toTypeString)
-              executeInputMessage = message
+        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+          case KernelMessage(_, _, header, _, _, _) =>
+            header.msg_type == ExecuteInput.toTypeString
         }
-        executeInputMessage should not be(null)
       }
 
       it("should send a message with ids equal to the incoming " +
         "KernelMessage's ids") {
         handlerActor ! MockExecuteRequestKernelMessage
-        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
-          case message : KernelMessage =>
-            message.ids should be(MockExecuteRequestKernelMessage.ids)
-
+        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+          case KernelMessage(ids, _, _, _, _, _) =>
+            ids == MockExecuteRequestKernelMessage.ids
         }
       }
 
       it("should send a message with parent header equal to the incoming " +
         "KernelMessage's header") {
         handlerActor ! MockExecuteRequestKernelMessage
-        kernelMessageRelayProbe.receiveWhile(100.milliseconds) {
-          case message : KernelMessage =>
-            message.parentHeader should be(MockExecuteRequestKernelMessage.header)
-
+        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+          case KernelMessage(_, _, _, parentHeader, _, _) =>
+            parentHeader == MockExecuteRequestKernelMessage.header
         }
       }
 
@@ -212,7 +200,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
         kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
           // Only mark as successful if this specific message was received
-          case KernelMessage(_, _, header, _, _, contentString)
+          case KernelMessage(_, _, header, _, _, _)
             if header.msg_type == ErrorContent.toTypeString => true
           case _ => false
         }
