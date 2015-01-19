@@ -18,10 +18,8 @@ package com.ibm.spark.kernel.protocol.v5.handler
 
 import akka.actor._
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import com.ibm.spark.kernel.protocol.v5.KernelStatusType
-import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
-import com.ibm.spark.kernel.protocol.v5.content.CompleteRequest
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.content.CompleteRequest
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5Test._
 import org.scalatest.mock.MockitoSugar
@@ -74,15 +72,10 @@ class CodeCompleteHandlerSpec extends TestKit(
     it("should send a CompleteRequest") {
       handlerActor ! MockCompleteRequestKernelMessage
       replyToHandlerWithOkAndResult()
-      var completeReplyMessage: KernelMessage = null
-      // Set to 500ms because of a timing issue with the test
-      kernelMessageRelayProbe.receiveWhile(500.milliseconds) {
-        case message : KernelMessage =>
-          val messageType = message.header.msg_type
-          if (messageType == MessageType.Outgoing.CompleteReply.toString)
-            completeReplyMessage = message
+      kernelMessageRelayProbe.fishForMessage(500.milliseconds) {
+        case KernelMessage(_, _, header, parentHeader, _, contentString) =>
+          header.msg_type == (MessageType.Outgoing.CompleteReply.toString)
       }
-      completeReplyMessage should not be (null)
     }
 
     it("should throw an error for bad JSON") {
@@ -110,13 +103,10 @@ class CodeCompleteHandlerSpec extends TestKit(
     it("should send an idle message") {
       handlerActor ! MockCompleteRequestKernelMessage
       replyToHandlerWithOkAndResult()
-      var idle = false
-      statusDispatchProbe.receiveWhile(100.milliseconds) {
-        case Tuple2(status: KernelStatusType, header: Header) =>
-          if(status == KernelStatusType.Idle)
-            idle = true
-        }
-      idle should be (true)
+      statusDispatchProbe.fishForMessage(500.milliseconds) {
+        case Tuple2(status, _) =>
+          status == KernelStatusType.Idle
       }
     }
+  }
 }
