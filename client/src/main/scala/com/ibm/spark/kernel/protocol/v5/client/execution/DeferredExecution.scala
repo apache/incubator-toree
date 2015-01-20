@@ -23,6 +23,7 @@ case class DeferredExecution() extends LogLike {
   private var executeResultCallbacks: List[(ExecuteResult) => Unit] = Nil
   private var streamCallbacks: List[(StreamContent) => Unit] = Nil
   private var errorCallbacks: List[(ExecuteReplyError) => Unit] = Nil
+  private var completionCallbacks: List[() => Unit] = Nil
   private var executeResultOption: Option[ExecuteResult] = None
   private var executeReplyOption: Option[ExecuteReply] = None
 
@@ -74,6 +75,19 @@ case class DeferredExecution() extends LogLike {
     this
   }
 
+  /**
+   * Registers a callback to be notified when code completion has completed
+   * successfully. {@param callback} will not be called if an error has been
+   * encountered, use {@method onError}.
+   * @param callback The callback to register.
+   * @return This deferred execution
+   */
+  def onSuccessfulCompletion(callback: () => Unit): DeferredExecution = {
+    this.completionCallbacks = callback :: this.completionCallbacks
+    processCallbacks()
+    this
+  }
+
   private def processCallbacks(): Unit = {
     (executeReplyOption, executeResultOption) match {
       case (Some(executeReply), Some(executeResult)) if executeReply.status.equals("error") =>
@@ -85,6 +99,8 @@ case class DeferredExecution() extends LogLike {
       case (Some(executeReply), Some(executeResult)) if executeReply.status.equals("ok") =>
           // call result callbacks
           this.executeResultCallbacks.foreach(_(executeResult))
+          // call the completion callbacks
+          this.completionCallbacks.foreach(_())
           // This prevents methods from getting called again when
           // a callback is registered after processing occurs
           this.executeResultCallbacks = Nil

@@ -47,6 +47,11 @@ object DeferredExecutionTest {
           (implicit promise: Promise[Try[ExecuteReplyPromise]]): Unit = {
     promise.success(Success(new ExecuteReplyPromise))
   }
+
+  def processOnSuccessfulCompletion()
+    (implicit promise: Promise[Try[String]]): Unit = {
+    promise.success(Success("Success"))
+  }
 }
 
 class ExecuteResultPromise {}
@@ -167,6 +172,40 @@ class DeferredExecutionTest extends FunSpec with ScalaFutures with Matchers {
         whenReady(executeResultPromise.future) {
           case _ =>
             executeReplyPromise.isCompleted should be(false)
+        }
+      }
+    }
+    describe("onSuccessfulCompletion( callback )") {
+      it("should run all onSuccessfulCompletion callbacks on ExecuteReplyOk") {
+        implicit val executeCompletePromise: Promise[Try[String]] = Promise()
+        val deferredExecution: DeferredExecution = DeferredExecution()
+          .onSuccessfulCompletion(processOnSuccessfulCompletion)
+
+        mockSendingKernelMessages(deferredExecution, executeReplyOk, executeReplyResult)
+
+        whenReady(executeCompletePromise.future) {
+          case Success(s) =>  //  Nothing to do for the successful case
+          case Failure(exception: Throwable) =>
+            fail("Promised resolved with failure while trying to " +
+              "process execute result.", exception)
+          case unknownValue=>
+            fail(s"Promised resolved with unknown value: ${unknownValue}")
+        }
+      }
+      it("should not run onSuccessfulCompletion callbacks on ExecuteReplyError") {
+        implicit val executeCompletePromise: Promise[Try[String]] = Promise()
+        //  This promise and callback should not be executed by the deferred
+        implicit val executeReplyPromise: Promise[Try[ExecuteReplyPromise]] = Promise()
+
+        val deferredExecution: DeferredExecution = DeferredExecution()
+          .onError(processExecuteReply)
+          .onSuccessfulCompletion(processOnSuccessfulCompletion)
+
+        mockSendingKernelMessages(deferredExecution, executeReplyError, executeReplyResult)
+
+        whenReady(executeReplyPromise.future) {
+          case _ =>
+            executeCompletePromise.isCompleted should be(false)
         }
       }
     }
