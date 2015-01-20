@@ -26,15 +26,40 @@ class LSMagic extends LineMagic with IncludeOutputStream {
   private lazy val printStream = new PrintStream(outputStream)
 
   /**
-   * Lists all available magics
+   * Lists all available magics.
    * @param code The single line of code
    * @return The output of the magic
    */
   override def execute(code: String): Unit = {
-    val classes = new BuiltinLoader().getClasses()
-    val magics = classes.map("%" + _.getSimpleName).mkString(" ").toLowerCase
+    val classes = new BuiltinLoader().loadClasses().toList
+    val lineMagics = magicNames("%", classOf[LineMagic], classes)
+      .mkString(" ").toLowerCase
+    val cellMagics = magicNames("%%", classOf[CellMagic], classes)
+      .mkString(" ").toLowerCase
     val message =
-      s"Available magics:\n$magics\n\nType %<magic_name> for usage info."
+      s"""|Available line magics:
+           |$lineMagics
+           |
+           |Available cell magics:
+           |$cellMagics
+           |
+           |Type %<magic_name> for usage info.
+         """.stripMargin
+
     printStream.println(message)
+  }
+
+  /**
+   * Provides a list of class names from the given list that implement
+   * the specified interface, with the specified prefix prepended.
+   * @param prefix prepended to each name, e.g. "%%"
+   * @param interface a magic interface, e.g. classOf[LineMagic]
+   * @param classes a list of magic classes
+   * @return list of class names with prefix
+   */
+  protected[magic] def magicNames(prefix: String, interface: Class[_],
+                                  classes: List[Class[_]]) : List[String] = {
+    val filteredClasses = classes.filter(_.getInterfaces.contains(interface))
+    filteredClasses.map(c => s"${prefix}${c.getSimpleName}")
   }
 }
