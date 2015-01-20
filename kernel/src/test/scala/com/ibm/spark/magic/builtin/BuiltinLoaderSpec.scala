@@ -28,5 +28,13 @@ class BuiltinLoaderSpec extends FunSpec with Matchers with MockitoSugar {
         classes.size shouldNot be(0)
       }
     }
+
+    describe("#loadClasses") {
+      it("should return class objects for classes in a package") {
+        val pkg = this.getClass.getPackage.getName
+        val classes = new BuiltinLoader().loadClasses(pkg).toList
+        classes.contains(this.getClass) should be (true)
+      }
+    }
   }
 }
