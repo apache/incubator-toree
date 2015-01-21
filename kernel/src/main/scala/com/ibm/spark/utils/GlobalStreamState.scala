@@ -16,7 +16,7 @@
 
 package com.ibm.spark.utils
 
-import java.io.{PrintStream, OutputStream, InputStream}
+import java.io.{InputStream, OutputStream, PrintStream}
 
 /**
  * Represents the global state for input and output streams used to communicate
