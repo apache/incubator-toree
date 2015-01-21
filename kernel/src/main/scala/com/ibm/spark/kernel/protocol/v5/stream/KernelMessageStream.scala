@@ -20,10 +20,8 @@ import java.io.OutputStream
 import java.nio.charset.Charset
 
 import com.ibm.spark.kernel.protocol.v5.content.StreamContent
-import com.ibm.spark.kernel.protocol.v5.{SystemActorType, MessageType, KMBuilder, KernelMessage}
+import com.ibm.spark.kernel.protocol.v5.{SystemActorType, MessageType, KMBuilder}
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import play.api.libs.json.Json
-
 import scala.collection.mutable.ListBuffer
 
 /**

@@ -31,6 +31,8 @@ abstract class BaseHandler(actorLoader: ActorLoader) extends OrderedSupport
    * @return The Akka partial function n
    */
   final def receive = {
+    // NOTE: Not using withProcessing as the finishedProcessing call is inside
+    //       a future (not triggered immediately)
     case kernelMessage: KernelMessage =>
       startProcessing()
       // Send the busy message before we process the message

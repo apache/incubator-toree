@@ -119,10 +119,11 @@ case class KernelMessageRelay(
       if (useSignatureManager) {
         logger.trace(s"Verifying signature for incoming message " +
           s"${kernelMessage.header.msg_id}")
-        val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
-        val signatureVerificationFuture = signatureManager ? ((
-          kernelMessage.signature, zmqStrings
-        ))
+        val signatureManager =
+          actorLoader.load(SystemActorType.SignatureManager)
+        val signatureVerificationFuture = signatureManager ? (
+          (kernelMessage.signature, zmqStrings)
+        )
 
         signatureVerificationFuture.mapTo[Boolean].onComplete {
           case Success(true) =>
@@ -133,7 +134,7 @@ case class KernelMessageRelay(
             logger.error(s"Invalid signature received from message " +
               s"${kernelMessage.header.msg_id}!")
             finishedProcessing()
-          case Failure(t)  =>
+          case Failure(t) =>
             logger.error("Failure when verifying signature!", t)
             finishedProcessing()
         }
@@ -146,7 +147,7 @@ case class KernelMessageRelay(
 
     // Assuming all kernel messages without zmq strings are outgoing
     case kernelMessage: KernelMessage =>
-
+      startProcessing()
       if (useSignatureManager) {
         logger.trace(s"Creating signature for outgoing message " +
           s"${kernelMessage.header.msg_id}")
@@ -155,12 +156,15 @@ case class KernelMessageRelay(
 
         // TODO: Handle error case for mapTo and non-present onFailure
         signatureInsertFuture.mapTo[KernelMessage] onSuccess {
-          case message => outgoingRelay(message)
+          case message =>
+            outgoingRelay(message)
+            finishedProcessing()
         }
       } else {
         logger.debug(s"Relaying outgoing message " +
           s"${kernelMessage.header.msg_id} without SignatureManager")
         outgoingRelay(kernelMessage)
+        finishedProcessing()
       }
   }
 
