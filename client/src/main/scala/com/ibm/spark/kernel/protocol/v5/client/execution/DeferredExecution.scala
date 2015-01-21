@@ -16,13 +16,14 @@
 
 package com.ibm.spark.kernel.protocol.v5.client.execution
 
-import com.ibm.spark.kernel.protocol.v5.content.{ExecuteReply, ExecuteReplyError, ExecuteResult, StreamContent}
+import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.utils.LogLike
 
 case class DeferredExecution() extends LogLike {
   private var executeResultCallbacks: List[(ExecuteResult) => Unit] = Nil
   private var streamCallbacks: List[(StreamContent) => Unit] = Nil
   private var errorCallbacks: List[(ExecuteReplyError) => Unit] = Nil
+  private var successCallbacks: List[(ExecuteReplyError) => Unit] = Nil
   private var executeResultOption: Option[ExecuteResult] = None
   private var executeReplyOption: Option[ExecuteReply] = None
 
@@ -74,21 +75,46 @@ case class DeferredExecution() extends LogLike {
     this
   }
 
+  /**
+   * Registers a callback to be notified when code completion has completed
+   * successfully. {@param callback} will not be called if an error has been
+   * encountered, use {@method onError}.
+   * @param callback The callback to register.
+   * @return This deferred execution
+   */
+  def onSuccess(callback: (ExecuteReplyError) => Unit): DeferredExecution = {
+    this.successCallbacks = callback :: this.successCallbacks
+    processCallbacks()
+    this
+  }
+  //  In the next three methods we need to clear each list.
+  //  This prevents methods from getting called again when
+  //  a callback is registered after processing has happened
+  private def callErrorCallbacks(executeReplyError: ExecuteReplyError) = {
+    this.errorCallbacks.foreach(_(executeReplyError))
+    this.errorCallbacks = Nil
+  }
+
+  private def callSuccessCallbacks(executeReplyOk: ExecuteReplyOk) = {
+    this.successCallbacks.foreach(_(executeReplyOk))
+    this.successCallbacks = Nil
+  }
+
+  private def callResultCallbacks(executeResult: ExecuteResult) = {
+    this.executeResultCallbacks.foreach(_(executeResult))
+    this.executeResultCallbacks = Nil
+  }
+
   private def processCallbacks(): Unit = {
     (executeReplyOption, executeResultOption) match {
       case (Some(executeReply), Some(executeResult)) if executeReply.status.equals("error") =>
-          // call error callbacks
-          this.errorCallbacks.foreach(_(executeReply))
-          // This prevents methods from getting called again when
-          // a callback is registered after processing occurs
-          this.errorCallbacks = Nil
+        callErrorCallbacks(executeReply)
       case (Some(executeReply), Some(executeResult)) if executeReply.status.equals("ok") =>
-          // call result callbacks
-          this.executeResultCallbacks.foreach(_(executeResult))
-          // This prevents methods from getting called again when
-          // a callback is registered after processing occurs
-          this.executeResultCallbacks = Nil
-      case _ =>
+        callResultCallbacks(executeResult)
+        callSuccessCallbacks(executeReply)
+      case (Some(executeReply), None) =>
+        callSuccessCallbacks(executeReply)
+      case value =>
         logger.debug(
           s"""
               Did not invoke client callbacks.

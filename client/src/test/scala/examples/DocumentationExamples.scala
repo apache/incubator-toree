@@ -50,10 +50,13 @@ object DocumentationExamples extends App {
   ********************/
   //  Create a variable, z, and assign a value to it
   client.execute("val z = 0")
+  Thread.sleep(500)
   //  Perform some computation
   client.execute("1 + 1")
+  Thread.sleep(500)
   //  Print some message
   client.execute("println(\"Hello, World\")")
+  Thread.sleep(500)
 
   /**********************************
   *   Receiving Results onResult    *
@@ -63,10 +66,13 @@ object DocumentationExamples extends App {
   }
   //  Create a variable, z, and assign a value to it
   client.execute("val z = 0").onResult(printResult)
+  Thread.sleep(500)
   //  Perform some computation, and print it twice
   client.execute("1 + 1").onResult(printResult).onResult(printResult)
+  Thread.sleep(500)
   //  The callback will never be invoked
   client.execute("someUndefinedVariable").onResult(printResult)
+  Thread.sleep(500)
 
   /****************************************
   *   Receiving Print Streams onStream    *
@@ -75,7 +81,9 @@ object DocumentationExamples extends App {
     println(s"Stream content was: ${content.text}")
   }
   client.execute("println(1/1)").onStream(printStreamContent)
+  Thread.sleep(500)
   client.execute("println(\"Hello, World\")").onStream(printStreamContent)
+  Thread.sleep(500)
 
   /********************************
   *   Handling Errors: onError    *
@@ -85,8 +93,10 @@ object DocumentationExamples extends App {
   }
   //  Error from executing a statement
   client.execute("1/0").onError(printError)
+  Thread.sleep(500)
   //  Error from invoking a println
   client.execute("println(someUndefinedVar").onError(printError)
+  Thread.sleep(500)
   /*
     Output should be:
       Result was: z: Int = 0
@@ -100,8 +110,33 @@ object DocumentationExamples extends App {
       Error was: Syntax Error.
    */
 
+
+  /***************************************************************************
+  *   Notification of Successful Code Completion : onSuccessfulCompletion    *
+  ***************************************************************************/
+  def printSuccess(executeReplyOk: ExecuteReplyOk) = {
+    println(s"Successful code completion")
+  }
+  //  onSuccess will be called
+  client.execute("33*33")
+    .onSuccess(printSuccess)
+    .onError(printError)
+  Thread.sleep(500)
+  //  onSuccess will not be called
+  client.execute("1/0").onSuccess {
+   executeReplyOk =>
+      println("This is never called.")
+  }.onError(printError)
+  Thread.sleep(500)
+  /*
+    Output should be:
+      Result was: res*: Int = 1089
+
+      Error was: java.lang.ArithmeticException
+  */
+
   //  Wait for all the executions to complete
-  Thread.sleep(5000)
+  Thread.sleep(30000)
   //  Properly shutdown the client and exit the application
   client.shutdown()
 }
