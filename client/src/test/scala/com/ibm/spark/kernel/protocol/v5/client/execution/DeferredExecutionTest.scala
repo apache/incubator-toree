@@ -26,16 +26,22 @@ import scala.concurrent.Promise
 import scala.util.{Try, Failure, Success}
 
 object DeferredExecutionTest {
-  val executeReplyError  = ExecuteReplyError(1, None, None, None)
-  val executeReplyOk     = ExecuteReplyOk(1, None, None)
-  val executeReplyResult = ExecuteResult(1, Data(), Metadata())
+  val executeReplyError  = Option(ExecuteReplyError(1, None, None, None))
+  val executeReplyOk     = Option(ExecuteReplyOk(1, None, None))
+  val executeResult      = Option(ExecuteResult(1, Data(), Metadata()))
 
   def mockSendingKernelMessages(deferredExecution: DeferredExecution,
-                                executeReply: ExecuteReply,
-                                executeResult: ExecuteResult): Unit = {
+                                executeReplyOption: Option[ExecuteReply],
+                                executeResultOption: Option[ExecuteResult]): Unit = {
     //  Mock behaviour of the kernel sending messages to us
-    deferredExecution.resolveResult(executeResult)
-    deferredExecution.resolveReply(executeReply)
+    executeResultOption.map {
+      executeResult =>
+      deferredExecution.resolveResult(executeResult)
+    }
+    executeReplyOption.map {
+      executeReply=>
+        deferredExecution.resolveReply(executeReply)
+    }
   }
   
   def processExecuteResult(executeResult: ExecuteResult)
@@ -48,7 +54,7 @@ object DeferredExecutionTest {
     promise.success(Success(new ExecuteReplyPromise))
   }
 
-  def processOnSuccessfulCompletion()
+  def processOnSuccessfulCompletion(executeReplyOk: ExecuteReplyOk)
     (implicit promise: Promise[Try[String]]): Unit = {
     promise.success(Success("Success"))
   }
@@ -67,7 +73,7 @@ class DeferredExecutionTest extends FunSpec with ScalaFutures with Matchers {
         val deferredExecution: DeferredExecution = DeferredExecution()
           .onResult(processExecuteResult)
 
-        mockSendingKernelMessages(deferredExecution, executeReplyOk, executeReplyResult)
+        mockSendingKernelMessages(deferredExecution, executeReplyOk, executeResult)
 
         whenReady(executeResultPromise.future) {
           case Success(v) => assert(true)
@@ -94,7 +100,7 @@ class DeferredExecutionTest extends FunSpec with ScalaFutures with Matchers {
         val deferredExecution: DeferredExecution = DeferredExecution()
           .onResult(processExecuteResult)
 
-        mockSendingKernelMessages(deferredExecution, executeReplyOk, executeReplyResult)
+        mockSendingKernelMessages(deferredExecution, executeReplyOk, executeResult)
         //  register callback after code execution has completed
         deferredExecution.onResult(processExecuteResult)
 
@@ -110,7 +116,7 @@ class DeferredExecutionTest extends FunSpec with ScalaFutures with Matchers {
         val deferredExecution: DeferredExecution = DeferredExecution()
           .onError(processExecuteReply)
           .onResult(processExecuteResult)
-        mockSendingKernelMessages(deferredExecution, executeReplyError, executeReplyResult)
+        mockSendingKernelMessages(deferredExecution, executeReplyError, executeResult)
 
         whenReady(executeReplyPromise.future) { _ =>
           executeResultPromise.isCompleted should be(false)
@@ -146,7 +152,7 @@ class DeferredExecutionTest extends FunSpec with ScalaFutures with Matchers {
         val deferredExecution: DeferredExecution = DeferredExecution()
           .onError(processExecuteReply)
 
-        mockSendingKernelMessages(deferredExecution, executeReplyError, executeReplyResult)
+        mockSendingKernelMessages(deferredExecution, executeReplyError, executeResult)
 
         whenReady(executeReplyPromise.future) {
           case Success(v) => assert(true)
@@ -167,7 +173,7 @@ class DeferredExecutionTest extends FunSpec with ScalaFutures with Matchers {
           .onError(processExecuteReply)
           .onResult(processExecuteResult)
 
-        mockSendingKernelMessages(deferredExecution, executeReplyOk, executeReplyResult)
+        mockSendingKernelMessages(deferredExecution, executeReplyOk, executeResult)
 
         whenReady(executeResultPromise.future) {
           case _ =>
@@ -176,12 +182,28 @@ class DeferredExecutionTest extends FunSpec with ScalaFutures with Matchers {
       }
     }
     describe("onSuccessfulCompletion( callback )") {
-      it("should run all onSuccessfulCompletion callbacks on ExecuteReplyOk") {
+      it("should run all onSuccessfulCompletion callbacks on ExecuteReplyOk and ExecuteResult") {
         implicit val executeCompletePromise: Promise[Try[String]] = Promise()
         val deferredExecution: DeferredExecution = DeferredExecution()
-          .onSuccessfulCompletion(processOnSuccessfulCompletion)
+          .onSuccess(processOnSuccessfulCompletion)
 
-        mockSendingKernelMessages(deferredExecution, executeReplyOk, executeReplyResult)
+        mockSendingKernelMessages(deferredExecution, executeReplyOk, executeResult)
+
+        whenReady(executeCompletePromise.future) {
+          case Success(s) =>  //  Nothing to do for the successful case
+          case Failure(exception: Throwable) =>
+            fail("Promised resolved with failure while trying to " +
+              "process execute result.", exception)
+          case unknownValue=>
+            fail(s"Promised resolved with unknown value: ${unknownValue}")
+        }
+      }
+      it("should run all onSuccessfulCompletion callbacks on ExecuteReplyOk and None") {
+        implicit val executeCompletePromise: Promise[Try[String]] = Promise()
+        val deferredExecution: DeferredExecution = DeferredExecution()
+          .onSuccess(processOnSuccessfulCompletion)
+
+        mockSendingKernelMessages(deferredExecution, executeReplyOk, None)
 
         whenReady(executeCompletePromise.future) {
           case Success(s) =>  //  Nothing to do for the successful case
@@ -199,9 +221,9 @@ class DeferredExecutionTest extends FunSpec with ScalaFutures with Matchers {
 
         val deferredExecution: DeferredExecution = DeferredExecution()
           .onError(processExecuteReply)
-          .onSuccessfulCompletion(processOnSuccessfulCompletion)
+          .onSuccess(processOnSuccessfulCompletion)
 
-        mockSendingKernelMessages(deferredExecution, executeReplyError, executeReplyResult)
+        mockSendingKernelMessages(deferredExecution, executeReplyError, executeResult)
 
         whenReady(executeReplyPromise.future) {
           case _ =>

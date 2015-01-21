@@ -114,22 +114,23 @@ object DocumentationExamples extends App {
   /***************************************************************************
   *   Notification of Successful Code Completion : onSuccessfulCompletion    *
   ***************************************************************************/
-  def printSuccessfulCompletion() = {
+  def printSuccess(executeReplyOk: ExecuteReplyOk) = {
     println(s"Successful code completion")
   }
-  //  onSuccessfulCompletion will be called
+  //  onSuccess will be called
   client.execute("33*33")
-    .onSuccessfulCompletion(printSuccessfulCompletion)
+    .onSuccess(printSuccess)
     .onError(printError)
   Thread.sleep(500)
-  //  onSuccessfulCompletion will not be called
-  client.execute("1/0").onSuccessfulCompletion(() => {
-    println("This is never called")
-  }).onError(printError)
+  //  onSuccess will not be called
+  client.execute("1/0").onSuccess {
+   executeReplyOk =>
+      println("This is never called.")
+  }.onError(printError)
   Thread.sleep(500)
   /*
     Output should be:
-      Result was: res*: Int = 1
+      Result was: res*: Int = 1089
 
       Error was: java.lang.ArithmeticException
   */
