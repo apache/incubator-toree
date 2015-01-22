@@ -87,20 +87,5 @@ class AddJar
 
     interpreter.addJars(fileDownloadLocation.toURI.toURL)
     sparkContext.addJar(fileDownloadLocation.getCanonicalPath)
-
-    // NOTE: Quick fix to re-enable SparkContext usage, otherwise any code
-    //       using the SparkContext (after this) has issues with some sort of
-    //       bad type of
-    //       org.apache.spark.org.apache.spark.org.apache.spark.SparkContext
-    interpreter.doQuietly(
-      interpreter.bind(
-        "sc", "org.apache.spark.SparkContext",
-        sparkContext, List("@transient")
-      ))
-
-    interpreter.doQuietly(
-      interpreter.bind(
-        "kernel", "com.ibm.spark.kernel.api.Kernel", kernel, List("@transient")
-      ))
   }
 }

@@ -50,25 +50,6 @@ class AddDeps extends LineMagic with IncludeInterpreter
       // add the jars to the interpreter and spark context
       interpreter.addJars(urls:_*)
       urls.foreach(url => sparkContext.addJar(url.getPath))
-
-      // TODO: Investigate why %AddJar http://...factorie.jar works without
-      //       needing to rebind the SparkContext
-      // NOTE: Quick fix to re-enable SparkContext usage, otherwise any code
-      //       using the SparkContext (after this) has issues with some sort of
-      //       bad type of
-      //       org.apache.spark.org.apache.spark.org.apache.spark.SparkContext
-      interpreter.doQuietly(
-        interpreter.bind(
-          "sc", "org.apache.spark.SparkContext",
-          sparkContext, List("@transient")
-      ))
-
-      interpreter.doQuietly(
-        interpreter.bind(
-          "kernel", "com.ibm.spark.kernel.api.Kernel", kernel, List("@transient")
-        ))
-
-      // TODO: report issues, etc, to the user or is the ivy output enough?
     } else {
       printHelp(printStream, """%AddDeps my.company artifact-id version""")
     }

@@ -23,15 +23,16 @@ import java.util.concurrent.ExecutionException
 
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
 import com.ibm.spark.utils.{TaskManager, MultiOutputStream}
-import org.apache.spark.repl
 import org.apache.spark.repl.{SparkJLineCompletion, SparkIMain}
 import org.slf4j.LoggerFactory
 import scala.concurrent.{Await, Future}
-import scala.tools.nsc._
+import scala.tools.nsc.{Global, Settings, io}
 import scala.tools.nsc.backend.JavaPlatform
 import scala.tools.nsc.interpreter._
-import scala.tools.nsc.io._
+import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.util.MergedClassPath
+
+import scala.util.{Try => UtilTry}
 
 import scala.language.reflectiveCalls
 
@@ -84,6 +85,39 @@ class ScalaInterpreter(
 
     jars.foreach(_runtimeClassloader.addJar)
     updateCompilerClassPath(jars : _*)
+
+    // Refresh all of our variables
+    refreshDefinitions()
+  }
+
+  // TODO: Need to figure out a better way to compare the representation of
+  //       an annotation (contained in AnnotationInfo) with various annotations
+  //       like scala.transient
+  protected def buildModifierList(termNameString: String) =
+    sparkIMain.symbolOfTerm(termNameString).accessed.annotations map {
+      case a if a.toString == "transient" => "@transient"
+      case a                              =>
+        logger.debug(s"Ignoring unknown annotation: $a")
+        ""
+    } filterNot { _.isEmpty }
+
+  protected def refreshDefinitions(): Unit = {
+    sparkIMain.definedTerms.foreach(termName => {
+      val termNameString = termName.toString
+      val termTypeString = sparkIMain.typeOfTerm(termNameString).toLongString
+      sparkIMain.valueOfTerm(termNameString) match {
+        case Some(termValue)  =>
+          logger.debug(s"Rebinding of $termNameString as $termTypeString")
+          UtilTry(sparkIMain.beSilentDuring {
+            sparkIMain.bind(
+              termNameString, termTypeString, termValue,
+              buildModifierList(termNameString)
+            )
+          })
+        case None             =>
+          logger.debug(s"Ignoring rebinding of $termNameString")
+      }
+    })
   }
 
   protected def reinitializeSymbols(): Unit = {
