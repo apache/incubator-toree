@@ -20,10 +20,9 @@ import java.io.OutputStream
 import java.nio.charset.Charset
 
 import com.ibm.spark.kernel.protocol.v5.content.StreamContent
-import com.ibm.spark.kernel.protocol.v5.{SystemActorType, MessageType, KMBuilder, KernelMessage}
+import com.ibm.spark.kernel.protocol.v5.{SystemActorType, MessageType, KMBuilder}
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import play.api.libs.json.Json
-
+import com.ibm.spark.utils.ScheduledTaskManager
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -32,22 +31,46 @@ import scala.collection.mutable.ListBuffer
  *
  * @param actorLoader The actor loader used to access the message relay
  * @param kmBuilder The KMBuilder used to construct outgoing kernel messages
+ * @param scheduledTaskManager The task manager used to schedule periodic
+ *                             flushes to send data across the wire
  * @param streamType The type of stream (stdout/stderr)
  */
 class KernelMessageStream(
   actorLoader: ActorLoader,
   kmBuilder: KMBuilder,
+  scheduledTaskManager: ScheduledTaskManager,
   streamType: String = "stdout"
 ) extends OutputStream {
   private val EncodingType = Charset.forName("UTF-8")
-  private var internalBytes: ListBuffer[Byte] = ListBuffer()
+  @volatile private var internalBytes: ListBuffer[Byte] = ListBuffer()
+
+  private var taskId: String = _
+
+  private def enableAutoFlush() =
+    if (taskId == null)
+      taskId = scheduledTaskManager.addTask(task = this.flush())
+
+  private def disableAutoFlush() =
+    if (taskId != null)
+      scheduledTaskManager.removeTask(taskId)
 
   /**
    * Takes the current byte array contents in memory, packages them up into a
    * KernelMessage, and sends the message to the KernelMessageRelay.
    */
   override def flush(): Unit = {
-    val contents = new String(internalBytes.toArray, EncodingType)
+    val contents = internalBytes.synchronized {
+      val bytesToString = new String(internalBytes.toArray, EncodingType)
+
+      // Clear the internal buffer
+      internalBytes.clear()
+
+      // Stop the auto-flushing
+      disableAutoFlush()
+
+      bytesToString
+    }
+
     val streamContent = StreamContent(
       streamType, contents
     )
@@ -61,9 +84,6 @@ class KernelMessageStream(
 
     // Ensure any underlying implementation is processed
     super.flush()
-
-    // Clear the internal buffer
-    internalBytes.clear()
   }
 
   /**
@@ -73,9 +93,9 @@ class KernelMessageStream(
    * @param b The byte whose least significant 8 bits are to be appended
    */
   override def write(b: Int): Unit = {
-    internalBytes += b.toByte
+    // Begin periodic flushing if this is a new set of bytes
+    enableAutoFlush()
 
-    // Attempt a flush if the provided byte was a newline
-    if (b.toChar == '\n') flush()
+    internalBytes += b.toByte
   }
 }

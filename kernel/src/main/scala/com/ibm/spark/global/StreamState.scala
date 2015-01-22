@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.utils
+package com.ibm.spark.global
 
-import java.io.{PrintStream, OutputStream, InputStream}
+import java.io.{InputStream, OutputStream, PrintStream}
 
 /**
  * Represents the global state for input and output streams used to communicate
  * standard input and output.
  */
-object GlobalStreamState {
+object StreamState {
   private val _inputStream = System.in
   private val _outputStream = System.out
   private val _errorStream = System.err

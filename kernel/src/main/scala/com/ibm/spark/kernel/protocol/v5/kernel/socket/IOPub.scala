@@ -29,13 +29,22 @@ import com.ibm.spark.utils.{MessageLogSupport, LogLike}
  * @param socketFactory A factory to create the ZeroMQ socket connection
  */
 class IOPub(socketFactory: SocketFactory)
-  extends Actor with MessageLogSupport {
+  extends Actor with MessageLogSupport with OrderedSupport
+{
   logger.trace("Created new IOPub actor")
   val socket = socketFactory.IOPub(context.system)
   override def receive: Receive = {
-    case message: KernelMessage =>
+    case message: KernelMessage => withProcessing {
       val zmqMessage: ZMQMessage = message
       logMessage(message)
       socket ! zmqMessage
+    }
   }
+
+  /**
+   * Defines the types that will be stashed by {@link #waiting() waiting}
+   * while the Actor is in processing state.
+   * @return
+   */
+  override def orderedTypes(): Seq[Class[_]] = Seq(classOf[KernelMessage])
 }

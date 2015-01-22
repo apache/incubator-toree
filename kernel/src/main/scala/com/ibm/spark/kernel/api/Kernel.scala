@@ -4,6 +4,7 @@ import java.io.PrintStream
 
 import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommManager
+import com.ibm.spark.global
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
@@ -65,8 +66,11 @@ class Kernel (
       "The StreamInfo provided is not a KernelMessage instance!")
 
     val kernelMessage = streamInfo.asInstanceOf[v5.KernelMessage]
-    new PrintStream(new v5.stream.KernelMessageStream(
-      actorLoader, v5.KMBuilder().withParent(kernelMessage)))
+    val outputStream = new v5.stream.KernelMessageStream(
+      actorLoader, v5.KMBuilder().withParent(kernelMessage),
+      global.ScheduledTaskManager.instance, "stdout")
+
+    new PrintStream(outputStream)
   }
 
   /**
@@ -81,7 +85,10 @@ class Kernel (
       "The StreamInfo provided is not a KernelMessage instance!")
 
     val kernelMessage = streamInfo.asInstanceOf[v5.KernelMessage]
-    new PrintStream(new v5.stream.KernelMessageStream(
-      actorLoader, v5.KMBuilder().withParent(kernelMessage), "stderr"))
+    val outputStream = new v5.stream.KernelMessageStream(
+      actorLoader, v5.KMBuilder().withParent(kernelMessage),
+      global.ScheduledTaskManager.instance, "stderr")
+
+    new PrintStream(outputStream)
   }
 }

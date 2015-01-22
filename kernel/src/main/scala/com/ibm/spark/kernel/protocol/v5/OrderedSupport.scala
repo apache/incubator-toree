@@ -64,6 +64,21 @@ trait OrderedSupport extends Actor with Stash with LogLike {
   }
 
   /**
+   * Executes a block of code, wrapping it in start/finished processing
+   * needed for ordered execution.
+   *
+   * @param block The block to execute
+   * @tparam T The return type of the block
+   * @return The result of executing the block
+   */
+  def withProcessing[T](block: => T): T = {
+    startProcessing()
+    val results = block
+    finishedProcessing()
+    results
+  }
+
+  /**
    * Defines the types that will be stashed by {@link #waiting() waiting}
    * while the Actor is in processing state.
    * @return

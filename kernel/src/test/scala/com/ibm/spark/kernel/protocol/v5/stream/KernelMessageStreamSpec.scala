@@ -16,11 +16,13 @@
 
 package com.ibm.spark.kernel.protocol.v5.stream
 
+import java.util.UUID
+
 import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import org.mockito.Matchers._
+import com.ibm.spark.utils.ScheduledTaskManager
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest._
@@ -35,22 +37,60 @@ class KernelMessageStreamSpec
   with MockitoSugar
 {
 
-  var actorLoader: ActorLoader = _
-  var kernelMessageRelayProbe: TestProbe = _
+  private var mockActorLoader: ActorLoader = _
+  private var mockScheduledTaskManager: MockScheduledTaskManager = _
+  private var kernelMessageRelayProbe: TestProbe = _
 
   //
   // SHARED ELEMENTS BETWEEN TESTS
   //
 
-  val executionCount = 3
+  private val ExecutionCount = 3
 
-  val skeletonBuilder = KMBuilder()
+  private val GeneratedTaskId = UUID.randomUUID().toString
+
+  private val skeletonBuilder = KMBuilder()
     .withIds(Nil).withSignature("").withContentString("")
     .withParentHeader(Header("", "", "", "", "5.0"))
 
+  /**
+   * This stubs out the methods of the scheduled task manager and provides a
+   * form of verification, which is not (easily) doable with Mockito due to the
+   * call-by-name argument in addTask.
+   */
+  private class MockScheduledTaskManager extends ScheduledTaskManager {
+    private var addTaskCalled = false
+    private var removeTaskCalled = false
+    private var stopCalled = false
+
+    def verifyAddTaskCalled(): Unit = addTaskCalled should be (true)
+    def verifyRemoveTaskCalled(): Unit = removeTaskCalled should be (true)
+    def verifyStopCalled(): Unit = stopCalled should be (true)
+    def verifyAddTaskNotCalled(): Unit = addTaskCalled should be (false)
+    def verifyRemoveTaskNotCalled(): Unit = removeTaskCalled should be (false)
+    def verifyStopNotCalled(): Unit = stopCalled should be (false)
+    def resetVerify(): Unit = {
+      addTaskCalled = false
+      removeTaskCalled = false
+      stopCalled = false
+    }
+
+    override def addTask[T](executionDelay: Long, timeInterval: Long, task: => T): String =
+    { addTaskCalled = true; GeneratedTaskId }
+
+    override def removeTask(taskId: String): Boolean =
+    { removeTaskCalled = true; true }
+
+    override def stop(): Unit = stopCalled = true
+
+    def teardown(): Unit = super.stop()
+  }
+
   before {
     // Create a mock ActorLoader for the KernelMessageStream we are testing
-    actorLoader = mock[ActorLoader]
+    mockActorLoader = mock[ActorLoader]
+
+    mockScheduledTaskManager = new MockScheduledTaskManager
 
     // Create a probe for the relay and mock the ActorLoader to return the
     // associated ActorSelection
@@ -58,7 +98,11 @@ class KernelMessageStreamSpec
     val kernelMessageRelaySelection: ActorSelection =
       system.actorSelection(kernelMessageRelayProbe.ref.path.toString)
     doReturn(kernelMessageRelaySelection)
-      .when(actorLoader).load(SystemActorType.KernelMessageRelay)
+      .when(mockActorLoader).load(SystemActorType.KernelMessageRelay)
+  }
+
+  after {
+    mockScheduledTaskManager.teardown()
   }
 
   describe("KernelMessageStream") {
@@ -66,7 +110,7 @@ class KernelMessageStreamSpec
       it("should add a new byte to the internal list") {
         Given("a kernel message stream with a skeleton kernel builder")
         val kernelMessageStream = new KernelMessageStream(
-          actorLoader, skeletonBuilder
+          mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
         When("a byte is written to the stream")
@@ -81,52 +125,73 @@ class KernelMessageStreamSpec
         executeResult.text should be (expected.toString)
       }
 
-      it("should call flush if the byte provided is a newline") {
+      it("should enable periodic flushing") {
         Given("a kernel message stream with a skeleton kernel builder")
-        val kernelMessageStream = spy(new KernelMessageStream(
-          actorLoader, skeletonBuilder
-        ))
+        val kernelMessageStream = new KernelMessageStream(
+          mockActorLoader, skeletonBuilder, mockScheduledTaskManager
+        )
 
-        When("a newline byte is written to the stream")
-        val expected = '\n'
-        kernelMessageStream.write(expected)
-
-        Then("flush is called")
-        verify(kernelMessageStream).flush()
-
-        And("a message is sent")
-        val message = kernelMessageRelayProbe
-          .receiveOne(1.seconds).asInstanceOf[KernelMessage]
-        val executeResult = Json.parse(message.contentString).as[StreamContent]
-        executeResult.text should be (expected.toString)
-      }
-
-      it("should not call flush if the byte provided is not a newline") {
-        Given("a kernel message stream with a skeleton kernel builder")
-        val kernelMessageStream = spy(new KernelMessageStream(
-          actorLoader, skeletonBuilder
-        ))
-
-        When("a non-newline byte is written to the stream")
+        When("a byte is written to the stream")
         val expected = 'a'
         kernelMessageStream.write(expected)
 
-        Then("flush is not called")
-        verify(kernelMessageStream, never()).flush()
+        Then("it should add a task to periodically flush")
+        mockScheduledTaskManager.verifyAddTaskCalled()
+      }
 
-        And("no message is sent")
-        kernelMessageRelayProbe.expectNoMsg(50.milliseconds)
+      it("should not enable periodic flushing if already enabled") {
+        Given("a kernel message stream with a skeleton kernel builder")
+        val kernelMessageStream = new KernelMessageStream(
+          mockActorLoader, skeletonBuilder, mockScheduledTaskManager
+        )
+
+        And("periodic flushing is already enabled")
+        kernelMessageStream.write('a')
+        mockScheduledTaskManager.verifyAddTaskCalled()
+        mockScheduledTaskManager.resetVerify()
+
+        When("a byte is written to the stream")
+        kernelMessageStream.write('b')
+
+        Then("it should not add a task to periodically flush")
+        mockScheduledTaskManager.verifyAddTaskNotCalled()
       }
     }
     describe("#flush") {
-      it("should clear the internal list of bytes") {
+      it("should disable periodic flushing") {
+        Given("a kernel message stream with a skeleton kernel builder")
+        val kernelMessageStream = new KernelMessageStream(
+          mockActorLoader, skeletonBuilder, mockScheduledTaskManager
+        )
 
+        When("a byte is written to the stream")
+        val expected = 'a'
+        kernelMessageStream.write(expected)
+
+        And("flush is invoked")
+        kernelMessageStream.flush()
+
+        Then("it should remove the task to periodically flush")
+        mockScheduledTaskManager.verifyRemoveTaskCalled()
+      }
+
+      it("should not disable periodic flushing if not enabled") {
+        Given("a kernel message stream with a skeleton kernel builder")
+        val kernelMessageStream = new KernelMessageStream(
+          mockActorLoader, skeletonBuilder, mockScheduledTaskManager
+        )
+
+        When("flush is invoked")
+        kernelMessageStream.flush()
+
+        Then("it should not remove the task to periodically flush")
+        mockScheduledTaskManager.verifyRemoveTaskNotCalled()
       }
 
       it("should set the ids of the kernel message") {
         Given("a kernel message stream with a skeleton kernel builder")
         val kernelMessageStream = new KernelMessageStream(
-          actorLoader, skeletonBuilder
+          mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
         When("a string is written as the result and flushed")
@@ -143,7 +208,7 @@ class KernelMessageStreamSpec
       it("should set the message type in the header of the kernel message to an execute_result") {
         Given("a kernel message stream with a skeleton kernel builder")
         val kernelMessageStream = new KernelMessageStream(
-          actorLoader, skeletonBuilder
+          mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
         When("a string is written as the result and flushed")
@@ -160,7 +225,7 @@ class KernelMessageStreamSpec
       it("should set the content string of the kernel message") {
         Given("a kernel message stream with a skeleton kernel builder")
         val kernelMessageStream = new KernelMessageStream(
-          actorLoader, skeletonBuilder
+          mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
         When("a string is written as the result and flushed")
