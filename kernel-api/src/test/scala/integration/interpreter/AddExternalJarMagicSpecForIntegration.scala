@@ -176,6 +176,34 @@ class AddExternalJarMagicSpecForIntegration
         ) should be ((Results.Success, Left("")))
         outputResult.toString should be ("3\n")
       }
+
+      it("should not have issues reinitializing classes, methods, or variables") {
+        val testJarUrl =
+          this.getClass.getClassLoader.getResource("ScalaTestJar.jar")
+
+        interpreter.interpret(
+          """
+            |class TestMe(x: Int) { def getX = x }
+          """.stripMargin)
+
+        interpreter.interpret(
+          """
+            |def runMe(testMe: TestMe): Int = testMe.getX
+          """.stripMargin)
+
+        interpreter.interpret(
+          """
+            |val me = new TestMe(3)
+          """.stripMargin)
+
+        interpreter.interpret(
+          """
+            |runMe(me)
+          """.stripMargin)
+
+        // Add a jar, which reinitializes the symbols
+        interpreter.addJars(testJarUrl)
+      }
     }
   }
 }
