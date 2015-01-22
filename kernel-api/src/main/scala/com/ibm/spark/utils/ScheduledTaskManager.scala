@@ -75,10 +75,12 @@ class ScheduledTaskManager(
    */
   def removeTask(taskId: String): Boolean = {
     // Exit if the task with the given id does not exist
-    if (!_taskMap.containsKey(taskId)) return false
+    if (taskId == null || !_taskMap.containsKey(taskId)) return false
 
     val future = _taskMap.remove(taskId)
-    future.cancel(true)
+
+    // Stop the future, but allow the current task to finish
+    future.cancel(false)
 
     true
   }

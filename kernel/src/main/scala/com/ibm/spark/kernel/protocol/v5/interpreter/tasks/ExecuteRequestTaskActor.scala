@@ -19,12 +19,13 @@ package com.ibm.spark.kernel.protocol.v5.interpreter.tasks
 import java.io.OutputStream
 
 import akka.actor.{Props, Actor}
+import com.ibm.spark.global.StreamState
 import com.ibm.spark.interpreter.{ExecuteAborted, Results, ExecuteError, Interpreter}
 import com.ibm.spark.kernel.api.StreamInfo
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.security.KernelSecurityManager
-import com.ibm.spark.utils.{ConditionalOutputStream, MultiOutputStream, GlobalStreamState, LogLike}
+import com.ibm.spark.utils.{ConditionalOutputStream, MultiOutputStream, LogLike}
 
 object ExecuteRequestTaskActor {
   def props(interpreter: Interpreter): Props =
@@ -45,7 +46,7 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
         val newErrorStream = buildOutputStream(outputStream, System.err)
 
         val (success, result) =
-          GlobalStreamState.withStreams(
+          StreamState.withStreams(
             newInputStream, newOutputStream, newErrorStream
           ) {
             // Add our parent message with StreamInfo type included

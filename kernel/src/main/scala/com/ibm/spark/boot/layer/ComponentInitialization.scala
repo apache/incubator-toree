@@ -20,6 +20,7 @@ import java.io.File
 
 import com.ibm.spark.comm.{CommManager, KernelCommManager, CommRegistrar, CommStorage}
 import com.ibm.spark.dependencies.{DependencyDownloader, IvyDependencyDownloader}
+import com.ibm.spark.global
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.api.Kernel
 import com.ibm.spark.kernel.protocol.v5.KMBuilder
@@ -28,7 +29,7 @@ import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
-import com.ibm.spark.utils.{GlobalStreamState, LogLike}
+import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 import org.apache.spark.{SparkContext, SparkConf}
 
@@ -195,8 +196,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
     logger.debug("Constructing new Spark Context")
     // TODO: Inject stream redirect headers in Spark dynamically
     var sparkContext: SparkContext = null
-    val outStream = new KernelMessageStream(actorLoader, KMBuilder())
-    GlobalStreamState.withStreams(System.in, outStream, outStream) {
+    val outStream = new KernelMessageStream(
+      actorLoader, KMBuilder(), global.ScheduledTaskManager.instance)
+    global.StreamState.withStreams(System.in, outStream, outStream) {
       sparkContext = new SparkContext(sparkConf)
     }
 
