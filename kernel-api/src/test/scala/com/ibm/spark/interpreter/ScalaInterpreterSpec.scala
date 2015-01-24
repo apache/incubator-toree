@@ -101,6 +101,8 @@ class ScalaInterpreterSpec extends FunSpec
     override protected def updateCompilerClassPath(jars: URL*): Unit = {}
 
     override protected def reinitializeSymbols(): Unit = {}
+
+    override protected def refreshDefinitions(): Unit = {}
   }
 
   before {
