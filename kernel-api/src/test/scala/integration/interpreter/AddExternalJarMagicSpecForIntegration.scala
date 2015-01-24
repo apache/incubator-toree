@@ -177,32 +177,44 @@ class AddExternalJarMagicSpecForIntegration
         outputResult.toString should be ("3\n")
       }
 
-      it("should not have issues reinitializing classes, methods, or variables") {
-        val testJarUrl =
-          this.getClass.getClassLoader.getResource("ScalaTestJar.jar")
-
-        interpreter.interpret(
-          """
-            |class TestMe(x: Int) { def getX = x }
-          """.stripMargin)
-
-        interpreter.interpret(
-          """
-            |def runMe(testMe: TestMe): Int = testMe.getX
-          """.stripMargin)
-
-        interpreter.interpret(
-          """
-            |val me = new TestMe(3)
-          """.stripMargin)
-
-        interpreter.interpret(
-          """
-            |runMe(me)
-          """.stripMargin)
+      it("should not have issues with previous variables") {
+        val testJar1Url =
+          this.getClass.getClassLoader.getResource("TestJar.jar")
+        val testJar2Url =
+          this.getClass.getClassLoader.getResource("TestJar2.jar")
 
         // Add a jar, which reinitializes the symbols
-        interpreter.addJars(testJarUrl)
+        interpreter.addJars(testJar1Url)
+
+        interpreter.interpret(
+          """
+            |val t = new com.ibm.testjar.TestClass()
+          """.stripMargin)._1 should be (Results.Success)
+
+        // Add a second jar, which reinitializes the symbols and breaks the
+        // above variable
+        interpreter.addJars(testJar2Url)
+
+        interpreter.interpret(
+          """
+            |def runMe(testClass: com.ibm.testjar.TestClass) =
+            |testClass.sayHello("Hello")
+          """.stripMargin)._1 should be (Results.Success)
+
+        // This line should NOT explode if variable is rebound correctly
+        // otherwise you get the error of
+        //
+        // Message: <console>:16: error: type mismatch;
+        // found   : com.ibm.testjar.com.ibm.testjar.com.ibm.testjar.com.ibm.
+        //           testjar.com.ibm.testjar.TestClass
+        // required: com.ibm.testjar.com.ibm.testjar.com.ibm.testjar.com.ibm.
+        //           testjar.com.ibm.testjar.TestClass
+        // runMe(t)
+        //       ^
+        interpreter.interpret(
+          """
+            |runMe(t)
+          """.stripMargin)._1 should be (Results.Success)
       }
     }
   }
