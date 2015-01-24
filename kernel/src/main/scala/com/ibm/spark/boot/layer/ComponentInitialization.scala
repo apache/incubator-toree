@@ -236,17 +236,30 @@ trait StandardComponentInitialization extends ComponentInitialization {
     // TODO: Avoid duplicating request for master twice (initializeSparkContext
     //       also does this)
     val master = config.getString("spark.master")
-    // If in local mode, do not need to add our jar as a dependency
+    // If in local mode, do not need to add our jars as dependencies
     if (!master.toLowerCase.startsWith("local")) {
-      logger.info("Adding self as dependency from " +
-        com.ibm.spark.SparkKernel.getClass.getProtectionDomain
-          .getCodeSource.getLocation.getPath
+      @inline def getJarPathFor(klass: Class[_]): String =
+        klass.getProtectionDomain.getCodeSource.getLocation.getPath
+
+      // TODO: Provide less hard-coded solution in case additional dependencies
+      //       are added or classes are refactored to different projects
+      val jarPaths = Seq(
+        // Macro project
+        getJarPathFor(classOf[com.ibm.spark.annotations.Experimental]),
+
+        // Protocol project
+        getJarPathFor(classOf[com.ibm.spark.kernel.protocol.v5.KernelMessage]),
+
+        // Kernel-api project
+        getJarPathFor(classOf[com.ibm.spark.kernel.api.KernelLike]),
+
+        // Kernel project
+        getJarPathFor(classOf[com.ibm.spark.boot.KernelBootstrap])
       )
-      // Assuming inside a jar if not in local mode
-      sparkContext.addJar(
-        com.ibm.spark.SparkKernel.getClass.getProtectionDomain
-          .getCodeSource.getLocation.getPath
-      )
+
+      logger.info("Adding kernel jars to cluster:\n- " +
+        jarPaths.mkString("\n- "))
+      jarPaths.foreach(sparkContext.addJar)
     } else {
       logger.info("Running in local mode! Not adding self as dependency!")
     }
