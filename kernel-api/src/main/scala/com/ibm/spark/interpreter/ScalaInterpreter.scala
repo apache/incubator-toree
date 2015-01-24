@@ -93,29 +93,25 @@ class ScalaInterpreter(
   // TODO: Need to figure out a better way to compare the representation of
   //       an annotation (contained in AnnotationInfo) with various annotations
   //       like scala.transient
+  protected def convertAnnotationsToModifiers(
+    annotationInfos: List[Global#AnnotationInfo]
+  ) = annotationInfos map {
+    case a if a.toString == "transient" => "@transient"
+    case a =>
+      logger.debug(s"Ignoring unknown annotation: $a")
+      ""
+  } filterNot {
+    _.isEmpty
+  }
+
   protected def buildModifierList(termNameString: String) = {
     import scala.language.existentials
     val termSymbol = sparkIMain.symbolOfTerm(termNameString)
 
-    if (termSymbol.hasAccessorFlag) {
-      termSymbol.accessed.annotations map {
-        case a if a.toString == "transient" => "@transient"
-        case a =>
-          logger.debug(s"Ignoring unknown accessor annotation: $a")
-          ""
-      } filterNot {
-        _.isEmpty
-      }
-    } else {
-      termSymbol.annotations map {
-        case a if a.toString == "transient" => "@transient"
-        case a =>
-          logger.debug(s"Ignoring unknown annotation: $a")
-          ""
-      } filterNot {
-        _.isEmpty
-      }
-    }
+    convertAnnotationsToModifiers(
+      if (termSymbol.hasAccessorFlag) termSymbol.accessed.annotations
+      else termSymbol.annotations
+    )
   }
 
   protected def refreshDefinitions(): Unit = {
