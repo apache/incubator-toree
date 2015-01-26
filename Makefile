@@ -65,3 +65,7 @@ system:
 tag:
 	docker tag $(FULL_IMAGE) ${NEW_IMAGE}
 	docker push ${NEW_IMAGE}
+
+tag-latest:
+	docker tag $(FULL_IMAGE) $(DOCKER_REGISTRY)/$(KERNEL_IMAGE):latest
+	docker push $(DOCKER_REGISTRY)/$(KERNEL_IMAGE):latest
