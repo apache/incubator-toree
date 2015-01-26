@@ -22,7 +22,7 @@ import java.nio.charset.Charset
 import com.ibm.spark.kernel.protocol.v5.content.StreamContent
 import com.ibm.spark.kernel.protocol.v5.{SystemActorType, MessageType, KMBuilder}
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.utils.ScheduledTaskManager
+import com.ibm.spark.utils.{LogLike, ScheduledTaskManager}
 import scala.collection.mutable.ListBuffer
 
 /**
@@ -40,19 +40,24 @@ class KernelMessageStream(
   kmBuilder: KMBuilder,
   scheduledTaskManager: ScheduledTaskManager,
   streamType: String = "stdout"
-) extends OutputStream {
+) extends OutputStream with LogLike {
   private val EncodingType = Charset.forName("UTF-8")
   @volatile private var internalBytes: ListBuffer[Byte] = ListBuffer()
 
   private var taskId: String = _
 
   private def enableAutoFlush() =
-    if (taskId == null)
+    if (taskId == null) {
+      logger.trace("Enabling auto flush")
       taskId = scheduledTaskManager.addTask(task = this.flush())
+    }
 
   private def disableAutoFlush() =
-    if (taskId != null)
+    if (taskId != null) {
+      logger.trace("Disabling auto flush")
       scheduledTaskManager.removeTask(taskId)
+      taskId = null
+    }
 
   /**
    * Takes the current byte array contents in memory, packages them up into a
@@ -60,6 +65,7 @@ class KernelMessageStream(
    */
   override def flush(): Unit = {
     val contents = internalBytes.synchronized {
+      logger.trace("Getting content to flush")
       val bytesToString = new String(internalBytes.toArray, EncodingType)
 
       // Clear the internal buffer
@@ -70,6 +76,8 @@ class KernelMessageStream(
 
       bytesToString
     }
+
+    logger.trace(s"Content to flush: $contents")
 
     val streamContent = StreamContent(
       streamType, contents
@@ -92,7 +100,7 @@ class KernelMessageStream(
    * are appended.
    * @param b The byte whose least significant 8 bits are to be appended
    */
-  override def write(b: Int): Unit = {
+  override def write(b: Int): Unit = internalBytes.synchronized {
     // Begin periodic flushing if this is a new set of bytes
     enableAutoFlush()
 
