@@ -109,7 +109,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
     dependencyDownloader
   }
 
-  private def initializeInterpreter(config: Config) = {
+  protected def initializeInterpreter(config: Config) = {
     val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
 
     logger.info("Constructing interpreter with arguments: " +

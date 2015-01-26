@@ -31,7 +31,7 @@ import com.typesafe.config.ConfigFactory
  * Represents an object that can deploy a singleton Spark Client for tests,
  * providing access to the actors used for socket communication.
  */
-object SparkClientDeployer {
+object SparkClientDeployer extends LogLike{
 
   private val profileJson: String = """
     {
@@ -118,16 +118,15 @@ object SparkClientDeployer {
    * receive any external commandline arguments.
    */
   private lazy val client = {
-    // TODO: Use proper logging?
     // Print out a message to indicate this fixture is being created
-    println("Creating 'no external args' Spark Client through Client Bootstrap")
+    logger.debug("Creating 'no external args' Spark Client through Client Bootstrap")
 
     val clientBootstrap =
       new ClientBootstrap(ConfigFactory.parseString(profileJson))
         with ExposedSystemInitialization
         with StandardHandlerInitialization
 
-    println("Finished initializing Client Bootstrap! Testing can now start!")
+    logger.debug("Finished initializing Client Bootstrap! Testing can now start!")
 
     clientBootstrap.createClient
   }
