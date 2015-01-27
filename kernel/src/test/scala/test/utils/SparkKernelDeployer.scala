@@ -16,24 +16,31 @@
 
 package test.utils
 
+import java.io.OutputStream
+
 import akka.actor.Actor.Receive
 import akka.actor.{Actor, Props, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, TestActorRef}
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.boot.layer._
 import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
+import com.ibm.spark.interpreter.{StandardSettingsProducer, StandardTaskManagerProducer, StandardSparkIMainProducer, ScalaInterpreter}
 import com.ibm.spark.kernel.protocol.v5.SocketType
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.kernel.socket._
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
+import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.Json
+import scala.collection.JavaConverters._
+import scala.tools.nsc.interpreter.JPrintWriter
+
 
 /**
  * Represents an object that can deploy a singleton Spark Kernel for tests,
  * providing access to the actors used for socket communication.
  */
-object SparkKernelDeployer {
+object SparkKernelDeployer extends LogLike with MockitoSugar {
 
   private var actorSystem: ActorSystem = _
   private var actorLoader: ActorLoader = _
@@ -51,6 +58,28 @@ object SparkKernelDeployer {
       case m =>
         testProbe.ref.forward(m)
         actor ! m
+    }
+  }
+
+  private trait ExposedComponentInitialization extends StandardComponentInitialization
+    with LogLike
+  {
+    override protected def initializeInterpreter(config: Config): ScalaInterpreter
+      with StandardSparkIMainProducer with StandardTaskManagerProducer
+      with StandardSettingsProducer = {
+        val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
+
+        logger.info("Constructing interpreter with arguments: " +
+          interpreterArgs.mkString(" "))
+        val interpreter = new ScalaInterpreter(interpreterArgs, mock[OutputStream])
+          with StandardSparkIMainProducer
+          with StandardTaskManagerProducer
+          with StandardSettingsProducer
+
+        logger.debug("Starting interpreter")
+        interpreter.start()
+
+        interpreter
     }
   }
 
@@ -132,18 +161,17 @@ object SparkKernelDeployer {
    * receive any external commandline arguments.
    */
   lazy val noArgKernelBootstrap = {
-    // TODO: Use proper logging?
     // Print out a message to indicate this fixture is being created
-    println("Creating 'no external args' Spark Kernel through Kernel Bootstrap")
+    logger.debug("Creating 'no external args' Spark Kernel through Kernel Bootstrap")
 
     val kernelBootstrap =
       (new KernelBootstrap(new CommandLineOptions(Nil).toConfig)
         with ExposedBareInitialization
-        with StandardComponentInitialization
+        with ExposedComponentInitialization
         with StandardHandlerInitialization
         with StandardHookInitialization).initialize()
 
-    println("Finished initializing Kernel Bootstrap! Testing can now start!")
+    logger.debug("Finished initializing Kernel Bootstrap! Testing can now start!")
 
     kernelBootstrap
   }
