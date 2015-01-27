@@ -27,7 +27,7 @@ import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
 class ScheduledTaskManagerSpec extends FunSpec with Matchers with BeforeAndAfter
   with Eventually
 {
-  private val TestTimeInterval = 10
+  private val TestTimeInterval = 30
   private val MaximumChecks = 3
   private val TimeoutScale = 3
   private var scheduledTaskManager: ScheduledTaskManager = _
@@ -50,7 +50,7 @@ class ScheduledTaskManagerSpec extends FunSpec with Matchers with BeforeAndAfter
     }
 
     def shouldNotRunAnymore(milliseconds: Long) = eventually {
-      val offset: Int = (milliseconds * 0.3).toInt
+      val offset: Int = (milliseconds * 0.5).toInt
 
       // Clean the state and wait to see if the task is executed again
       taskRun.set(false)
@@ -60,8 +60,8 @@ class ScheduledTaskManagerSpec extends FunSpec with Matchers with BeforeAndAfter
     }
 
     def shouldRunEvery(milliseconds: Long) = {
-      // 30% +/-
-      val offset: Int = (milliseconds * 0.3).toInt
+      // 50% +/-
+      val offset: Int = (milliseconds * 0.5).toInt
 
       eventually {
         // Assert we have the desired number of checks
