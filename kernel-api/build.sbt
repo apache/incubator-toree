@@ -16,6 +16,8 @@ import xerial.sbt.Pack._
  */
 pack <<= pack dependsOn compile
 
+resolvers += "Release Candidates" at "https://repository.apache.org/content/repositories/orgapachespark-1061/"
+
 //
 // SCALA INTERPRETER DEPENDENCIES
 //

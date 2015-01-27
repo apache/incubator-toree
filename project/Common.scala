@@ -34,7 +34,7 @@ object Common {
   private val buildVersion      = if(snapshot) "0.1.1-SNAPSHOT" else "0.1.1"
   private val buildScalaVersion = "2.10.4"
   private val buildSbtVersion   = "0.13.7"
-  val sparkVersion              = "1.1.0"
+  val sparkVersion              = "1.2.1"
 
   // Global dependencies provided to all projects
   private val buildLibraryDependencies = Seq(

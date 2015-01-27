@@ -40,7 +40,7 @@ object Utilities extends LogLike {
   /**
    * This timeout needs to be defined for the Akka asks to timeout
    */
-  implicit val timeout = Timeout(100000.days)
+  implicit val timeout = Timeout(21474835.seconds)
 
   implicit def ByteStringToString(byteString : ByteString) : String = {
     new String(byteString.toArray, Charset.forName("UTF-8"))
