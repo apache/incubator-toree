@@ -59,6 +59,11 @@ class ScalaInterpreterSpec extends FunSpec
     ): Unit = {}
   }
 
+  trait SingleLineInterpretLineRec extends StubbedStartInterpreter {
+    override protected def interpretRec(lines: List[String], silent: Boolean, results: (Result, Either[ExecuteOutput, ExecuteFailure])): (Result, Either[ExecuteOutput, ExecuteFailure]) =
+      interpretLine(lines.mkString("\n"))
+  }
+
   trait StubbedInterpretAddTask extends StubbedStartInterpreter {
     override protected def interpretAddTask(code: String, silent: Boolean) =
       mock[Future[IR.Result]]
@@ -184,6 +189,7 @@ class ScalaInterpreterSpec extends FunSpec
         var taskManagerAddCalled = false
         val itInterpreter =
           new StubbedStartInterpreter
+          with SingleLineInterpretLineRec
           with StubbedUpdatePrintStreams
           //with StubbedInterpretAddTask
           with StubbedInterpretMapToCustomResult

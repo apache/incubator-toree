@@ -5,9 +5,11 @@ import java.io.PrintStream
 import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommManager
 import com.ibm.spark.global
+import com.ibm.spark.interpreter.Results.Result
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import com.ibm.spark.kernel.protocol.v5.magic.MagicParser
 import com.ibm.spark.magic.{MagicLoader, MagicExecutor}
 import scala.language.dynamics
 
@@ -27,29 +29,46 @@ class Kernel (
 ) extends Dynamic with KernelLike {
 
   val magics = new MagicExecutor(magicLoader)
+  val magicParser = new MagicParser(magicLoader)
+
+  /**
+   * Handles the output of interpreting code.
+   * @param output the output of the interpreter
+   * @return (success, message) or (failure, message)
+   */
+  private def handleInterpreterOutput(
+    output: (Result, Either[ExecuteOutput, ExecuteFailure])
+  ): (Boolean, String) = {
+    val (success, result) = output
+    success match {
+      case Results.Success =>
+        (true, result.left.getOrElse("").asInstanceOf[String])
+      case Results.Error =>
+        (false, result.right.getOrElse("").toString)
+      case Results.Aborted =>
+        (false, "Aborted!")
+      case Results.Incomplete =>
+        // If we get an incomplete it's most likely a syntax error, so
+        // let the user know.
+        (false, "Syntax Error!")
+    }
+  }
 
   /**
    * Executes a block of code represented as a string and returns the result.
    *
    * @param code The code as an option to execute
-   *
    * @return A tuple containing the result (true/false) and the output as a
    *         string
    */
   def eval(code: Option[String]): (Boolean, String) = {
     code.map(c => {
-      val (success, result) = interpreter.interpret(c)
-      success match {
-        case Results.Success =>
-          (true, result.left.getOrElse("").asInstanceOf[String])
-        case Results.Error =>
-          (false, result.right.getOrElse("").toString)
-        case Results.Aborted =>
-          (false, "Aborted!")
-        case Results.Incomplete =>
-          // If we get an incomplete it's most likely a syntax error, so
-          // let the user know.
-          (false, "Syntax Error!")
+      magicParser.parse(c) match {
+        case Left(parsedCode) =>
+          val output = interpreter.interpret(parsedCode)
+          handleInterpreterOutput(output)
+        case Right(errMsg) =>
+          (false, errMsg)
       }
     }).getOrElse((false, "Error!"))
   }

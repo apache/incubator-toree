@@ -67,13 +67,13 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
               // TODO: Think of a cleaner wrapper to handle updating the Console
               //       input and output streams
               interpreter.interpret(
-                """
+                """val $updateOutput = {
                 Console.setIn(System.in)
                 Console.setOut(System.out)
                 Console.setErr(System.err)
-              """)
+              }""".trim)
             }
-            interpreter.interpret(executeRequest.code)
+            interpreter.interpret(executeRequest.code.trim)
           }
 
         logger.debug(s"Interpreter execution result was ${success}")
