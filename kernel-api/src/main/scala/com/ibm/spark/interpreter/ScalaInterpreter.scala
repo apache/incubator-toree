@@ -25,6 +25,7 @@ import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem
 import com.ibm.spark.utils.{TaskManager, MultiOutputStream}
 import org.apache.spark.repl.{SparkJLineCompletion, SparkIMain}
 import org.slf4j.LoggerFactory
+import scala.annotation.tailrec
 import scala.concurrent.{Await, Future}
 import scala.tools.nsc.{Global, Settings, io}
 import scala.tools.nsc.backend.JavaPlatform
@@ -186,12 +187,56 @@ class ScalaInterpreter(
   }
 
   override def interpret(code: String, silent: Boolean = false):
+  (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
+    val starting = (Results.Success, Left(""))
+    interpretRec(code.trim.split("\n").toList, false, starting)
+  }
+
+  protected def interpretRec(lines: List[String], silent: Boolean = false, results: (Results.Result, Either[ExecuteOutput, ExecuteFailure])): (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
+    lines match {
+      case Nil => results
+      case x :: xs =>
+        val output = interpretLine(x)
+
+        output._1 match {
+          // if success, keep interpreting and aggregate ExecuteOutputs
+          case Results.Success =>
+            val result = for {
+              prev <- results._2.left
+              curr <- output._2.left
+            } yield (prev + "\n" + curr).trim
+            interpretRec(xs, silent, (output._1, result))
+
+          // if incomplete, keep combining incomplete statements
+          case Results.Incomplete =>
+            xs match {
+              case Nil => interpretRec(Nil, silent, (Results.Incomplete, results._2))
+              case _ => interpretRec(x + "\n" + xs.head :: xs.tail, silent, results)
+            }
+
+          //
+          case Results.Aborted =>
+            output
+             //interpretRec(Nil, silent, output)
+
+          // if failure, stop interpreting and return the error
+          case Results.Error =>
+            val result = for {
+              curr <- output._2.right
+            } yield curr
+            interpretRec(Nil, silent, (output._1, result))
+        }
+    }
+  }
+
+
+  protected def interpretLine(line: String, silent: Boolean = false):
     (Results.Result, Either[ExecuteOutput, ExecuteFailure]) =
   {
     require(sparkIMain != null && taskManager != null)
-    logger.trace(s"Interpreting code: $code")
+    logger.trace(s"Interpreting line: $line")
 
-    val futureResult = interpretAddTask(code, silent)
+    val futureResult = interpretAddTask(line, silent)
 
     // Map the old result types to our new types
     val mappedFutureResult = interpretMapToCustomResult(futureResult)
