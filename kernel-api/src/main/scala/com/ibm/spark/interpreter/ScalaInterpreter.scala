@@ -105,14 +105,20 @@ class ScalaInterpreter(
     _.isEmpty
   }
 
+  protected def convertScopeToModifiers(scopeSymbol: Global#Symbol) = {
+    (if (scopeSymbol.isImplicit) "implicit" else "") ::
+      Nil
+  }
+
   protected def buildModifierList(termNameString: String) = {
     import scala.language.existentials
     val termSymbol = sparkIMain.symbolOfTerm(termNameString)
 
+
     convertAnnotationsToModifiers(
       if (termSymbol.hasAccessorFlag) termSymbol.accessed.annotations
       else termSymbol.annotations
-    )
+    ) ++ convertScopeToModifiers(termSymbol)
   }
 
   protected def refreshDefinitions(): Unit = {
@@ -121,11 +127,12 @@ class ScalaInterpreter(
       val termTypeString = sparkIMain.typeOfTerm(termNameString).toLongString
       sparkIMain.valueOfTerm(termNameString) match {
         case Some(termValue)  =>
-          logger.debug(s"Rebinding of $termNameString as $termTypeString")
+          val modifiers = buildModifierList(termNameString)
+          logger.debug(s"Rebinding of $termNameString as " +
+            s"${modifiers.mkString(" ")} $termTypeString")
           UtilTry(sparkIMain.beSilentDuring {
             sparkIMain.bind(
-              termNameString, termTypeString, termValue,
-              buildModifierList(termNameString)
+              termNameString, termTypeString, termValue, modifiers
             )
           })
         case None             =>
