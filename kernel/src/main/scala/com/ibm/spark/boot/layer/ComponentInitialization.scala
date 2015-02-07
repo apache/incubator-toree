@@ -27,7 +27,7 @@ import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.api.Kernel
 import com.ibm.spark.kernel.protocol.v5.KMBuilder
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
+import com.ibm.spark.kernel.protocol.v5.stream.KernelOutputStream
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
@@ -201,7 +201,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
     logger.debug("Constructing new Spark Context")
     // TODO: Inject stream redirect headers in Spark dynamically
     var sparkContext: SparkContext = null
-    val outStream = new KernelMessageStream(
+    val outStream = new KernelOutputStream(
       actorLoader, KMBuilder(), global.ScheduledTaskManager.instance)
     global.StreamState.withStreams(System.in, outStream, outStream) {
       sparkContext = new SparkContext(sparkConf)

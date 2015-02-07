@@ -14,18 +14,16 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.input
+package com.ibm.spark.kernel.protocol.v5.stream
 
 import java.io.InputStream
 import java.nio.charset.Charset
 
-import com.ibm.spark.kernel.protocol.v5.{MessageType, SystemActorType, KMBuilder}
+import akka.pattern.ask
 import com.ibm.spark.kernel.protocol.v5.content.InputRequest
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-
 import com.ibm.spark.kernel.protocol.v5.kernel.Utilities.timeout
-
-import akka.pattern.ask
+import com.ibm.spark.kernel.protocol.v5.{KMBuilder, MessageType}
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.{Await, Future}

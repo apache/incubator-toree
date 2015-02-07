@@ -31,7 +31,7 @@ import com.ibm.spark.kernel.protocol.v5.content.StreamContent
 
 import scala.concurrent.duration._
 
-class KernelMessageStreamSpec
+class KernelOuputStreamSpec
   extends TestKit(ActorSystem("KernelMessageStreamActorSystem"))
   with FunSpecLike with Matchers with GivenWhenThen with BeforeAndAfter
   with MockitoSugar
@@ -109,7 +109,7 @@ class KernelMessageStreamSpec
     describe("#write(Int)") {
       it("should add a new byte to the internal list") {
         Given("a kernel message stream with a skeleton kernel builder")
-        val kernelMessageStream = new KernelMessageStream(
+        val kernelMessageStream = new KernelOutputStream(
           mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
@@ -127,7 +127,7 @@ class KernelMessageStreamSpec
 
       it("should enable periodic flushing") {
         Given("a kernel message stream with a skeleton kernel builder")
-        val kernelMessageStream = new KernelMessageStream(
+        val kernelMessageStream = new KernelOutputStream(
           mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
@@ -141,7 +141,7 @@ class KernelMessageStreamSpec
 
       it("should not enable periodic flushing if already enabled") {
         Given("a kernel message stream with a skeleton kernel builder")
-        val kernelMessageStream = new KernelMessageStream(
+        val kernelMessageStream = new KernelOutputStream(
           mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
@@ -160,7 +160,7 @@ class KernelMessageStreamSpec
     describe("#flush") {
       it("should disable periodic flushing") {
         Given("a kernel message stream with a skeleton kernel builder")
-        val kernelMessageStream = new KernelMessageStream(
+        val kernelMessageStream = new KernelOutputStream(
           mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
@@ -177,7 +177,7 @@ class KernelMessageStreamSpec
 
       it("should not disable periodic flushing if not enabled") {
         Given("a kernel message stream with a skeleton kernel builder")
-        val kernelMessageStream = new KernelMessageStream(
+        val kernelMessageStream = new KernelOutputStream(
           mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
@@ -190,7 +190,7 @@ class KernelMessageStreamSpec
 
       it("should set the ids of the kernel message") {
         Given("a kernel message stream with a skeleton kernel builder")
-        val kernelMessageStream = new KernelMessageStream(
+        val kernelMessageStream = new KernelOutputStream(
           mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
@@ -207,7 +207,7 @@ class KernelMessageStreamSpec
 
       it("should set the message type in the header of the kernel message to an execute_result") {
         Given("a kernel message stream with a skeleton kernel builder")
-        val kernelMessageStream = new KernelMessageStream(
+        val kernelMessageStream = new KernelOutputStream(
           mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 
@@ -224,7 +224,7 @@ class KernelMessageStreamSpec
 
       it("should set the content string of the kernel message") {
         Given("a kernel message stream with a skeleton kernel builder")
-        val kernelMessageStream = new KernelMessageStream(
+        val kernelMessageStream = new KernelOutputStream(
           mockActorLoader, skeletonBuilder, mockScheduledTaskManager
         )
 

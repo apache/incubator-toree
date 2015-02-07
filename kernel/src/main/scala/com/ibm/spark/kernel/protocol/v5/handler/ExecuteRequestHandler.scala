@@ -22,7 +22,7 @@ import com.ibm.spark.global.ExecutionCounter
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
-import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
+import com.ibm.spark.kernel.protocol.v5.stream.KernelOutputStream
 import com.ibm.spark.{global => kernelGlobal}
 import Utilities._
 import com.ibm.spark.utils._
@@ -58,7 +58,7 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
 
       // Construct our new set of streams
       // TODO: Add support for error streams
-      val outputStream = new KernelMessageStream(
+      val outputStream = new KernelOutputStream(
         actorLoader, skeletonBuilder,
         kernelGlobal.ScheduledTaskManager.instance)
       val executeFuture = ask(
