@@ -20,7 +20,6 @@ import com.ibm.spark.boot.layer._
 import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
 
 object SparkKernel extends App {
-
   private val options = new CommandLineOptions(args)
 
   if (options.help) {

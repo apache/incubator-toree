@@ -29,14 +29,16 @@ import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
-import com.ibm.spark.utils.LogLike
+import com.ibm.spark.utils.{KeyValuePairUtils, LogLike}
 import com.typesafe.config.Config
+import joptsimple.util.KeyValuePair
 import org.apache.spark.{SparkContext, SparkConf}
 
 import scala.collection.JavaConverters._
 
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.JPrintWriter
+import scala.util.Try
 
 /**
  * Represents the component initialization. All component-related pieces of the
@@ -164,13 +166,12 @@ trait StandardComponentInitialization extends ComponentInitialization {
     logger.info("Using " + appName + " as Spark application name")
     conf.setAppName(appName)
 
-    // TODO: Add support for spark.executor.uri from environment variable or CLI
-    logger.warn("spark.executor.uri is not supported!")
-    //conf.set("spark.executor.uri", "...")
-
-    // TODO: Add support for Spark Home from environment variable or CLI
-    logger.warn("Spark Home is not supported!")
-    //conf.setSparkHome("...")
+    KeyValuePairUtils.stringToKeyValuePairSeq(
+      config.getString("spark_configuration")
+    ).foreach { keyValuePair =>
+      logger.info(s"Setting ${keyValuePair.key} to ${keyValuePair.value}")
+      Try(conf.set(keyValuePair.key, keyValuePair.value))
+    }
 
     // TODO: Move SparkIMain to private and insert in a different way
     logger.warn("Locked to Scala interpreter with SparkIMain until decoupled!")

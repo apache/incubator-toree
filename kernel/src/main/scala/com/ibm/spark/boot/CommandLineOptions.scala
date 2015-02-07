@@ -18,7 +18,9 @@ package com.ibm.spark.boot
 
 import java.io.{File, OutputStream}
 
+import com.ibm.spark.utils.KeyValuePairUtils
 import com.typesafe.config.{Config, ConfigFactory}
+import joptsimple.util.KeyValuePair
 import joptsimple.{OptionParser, OptionSpec}
 
 import scala.collection.JavaConverters._
@@ -64,6 +66,11 @@ class CommandLineOptions(args: Seq[String]) {
   private val _heartbeat_port = parser.accepts(
     "heartbeat-port", "port of the heartbeat socket"
   ).withRequiredArg().ofType(classOf[Int])
+
+  private val _spark_configuration = parser.acceptsAll(
+    Seq("spark-configuration", "S").asJava,
+    "configuration setting for Apache Spark"
+  ).withRequiredArg().ofType(classOf[KeyValuePair])
 
   private val _magic_url =
     parser.accepts("magic-url", "path to a magic jar")
@@ -114,7 +121,11 @@ class CommandLineOptions(args: Seq[String]) {
         "hb_port" -> get(_heartbeat_port),
         "ip" -> get(_ip),
         "interpreter_args" -> interpreterArgs,
-        "magic_urls" -> Some(getAll(_magic_url).get.asJava)
+        "magic_urls" -> getAll(_magic_url).map(_.asJava)
+          .flatMap(list => if (list.isEmpty) None else Some(list)),
+        "spark_configuration" -> getAll(_spark_configuration)
+          .map(list => KeyValuePairUtils.keyValuePairSeqToString(list))
+          .flatMap(str => if (str.nonEmpty) Some(str) else None)
     ).flatMap(removeEmptyOptions).asInstanceOf[Map[String, AnyRef]].asJava)
 
     commandLineConfig.withFallback(profileConfig).withFallback(ConfigFactory.load)
