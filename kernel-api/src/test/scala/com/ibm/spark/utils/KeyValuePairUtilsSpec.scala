@@ -26,6 +26,12 @@ class KeyValuePairUtilsSpec extends FunSpec with Matchers {
 
   describe("KeyValuePairUtils") {
     describe("#stringToKeyValuePairSeq") {
+      it("should throw an exception when given a null string") {
+        intercept[IllegalArgumentException] {
+          KeyValuePairUtils.stringToKeyValuePairSeq(null)
+        }
+      }
+
       it("should convert an empty string to an empty sequence") {
         val expected = Nil
         val actual = KeyValuePairUtils.stringToKeyValuePairSeq("")
@@ -57,6 +63,12 @@ class KeyValuePairUtilsSpec extends FunSpec with Matchers {
     }
 
     describe("#keyValuePairSeqToString") {
+      it("should throw an exception when given a null sequence") {
+        intercept[IllegalArgumentException] {
+          KeyValuePairUtils.keyValuePairSeqToString(null)
+        }
+      }
+
       it("should return an empty string if the sequence is empty") {
         val expected = ""
         val actual = KeyValuePairUtils.keyValuePairSeqToString(Nil)

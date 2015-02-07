@@ -26,32 +26,39 @@ object KeyValuePairUtils {
 
   /**
    * Transforms the provided string into a list of KeyValuePair objects.
-   * @param keyPairString The string representing the series of keys and values
+   * @param keyValuePairString The string representing the series of keys and
+   *                           values
    * @param delimiter The delimiter used for splitting up the string
    * @return The list of KeyValuePair objects
    */
   def stringToKeyValuePairSeq(
-    keyPairString: String,
+    keyValuePairString: String,
     delimiter: String = DefaultDelimiter
-  ): Seq[KeyValuePair] =
-    keyPairString
+  ): Seq[KeyValuePair] = {
+    require(keyValuePairString != null, "KeyValuePair string cannot be null!")
+
+    keyValuePairString
       .split(delimiter)
       .map(_.trim)
       .filterNot(_.isEmpty)
       .map(KeyValuePair.valueOf)
       .toSeq
+  }
 
   /**
    * Transforms the provided list of KeyValuePair elements into a string.
-   * @param keyValuePairList The list of KeyValuePair
+   * @param keyValuePairSeq The sequence of KeyValuePair objects
    * @param delimiter The separator between string KeyValuePair
    * @return The resulting string from the list of KeyValuePair objects
    */
   def keyValuePairSeqToString(
-    keyValuePairList: Seq[KeyValuePair],
+    keyValuePairSeq: Seq[KeyValuePair],
     delimiter: String = DefaultDelimiter
-  ): String =
-    keyValuePairList
+  ): String = {
+    require(keyValuePairSeq != null, "KeyValuePair sequence cannot be null!")
+
+    keyValuePairSeq
       .map(pair => pair.key + "=" + pair.value)
       .mkString(delimiter)
+  }
 }
