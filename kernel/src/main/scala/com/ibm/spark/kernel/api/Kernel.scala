@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel.api
 
-import java.io.PrintStream
+import java.io.{InputStream, PrintStream}
 
 import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommManager
@@ -109,5 +109,23 @@ class Kernel (
       global.ScheduledTaskManager.instance, "stderr")
 
     new PrintStream(outputStream)
+  }
+
+  /**
+   * Returns an input stream to be used to receive information from the client.
+   *
+   * @return The input stream instance or an error if the stream info is
+   *         not found
+   */
+  override def in(implicit streamInfo: StreamInfo): InputStream = {
+    require(streamInfo.isInstanceOf[v5.KernelMessage],
+      "The StreamInfo provided is not a KernelMessage instance!")
+
+    new v5.input.KernelInputStream(
+      actorLoader,
+      v5.KMBuilder()
+        .withIds(streamInfo.asInstanceOf[v5.KernelMessage].ids)
+        .withParent(streamInfo.asInstanceOf[v5.KernelMessage])
+    )
   }
 }

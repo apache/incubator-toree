@@ -17,7 +17,9 @@
 package com.ibm.spark.boot.layer
 
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
+import akka.actor.ActorRef
 import com.ibm.spark.comm.{CommManager, KernelCommManager, CommRegistrar, CommStorage}
 import com.ibm.spark.dependencies.{DependencyDownloader, IvyDependencyDownloader}
 import com.ibm.spark.global
@@ -55,7 +57,8 @@ trait ComponentInitialization {
   def initializeComponents(
     config: Config, appName: String, actorLoader: ActorLoader
   ): (CommStorage, CommRegistrar, CommManager, Interpreter, Interpreter,
-    Kernel, SparkContext, DependencyDownloader, MagicLoader)
+    Kernel, SparkContext, DependencyDownloader, MagicLoader,
+    collection.mutable.Map[String, ActorRef])
 }
 
 /**
@@ -85,8 +88,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
       config, interpreter, sparkContext, dependencyDownloader)
     val kernel = initializeKernel(
       actorLoader, interpreter, kernelInterpreter, commManager, magicLoader)
+    val responseMap = initializeResponseMap()
     (commStorage, commRegistrar, commManager, interpreter, kernelInterpreter,
-      kernel, sparkContext, dependencyDownloader, magicLoader)
+      kernel, sparkContext, dependencyDownloader, magicLoader, responseMap)
   }
 
   private def initializeCommObjects(actorLoader: ActorLoader) = {
@@ -265,6 +269,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
       logger.info("Running in local mode! Not adding self as dependency!")
     }
   }
+
+  protected def initializeResponseMap(): collection.mutable.Map[String, ActorRef] =
+    new ConcurrentHashMap[String, ActorRef]().asScala
 
   private def initializeKernel(
     actorLoader: ActorLoader,
