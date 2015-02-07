@@ -40,7 +40,7 @@ addSbtPlugin("se.marcuslonnberg" % "sbt-docker" % "0.5.2")
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.3.2")
 
 // Provides code coverage support
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.2")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.4")
 
 // Provides coveralls integration (for use with Travis-ci)
 addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0.BETA1")
