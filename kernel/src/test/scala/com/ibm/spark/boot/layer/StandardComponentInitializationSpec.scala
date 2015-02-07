@@ -57,6 +57,7 @@ class StandardComponentInitializationSpec extends FunSpec with Matchers
       it("should set spark.master in SparkConf") {
         val expected = "some value"
         doReturn(expected).when(mockConfig).getString("spark.master")
+        doReturn("").when(mockConfig).getString("spark_configuration")
 
         // Stub out other helper methods to avoid long init process and to
         // avoid failure when creating SparkContext
