@@ -51,7 +51,7 @@ class ClientBootstrap(config: Config) extends LogLike {
    * Initializes all kernel systems.
    */
   def initialize(): Unit = {
-    val (_,_,_,_,s) = initializeSystem(actorSystem, actorLoader, socketFactory)
+    val (_,_,_,_,_,s) = initializeSystem(actorSystem, actorLoader, socketFactory)
 
     this.commStorage = s
 

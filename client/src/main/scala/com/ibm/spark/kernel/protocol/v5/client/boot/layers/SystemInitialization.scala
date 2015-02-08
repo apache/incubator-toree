@@ -33,13 +33,13 @@ trait SystemInitialization {
    * @param actorLoader The actor loader used by the client
    * @param socketFactory The socket factory used by the client
    *
-   * @return The heartbeat, shell, and IOPub client actors and the Comm
+   * @return The heartbeat, stdin, shell, and IOPub client actors and the Comm
    *         registrar and storage used for Comm callbacks
    */
   def initializeSystem(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
     socketFactory: SocketFactory
-  ): (ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage)
+  ): (ActorRef, ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage)
 }
 
 /**
@@ -58,11 +58,11 @@ trait StandardSystemInitialization extends SystemInitialization {
   override def initializeSystem(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
     socketFactory: SocketFactory
-  ): (ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage) = {
+  ): (ActorRef, ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage) = {
     val commStorage = new CommStorage()
     val commRegistrar = new CommRegistrar(commStorage)
 
-    val (heartbeat, shell, ioPub) = initializeSystemActors(
+    val (heartbeat, stdin, shell, ioPub) = initializeSystemActors(
       actorSystem = actorSystem,
       actorLoader = actorLoader,
       socketFactory = socketFactory,
@@ -70,7 +70,7 @@ trait StandardSystemInitialization extends SystemInitialization {
       commStorage = commStorage
     )
 
-    (heartbeat, shell, ioPub, commRegistrar, commStorage)
+    (heartbeat, stdin, shell, ioPub, commRegistrar, commStorage)
   }
 
   private def initializeSystemActors(
@@ -81,6 +81,11 @@ trait StandardSystemInitialization extends SystemInitialization {
     val heartbeatClient = actorSystem.actorOf(
       Props(classOf[HeartbeatClient], socketFactory),
       name = SocketType.HeartbeatClient.toString
+    )
+
+    val stdinClient = actorSystem.actorOf(
+      Props(classOf[StdinClient], socketFactory),
+      name = SocketType.StdInClient.toString
     )
 
     val shellClient = actorSystem.actorOf(
@@ -94,6 +99,6 @@ trait StandardSystemInitialization extends SystemInitialization {
       name = SocketType.IOPubClient.toString
     )
 
-    (heartbeatClient, shellClient, ioPubClient)
+    (heartbeatClient, stdinClient, shellClient, ioPubClient)
   }
 }
