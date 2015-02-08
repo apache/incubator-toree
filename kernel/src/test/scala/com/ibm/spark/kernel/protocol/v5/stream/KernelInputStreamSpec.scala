@@ -67,6 +67,18 @@ class KernelInputStreamSpec
   }
 
   describe("KernelInputStream") {
+    describe("#available") {
+      it("should be zero when no input has been read") {
+        kernelInputStream.available() should be (0)
+      }
+
+      it("should match the bytes remaining internally") {
+        kernelInputStream.read()
+
+        kernelInputStream.available() should be (TestReplyString.length - 1)
+      }
+    }
+
     describe("#read") {
       it("should send a request for more data if the buffer is empty") {
         // Fresh input stream has nothing in its buffer

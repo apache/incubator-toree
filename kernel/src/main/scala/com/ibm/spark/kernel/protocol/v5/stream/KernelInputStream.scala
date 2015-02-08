@@ -54,6 +54,13 @@ class KernelInputStream(
   @volatile private var internalBytes: ListBuffer[Byte] = ListBuffer()
 
   /**
+   * Returns the number of bytes available before the next request is made
+   * for more data.
+   * @return The total number of bytes in the internal buffer
+   */
+  override def available(): Int = internalBytes.length
+
+  /**
    * Requests the next byte of data from the client. If the buffer containing
    * @return The byte of data as an integer
    */
