@@ -49,7 +49,10 @@ object Build extends Build with Settings with SubProjects with TestTasks {
         publishArtifact := false,
         publishLocal := {}
       )
-  ).aggregate(client, kernel, kernel_api, protocol, macros)
+  ).aggregate(client, kernel, kernel_api, protocol, macros).dependsOn(
+    client % "test->test",
+    kernel % "test->test"
+  )
 }
 
 /**
