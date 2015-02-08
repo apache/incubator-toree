@@ -46,6 +46,8 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
   private var actorLoader: ActorLoader = _
   private var heartbeatProbe: TestProbe = _
   private var heartbeatActor: ActorRef = _
+  private var stdinProbe: TestProbe = _
+  private var stdinActor: ActorRef = _
   private var shellProbe: TestProbe = _
   private var shellActor: ActorRef = _
   private var ioPubProbe: TestProbe = _
@@ -92,7 +94,7 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
   {
     override protected def createSockets(
       config: Config, actorSystem: ActorSystem, actorLoader: ActorLoader
-    ): (ActorRef, ActorRef, ActorRef) =
+    ): (ActorRef, ActorRef, ActorRef, ActorRef) =
     {
       logger.debug("Creating sockets")
 
@@ -107,6 +109,12 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
         socketConfig.hb_port)
       val testHeartbeatActor = actorSystem.actorOf(
         Props(classOf[Heartbeat], socketFactory)
+      )
+
+      logger.debug("Initializing Stdin on port " +
+        socketConfig.stdin_port)
+      val testStdinActor = actorSystem.actorOf(
+        Props(classOf[Stdin], socketFactory, actorLoader)
       )
 
       logger.debug("Initializing Shell on port " +
@@ -127,6 +135,11 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
         Props(new ActorInterceptor(heartbeatProbe, testHeartbeatActor)),
         name = SocketType.Heartbeat.toString
       )
+      stdinProbe = new TestProbe(actorSystem)
+      val stdinInterceptor = actorSystem.actorOf(
+        Props(new ActorInterceptor(stdinProbe, testStdinActor)),
+        name = SocketType.StdIn.toString
+      )
       shellProbe = new TestProbe(actorSystem)
       val shellInterceptor = actorSystem.actorOf(
         Props(new ActorInterceptor(shellProbe, testShellActor)),
@@ -138,7 +151,8 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
         name = SocketType.IOPub.toString
       )
 
-      (heartbeatInterceptor, shellInterceptor, ioPubInterceptor)
+      (heartbeatInterceptor, stdinInterceptor, shellInterceptor,
+        ioPubInterceptor)
     }
 
     override protected def createActorLoader(actorSystem: ActorSystem) = {

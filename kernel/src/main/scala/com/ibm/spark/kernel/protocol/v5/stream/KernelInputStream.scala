@@ -28,6 +28,13 @@ import com.ibm.spark.kernel.protocol.v5.{KMBuilder, MessageType}
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.{Await, Future}
 
+import KernelInputStream._
+
+object KernelInputStream {
+  val DefaultPrompt = ""
+  val DefaultPassword = false
+}
+
 /**
  * Represents an OutputStream that sends data back to the clients connect to the
  * kernel instance.
@@ -40,14 +47,14 @@ import scala.concurrent.{Await, Future}
 class KernelInputStream(
   actorLoader: ActorLoader,
   kmBuilder: KMBuilder,
-  prompt: String = "",
-  password: Boolean = false
+  prompt: String = DefaultPrompt,
+  password: Boolean = DefaultPassword
 ) extends InputStream {
   private val EncodingType = Charset.forName("UTF-8")
   @volatile private var internalBytes: ListBuffer[Byte] = ListBuffer()
 
   /**
-   * Requests the next byte of data from the client.
+   * Requests the next byte of data from the client. If the buffer containing
    * @return The byte of data as an integer
    */
   override def read(): Int = {
