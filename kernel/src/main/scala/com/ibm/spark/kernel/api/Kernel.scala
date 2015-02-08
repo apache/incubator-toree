@@ -15,6 +15,8 @@ import com.ibm.spark.magic.{MagicLoader, MagicExecutor}
 import com.ibm.spark.utils.LogLike
 import scala.util.DynamicVariable
 
+import scala.reflect.runtime.universe._
+
 import scala.language.dynamics
 
 /**
@@ -118,24 +120,17 @@ class Kernel (
    * @return The print stream instance or an error if the stream info is
    *         not found
    */
-  override def out(implicit streamInfo: StreamInfo): PrintStream = {
-    require(streamInfo.isInstanceOf[v5.KernelMessage],
-      "The StreamInfo provided is not a KernelMessage instance!")
+  override def out(implicit streamInfo: StreamInfo): PrintStream =
+    constructStream(currentOutputStream, currentOutputStreamInfo, streamInfo,
+      { streamInfo =>
+        val kernelMessage = streamInfo.asInstanceOf[v5.KernelMessage]
+        val outputStream = new v5.stream.KernelOutputStream(
+          actorLoader, v5.KMBuilder().withParent(kernelMessage),
+          global.ScheduledTaskManager.instance, "stdout")
 
-    // Update the stream being used only if the information has changed
-    // or if the stream has not been initialized
-    if (updateOutputStreamInfo(streamInfo) || currentOutputStream.value == null) {
-      logger.trace("Creating new kernel output stream!")
-      val kernelMessage = streamInfo.asInstanceOf[v5.KernelMessage]
-      val outputStream = new v5.stream.KernelOutputStream(
-        actorLoader, v5.KMBuilder().withParent(kernelMessage),
-        global.ScheduledTaskManager.instance, "stdout")
-
-      currentOutputStream.value = new PrintStream(outputStream)
-    }
-
-    currentOutputStream.value
-  }
+        new PrintStream(outputStream)
+      }
+    )
 
   /**
    * Returns a print stream to be used for communication back to clients
@@ -144,24 +139,17 @@ class Kernel (
    * @return The print stream instance or an error if the stream info is
    *         not found
    */
-  override def err(implicit streamInfo: StreamInfo): PrintStream = {
-    require(streamInfo.isInstanceOf[v5.KernelMessage],
-      "The StreamInfo provided is not a KernelMessage instance!")
+  override def err(implicit streamInfo: StreamInfo): PrintStream =
+    constructStream(currentErrorStream, currentErrorStreamInfo, streamInfo,
+      { streamInfo =>
+        val kernelMessage = streamInfo.asInstanceOf[v5.KernelMessage]
+        val outputStream = new v5.stream.KernelOutputStream(
+          actorLoader, v5.KMBuilder().withParent(kernelMessage),
+          global.ScheduledTaskManager.instance, "stderr")
 
-    // Update the stream being used only if the information has changed
-    // or if the stream has not been initialized
-    if (updateErrorStreamInfo(streamInfo) || currentErrorStream.value == null) {
-      logger.trace("Creating new kernel error stream!")
-      val kernelMessage = streamInfo.asInstanceOf[v5.KernelMessage]
-      val outputStream = new v5.stream.KernelOutputStream(
-        actorLoader, v5.KMBuilder().withParent(kernelMessage),
-        global.ScheduledTaskManager.instance, "stderr")
-
-      currentErrorStream.value = new PrintStream(outputStream)
-    }
-
-    currentErrorStream.value
-  }
+        new PrintStream(outputStream)
+      }
+    )
 
   /**
    * Returns an input stream to be used to receive information from the client.
@@ -169,23 +157,51 @@ class Kernel (
    * @return The input stream instance or an error if the stream info is
    *         not found
    */
-  override def in(implicit streamInfo: StreamInfo): InputStream = {
-    require(streamInfo.isInstanceOf[v5.KernelMessage],
+  override def in(implicit streamInfo: StreamInfo): InputStream =
+    constructStream(currentInputStream, currentInputStreamInfo, streamInfo,
+      { streamInfo =>
+        new KernelInputStream(
+          actorLoader,
+          v5.KMBuilder()
+            .withIds(streamInfo.asInstanceOf[v5.KernelMessage].ids)
+            .withParent(streamInfo.asInstanceOf[v5.KernelMessage])
+        )
+      }
+    )
+
+
+  /**
+   * Constructs or uses an existing stream.
+   *
+   * @param dynamicStream The DynamicVariable containing the stream to modify
+   *                      or use
+   * @param dynamicStreamInfo The DynamicVariable containing the StreamInfo to
+   *                          check against the new StreamInfo
+   * @param newStreamInfo The potentially-new StreamInfo
+   * @param streamConstructionFunc The function used to create a new stream
+   * @param typeTag The type information associated with the stream
+   * @tparam T The stream type
+   * @return The new stream or existing stream
+   */
+  private def constructStream[T](
+    dynamicStream: DynamicVariable[T],
+    dynamicStreamInfo: DynamicVariable[StreamInfo],
+    newStreamInfo: StreamInfo,
+    streamConstructionFunc: (StreamInfo) => T
+  )(implicit typeTag: TypeTag[T]) = {
+    require(newStreamInfo.isInstanceOf[v5.KernelMessage],
       "The StreamInfo provided is not a KernelMessage instance!")
 
     // Update the stream being used only if the information has changed
     // or if the stream has not been initialized
-    if (updateInputStreamInfo(streamInfo) || currentInputStream.value == null) {
-      logger.trace("Creating new kernel input stream!")
-      currentInputStream.value = new KernelInputStream(
-        actorLoader,
-        v5.KMBuilder()
-          .withIds(streamInfo.asInstanceOf[v5.KernelMessage].ids)
-          .withParent(streamInfo.asInstanceOf[v5.KernelMessage])
-      )
+    if (updateStreamInfo(dynamicStreamInfo, newStreamInfo) ||
+      dynamicStream.value == null)
+    {
+      logger.trace("Creating new kernel " + typeTag.tpe.toString + "!")
+      dynamicStream.value = streamConstructionFunc(newStreamInfo)
     }
 
-    currentInputStream.value
+    dynamicStream.value
   }
 
   /**
@@ -208,10 +224,4 @@ class Kernel (
     } else {
       false
     }
-  private val updateInputStreamInfo =
-    updateStreamInfo(currentInputStreamInfo, _: StreamInfo)
-  private val updateOutputStreamInfo =
-    updateStreamInfo(currentOutputStreamInfo, _: StreamInfo)
-  private val updateErrorStreamInfo =
-    updateStreamInfo(currentErrorStreamInfo, _: StreamInfo)
 }
