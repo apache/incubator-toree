@@ -74,7 +74,7 @@ class KernelBootstrap(config: Config) extends LogLike {
     // Initialize components needed elsewhere
     val (commStorage, commRegistrar, commManager, interpreter,
       kernelInterpreter, kernel, sparkContext, dependencyDownloader,
-      magicLoader) =
+      magicLoader, responseMap) =
       initializeComponents(
         config      = config,
         appName     = DefaultAppName,
@@ -90,7 +90,8 @@ class KernelBootstrap(config: Config) extends LogLike {
       interpreter   = interpreter,
       commRegistrar = commRegistrar,
       commStorage   = commStorage,
-      magicLoader   = magicLoader
+      magicLoader   = magicLoader,
+      responseMap   = responseMap
     )
 
     // Initialize our hooks that handle various JVM events

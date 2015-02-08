@@ -34,12 +34,19 @@ object SocketFactory {
  *                     instantiated
  */
 class  SocketFactory(socketConfig: SocketConfig) {
+  /**
+   * Represents the identity shared between Shell and Stdin connections.
+   */
+  private val ZmqIdentity = UUID.randomUUID().toString.getBytes("UTF-8")
+
   val HeartbeatConnection = SocketConnection(
     socketConfig.transport, socketConfig.ip, socketConfig.hb_port)
   val ShellConnection = SocketConnection(
     socketConfig.transport, socketConfig.ip, socketConfig.shell_port)
   val IOPubConnection = SocketConnection(
     socketConfig.transport, socketConfig.ip, socketConfig.iopub_port)
+  val StdinConnection = SocketConnection(
+    socketConfig.transport, socketConfig.ip, socketConfig.stdin_port)
 
   /**
    * Creates a ZeroMQ request socket representing the client endpoint for
@@ -70,7 +77,25 @@ class  SocketFactory(socketConfig: SocketConfig) {
   def ShellClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
     ZeroMQExtension(system).newDealerSocket(Array(
       Listener(listener), Connect(ShellConnection.toString),
-      Identity(UUID.randomUUID().toString.getBytes)
+      Identity(ZmqIdentity)
+    ))
+  }
+
+  /**
+   * Creates a ZeroMQ reply socket representing the client endpoint for stdin
+   * messages. Generates an id for
+   * <a href="http://api.zeromq.org/2-1:zmq-setsockopt#toc6">
+   * Router/Dealer message routing</a>.
+   *
+   * @param system The actor system the socket actor will belong
+   * @param listener The actor who will receive
+   *
+   * @return The ActorRef created for the socket connection
+   */
+  def StdinClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
+    ZeroMQExtension(system).newDealerSocket(Array(
+      Listener(listener), Connect(StdinConnection.toString),
+      Identity(ZmqIdentity)
     ))
   }
 

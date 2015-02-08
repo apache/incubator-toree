@@ -97,6 +97,8 @@ object Utilities extends LogLike {
     )
   }
 
+  def getSessionId = sessionId
+
   def toKernelMessage(message: ExecuteRequest): KernelMessage = {
     // construct a kernel message whose content is an ExecuteRequest
     val id = java.util.UUID.randomUUID().toString

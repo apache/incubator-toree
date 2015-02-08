@@ -23,6 +23,7 @@ import com.ibm.spark.comm._
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, ExecuteRequestTuple}
 import com.ibm.spark.kernel.protocol.v5.client.socket.HeartbeatMessage
+import com.ibm.spark.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
 import com.ibm.spark.utils.LogLike
 import scala.concurrent.duration._
@@ -102,6 +103,13 @@ class SparkKernelClient(
     actorLoader.load(MessageType.Incoming.ExecuteRequest) ! ExecuteRequestTuple(request, de)
     de
   }
+
+  /**
+   * Sets the response function used when input is requested by the kernel.
+   * @param responseFunc The response function to use
+   */
+  def setResponseFunction(responseFunc: ResponseFunction): Unit =
+    actorLoader.load(SocketType.StdInClient) ! responseFunc
 
   /**
    * Represents the exposed interface for Comm communication with the kernel.

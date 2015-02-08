@@ -107,7 +107,7 @@ class ClientCommSpecForSystem
   describe("Comm for Client System") {
     describe("executing Comm API to open a new comm") {
       it("should correctly send comm_open to socket") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
 
           client.comm.open(testTargetName)
@@ -124,7 +124,7 @@ class ClientCommSpecForSystem
 
     describe("executing Comm API to send a message") {
       it("should correctly send comm_msg to socket") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
 
           val commWriter = client.comm.open(testTargetName)
@@ -143,7 +143,7 @@ class ClientCommSpecForSystem
 
     describe("executing Comm API to close an existing comm") {
       it("should correctly send comm_close to socket") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
 
           val commWriter = client.comm.open(testTargetName)
@@ -161,7 +161,7 @@ class ClientCommSpecForSystem
 
     describe("receiving Comm API open from a kernel") {
       it("should respond comm_close if the target is not found") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
 
           // Send a comm_open (as if a kernel did it)
@@ -178,7 +178,7 @@ class ClientCommSpecForSystem
       }
 
       it("should not execute open callbacks if the target is not found") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
 
           var openExecuted = false
@@ -195,7 +195,7 @@ class ClientCommSpecForSystem
       }
 
       it("should execute open callbacks if the target is found") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
 
           var openExecuted = false
@@ -214,7 +214,7 @@ class ClientCommSpecForSystem
 
     describe("receiving Comm API message from a client") {
       it("should not execute message callbacks if the Comm id is not found") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
           val testCommId = java.util.UUID.randomUUID().toString
 
@@ -234,7 +234,7 @@ class ClientCommSpecForSystem
       }
 
       it("should execute message callbacks if the Comm id is found") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
           val testCommId = java.util.UUID.randomUUID().toString
 
@@ -263,7 +263,7 @@ class ClientCommSpecForSystem
 
     describe("receiving Comm API close from a client") {
       it("should not execute close callbacks if the Comm id is not found") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
           val testCommId = java.util.UUID.randomUUID().toString
 
@@ -283,7 +283,7 @@ class ClientCommSpecForSystem
       }
 
       it("should execute close callbacks if the Comm id is found") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
           val testCommId = java.util.UUID.randomUUID().toString
 
@@ -310,7 +310,7 @@ class ClientCommSpecForSystem
       }
 
       it("should unlink the Comm id from the target if the Comm id is found") {
-        withSparkClient { (client, actorLoader, heartbeat, shell, ioPub) =>
+        withSparkClient { (client, actorLoader, heartbeat, stdin, shell, ioPub) =>
           val testTargetName = java.util.UUID.randomUUID().toString
           val testCommId = java.util.UUID.randomUUID().toString
 

@@ -139,6 +139,13 @@ trait StandardBareInitialization extends BareInitialization { this: LogLike =>
       name = SocketType.Heartbeat.toString
     )
 
+    logger.debug("Initializing Stdin on port " +
+      socketConfig.stdin_port)
+    val stdinActor = actorSystem.actorOf(
+      Props(classOf[Stdin], socketFactory, actorLoader),
+      name = SocketType.StdIn.toString
+    )
+
     logger.debug("Initializing Shell on port " +
       socketConfig.shell_port)
     val shellActor = actorSystem.actorOf(
@@ -153,6 +160,6 @@ trait StandardBareInitialization extends BareInitialization { this: LogLike =>
       name = SocketType.IOPub.toString
     )
 
-    (heartbeatActor, shellActor, ioPubActor)
+    (heartbeatActor, stdinActor, shellActor, ioPubActor)
   }
 }

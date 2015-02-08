@@ -17,7 +17,9 @@
 package com.ibm.spark.boot.layer
 
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
+import akka.actor.ActorRef
 import com.ibm.spark.comm.{CommManager, KernelCommManager, CommRegistrar, CommStorage}
 import com.ibm.spark.dependencies.{DependencyDownloader, IvyDependencyDownloader}
 import com.ibm.spark.global
@@ -25,7 +27,7 @@ import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.api.Kernel
 import com.ibm.spark.kernel.protocol.v5.KMBuilder
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.stream.KernelMessageStream
+import com.ibm.spark.kernel.protocol.v5.stream.KernelOutputStream
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
@@ -55,7 +57,8 @@ trait ComponentInitialization {
   def initializeComponents(
     config: Config, appName: String, actorLoader: ActorLoader
   ): (CommStorage, CommRegistrar, CommManager, Interpreter, Interpreter,
-    Kernel, SparkContext, DependencyDownloader, MagicLoader)
+    Kernel, SparkContext, DependencyDownloader, MagicLoader,
+    collection.mutable.Map[String, ActorRef])
 }
 
 /**
@@ -85,8 +88,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
       config, interpreter, sparkContext, dependencyDownloader)
     val kernel = initializeKernel(
       actorLoader, interpreter, kernelInterpreter, commManager, magicLoader)
+    val responseMap = initializeResponseMap()
     (commStorage, commRegistrar, commManager, interpreter, kernelInterpreter,
-      kernel, sparkContext, dependencyDownloader, magicLoader)
+      kernel, sparkContext, dependencyDownloader, magicLoader, responseMap)
   }
 
   private def initializeCommObjects(actorLoader: ActorLoader) = {
@@ -197,7 +201,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
     logger.debug("Constructing new Spark Context")
     // TODO: Inject stream redirect headers in Spark dynamically
     var sparkContext: SparkContext = null
-    val outStream = new KernelMessageStream(
+    val outStream = new KernelOutputStream(
       actorLoader, KMBuilder(), global.ScheduledTaskManager.instance)
     global.StreamState.withStreams(System.in, outStream, outStream) {
       sparkContext = new SparkContext(sparkConf)
@@ -265,6 +269,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
       logger.info("Running in local mode! Not adding self as dependency!")
     }
   }
+
+  protected def initializeResponseMap(): collection.mutable.Map[String, ActorRef] =
+    new ConcurrentHashMap[String, ActorRef]().asScala
 
   private def initializeKernel(
     actorLoader: ActorLoader,

@@ -18,8 +18,8 @@ package com.ibm.spark.kernel.protocol.v5.kernel.socket
 
 import org.scalatest.{FunSpec, Matchers}
 
-class ServerSocketFactorySpec extends FunSpec with Matchers {
-  describe("ServerSocketFactory"){
+class SocketFactorySpec extends FunSpec with Matchers {
+  describe("SocketFactory"){
     describe("HeartbeatConnection"){
     	it("should be composed of transport ip and heartbeat port"){
         val config: SocketConfig = SocketConfig(-1,-1,8000,-1, -1, "<STRING-IP>", "<STRING-TRANSPORT>","<STRING-SCHEME>","<STRING-KEY>")

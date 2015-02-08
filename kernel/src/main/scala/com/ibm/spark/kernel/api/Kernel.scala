@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel.api
 
-import java.io.PrintStream
+import java.io.{InputStream, PrintStream}
 
 import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommManager
@@ -10,6 +10,7 @@ import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.magic.MagicParser
+import com.ibm.spark.kernel.protocol.v5.stream.KernelInputStream
 import com.ibm.spark.magic.{MagicLoader, MagicExecutor}
 import scala.language.dynamics
 
@@ -85,7 +86,7 @@ class Kernel (
       "The StreamInfo provided is not a KernelMessage instance!")
 
     val kernelMessage = streamInfo.asInstanceOf[v5.KernelMessage]
-    val outputStream = new v5.stream.KernelMessageStream(
+    val outputStream = new v5.stream.KernelOutputStream(
       actorLoader, v5.KMBuilder().withParent(kernelMessage),
       global.ScheduledTaskManager.instance, "stdout")
 
@@ -104,10 +105,28 @@ class Kernel (
       "The StreamInfo provided is not a KernelMessage instance!")
 
     val kernelMessage = streamInfo.asInstanceOf[v5.KernelMessage]
-    val outputStream = new v5.stream.KernelMessageStream(
+    val outputStream = new v5.stream.KernelOutputStream(
       actorLoader, v5.KMBuilder().withParent(kernelMessage),
       global.ScheduledTaskManager.instance, "stderr")
 
     new PrintStream(outputStream)
+  }
+
+  /**
+   * Returns an input stream to be used to receive information from the client.
+   *
+   * @return The input stream instance or an error if the stream info is
+   *         not found
+   */
+  override def in(implicit streamInfo: StreamInfo): InputStream = {
+    require(streamInfo.isInstanceOf[v5.KernelMessage],
+      "The StreamInfo provided is not a KernelMessage instance!")
+
+    new KernelInputStream(
+      actorLoader,
+      v5.KMBuilder()
+        .withIds(streamInfo.asInstanceOf[v5.KernelMessage].ids)
+        .withParent(streamInfo.asInstanceOf[v5.KernelMessage])
+    )
   }
 }

@@ -16,7 +16,7 @@
 
 package com.ibm.spark.boot.layer
 
-import akka.actor.{ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
 import com.ibm.spark.comm.{CommRegistrar, CommStorage}
 import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
@@ -49,7 +49,8 @@ trait HandlerInitialization {
   def initializeHandlers(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
     interpreter: Interpreter, magicLoader: MagicLoader,
-    commRegistrar: CommRegistrar, commStorage: CommStorage
+    commRegistrar: CommRegistrar, commStorage: CommStorage,
+    responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit
 }
 
@@ -72,10 +73,11 @@ trait StandardHandlerInitialization extends HandlerInitialization {
   def initializeHandlers(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
     interpreter: Interpreter, magicLoader: MagicLoader,
-    commRegistrar: CommRegistrar, commStorage: CommStorage
+    commRegistrar: CommRegistrar, commStorage: CommStorage,
+    responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit = {
     initializeKernelHandlers(
-      actorSystem, actorLoader, commRegistrar, commStorage)
+      actorSystem, actorLoader, commRegistrar, commStorage, responseMap)
     initializeSystemActors(actorSystem, actorLoader, interpreter, magicLoader)
   }
 
@@ -102,12 +104,24 @@ trait StandardHandlerInitialization extends HandlerInitialization {
 
   private def initializeKernelHandlers(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
-    commRegistrar: CommRegistrar, commStorage: CommStorage
+    commRegistrar: CommRegistrar, commStorage: CommStorage,
+    responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit = {
     def initializeRequestHandler[T](clazz: Class[T], messageType: MessageType) = {
       logger.debug("Creating %s handler".format(messageType.toString))
       actorSystem.actorOf(
         Props(clazz, actorLoader),
+        name = messageType.toString
+      )
+    }
+
+    def initializeInputHandler[T](
+      clazz: Class[T],
+      messageType: MessageType
+    ): Unit = {
+      logger.debug("Creating %s handler".format(messageType.toString))
+      actorSystem.actorOf(
+        Props(clazz, actorLoader, responseMap),
         name = messageType.toString
       )
     }
@@ -133,9 +147,11 @@ trait StandardHandlerInitialization extends HandlerInitialization {
     initializeRequestHandler(classOf[ExecuteRequestHandler],
       MessageType.Incoming.ExecuteRequest)
     initializeRequestHandler(classOf[KernelInfoRequestHandler],
-      MessageType.Incoming.KernelInfoRequest )
+      MessageType.Incoming.KernelInfoRequest)
     initializeRequestHandler(classOf[CodeCompleteHandler],
-      MessageType.Incoming.CompleteRequest )
+      MessageType.Incoming.CompleteRequest)
+    initializeInputHandler(classOf[InputRequestReplyHandler],
+      MessageType.Incoming.InputReply)
     initializeCommHandler(classOf[CommOpenHandler],
       MessageType.Incoming.CommOpen)
     initializeCommHandler(classOf[CommMsgHandler],
@@ -147,6 +163,8 @@ trait StandardHandlerInitialization extends HandlerInitialization {
     initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.KernelInfoReply)
     initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.ExecuteReply)
     initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.CompleteReply)
+
+    initializeSocketHandler(SocketType.StdIn, MessageType.Outgoing.InputRequest)
 
     initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.ExecuteResult)
     initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.Stream)

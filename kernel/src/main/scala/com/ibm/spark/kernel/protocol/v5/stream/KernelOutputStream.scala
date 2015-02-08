@@ -35,7 +35,7 @@ import scala.collection.mutable.ListBuffer
  *                             flushes to send data across the wire
  * @param streamType The type of stream (stdout/stderr)
  */
-class KernelMessageStream(
+class KernelOutputStream(
   actorLoader: ActorLoader,
   kmBuilder: KMBuilder,
   scheduledTaskManager: ScheduledTaskManager,

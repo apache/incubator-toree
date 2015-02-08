@@ -78,6 +78,9 @@ package object v5 {
       val KernelInfoRequest  = Value("kernel_info_request")
       val ShutdownRequest = Value("shutdown_request")
 
+      //  Stdin Router/Dealer Messages
+      val InputReply      = Value("input_reply")
+
       // NOTE: These are not consistent with the type as they would conflict
       val CommOpen        = Value("incoming_comm_open")
       val CommMsg         = Value("incoming_comm_msg")
@@ -96,6 +99,9 @@ package object v5 {
       val InspectReply    = Value("inspect_reply")
       val KernelInfoReply    = Value("kernel_info_reply")
       val ShutdownReply   = Value("shutdown_reply")
+
+      //  Stdin Router/Dealer Messages
+      val InputRequest    = Value("input_request")
 
       //  Pub/Sub Messages
       val ClearOutput     = Value("clear_output")

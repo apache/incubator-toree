@@ -19,7 +19,7 @@ package test.utils
 import akka.actor.{Actor, Props, ActorRef, ActorSystem}
 import akka.testkit.TestProbe
 import com.ibm.spark.comm.{CommRegistrar, CommStorage}
-import com.ibm.spark.kernel.protocol.v5.client.socket.{IOPubClient, ShellClient, SocketFactory, HeartbeatClient}
+import com.ibm.spark.kernel.protocol.v5.client.socket._
 import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, SparkKernelClient}
 import com.ibm.spark.kernel.protocol.v5.client.boot.ClientBootstrap
 import com.ibm.spark.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
@@ -50,6 +50,7 @@ object SparkClientDeployer extends LogLike{
   private var testActorSystem: ActorSystem = _
   private var testActorLoader: ActorLoader = _
   private var heartbeatProbe: TestProbe = _
+  private var stdinProbe: TestProbe = _
   private var shellProbe: TestProbe = _
   private var ioPubProbe: TestProbe = _
 
@@ -73,7 +74,7 @@ object SparkClientDeployer extends LogLike{
     override def initializeSystem(
       actorSystem: ActorSystem, actorLoader: ActorLoader,
       socketFactory: SocketFactory):
-    (ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage) = {
+    (ActorRef, ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage) = {
       val commStorage = new CommStorage()
       val commRegistrar = new CommRegistrar(commStorage)
 
@@ -84,6 +85,15 @@ object SparkClientDeployer extends LogLike{
       val heartbeatInterceptor = actorSystem.actorOf(
         Props(new ActorInterceptor(heartbeatProbe, heartbeatClient)),
         name = SocketType.HeartbeatClient.toString
+      )
+
+      stdinProbe = new TestProbe(actorSystem)
+      val stdinClient = actorSystem.actorOf(
+        Props(classOf[StdinClient], socketFactory)
+      )
+      val stdinInterceptor = actorSystem.actorOf(
+        Props(new ActorInterceptor(stdinProbe, stdinClient)),
+        name = SocketType.StdInClient.toString
       )
 
       shellProbe = new TestProbe(actorSystem)
@@ -108,8 +118,8 @@ object SparkClientDeployer extends LogLike{
       testActorSystem = actorSystem
       testActorLoader = actorLoader
 
-      (heartbeatInterceptor, shellInterceptor, ioPubInterceptor,
-        commRegistrar, commStorage)
+      (heartbeatInterceptor, stdinInterceptor, shellInterceptor,
+        ioPubInterceptor, commRegistrar, commStorage)
     }
   }
 
@@ -140,9 +150,10 @@ object SparkClientDeployer extends LogLike{
    * @return The results from the test code
    */
   def withSparkClient(
-    testCode: (SparkKernelClient, ActorLoader, TestProbe, TestProbe,
-      TestProbe) => Any
-  ) = testCode(client, testActorLoader, heartbeatProbe, shellProbe, ioPubProbe)
+    testCode: (SparkKernelClient, ActorLoader,
+      TestProbe, TestProbe, TestProbe, TestProbe) => Any
+  ) = testCode(client, testActorLoader,
+    heartbeatProbe, stdinProbe, shellProbe, ioPubProbe)
 
 
   /**

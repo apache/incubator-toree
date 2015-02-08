@@ -56,5 +56,5 @@ trait KernelLike {
    * @return The input stream instance or an error if the stream info is
    *         not found
    */
-  def in(implicit streamInfo: StreamInfo): InputStream = ??? // Not implemented
+  def in(implicit streamInfo: StreamInfo): InputStream
 }
