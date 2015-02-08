@@ -20,6 +20,7 @@ import akka.actor.{ActorRef, Props, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
 import com.ibm.spark.kernel.protocol.v5.content.{InputReply, InputRequest, ClearOutput, ExecuteRequest}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
@@ -35,6 +36,7 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
   with BeforeAndAfter
 {
   private val TestReplyString = "some value"
+  private val TestResponseFunc: ResponseFunction = (_, _) => TestReplyString
 
   private var mockSocketFactory: SocketFactory = _
   private var socketProbe: TestProbe = _
@@ -47,13 +49,38 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
       .StdinClient(any[ActorSystem], any[ActorRef])
 
     stdinClient = system.actorOf(Props(
-      classOf[StdinClient], mockSocketFactory,
-      (prompt: String, password: Boolean) => TestReplyString
+      classOf[StdinClient], mockSocketFactory
     ))
+
+    // Set the response function for our client socket
+    stdinClient ! TestResponseFunc
   }
 
   describe("StdinClient") {
     describe("#receive") {
+      it("should update the response function if receiving a new one") {
+        val expected = "some other value"
+        val replacementFunc: ResponseFunction = (_, _) => expected
+
+        // Update the function
+        stdinClient ! replacementFunc
+
+        val inputRequestMessage: ZMQMessage = KMBuilder()
+          .withHeader(InputRequest.toTypeString)
+          .withContentString(InputRequest("", false))
+          .build
+
+        stdinClient ! inputRequestMessage
+
+        socketProbe.expectMsgPF() {
+          case zmqMessage: ZMQMessage =>
+            val kernelMessage: KernelMessage = zmqMessage
+            val inputReply =
+              Json.parse(kernelMessage.contentString).as[InputReply]
+            inputReply.value should be (expected)
+        }
+      }
+
       it("should do nothing if the incoming message is not an input_request") {
         val notInputRequestMessage: ZMQMessage = KMBuilder()
           .withHeader(ClearOutput.toTypeString)

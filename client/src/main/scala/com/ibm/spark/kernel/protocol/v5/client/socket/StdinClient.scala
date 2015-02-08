@@ -24,21 +24,35 @@ import com.ibm.spark.utils.LogLike
 import com.ibm.spark.kernel.protocol.v5.client.Utilities._
 import play.api.libs.json.Json
 
+import StdinClient._
+
+object StdinClient {
+  type ResponseFunction = (String, Boolean) => String
+  val EmptyResponseFunction: ResponseFunction = (_, _) => ""
+}
+
 /**
  * The client endpoint for Stdin messages specified in the IPython Kernel Spec
  * @param socketFactory A factory to create the ZeroMQ socket connection
- * @param responseFunc The function to use for generating a response from an
- *                     input_request message
  */
 class StdinClient(
-  socketFactory: SocketFactory,
-  responseFunc: (String, Boolean) => String
+  socketFactory: SocketFactory
 ) extends Actor with LogLike {
   logger.debug("Created stdin client actor")
 
   private val socket = socketFactory.StdinClient(context.system, self)
 
+  /**
+   * The function to use for generating a response from an input_request
+   * message.
+   */
+  private var responseFunc: ResponseFunction = EmptyResponseFunction
+
   override def receive: Receive = {
+    case responseFunc: ResponseFunction =>
+      logger.debug("Updating response function")
+      this.responseFunc = responseFunc
+
     case message: ZMQMessage =>
       logger.debug("Received stdin kernel message")
       val kernelMessage: KernelMessage = message
