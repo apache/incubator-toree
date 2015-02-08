@@ -10,4 +10,5 @@ target/
 scratch/
 **/*ivy.xml
 test-output/
+out/
 
