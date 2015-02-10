@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import java.text.SimpleDateFormat
+import java.util.Calendar
+
 import com.typesafe.sbt.SbtGhPages.ghpages
 import com.typesafe.sbt.SbtSite.site
 import sbt.Keys._
@@ -110,14 +113,23 @@ trait SubProjects extends Settings with TestTasks {
 
   /**
    * Required by the sbt-buildinfo plugin. Defines the following:
-   * version: Current kernel version (see buildVersion in Common.scala).
-   * scalaVersion: Current Scala version (see buildScalaVersion in Common.scala).
-   * sparkVersion: Current Spark version.
+   * buildDate: Current date of build
+   * version: Current kernel version (see buildVersion in Common.scala)
+   * scalaVersion: Current Scala version (see buildScalaVersion in Common.scala)
+   * sparkVersion: Current Spark version
    */
   lazy val buildSettings = Seq(
     sourceGenerators in Compile <+= buildInfo,
-    buildInfoKeys ++= Seq[BuildInfoKey](version, scalaVersion, "sparkVersion" -> Common.sparkVersion),
-    buildInfoPackage := "buildinfo"
+    buildInfoKeys ++= Seq[BuildInfoKey](
+      version, scalaVersion,
+      "sparkVersion" -> Common.sparkVersion,
+      "buildDate" -> {
+        val simpleDateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss")
+        val now = Calendar.getInstance.getTime
+        simpleDateFormat.format(now)
+      }
+    ),
+    buildInfoPackage := "com.ibm.spark.kernel"
   )
 
   /**

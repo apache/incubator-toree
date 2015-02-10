@@ -33,7 +33,10 @@ class CommandLineOptions(args: Seq[String]) {
    * Options supported by our kernel.
    */
   private val _help =
-    parser.accepts("help", "display help information").forHelp()
+    parser.acceptsAll(Seq("help", "h").asJava, "display help information").forHelp()
+
+  private val _version =
+    parser.acceptsAll(Seq("version", "v").asJava, "display version information")
 
   private val _profile =
     parser.accepts("profile", "path to IPython JSON connection file")
@@ -98,6 +101,8 @@ class CommandLineOptions(args: Seq[String]) {
 
   val help: Boolean = has(_help)
 
+  val version: Boolean = has(_version)
+
   /*
    * Config object has 3 levels and fallback in this order
    * 1. Comandline Args
@@ -131,7 +136,7 @@ class CommandLineOptions(args: Seq[String]) {
     commandLineConfig.withFallback(profileConfig).withFallback(ConfigFactory.load)
   }
 
-  private def removeEmptyOptions: ((String, Option[Any])) => Iterable[(String, Any)] = {
+  private val removeEmptyOptions: ((String, Option[Any])) => Iterable[(String, Any)] = {
     pair => if (pair._2.isDefined) Some((pair._1, pair._2.get)) else None
   }
 

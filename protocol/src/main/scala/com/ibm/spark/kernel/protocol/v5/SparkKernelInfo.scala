@@ -16,7 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5
 
-import buildinfo.BuildInfo
+import com.ibm.spark.kernel.BuildInfo
 
 object SparkKernelInfo {
   /**

@@ -18,12 +18,18 @@ package com.ibm.spark
 
 import com.ibm.spark.boot.layer._
 import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
+import com.ibm.spark.kernel.BuildInfo
 
 object SparkKernel extends App {
   private val options = new CommandLineOptions(args)
 
   if (options.help) {
     options.printHelpOn(System.out)
+  } else if (options.version) {
+    println(s"Kernel Version:       ${BuildInfo.version}")
+    println(s"Build Date:           ${BuildInfo.buildDate}")
+    println(s"Scala Version:        ${BuildInfo.scalaVersion}")
+    println(s"Apache Spark Version: ${BuildInfo.sparkVersion}")
   } else {
     (new KernelBootstrap(options.toConfig)
       with StandardBareInitialization

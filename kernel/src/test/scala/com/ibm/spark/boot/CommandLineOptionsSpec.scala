@@ -28,18 +28,50 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
 
   describe("CommandLineOptions") {
     describe("when received --help") {
-      it("should report the help message and exit") {
+      it("should set the help flag to true") {
         val options = new CommandLineOptions("--help" :: Nil)
 
         options.help should be (true)
       }
     }
 
-    describe("when not received --help") {
+    describe("when received -h") {
+      it("should set the help flag to true") {
+        val options = new CommandLineOptions("-h" :: Nil)
+
+        options.help should be (true)
+      }
+    }
+
+    describe("when not received --help or -h") {
       it("should set the help flag to false") {
         val options = new CommandLineOptions(Nil)
 
         options.help should be (false)
+      }
+    }
+
+    describe("when received --version") {
+      it("should set the version flag to true") {
+        val options = new CommandLineOptions("--version" :: Nil)
+
+        options.version should be (true)
+      }
+    }
+
+    describe("when received -v") {
+      it("should set the version flag to true") {
+        val options = new CommandLineOptions("-v" :: Nil)
+
+        options.version should be (true)
+      }
+    }
+
+    describe("when not received --version or -v") {
+      it("should set the version flag to false") {
+        val options = new CommandLineOptions(Nil)
+
+        options.version should be (false)
       }
     }
 
