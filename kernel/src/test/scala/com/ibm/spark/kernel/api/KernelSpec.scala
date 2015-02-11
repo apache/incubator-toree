@@ -97,5 +97,22 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
         kernel.err shouldBe a [PrintStream]
       }
     }
+
+    describe("#stream") {
+      it("should throw an exception if the StreamInfo is not a KernelMessage") {
+        implicit val streamInfo = new Object with StreamInfo
+        intercept[IllegalArgumentException] {
+          kernel.stream
+        }
+      }
+
+      it("should create a StreamMethods instance if there is a StreamInfo") {
+        implicit val streamInfo =
+          new KernelMessage(Nil, "", mock[Header], mock[ParentHeader],
+            mock[Metadata], "") with StreamInfo
+        kernel.stream shouldBe a [StreamMethods]
+      }
+
+    }
   }
 }
