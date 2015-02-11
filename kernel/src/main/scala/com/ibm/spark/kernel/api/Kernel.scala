@@ -8,6 +8,7 @@ import com.ibm.spark.global
 import com.ibm.spark.interpreter.Results.Result
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5
+import com.ibm.spark.kernel.protocol.v5.KernelMessage
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.magic.MagicParser
 import com.ibm.spark.kernel.protocol.v5.stream.KernelInputStream
@@ -33,6 +34,7 @@ class Kernel (
   val comm: CommManager,
   val magicLoader: MagicLoader
 ) extends KernelLike with LogLike {
+
 
   /**
    * Represents the current input stream used by the kernel for the specific
@@ -111,6 +113,15 @@ class Kernel (
           (false, errMsg)
       }
     }).getOrElse((false, "Error!"))
+  }
+
+  override def stream(implicit streamInfo: StreamInfo): StreamMethods = {
+    require(streamInfo.isInstanceOf[v5.KernelMessage],
+      "The StreamInfo provided is not a KernelMessage instance!")
+
+    val parentMessage = streamInfo.asInstanceOf[KernelMessage]
+
+    new StreamMethods(actorLoader, parentMessage)
   }
 
   /**

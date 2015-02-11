@@ -33,6 +33,17 @@ trait KernelLike {
   def eval(code: Option[String]): (Boolean, String)
 
   /**
+   * Returns a collection of methods that can be used to stream data from the
+   * kernel to the client.
+   *
+   * @param streamInfo The underlying KernelMessage (as StreamInfo) to use as
+   *                   the parent for outgoing stream messages
+   *
+   * @return The collection of stream methods
+   */
+  def stream(implicit streamInfo: StreamInfo): StreamMethodsLike
+
+  /**
    * Returns a print stream to be used for communication back to clients
    * via standard out.
    *
