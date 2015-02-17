@@ -30,8 +30,11 @@ object Common {
   val repoEndpoint              = Properties.envOrElse("REPO_ENDPOINT", if(snapshot) "/nexus/content/repositories/snapshots/" else "/nexus/content/repositories/releases/")
   val repoUrl                   = Properties.envOrElse("REPO_URL", s"http://${repoHost}:${repoPort}${repoEndpoint}")
 
+  private val versionNumber     = "0.1.2"
   private val buildOrganization = "com.ibm.spark"
-  private val buildVersion      = if(snapshot) "0.1.1-SNAPSHOT" else "0.1.1"
+  private val buildVersion      =
+    if (snapshot) s"$versionNumber-SNAPSHOT"
+    else versionNumber
   private val buildScalaVersion = "2.10.4"
   private val buildSbtVersion   = "0.13.7"
   val sparkVersion              = "1.2.1"
