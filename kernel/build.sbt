@@ -23,13 +23,13 @@ packArchive <<= packArchive dependsOn (rebuildIvyXml dependsOn deliverLocal)
 // AKKA DEPENDENCIES (from Spark project)
 //
 libraryDependencies +=
-  "org.spark-project.akka" %% "akka-zeromq" % "2.2.3-shaded-protobuf" // Apache v2
+  "org.spark-project.akka" %% "akka-zeromq" % "2.3.4-spark" // Apache v2
 
 //
 // TEST DEPENDENCIES
 //
 libraryDependencies +=
-  "org.spark-project.akka" %% "akka-testkit" % "2.2.3-shaded-protobuf" % "test" // MIT
+  "org.spark-project.akka" %% "akka-testkit" % "2.3.4-spark" % "test" // MIT
 
 //
 // CUSTOM TASKS

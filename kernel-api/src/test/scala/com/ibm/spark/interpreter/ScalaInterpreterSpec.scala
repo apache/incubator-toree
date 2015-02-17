@@ -268,9 +268,10 @@ class ScalaInterpreterSpec extends FunSpec
         val httpServerClass =
           java.lang.Class.forName("org.apache.spark.HttpServer")
         val httpServerConstructor = httpServerClass.getDeclaredConstructor(
-          classOf[File], securityManagerClass, classOf[Int], classOf[String])
+          classOf[SparkConf], classOf[File], securityManagerClass, classOf[Int],
+          classOf[String])
         val httpServer = httpServerConstructor.newInstance(
-          null, null, 0: java.lang.Integer, "")
+          null, null, null, 0: java.lang.Integer, "")
 
         // Return the server instance (cannot mock a private class)
         // NOTE: Can mock the class through reflection, but cannot verify
