@@ -17,6 +17,7 @@ pairs:
   # Other ET
   sw: Sean Welleck; swelleck
   zcm: Zack Morris; zmorris
+  pb: Phil Berkland; berkland
 email:
   prefix: pair
   domain: us.ibm.com
