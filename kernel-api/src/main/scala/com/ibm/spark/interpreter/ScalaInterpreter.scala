@@ -36,6 +36,7 @@ import scala.tools.nsc.util.MergedClassPath
 import scala.util.{Try => UtilTry}
 
 import scala.language.reflectiveCalls
+import com.ibm.spark.kernel.api.KernelOptions
 
 class ScalaInterpreter(
   args: List[String],
@@ -199,6 +200,30 @@ class ScalaInterpreter(
     interpretRec(code.trim.split("\n").toList, false, starting)
   }
 
+  def truncateResult(result:String, showType:Boolean =false, noTruncate: Boolean = false): String = {
+    val resultRX="""(res\d+):\s+(\S+)\s+=\s+(.*)""".r
+
+    result match {
+      case resultRX(varName,varType,resString) => {
+          var returnStr=resString
+          if (noTruncate)
+          {
+            val r=read(varName)
+            returnStr=r.getOrElse("").toString
+          }
+
+          if (showType)
+            returnStr=varType+" = "+returnStr
+
+        returnStr
+
+      }
+      case _ => ""
+    }
+
+
+  }
+
   protected def interpretRec(lines: List[String], silent: Boolean = false, results: (Results.Result, Either[ExecuteOutput, ExecuteFailure])): (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
     lines match {
       case Nil => results
@@ -209,9 +234,8 @@ class ScalaInterpreter(
           // if success, keep interpreting and aggregate ExecuteOutputs
           case Results.Success =>
             val result = for {
-              prev <- results._2.left
-              curr <- output._2.left
-            } yield (prev + "\n" + curr).trim
+              originalResult <- output._2.left
+            } yield(truncateResult(originalResult, KernelOptions.showTypes,KernelOptions.noTruncation))
             interpretRec(xs, silent, (output._1, result))
 
           // if incomplete, keep combining incomplete statements
