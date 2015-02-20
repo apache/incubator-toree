@@ -341,5 +341,17 @@ class ScalaInterpreterSpec extends FunSpec
           anyString(), anyString(), any[Any], any[List[String]])
       }
     }
+
+    describe("#truncateResult") {
+      it("should truncate result of res result") {
+        //  Results that match
+        interpreter.truncateResult("res7: Int = 38") should be("38")
+        interpreter.truncateResult("res7: Int = 38",true) should be("Int = 38")
+        interpreter.truncateResult("res123") should be("")
+        interpreter.truncateResult("res1") should be("")
+        //  Results that don't match
+        interpreter.truncateResult("resabc: Int = 38") should be("")
+      }
+    }
   }
 }
