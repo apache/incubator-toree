@@ -33,6 +33,7 @@ import org.slf4j.Logger
 import test.utils.UncaughtExceptionSuppression
 
 import scala.concurrent.duration._
+import test.utils.SparkContextProvider
 
 object InterpreterActorSpecForIntegration {
   val config = """
@@ -69,10 +70,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
     interpreter.doQuietly({
       conf.set("spark.repl.class.uri", interpreter.classServerURI)
       //context = new SparkContext(conf) with NoSparkLogging
-      context = new SparkContext(conf) {
-        override protected def log: Logger =
-          org.slf4j.helpers.NOPLogger.NOP_LOGGER
-      }
+      context = SparkContextProvider.sparkContext
       interpreter.bind(
         "sc", "org.apache.spark.SparkContext",
         context, List( """@transient"""))
@@ -80,7 +78,8 @@ class InterpreterActorSpecForIntegration extends TestKit(
   }
 
   after {
-    context.stop()
+    //  context is shared so dont stop it
+    //    context.stop()
     interpreter.stop()
   }
 
