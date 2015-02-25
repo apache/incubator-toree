@@ -42,7 +42,7 @@ class KernelCommSpecForSystem
 {
   private val MaxFishTime = 5.seconds
 
-  import test.utils.SparkKernelDeployer._
+  import com.ibm.spark.boot.layer.SparkKernelDeployer._
 
   private def waitForExecuteReply(
     shell: TestProbe, headerId: v5.UUID, maxTime: Duration = MaxFishTime

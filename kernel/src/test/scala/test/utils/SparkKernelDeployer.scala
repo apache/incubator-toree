@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package test.utils
+package com.ibm.spark.boot.layer
 
 import java.io.OutputStream
 
@@ -25,7 +25,7 @@ import akka.zeromq.ZMQMessage
 import com.ibm.spark.boot.layer._
 import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
 import com.ibm.spark.interpreter.{StandardSettingsProducer, StandardTaskManagerProducer, StandardSparkIMainProducer, ScalaInterpreter}
-import com.ibm.spark.kernel.protocol.v5.SocketType
+import com.ibm.spark.kernel.protocol.v5.{KMBuilder, SocketType}
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.kernel.socket._
 import com.ibm.spark.utils.LogLike
@@ -34,14 +34,16 @@ import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.Json
 import scala.collection.JavaConverters._
 import scala.tools.nsc.interpreter.JPrintWriter
-
+import test.utils.SparkContextProvider
+import org.apache.spark.{SparkContext, SparkConf}
+import com.ibm.spark.kernel.protocol.v5.stream.KernelOutputStream
+import com.ibm.spark.global
 
 /**
  * Represents an object that can deploy a singleton Spark Kernel for tests,
  * providing access to the actors used for socket communication.
  */
 object SparkKernelDeployer extends LogLike with MockitoSugar {
-
   private var actorSystem: ActorSystem = _
   private var actorLoader: ActorLoader = _
   private var heartbeatProbe: TestProbe = _
@@ -64,25 +66,39 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
   }
 
   private trait ExposedComponentInitialization extends StandardComponentInitialization
-    with LogLike
-  {
+    with LogLike {
     override protected def initializeInterpreter(config: Config): ScalaInterpreter
       with StandardSparkIMainProducer with StandardTaskManagerProducer
       with StandardSettingsProducer = {
-        val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
+      val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
 
-        logger.info("Constructing interpreter with arguments: " +
-          interpreterArgs.mkString(" "))
-        val interpreter = new ScalaInterpreter(interpreterArgs, mock[OutputStream])
-          with StandardSparkIMainProducer
-          with StandardTaskManagerProducer
-          with StandardSettingsProducer
+      logger.info("Constructing interpreter with arguments: " +
+        interpreterArgs.mkString(" "))
+      val interpreter = new ScalaInterpreter(interpreterArgs, mock[OutputStream])
+        with StandardSparkIMainProducer
+        with StandardTaskManagerProducer
+        with StandardSettingsProducer
 
-        logger.debug("Starting interpreter")
-        interpreter.start()
+      logger.debug("Starting interpreter")
+      interpreter.start()
 
-        interpreter
+      interpreter
     }
+
+    override protected[layer] def reallyInitializeSparkContext(actorLoader: ActorLoader, kmBuilder: KMBuilder, sparkConf: SparkConf): SparkContext =
+     {
+      logger.debug("Constructing new Spark Context")
+      // TODO: Inject stream redirect headers in Spark dynamically
+      var sparkContext: SparkContext = null
+      val outStream = new KernelOutputStream(
+        actorLoader, KMBuilder(), global.ScheduledTaskManager.instance)
+      global.StreamState.withStreams(System.in, outStream, outStream) {
+        sparkContext = SparkContextProvider.sparkContext
+      }
+
+      sparkContext
+     }
+
   }
 
   /**

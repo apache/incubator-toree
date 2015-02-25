@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.api
+package test.utils
+
+import org.apache.spark.{SparkConf, SparkContext}
+
+/**
+ * Created by spark on 2/24/15.
+ */
+object SparkContextProvider {
 
 
-object KernelOptions {
-  var showTypes: Boolean = false
-  var noTruncation: Boolean = false
+
+  lazy val sparkContext = {
+    val conf = new SparkConf()
+    conf.setMaster("local[*]")
+    conf.setAppName("Tests")
+   val sc= new SparkContext(conf)
+    sc
+  }
 }
