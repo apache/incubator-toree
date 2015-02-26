@@ -28,6 +28,7 @@ import org.scalatest.mock.MockitoSugar
 
 import org.mockito.Mockito._
 import org.mockito.Matchers._
+import com.ibm.spark.magic.MagicLoader
 
 class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
   describe("AddJar"){
@@ -37,6 +38,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val mockSparkContext = mock[SparkContext]
         val mockInterpreter = mock[Interpreter]
         val mockOutputStream = mock[OutputStream]
+        val mockMagicLoader = mock[MagicLoader]
 
         val addJarMagic = new AddJar
           with IncludeSparkContext
@@ -46,6 +48,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
+          override lazy val magicLoader: MagicLoader = mockMagicLoader
           override def downloadFile(fileUrl: URL, destinationUrl: URL): URL =
             new URL("file://someFile") // Cannot mock URL
         }
@@ -54,6 +57,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
 
         verify(mockSparkContext).addJar(anyString())
         verify(mockInterpreter).addJars(any[URL])
+        verify(mockMagicLoader, times(0)).addJar(any())
       }
 
       it("should use a cached jar if the force option is not provided") {
@@ -130,6 +134,32 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         downloadFileCalled should be (true)
         verify(mockSparkContext).addJar(anyString())
         verify(mockInterpreter).addJars(any[URL])
+      }
+
+      it("should add magic jar to magicloader and not to interpreter and spark"+
+         "context") {
+        val mockSparkContext = mock[SparkContext]
+        val mockInterpreter = mock[Interpreter]
+        val mockOutputStream = mock[OutputStream]
+        val mockMagicLoader = mock[MagicLoader]
+
+        val addJarMagic = new AddJar
+          with IncludeSparkContext
+          with IncludeInterpreter
+          with IncludeOutputStream
+        {
+          override val sparkContext: SparkContext = mockSparkContext
+          override val interpreter: Interpreter = mockInterpreter
+          override val outputStream: OutputStream = mockOutputStream
+          override lazy val magicLoader: MagicLoader = mockMagicLoader
+        }
+
+        addJarMagic.execute(
+          """--magic http://www.example.com/""")
+
+        verify(mockMagicLoader).addJar(any())
+        verify(mockSparkContext, times(0)).addJar(anyString())
+        verify(mockInterpreter, times(0)).addJars(any[URL])
       }
     }
   }

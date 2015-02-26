@@ -106,6 +106,7 @@ class MagicLoader(
     names.map(n => (n.toLowerCase, n)).toMap
   }
 
+  def addJar(jar: URL) = addURL(jar)
   /**
    * Creates a instance of the specified magic with dependencies added.
    * @param name name of magic class
@@ -125,6 +126,7 @@ class MagicLoader(
       classMirror.reflectConstructor(classConstructorSymbol)
 
     val magicInstance = classConstructorMethod()
+
 
     // Add all of our dependencies to the new instance
     dependencyMap.internalMap.filter(selfType <:< _._1).values.foreach(

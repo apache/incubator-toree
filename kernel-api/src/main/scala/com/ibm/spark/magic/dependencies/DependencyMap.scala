@@ -20,7 +20,7 @@ import java.io.OutputStream
 
 import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.kernel.api.KernelLike
-import com.ibm.spark.magic.Magic
+import com.ibm.spark.magic.{MagicLoader, Magic}
 import org.apache.spark.SparkContext
 
 import scala.reflect.runtime.universe._
@@ -102,6 +102,21 @@ class DependencyMap {
         magic =>
           magic.asInstanceOf[IncludeKernel]
             .kernel=(kernel)
+      )
+
+    this
+  }
+
+  /**
+   * Sets the MagicLoader for this map.
+   * @param kernel The new Kernel
+   */
+  def setMagicLoader(magicLoader: MagicLoader) = {
+    internalMap(typeOf[IncludeMagicLoader]) =
+      PartialFunction[Magic, Unit](
+        magic =>
+          magic.asInstanceOf[IncludeMagicLoader]
+            .magicLoader=(magicLoader)
       )
 
     this

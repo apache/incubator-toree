@@ -310,7 +310,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val builtinLoader = new BuiltinLoader()
 
     val magicUrlArray = config.getStringList("magic_urls").asScala
-      .map(s => new File(s).toURI.toURL).toArray
+      .map(s => new java.net.URL(s)).toArray
 
     if (magicUrlArray.isEmpty)
       logger.warn("No external magics provided to MagicLoader!")
@@ -324,7 +324,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
       urls = magicUrlArray,
       parentLoader = builtinLoader
     )
-
+    magicLoader.dependencyMap.setMagicLoader(magicLoader)
     magicLoader
   }
 }
