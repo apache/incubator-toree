@@ -50,6 +50,20 @@ class DependencyMap {
   }
 
   /**
+   * Sets the Interpreter for this map.
+   * @param interpreter The new Interpreter
+   */
+  def setKernelInterpreter(interpreter: Interpreter) = {
+    internalMap(typeOf[IncludeKernelInterpreter]) =
+      PartialFunction[Magic, Unit](
+        magic =>
+          magic.asInstanceOf[IncludeKernelInterpreter].kernelInterpreter_=(interpreter)
+      )
+
+    this
+  }
+
+  /**
    * Sets the SparkContext for this map.
    * @param sparkContext The new SparkContext
    */
