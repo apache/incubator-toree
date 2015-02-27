@@ -85,7 +85,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
       config, appName, actorLoader, interpreter)
     val dependencyDownloader = initializeDependencyDownloader(config)
     val magicLoader = initializeMagicLoader(
-      config, interpreter, sparkContext, dependencyDownloader)
+      config, interpreter, kernelInterpreter, sparkContext, dependencyDownloader)
     val kernel = initializeKernel(
       actorLoader, interpreter, kernelInterpreter, commManager, magicLoader)
     val responseMap = initializeResponseMap()
@@ -295,7 +295,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
   }
 
   private def initializeMagicLoader(
-    config: Config, interpreter: Interpreter, sparkContext: SparkContext,
+    config: Config, interpreter: Interpreter, kernelInterpreter: Interpreter, sparkContext: SparkContext,
     dependencyDownloader: DependencyDownloader
   ) = {
     logger.debug("Constructing magic loader")
@@ -304,6 +304,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val dependencyMap = new DependencyMap()
       .setInterpreter(interpreter)
       .setSparkContext(sparkContext)
+      .setKernelInterpreter(kernelInterpreter)
       .setDependencyDownloader(dependencyDownloader)
 
     logger.debug("Creating BuiltinLoader")

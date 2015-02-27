@@ -16,10 +16,10 @@
 
 package com.ibm.spark.magic.builtin
 
-import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError}
+import com.ibm.spark.interpreter.{ExecuteFailure, Results, ExecuteAborted, ExecuteError}
 import com.ibm.spark.kernel.protocol.v5.MIMEType
 import com.ibm.spark.magic._
-import com.ibm.spark.magic.dependencies.IncludeInterpreter
+import com.ibm.spark.magic.dependencies.{IncludeKernelInterpreter, IncludeInterpreter}
 import com.ibm.spark.utils.LogLike
 import com.ibm.spark.utils.json.RddToJson
 import org.apache.spark.sql.SchemaRDD
@@ -27,37 +27,33 @@ import org.apache.spark.sql.SchemaRDD
 /**
  * Temporary magic to show an RDD as JSON
  */
-class RDD extends CellMagic with IncludeInterpreter with LogLike {
+class RDD extends CellMagic with IncludeKernelInterpreter with LogLike {
 
   private def convertToJson(code: String) = {
-    val (_, message) = interpreter.interpret(code)
-    val rddRegex = "(^|\\n)(res\\d+): org.apache.spark.sql.SchemaRDD =".r
-
-    if (message.isLeft) {
-      val result = message.left.get.toString
-      if (rddRegex.findFirstIn(result).nonEmpty) {
-        val matchData = rddRegex.findFirstMatchIn(result).get
-        try {
-          val rdd = interpreter.read(matchData.group(2)).get.asInstanceOf[SchemaRDD]
-          CellMagicOutput(MIMEType.ApplicationJson -> RddToJson.convert(rdd))
-        } catch {
-            case e: Exception =>
-              logger.error(e.getMessage, e)
-              CellMagicOutput(MIMEType.PlainText ->
-                ("An error occurred converting RDD to JSON.\n"+e.getMessage))
+    val (result, message) = kernelInterpreter.interpret(code)
+    result match {
+      case Results.Success =>
+        val rddVarName = kernelInterpreter.mostRecentVar
+        kernelInterpreter.read(rddVarName).map(rddVal => {
+          try{
+            CellMagicOutput(MIMEType.ApplicationJson -> RddToJson.convert(rddVal.asInstanceOf[SchemaRDD]))
+          } catch {
+            case _: Throwable =>
+              CellMagicOutput(MIMEType.PlainText -> s"Could note convert RDD to JSON: ${rddVarName}->${rddVal}")
+          }
+        }).getOrElse(CellMagicOutput(MIMEType.PlainText -> "No RDD Value found!"))
+      case _ =>
+        val errorMessage = message.right.toOption match {
+          case Some(executeFailure) => executeFailure match {
+            case _: ExecuteAborted => throw new Exception("RDD magic aborted!")
+            case executeError: ExecuteError => throw new Exception(executeError.value)
+          }
+          case _ =>  "No error information available!"
         }
-      } else CellMagicOutput(MIMEType.PlainText -> result)
-
-    // NOTE: Forced to construct and throw exception to trigger proper reporting
-    // TODO: Refactor to potentially have interpreter throw exception
-    } else {
-      message.right.get match {
-        case ex: ExecuteError => throw new Throwable(ex.value)
-        case ex: ExecuteAborted => throw new Throwable("RDD magic aborted!")
-      }
+        logger.error(s"Error retrieving RDD value: ${errorMessage}")
+        CellMagicOutput(MIMEType.PlainText ->
+          (s"An error occurred converting RDD to JSON.\n${errorMessage}"))
     }
-
-    //else MagicOutput(MIMEType.PlainText -> message.right.get.toString)
   }
 
   override def execute(code: String): CellMagicOutput =
