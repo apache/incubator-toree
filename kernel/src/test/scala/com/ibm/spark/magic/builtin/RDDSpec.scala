@@ -17,9 +17,9 @@
 package com.ibm.spark.magic.builtin
 
 import com.ibm.spark.interpreter.Results.Result
-import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError, Interpreter}
+import com.ibm.spark.interpreter.{Results, ExecuteAborted, ExecuteError, Interpreter}
 import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.magic.dependencies.IncludeInterpreter
+import com.ibm.spark.magic.dependencies.{IncludeKernelInterpreter, IncludeInterpreter}
 import org.apache.spark.sql.{SchemaRDD, StructType}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
@@ -43,13 +43,14 @@ class RDDSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfte
   doReturn(mockRdd).when(mockSchemaRdd).map(any())(any())
   doReturn(rows).when(mockRdd).take(anyInt())
 
-  val rddMagic = new RDD with IncludeInterpreter {
-    override val interpreter: Interpreter = mockInterpreter
+  val rddMagic = new RDD with IncludeKernelInterpreter {
+    override val kernelInterpreter: Interpreter = mockInterpreter
   }
 
   before {
+    doReturn("someRDD").when(mockInterpreter).mostRecentVar
     doReturn(Some(mockSchemaRdd)).when(mockInterpreter).read(anyString())
-    doReturn((mock[Result], Left(resOutput)))
+    doReturn((Results.Success, Left(resOutput)))
       .when(mockInterpreter).interpret(anyString(), anyBoolean())
   }
 
