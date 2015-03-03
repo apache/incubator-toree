@@ -55,9 +55,6 @@ fi
 COMMIT="de9fe06e571ed3990600bf7c1badf071b1178b67"
 SUBMODULE="692ab15089220f91156a7761913e7c77bb834d2f"
 
-# Alternatively
-# COMMIT="4ad9a496424fea42f5f25891701fd94d9b925b33"
-
 if ! flag_is_set IPYTHON; then
   apt-get -f -y install && \
   apt-get -y install python-pip python-dev libzmq-dev build-essential && \
@@ -72,11 +69,13 @@ if ! flag_is_set IPYTHON; then
 fi
 
 if [ -z `which docker` ]; then
-  curl -sSL https://get.docker.io/ubuntu/ | sh
-  gpasswd -a vagrant docker
-  service docker stop
-  chown vagrant /var/run/docker.sock
-  service docker start
+  sudo apt-get update -y
+  sudo apt-get -y install openjdk-7-jdk apt-transport-https linux-image-extra-`uname -r`
+  printf "deb https://get.docker.com/ubuntu docker main\n" > /etc/apt/sources.list.d/docker.list
+  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
+  sudo apt-get update -y
+  sudo apt-get install -y lxc-docker-1.4.1
+  sudo chown vagrant:vagrant /var/run/docker.sock
 fi
 
 # Install scala and sbt (if not already installed)
