@@ -92,7 +92,8 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
       var sparkContext: SparkContext = null
       val outStream = new KernelOutputStream(
         actorLoader, KMBuilder(), global.ScheduledTaskManager.instance)
-      global.StreamState.withStreams(System.in, outStream, outStream) {
+      global.StreamState.setStreams(System.in, outStream, outStream)
+      global.StreamState.withStreams {
         sparkContext = SparkContextProvider.sparkContext
       }
 
