@@ -19,6 +19,7 @@ import scala.util.DynamicVariable
 import scala.reflect.runtime.universe._
 
 import scala.language.dynamics
+import com.ibm.spark.global.ExecuteRequestState
 
 /**
  * Represents the main kernel API to be used for interaction.
@@ -42,8 +43,8 @@ class Kernel (
    */
   private val currentInputStream =
     new DynamicVariable[InputStream](null)
-  private val currentInputStreamInfo =
-    new DynamicVariable[StreamInfo](null)
+  private val currentInputKernelMessage =
+    new DynamicVariable[KernelMessage](null)
 
   /**
    * Represents the current output stream used by the kernel for the specific
@@ -51,8 +52,8 @@ class Kernel (
    */
   private val currentOutputStream =
     new DynamicVariable[PrintStream](null)
-  private val currentOutputStreamInfo =
-    new DynamicVariable[StreamInfo](null)
+  private val currentOutputKernelMessage =
+    new DynamicVariable[KernelMessage](null)
 
   /**
    * Represents the current error stream used by the kernel for the specific
@@ -60,8 +61,8 @@ class Kernel (
    */
   private val currentErrorStream =
     new DynamicVariable[PrintStream](null)
-  private val currentErrorStreamInfo =
-    new DynamicVariable[StreamInfo](null)
+  private val currentErrorKernelMessage =
+    new DynamicVariable[KernelMessage](null)
 
   /**
    * Represents magics available through the kernel.
@@ -115,11 +116,8 @@ class Kernel (
     }).getOrElse((false, "Error!"))
   }
 
-  override def stream(implicit streamInfo: StreamInfo): StreamMethods = {
-    require(streamInfo.isInstanceOf[v5.KernelMessage],
-      "The StreamInfo provided is not a KernelMessage instance!")
-
-    val parentMessage = streamInfo.asInstanceOf[KernelMessage]
+  override def stream: StreamMethods = {
+    val parentMessage = lastKernelMessage()
 
     new StreamMethods(actorLoader, parentMessage)
   }
@@ -131,17 +129,18 @@ class Kernel (
    * @return The print stream instance or an error if the stream info is
    *         not found
    */
-  override def out(implicit streamInfo: StreamInfo): PrintStream =
-    constructStream(currentOutputStream, currentOutputStreamInfo, streamInfo,
-      { streamInfo =>
-        val kernelMessage = streamInfo.asInstanceOf[v5.KernelMessage]
+  override def out: PrintStream = {
+    val kernelMessage = lastKernelMessage()
+
+    constructStream(currentOutputStream, currentOutputKernelMessage, kernelMessage, {
+      kernelMessage =>
         val outputStream = new v5.stream.KernelOutputStream(
           actorLoader, v5.KMBuilder().withParent(kernelMessage),
           global.ScheduledTaskManager.instance, "stdout")
 
         new PrintStream(outputStream)
-      }
-    )
+    })
+  }
 
   /**
    * Returns a print stream to be used for communication back to clients
@@ -150,17 +149,17 @@ class Kernel (
    * @return The print stream instance or an error if the stream info is
    *         not found
    */
-  override def err(implicit streamInfo: StreamInfo): PrintStream =
-    constructStream(currentErrorStream, currentErrorStreamInfo, streamInfo,
-      { streamInfo =>
-        val kernelMessage = streamInfo.asInstanceOf[v5.KernelMessage]
-        val outputStream = new v5.stream.KernelOutputStream(
-          actorLoader, v5.KMBuilder().withParent(kernelMessage),
-          global.ScheduledTaskManager.instance, "stderr")
+  override def err: PrintStream = {
+    val kernelMessage = lastKernelMessage()
 
-        new PrintStream(outputStream)
-      }
-    )
+    constructStream(currentErrorStream, currentErrorKernelMessage, kernelMessage, { kernelMessage =>
+      val outputStream = new v5.stream.KernelOutputStream(
+        actorLoader, v5.KMBuilder().withParent(kernelMessage),
+        global.ScheduledTaskManager.instance, "stderr")
+
+      new PrintStream(outputStream)
+    })
+  }
 
   /**
    * Returns an input stream to be used to receive information from the client.
@@ -168,27 +167,27 @@ class Kernel (
    * @return The input stream instance or an error if the stream info is
    *         not found
    */
-  override def in(implicit streamInfo: StreamInfo): InputStream =
-    constructStream(currentInputStream, currentInputStreamInfo, streamInfo,
-      { streamInfo =>
-        new KernelInputStream(
-          actorLoader,
-          v5.KMBuilder()
-            .withIds(streamInfo.asInstanceOf[v5.KernelMessage].ids)
-            .withParent(streamInfo.asInstanceOf[v5.KernelMessage])
-        )
-      }
-    )
+  override def in: InputStream = {
+    val kernelMessage = lastKernelMessage()
 
+    constructStream(currentInputStream, currentInputKernelMessage, kernelMessage, { kernelMessage =>
+      new KernelInputStream(
+        actorLoader,
+        v5.KMBuilder()
+          .withIds(kernelMessage.ids)
+          .withParent(kernelMessage)
+      )
+    })
+  }
 
   /**
    * Constructs or uses an existing stream.
    *
    * @param dynamicStream The DynamicVariable containing the stream to modify
    *                      or use
-   * @param dynamicStreamInfo The DynamicVariable containing the StreamInfo to
-   *                          check against the new StreamInfo
-   * @param newStreamInfo The potentially-new StreamInfo
+   * @param dynamicKernelMessage The DynamicVariable containing the KernelMessage to
+   *                          check against the new KernelMessage
+   * @param newKernelMessage The potentially-new KernelMessage
    * @param streamConstructionFunc The function used to create a new stream
    * @param typeTag The type information associated with the stream
    * @tparam T The stream type
@@ -196,20 +195,17 @@ class Kernel (
    */
   private def constructStream[T](
     dynamicStream: DynamicVariable[T],
-    dynamicStreamInfo: DynamicVariable[StreamInfo],
-    newStreamInfo: StreamInfo,
-    streamConstructionFunc: (StreamInfo) => T
+    dynamicKernelMessage: DynamicVariable[KernelMessage],
+    newKernelMessage: KernelMessage,
+    streamConstructionFunc: (KernelMessage) => T
   )(implicit typeTag: TypeTag[T]) = {
-    require(newStreamInfo.isInstanceOf[v5.KernelMessage],
-      "The StreamInfo provided is not a KernelMessage instance!")
-
     // Update the stream being used only if the information has changed
     // or if the stream has not been initialized
-    if (updateStreamInfo(dynamicStreamInfo, newStreamInfo) ||
+    if (updateKernelMessage(dynamicKernelMessage, newKernelMessage) ||
       dynamicStream.value == null)
     {
       logger.trace("Creating new kernel " + typeTag.tpe.toString + "!")
-      dynamicStream.value = streamConstructionFunc(newStreamInfo)
+      dynamicStream.value = streamConstructionFunc(newKernelMessage)
     }
 
     dynamicStream.value
@@ -219,20 +215,26 @@ class Kernel (
    * Updates the last stream info returning the status of whether or not the
    * new stream info was different than the last stream info.
    *
-   * @param dynamicStreamInfo The dynamic variable containing the current
+   * @param dynamicKernelMessage The dynamic variable containing the current
    *                          stream info
-   * @param streamInfo The new stream info
+   * @param kernelMessage The new stream info
    * @return True if the new stream info is different from the last (therefore
    *         replaced), otherwise false
    */
-  private def updateStreamInfo(
-    dynamicStreamInfo: DynamicVariable[StreamInfo],
-    streamInfo: StreamInfo
+  private def updateKernelMessage(
+    dynamicKernelMessage: DynamicVariable[KernelMessage],
+    kernelMessage: KernelMessage
   ): Boolean =
-    if (streamInfo != null && !streamInfo.equals(dynamicStreamInfo.value)) {
-      dynamicStreamInfo.value = streamInfo
+    if (kernelMessage != null && !kernelMessage.equals(dynamicKernelMessage.value)) {
+      dynamicKernelMessage.value = kernelMessage
       true
     } else {
       false
     }
+
+  private def lastKernelMessage() = {
+    val someKernelMessage = ExecuteRequestState.lastKernelMessage
+    require(someKernelMessage.nonEmpty, "No kernel message received!")
+    someKernelMessage.get
+  }
 }
