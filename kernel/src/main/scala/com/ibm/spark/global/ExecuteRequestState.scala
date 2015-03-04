@@ -7,7 +7,7 @@ import com.ibm.spark.kernel.protocol.v5.KernelMessage
  * execute requests.
  */
 object ExecuteRequestState {
-  private var _lastKernelMessage: Option[KernelMessage] = _
+  private var _lastKernelMessage: Option[KernelMessage] = None
 
   /**
    * Processes the incoming kernel message and updates any associated state.
@@ -25,4 +25,9 @@ object ExecuteRequestState {
    *         otherwise None
    */
   def lastKernelMessage: Option[KernelMessage] = _lastKernelMessage
+
+  /**
+   * Resets the state of the ExecuteRequestState to the default.
+   */
+  def reset() = _lastKernelMessage = None
 }

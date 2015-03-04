@@ -1,6 +1,6 @@
 package com.ibm.spark.kernel.api
 
-import java.io.PrintStream
+import java.io.{InputStream, PrintStream}
 
 import com.ibm.spark.comm.CommManager
 import com.ibm.spark.interpreter._
@@ -10,6 +10,7 @@ import com.ibm.spark.magic.MagicLoader
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import com.ibm.spark.global.ExecuteRequestState
 
 class KernelSpec extends FunSpec with Matchers with MockitoSugar
   with BeforeAndAfter
@@ -45,6 +46,10 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
     )
   }
 
+  after {
+    ExecuteRequestState.reset()
+  }
+
   describe("Kernel") {
     describe("#eval") {
       it("should return syntax error") {
@@ -65,51 +70,69 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
     }
 
     describe("#out") {
-      ignore("should throw an exception if the StreamInfo is not a KernelMessage") {
-        implicit val streamInfo = new Object with StreamInfo
+      it("should throw an exception if the ExecuteRequestState has not been set") {
         intercept[IllegalArgumentException] {
           kernel.out
         }
       }
 
-      ignore("should create a new PrintStream instance if there is StreamInfo") {
-        implicit val streamInfo =
+      it("should create a new PrintStream instance if the ExecuteRequestState has been set") {
+        ExecuteRequestState.processIncomingKernelMessage(
           new KernelMessage(Nil, "", mock[Header], mock[ParentHeader],
-            mock[Metadata], "") with StreamInfo
+            mock[Metadata], "")
+        )
         kernel.out shouldBe a [PrintStream]
       }
     }
 
     describe("#err") {
-      ignore("should throw an exception if the StreamInfo is not a KernelMessage") {
-        implicit val streamInfo = new Object with StreamInfo
+      it("should throw an exception if the ExecuteRequestState has not been set") {
         intercept[IllegalArgumentException] {
           kernel.err
         }
       }
 
-      ignore("should create a new PrintStream instance if there is StreamInfo") {
-        implicit val streamInfo =
+      it("should create a new PrintStream instance if the ExecuteRequestState has been set") {
+        ExecuteRequestState.processIncomingKernelMessage(
           new KernelMessage(Nil, "", mock[Header], mock[ParentHeader],
-            mock[Metadata], "") with StreamInfo
+            mock[Metadata], "")
+        )
 
         // TODO: Access the underlying streamType field to assert stderr?
         kernel.err shouldBe a [PrintStream]
       }
     }
 
+    describe("#in") {
+      it("should throw an exception if the ExecuteRequestState has not been set") {
+        intercept[IllegalArgumentException] {
+          kernel.in
+        }
+      }
+
+      it("should create a new InputStream instance if the ExecuteRequestState has been set") {
+        ExecuteRequestState.processIncomingKernelMessage(
+          new KernelMessage(Nil, "", mock[Header], mock[ParentHeader],
+            mock[Metadata], "")
+        )
+
+        kernel.in shouldBe a [InputStream]
+      }
+    }
+
     describe("#stream") {
-      ignore("should throw an exception if the StreamInfo is not a KernelMessage") {
-        implicit val streamInfo = new Object with StreamInfo
+      it("should throw an exception if the ExecuteRequestState has not been set") {
         intercept[IllegalArgumentException] {
           kernel.stream
         }
       }
 
-      ignore("should create a StreamMethods instance if there is a StreamInfo") {
-        implicit val streamInfo =
+      it("should create a StreamMethods instance if the ExecuteRequestState has been set") {
+        ExecuteRequestState.processIncomingKernelMessage(
           new KernelMessage(Nil, "", mock[Header], mock[ParentHeader],
-            mock[Metadata], "") with StreamInfo
+            mock[Metadata], "")
+        )
+
         kernel.stream shouldBe a [StreamMethods]
       }
     }
