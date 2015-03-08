@@ -393,6 +393,23 @@ emitted, the {@param callback} will only receive messages emitted after the
 point of registration.</p></div><dl class="paramcmts block"><dt class="param">callback</dt><dd class="cmt"><p>A callback function, which can be invoked 0 or more times,
                 with Stream Ipython messages</p></dd><dt>returns</dt><dd class="cmt"><p>The DeferredExecution with the given callback registered.
 </p></dd></dl></div>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.execution.DeferredExecution#onSuccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="onSuccess(callback:com.ibm.spark.kernel.protocol.v5.content.ExecuteReplyError=&gt;Unit):com.ibm.spark.kernel.protocol.v5.client.execution.DeferredExecution"></a>
+      <a id="onSuccess((ExecuteReplyError)⇒Unit):DeferredExecution"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">onSuccess</span><span class="params">(<span name="callback">callback: (<a href="../../content/package.html#ExecuteReplyError=com.ibm.spark.kernel.protocol.v5.content.ExecuteReply" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.content.ExecuteReplyError">ExecuteReplyError</a>) ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="result">: <a href="" class="extype" name="com.ibm.spark.kernel.protocol.v5.client.execution.DeferredExecution">DeferredExecution</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Registers a callback to be notified when code completion has completed
+successfully.</p><div class="fullcomment"><div class="comment cmt"><p>Registers a callback to be notified when code completion has completed
+successfully. {@param callback} will not be called if an error has been
+encountered, use {@method onError}.</p></div><dl class="paramcmts block"><dt class="param">callback</dt><dd class="cmt"><p>The callback to register.</p></dd><dt>returns</dt><dd class="cmt"><p>This deferred execution
+</p></dd></dl></div>
     </li><li name="com.ibm.spark.kernel.protocol.v5.client.execution.DeferredExecution#resolveReply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="resolveReply(executeReplyMessage:com.ibm.spark.kernel.protocol.v5.content.ExecuteReply):Unit"></a>
       <a id="resolveReply(ExecuteReply):Unit"></a>

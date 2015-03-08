@@ -72,7 +72,7 @@
       </h4>
       <p class="comment cmt">The server endpoint for heartbeat messages specified in the IPython Kernel Spec</p>
     </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.IOPub" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="IOPubextendsActorwithMessageLogSupport"></a>
+      <a id="IOPubextendsActorwithMessageLogSupportwithOrderedSupport"></a>
       <a id="IOPub:IOPub"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -80,12 +80,12 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="IOPub.html"><span class="name">IOPub</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="../../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></span>
+        <a href="IOPub.html"><span class="name">IOPub</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="../../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a> with <a href="../../OrderedSupport.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.OrderedSupport">OrderedSupport</a></span>
       </span>
       </h4>
       <p class="comment cmt">The server endpoint for IOPub messages specified in the IPython Kernel Spec</p>
     </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.Shell" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ShellextendsActorwithMessageLogSupport"></a>
+      <a id="ShellextendsZeromqKernelMessageSocket"></a>
       <a id="Shell:Shell"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -93,7 +93,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Shell.html"><span class="name">Shell</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="../../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></span>
+        <a href="Shell.html"><span class="name">Shell</span></a><span class="result"> extends <a href="ZeromqKernelMessageSocket.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket">ZeromqKernelMessageSocket</a></span>
       </span>
       </h4>
       <p class="comment cmt">The server endpoint for shell messages specified in the IPython Kernel Spec</p>
@@ -135,7 +135,34 @@
         <a href="SocketFactory.html"><span class="name">SocketFactory</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4>
-      <p class="comment cmt">A Factor class to provide various socket connections for IPython Kernel Spec</p>
+      <p class="comment cmt">A Factory class to provide various socket connections for IPython Kernel Spec</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.Stdin" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StdinextendsZeromqKernelMessageSocket"></a>
+      <a id="Stdin:Stdin"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Stdin.html"><span class="name">Stdin</span></a><span class="result"> extends <a href="ZeromqKernelMessageSocket.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket">ZeromqKernelMessageSocket</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">The server endpoint for stdin messages specified in the IPython Kernel Spec</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ZeromqKernelMessageSocketextendsActorwithMessageLogSupport"></a>
+      <a id="ZeromqKernelMessageSocket:ZeromqKernelMessageSocket"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ZeromqKernelMessageSocket.html"><span class="name">ZeromqKernelMessageSocket</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="../../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Represents a generic socket geared toward two-way communication using
+ZeroMQ and KernelMessage structures.</p>
     </li></ol>
             </div>
 

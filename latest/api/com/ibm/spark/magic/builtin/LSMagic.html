@@ -236,7 +236,7 @@
         <span class="name">execute</span><span class="params">(<span name="code">code: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Lists all available magics</p><div class="fullcomment"><div class="comment cmt"><p>Lists all available magics</p></div><dl class="paramcmts block"><dt class="param">code</dt><dd class="cmt"><p>The single line of code</p></dd><dt>returns</dt><dd class="cmt"><p>The output of the magic
+      <p class="shortcomment cmt">Lists all available magics.</p><div class="fullcomment"><div class="comment cmt"><p>Lists all available magics.</p></div><dl class="paramcmts block"><dt class="param">code</dt><dd class="cmt"><p>The single line of code</p></dd><dt>returns</dt><dd class="cmt"><p>The output of the magic
 </p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.ibm.spark.magic.builtin.LSMagic">LSMagic</a> → <a href="../LineMagic.html" class="extype" name="com.ibm.spark.magic.LineMagic">LineMagic</a> → <a href="../Magic.html" class="extype" name="com.ibm.spark.magic.Magic">Magic</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
@@ -296,6 +296,22 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.ibm.spark.magic.builtin.LSMagic#magicNames" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="magicNames(prefix:String,interface:Class[_],classes:List[Class[_]]):List[String]"></a>
+      <a id="magicNames(String,Class[_],List[Class[_]]):List[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">magicNames</span><span class="params">(<span name="prefix">prefix: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="interface">interface: <span class="extype" name="scala.Predef.Class">Class</span>[_]</span>, <span name="classes">classes: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.Class">Class</span>[_]]</span>)</span><span class="result">: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Provides a list of class names from the given list that implement
+the specified interface, with the specified prefix prepended.</p><div class="fullcomment"><div class="comment cmt"><p>Provides a list of class names from the given list that implement
+the specified interface, with the specified prefix prepended.</p></div><dl class="paramcmts block"><dt class="param">prefix</dt><dd class="cmt"><p>prepended to each name, e.g. &quot;%%&quot;</p></dd><dt class="param">interface</dt><dd class="cmt"><p>a magic interface, e.g. classOf[LineMagic]</p></dd><dt class="param">classes</dt><dd class="cmt"><p>a list of magic classes</p></dd><dt>returns</dt><dd class="cmt"><p>list of class names with prefix
+</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../package.html" class="extype" name="com.ibm.spark.magic">com.ibm.spark.magic</a>] </dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>

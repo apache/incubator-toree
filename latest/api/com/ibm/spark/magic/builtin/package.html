@@ -72,7 +72,7 @@
       </h4>
       
     </li><li name="com.ibm.spark.magic.builtin.AddJar" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="AddJarextendsLineMagicwithIncludeInterpreterwithIncludeSparkContextwithIncludeOutputStreamwithDownloadSupportwithArgumentParsingSupportwithIncludeKernel"></a>
+      <a id="AddJarextendsLineMagicwithIncludeInterpreterwithIncludeSparkContextwithIncludeOutputStreamwithDownloadSupportwithArgumentParsingSupportwithIncludeKernelwithIncludeMagicLoader"></a>
       <a id="AddJar:AddJar"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -80,7 +80,7 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="AddJar.html"><span class="name">AddJar</span></a><span class="result"> extends <a href="../LineMagic.html" class="extype" name="com.ibm.spark.magic.LineMagic">LineMagic</a> with <a href="../dependencies/IncludeInterpreter.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeInterpreter">IncludeInterpreter</a> with <a href="../dependencies/IncludeSparkContext.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeSparkContext">IncludeSparkContext</a> with <a href="../dependencies/IncludeOutputStream.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeOutputStream">IncludeOutputStream</a> with <a href="../../utils/DownloadSupport.html" class="extype" name="com.ibm.spark.utils.DownloadSupport">DownloadSupport</a> with <a href="../../utils/ArgumentParsingSupport.html" class="extype" name="com.ibm.spark.utils.ArgumentParsingSupport">ArgumentParsingSupport</a> with <a href="../dependencies/IncludeKernel.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeKernel">IncludeKernel</a></span>
+        <a href="AddJar.html"><span class="name">AddJar</span></a><span class="result"> extends <a href="../LineMagic.html" class="extype" name="com.ibm.spark.magic.LineMagic">LineMagic</a> with <a href="../dependencies/IncludeInterpreter.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeInterpreter">IncludeInterpreter</a> with <a href="../dependencies/IncludeSparkContext.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeSparkContext">IncludeSparkContext</a> with <a href="../dependencies/IncludeOutputStream.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeOutputStream">IncludeOutputStream</a> with <a href="../../utils/DownloadSupport.html" class="extype" name="com.ibm.spark.utils.DownloadSupport">DownloadSupport</a> with <a href="../../utils/ArgumentParsingSupport.html" class="extype" name="com.ibm.spark.utils.ArgumentParsingSupport">ArgumentParsingSupport</a> with <a href="../dependencies/IncludeKernel.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeKernel">IncludeKernel</a> with <a href="../dependencies/IncludeMagicLoader.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeMagicLoader">IncludeMagicLoader</a></span>
       </span>
       </h4>
       
@@ -137,7 +137,7 @@
       </h4>
       
     </li><li name="com.ibm.spark.magic.builtin.RDD" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="RDDextendsCellMagicwithIncludeInterpreterwithLogLike"></a>
+      <a id="RDDextendsCellMagicwithIncludeKernelInterpreterwithLogLike"></a>
       <a id="RDD:RDD"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -145,11 +145,37 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="RDD.html"><span class="name">RDD</span></a><span class="result"> extends <a href="../CellMagic.html" class="extype" name="com.ibm.spark.magic.CellMagic">CellMagic</a> with <a href="../dependencies/IncludeInterpreter.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeInterpreter">IncludeInterpreter</a> with <a href="../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></span>
+        <a href="RDD.html"><span class="name">RDD</span></a><span class="result"> extends <a href="../CellMagic.html" class="extype" name="com.ibm.spark.magic.CellMagic">CellMagic</a> with <a href="../dependencies/IncludeKernelInterpreter.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeKernelInterpreter">IncludeKernelInterpreter</a> with <a href="../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></span>
       </span>
       </h4>
       <p class="comment cmt">Temporary magic to show an RDD as JSON
 </p>
+    </li><li name="com.ibm.spark.magic.builtin.ShowTypes" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ShowTypesextendsLineMagicwithIncludeOutputStream"></a>
+      <a id="ShowTypes:ShowTypes"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ShowTypes.html"><span class="name">ShowTypes</span></a><span class="result"> extends <a href="../LineMagic.html" class="extype" name="com.ibm.spark.magic.LineMagic">LineMagic</a> with <a href="../dependencies/IncludeOutputStream.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeOutputStream">IncludeOutputStream</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.magic.builtin.Truncation" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TruncationextendsLineMagicwithIncludeOutputStream"></a>
+      <a id="Truncation:Truncation"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Truncation.html"><span class="name">Truncation</span></a><span class="result"> extends <a href="../LineMagic.html" class="extype" name="com.ibm.spark.magic.LineMagic">LineMagic</a> with <a href="../dependencies/IncludeOutputStream.html" class="extype" name="com.ibm.spark.magic.dependencies.IncludeOutputStream">IncludeOutputStream</a></span>
+      </span>
+      </h4>
+      
     </li></ol>
             </div>
 

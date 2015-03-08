@@ -122,6 +122,22 @@ via standard error.
 </p></dd><dt>returns</dt><dd class="cmt"><p>A tuple containing the result (true/false) and the output as a
         string
 </p></dd></dl></div>
+    </li><li name="com.ibm.spark.kernel.api.KernelLike#in" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="in(implicitstreamInfo:com.ibm.spark.kernel.api.StreamInfo):java.io.InputStream"></a>
+      <a id="in(StreamInfo):InputStream"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">in</span><span class="params">(<span class="implicit">implicit </span><span name="streamInfo">streamInfo: <a href="StreamInfo.html" class="extype" name="com.ibm.spark.kernel.api.StreamInfo">StreamInfo</a></span>)</span><span class="result">: <span class="extype" name="java.io.InputStream">InputStream</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Returns an input stream to be used to receive information from the client.</p><div class="fullcomment"><div class="comment cmt"><p>Returns an input stream to be used to receive information from the client.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>The input stream instance or an error if the stream info is
+        not found
+</p></dd></dl></div>
     </li><li name="com.ibm.spark.kernel.api.KernelLike#out" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="out(implicitstreamInfo:com.ibm.spark.kernel.api.StreamInfo):java.io.PrintStream"></a>
       <a id="out(StreamInfo):PrintStream"></a>
@@ -139,6 +155,25 @@ via standard out.</p><div class="fullcomment"><div class="comment cmt"><p>Return
 via standard out.
 </p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>The print stream instance or an error if the stream info is
         not found
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.kernel.api.KernelLike#stream" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="stream(implicitstreamInfo:com.ibm.spark.kernel.api.StreamInfo):com.ibm.spark.kernel.api.StreamMethodsLike"></a>
+      <a id="stream(StreamInfo):StreamMethodsLike"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stream</span><span class="params">(<span class="implicit">implicit </span><span name="streamInfo">streamInfo: <a href="StreamInfo.html" class="extype" name="com.ibm.spark.kernel.api.StreamInfo">StreamInfo</a></span>)</span><span class="result">: <a href="StreamMethodsLike.html" class="extype" name="com.ibm.spark.kernel.api.StreamMethodsLike">StreamMethodsLike</a></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Returns a collection of methods that can be used to stream data from the
+kernel to the client.</p><div class="fullcomment"><div class="comment cmt"><p>Returns a collection of methods that can be used to stream data from the
+kernel to the client.
+</p></div><dl class="paramcmts block"><dt class="param">streamInfo</dt><dd class="cmt"><p>The underlying KernelMessage (as StreamInfo) to use as
+                  the parent for outgoing stream messages
+</p></dd><dt>returns</dt><dd class="cmt"><p>The collection of stream methods
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -313,22 +348,6 @@ via standard out.
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.ibm.spark.kernel.api.KernelLike#in" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="in(implicitstreamInfo:com.ibm.spark.kernel.api.StreamInfo):java.io.InputStream"></a>
-      <a id="in(StreamInfo):InputStream"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">in</span><span class="params">(<span class="implicit">implicit </span><span name="streamInfo">streamInfo: <a href="StreamInfo.html" class="extype" name="com.ibm.spark.kernel.api.StreamInfo">StreamInfo</a></span>)</span><span class="result">: <span class="extype" name="java.io.InputStream">InputStream</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Returns an input stream to be used to receive information from the client.</p><div class="fullcomment"><div class="comment cmt"><p>Returns an input stream to be used to receive information from the client.
-</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>The input stream instance or an error if the stream info is
-        not found
-</p></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>

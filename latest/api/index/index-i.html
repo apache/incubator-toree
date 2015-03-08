@@ -36,6 +36,12 @@
       <div class="name">IncludeKernel</div>
       <div class="occurrences"><a href="../com/ibm/spark/magic/dependencies/package.html" class="extype" name="com.ibm.spark.magic.dependencies">dependencies</a> </div>
     </div><div class="entry">
+      <div class="name">IncludeKernelInterpreter</div>
+      <div class="occurrences"><a href="../com/ibm/spark/magic/dependencies/package.html" class="extype" name="com.ibm.spark.magic.dependencies">dependencies</a> </div>
+    </div><div class="entry">
+      <div class="name">IncludeMagicLoader</div>
+      <div class="occurrences"><a href="../com/ibm/spark/magic/dependencies/package.html" class="extype" name="com.ibm.spark.magic.dependencies">dependencies</a> </div>
+    </div><div class="entry">
       <div class="name">IncludeOutputStream</div>
       <div class="occurrences"><a href="../com/ibm/spark/magic/dependencies/package.html" class="extype" name="com.ibm.spark.magic.dependencies">dependencies</a> </div>
     </div><div class="entry">
@@ -47,6 +53,15 @@
     </div><div class="entry">
       <div class="name">Incomplete</div>
       <div class="occurrences"><a href="../com/ibm/spark/interpreter/Results$.html" class="extype" name="com.ibm.spark.interpreter.Results">Results</a> </div>
+    </div><div class="entry">
+      <div class="name">InputReply</div>
+      <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/content/package.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content">content</a> </div>
+    </div><div class="entry">
+      <div class="name">InputRequest</div>
+      <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/content/package.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content">content</a> </div>
+    </div><div class="entry">
+      <div class="name">InputRequestReplyHandler</div>
+      <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/handler/package.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.handler">handler</a> </div>
     </div><div class="entry">
       <div class="name">InspectReply</div>
       <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/content/package.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content">content</a> </div>
@@ -100,13 +115,13 @@
       <div class="occurrences"><a href="../com/ibm/spark/interpreter/package.html" class="extype" name="com.ibm.spark.interpreter">interpreter</a> </div>
     </div><div class="entry">
       <div class="name">in</div>
-      <div class="occurrences"><a href="../com/ibm/spark/interpreter/imports/printers/WrapperConsole.html" class="extype" name="com.ibm.spark.interpreter.imports.printers.WrapperConsole">WrapperConsole</a> <a href="../com/ibm/spark/interpreter/imports/printers/WrapperSystem.html" class="extype" name="com.ibm.spark.interpreter.imports.printers.WrapperSystem">WrapperSystem</a> <a href="../com/ibm/spark/kernel/api/KernelLike.html" class="extype" name="com.ibm.spark.kernel.api.KernelLike">KernelLike</a> </div>
+      <div class="occurrences"><a href="../com/ibm/spark/interpreter/imports/printers/WrapperConsole.html" class="extype" name="com.ibm.spark.interpreter.imports.printers.WrapperConsole">WrapperConsole</a> <a href="../com/ibm/spark/interpreter/imports/printers/WrapperSystem.html" class="extype" name="com.ibm.spark.interpreter.imports.printers.WrapperSystem">WrapperSystem</a> <a href="../com/ibm/spark/kernel/api/Kernel.html" class="extype" name="com.ibm.spark.kernel.api.Kernel">Kernel</a> <a href="../com/ibm/spark/kernel/api/KernelLike.html" class="extype" name="com.ibm.spark.kernel.api.KernelLike">KernelLike</a> </div>
     </div><div class="entry">
       <div class="name">incomingSpecialCases</div>
       <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/relay/KernelMessageRelay.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.relay.KernelMessageRelay">KernelMessageRelay</a> </div>
     </div><div class="entry">
       <div class="name">incr</div>
-      <div class="occurrences"><a href="../com/ibm/spark/utils/ExecutionCounter$.html" class="extype" name="com.ibm.spark.utils.ExecutionCounter">ExecutionCounter</a> </div>
+      <div class="occurrences"><a href="../com/ibm/spark/global/ExecutionCounter$.html" class="extype" name="com.ibm.spark.global.ExecutionCounter">ExecutionCounter</a> </div>
     </div><div class="entry">
       <div class="name">initialize</div>
       <div class="occurrences"><a href="../com/ibm/spark/boot/KernelBootstrap.html" class="extype" name="com.ibm.spark.boot.KernelBootstrap">KernelBootstrap</a> <a href="../com/ibm/spark/kernel/protocol/v5/client/boot/ClientBootstrap.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.client.boot.ClientBootstrap">ClientBootstrap</a> </div>
@@ -126,11 +141,29 @@
       <div class="name">initializeHooks</div>
       <div class="occurrences"><a href="../com/ibm/spark/boot/layer/HookInitialization.html" class="extype" name="com.ibm.spark.boot.layer.HookInitialization">HookInitialization</a> <a href="../com/ibm/spark/boot/layer/StandardHookInitialization.html" class="extype" name="com.ibm.spark.boot.layer.StandardHookInitialization">StandardHookInitialization</a> </div>
     </div><div class="entry">
+      <div class="name">initializeInterpreter</div>
+      <div class="occurrences"><a href="../com/ibm/spark/boot/layer/StandardComponentInitialization.html" class="extype" name="com.ibm.spark.boot.layer.StandardComponentInitialization">StandardComponentInitialization</a> </div>
+    </div><div class="entry">
+      <div class="name">initializeResponseMap</div>
+      <div class="occurrences"><a href="../com/ibm/spark/boot/layer/StandardComponentInitialization.html" class="extype" name="com.ibm.spark.boot.layer.StandardComponentInitialization">StandardComponentInitialization</a> </div>
+    </div><div class="entry">
       <div class="name">initializeSparkContext</div>
       <div class="occurrences"><a href="../com/ibm/spark/boot/layer/StandardComponentInitialization.html" class="extype" name="com.ibm.spark.boot.layer.StandardComponentInitialization">StandardComponentInitialization</a> </div>
     </div><div class="entry">
       <div class="name">initializeSystem</div>
       <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/client/boot/layers/StandardSystemInitialization.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.client.boot.layers.StandardSystemInitialization">StandardSystemInitialization</a> <a href="../com/ibm/spark/kernel/protocol/v5/client/boot/layers/SystemInitialization.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.client.boot.layers.SystemInitialization">SystemInitialization</a> </div>
+    </div><div class="entry">
+      <div class="name">inputReplyReads</div>
+      <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/content/InputReply$.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.InputReply">InputReply</a> </div>
+    </div><div class="entry">
+      <div class="name">inputReplyWrites</div>
+      <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/content/InputReply$.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.InputReply">InputReply</a> </div>
+    </div><div class="entry">
+      <div class="name">inputRequestReads</div>
+      <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/content/InputRequest$.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.InputRequest">InputRequest</a> </div>
+    </div><div class="entry">
+      <div class="name">inputRequestWrites</div>
+      <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/content/InputRequest$.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.InputRequest">InputRequest</a> </div>
     </div><div class="entry">
       <div class="name">inspectReplyOkReads</div>
       <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/content/InspectReply$.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.InspectReply">InspectReply</a> </div>
@@ -144,6 +177,9 @@
       <div class="name">inspectRequestWrites</div>
       <div class="occurrences"><a href="../com/ibm/spark/kernel/protocol/v5/content/InspectRequest$.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.content.InspectRequest">InspectRequest</a> </div>
     </div><div class="entry">
+      <div class="name">instance</div>
+      <div class="occurrences"><a href="../com/ibm/spark/global/ScheduledTaskManager$.html" class="extype" name="com.ibm.spark.global.ScheduledTaskManager">ScheduledTaskManager</a> </div>
+    </div><div class="entry">
       <div class="name">internalMap</div>
       <div class="occurrences"><a href="../com/ibm/spark/magic/dependencies/DependencyMap.html" class="extype" name="com.ibm.spark.magic.dependencies.DependencyMap">DependencyMap</a> </div>
     </div><div class="entry">
@@ -156,6 +192,9 @@
       <div class="name">interpretConstructExecuteError</div>
       <div class="occurrences"><a href="../com/ibm/spark/interpreter/ScalaInterpreter.html" class="extype" name="com.ibm.spark.interpreter.ScalaInterpreter">ScalaInterpreter</a> </div>
     </div><div class="entry">
+      <div class="name">interpretLine</div>
+      <div class="occurrences"><a href="../com/ibm/spark/interpreter/ScalaInterpreter.html" class="extype" name="com.ibm.spark.interpreter.ScalaInterpreter">ScalaInterpreter</a> </div>
+    </div><div class="entry">
       <div class="name">interpretMapToCustomResult</div>
       <div class="occurrences"><a href="../com/ibm/spark/interpreter/ScalaInterpreter.html" class="extype" name="com.ibm.spark.interpreter.ScalaInterpreter">ScalaInterpreter</a> </div>
     </div><div class="entry">
@@ -163,6 +202,9 @@
       <div class="occurrences"><a href="../com/ibm/spark/interpreter/ScalaInterpreter.html" class="extype" name="com.ibm.spark.interpreter.ScalaInterpreter">ScalaInterpreter</a> </div>
     </div><div class="entry">
       <div class="name">interpretMapToResultAndOutput</div>
+      <div class="occurrences"><a href="../com/ibm/spark/interpreter/ScalaInterpreter.html" class="extype" name="com.ibm.spark.interpreter.ScalaInterpreter">ScalaInterpreter</a> </div>
+    </div><div class="entry">
+      <div class="name">interpretRec</div>
       <div class="occurrences"><a href="../com/ibm/spark/interpreter/ScalaInterpreter.html" class="extype" name="com.ibm.spark.interpreter.ScalaInterpreter">ScalaInterpreter</a> </div>
     </div><div class="entry">
       <div class="name">interpreter</div>

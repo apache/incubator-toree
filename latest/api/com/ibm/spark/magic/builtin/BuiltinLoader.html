@@ -455,19 +455,22 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>ClassLoader</dd></dl></div>
-    </li><li name="com.ibm.spark.magic.builtin.BuiltinLoader#getClasses" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getClasses(pkg:String):Iterable[com.google.common.reflect.ClassPath.ClassInfo]withIntwithcom.google.common.reflect.ClassPath.ClassInfo=&gt;Boolean"></a>
-      <a id="getClasses(String):Iterable[ClassInfo]with(IntwithClassInfo)⇒Boolean"></a>
+    </li><li name="com.ibm.spark.magic.builtin.BuiltinLoader#getClasses" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClasses(pkg:String):List[com.google.common.reflect.ClassPath.ClassInfo]"></a>
+      <a id="getClasses(String):List[ClassInfo]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getClasses</span><span class="params">(<span name="pkg">pkg: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">pkgName</span></span>)</span><span class="result">: <span class="extype" name="scala.collection.Iterable">Iterable</span>[<span class="extype" name="com.google.common.reflect.ClassPath.ClassInfo">ClassInfo</span>] with (<span class="extype" name="scala.Int">Int</span> with <span class="extype" name="com.google.common.reflect.ClassPath.ClassInfo">ClassInfo</span>) ⇒ <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">getClasses</span><span class="params">(<span name="pkg">pkg: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">pkgName</span></span>)</span><span class="result">: <span class="extype" name="scala.List">List</span>[<span class="extype" name="com.google.common.reflect.ClassPath.ClassInfo">ClassInfo</span>]</span>
       </span>
       </h4>
-      
+      <p class="shortcomment cmt">Provides a list of ClassInfo objects for each class in the specified
+package.</p><div class="fullcomment"><div class="comment cmt"><p>Provides a list of ClassInfo objects for each class in the specified
+package.</p></div><dl class="paramcmts block"><dt class="param">pkg</dt><dd class="cmt"><p>package name</p></dd><dt>returns</dt><dd class="cmt"><p>list of ClassInfo objects
+</p></dd></dl></div>
     </li><li name="java.lang.ClassLoader#getPackage" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getPackage(x$1:String):Package"></a>
       <a id="getPackage(String):Package"></a>
@@ -618,6 +621,22 @@ as the base of the name if unable to load normally.
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="com.ibm.spark.magic.builtin.BuiltinLoader#loadClasses" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="loadClasses(pkg:String):List[Class[_]]"></a>
+      <a id="loadClasses(String):List[Class[_]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">loadClasses</span><span class="params">(<span name="pkg">pkg: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">pkgName</span></span>)</span><span class="result">: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.Class">Class</span>[_]]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Provides a list of Class[_] objects for each class in the specified
+package.</p><div class="fullcomment"><div class="comment cmt"><p>Provides a list of Class[_] objects for each class in the specified
+package.</p></div><dl class="paramcmts block"><dt class="param">pkg</dt><dd class="cmt"><p>package name</p></dd><dt>returns</dt><dd class="cmt"><p>list of Class[_] objects
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>

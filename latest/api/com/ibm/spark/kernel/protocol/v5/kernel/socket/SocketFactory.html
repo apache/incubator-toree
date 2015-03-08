@@ -39,7 +39,7 @@
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A Factor class to provide various socket connections for IPython Kernel Spec</p></div><div class="toggleContainer block">
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A Factory class to provide various socket connections for IPython Kernel Spec</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -91,7 +91,8 @@
         <span class="name">SocketFactory</span><span class="params">(<span name="socketConfig">socketConfig: <a href="SocketConfig.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketConfig">SocketConfig</a></span>)</span>
       </span>
       </h4>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">socketConfig</dt><dd class="cmt"><p>The configuration for the sockets to be properly instantiated
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">socketConfig</dt><dd class="cmt"><p>The configuration for the sockets to be properly
+                    instantiated
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -179,7 +180,9 @@
         <span class="name">Heartbeat</span><span class="params">(<span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="listener">listener: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Creates a ZeroMQ reply socket representing the server endpoint for heartbeat messages</p><div class="fullcomment"><div class="comment cmt"><p>Creates a ZeroMQ reply socket representing the server endpoint for heartbeat messages</p></div><dl class="paramcmts block"><dt class="param">system</dt><dd class="cmt"><p>The actor system the socket actor will belong</p></dd><dt class="param">listener</dt><dd class="cmt"><p>The actor who will receive</p></dd><dt>returns</dt><dd class="cmt"><p>The ActorRef created for the socket connection
+      <p class="shortcomment cmt">Creates a ZeroMQ reply socket representing the server endpoint for
+heartbeat messages</p><div class="fullcomment"><div class="comment cmt"><p>Creates a ZeroMQ reply socket representing the server endpoint for
+heartbeat messages</p></div><dl class="paramcmts block"><dt class="param">system</dt><dd class="cmt"><p>The actor system the socket actor will belong</p></dd><dt class="param">listener</dt><dd class="cmt"><p>The actor who will receive</p></dd><dt>returns</dt><dd class="cmt"><p>The ActorRef created for the socket connection
 </p></dd></dl></div>
     </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketFactory#HeartbeatConnection" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="HeartbeatConnection:com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketConnection"></a>
@@ -206,7 +209,9 @@
         <span class="name">IOPub</span><span class="params">(<span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>)</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Creates a ZeroMQ reply socket representing the server endpoint for IOPub messages</p><div class="fullcomment"><div class="comment cmt"><p>Creates a ZeroMQ reply socket representing the server endpoint for IOPub messages</p></div><dl class="paramcmts block"><dt class="param">system</dt><dd class="cmt"><p>The actor system the socket actor will belong</p></dd><dt>returns</dt><dd class="cmt"><p>The ActorRef created for the socket connection
+      <p class="shortcomment cmt">Creates a ZeroMQ reply socket representing the server endpoint for IOPub
+messages</p><div class="fullcomment"><div class="comment cmt"><p>Creates a ZeroMQ reply socket representing the server endpoint for IOPub
+messages</p></div><dl class="paramcmts block"><dt class="param">system</dt><dd class="cmt"><p>The actor system the socket actor will belong</p></dd><dt>returns</dt><dd class="cmt"><p>The ActorRef created for the socket connection
 </p></dd></dl></div>
     </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketFactory#IOPubConnection" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="IOPubConnection:com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketConnection"></a>
@@ -233,7 +238,9 @@
         <span class="name">Shell</span><span class="params">(<span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="listener">listener: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4>
-      <p class="shortcomment cmt">Creates a ZeroMQ reply socket representing the server endpoint for shell messages</p><div class="fullcomment"><div class="comment cmt"><p>Creates a ZeroMQ reply socket representing the server endpoint for shell messages</p></div><dl class="paramcmts block"><dt class="param">system</dt><dd class="cmt"><p>The actor system the socket actor will belong</p></dd><dt class="param">listener</dt><dd class="cmt"><p>The actor who will receive</p></dd><dt>returns</dt><dd class="cmt"><p>The ActorRef created for the socket connection
+      <p class="shortcomment cmt">Creates a ZeroMQ reply socket representing the server endpoint for shell
+messages</p><div class="fullcomment"><div class="comment cmt"><p>Creates a ZeroMQ reply socket representing the server endpoint for shell
+messages</p></div><dl class="paramcmts block"><dt class="param">system</dt><dd class="cmt"><p>The actor system the socket actor will belong</p></dd><dt class="param">listener</dt><dd class="cmt"><p>The actor who will receive</p></dd><dt>returns</dt><dd class="cmt"><p>The ActorRef created for the socket connection
 </p></dd></dl></div>
     </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketFactory#ShellConnection" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ShellConnection:com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketConnection"></a>
@@ -245,6 +252,35 @@
       </span>
       <span class="symbol">
         <span class="name">ShellConnection</span><span class="result">: <a href="SocketConnection.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketConnection">SocketConnection</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketFactory#Stdin" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="Stdin(system:akka.actor.ActorSystem,listener:akka.actor.ActorRef):akka.actor.ActorRef"></a>
+      <a id="Stdin(ActorSystem,ActorRef):ActorRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">Stdin</span><span class="params">(<span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="listener">listener: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Creates a ZeroMQ reply socket representing the server endpoint for stdin
+messages</p><div class="fullcomment"><div class="comment cmt"><p>Creates a ZeroMQ reply socket representing the server endpoint for stdin
+messages</p></div><dl class="paramcmts block"><dt class="param">system</dt><dd class="cmt"><p>The actor system the socket actor will belong</p></dd><dt class="param">listener</dt><dd class="cmt"><p>The actor who will receive</p></dd><dt>returns</dt><dd class="cmt"><p>The ActorRef created for the socket connection
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketFactory#StdinConnection" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StdinConnection:com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketConnection"></a>
+      <a id="StdinConnection:SocketConnection"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">StdinConnection</span><span class="result">: <a href="SocketConnection.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketConnection">SocketConnection</a></span>
       </span>
       </h4>
       

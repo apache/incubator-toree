@@ -35,13 +35,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Shell</span><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="../../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></span>
+        <span class="name">Shell</span><span class="result"> extends <a href="ZeromqKernelMessageSocket.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket">ZeromqKernelMessageSocket</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>The server endpoint for shell messages specified in the IPython Kernel Spec</p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="../../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a>, <a href="../../../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="ZeromqKernelMessageSocket.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket">ZeromqKernelMessageSocket</a>, <a href="../../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a>, <a href="../../../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a>, <span class="extype" name="akka.actor.Actor">Actor</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +59,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.Shell"><span>Shell</span></li><li class="in" name="com.ibm.spark.utils.MessageLogSupport"><span>MessageLogSupport</span></li><li class="in" name="com.ibm.spark.utils.LogLike"><span>LogLike</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.Shell"><span>Shell</span></li><li class="in" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket"><span>ZeromqKernelMessageSocket</span></li><li class="in" name="com.ibm.spark.utils.MessageLogSupport"><span>MessageLogSupport</span></li><li class="in" name="com.ibm.spark.utils.LogLike"><span>LogLike</span></li><li class="in" name="akka.actor.Actor"><span>Actor</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -91,7 +91,8 @@
         <span class="name">Shell</span><span class="params">(<span name="socketFactory">socketFactory: <a href="SocketFactory.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.SocketFactory">SocketFactory</a></span>, <span name="actorLoader">actorLoader: <a href="../ActorLoader.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader">ActorLoader</a></span>)</span>
       </span>
       </h4>
-      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">socketFactory</dt><dd class="cmt"><p>A factory to create the ZeroMQ socket connection
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">socketFactory</dt><dd class="cmt"><p>A factory to create the ZeroMQ socket connection</p></dd><dt class="param">actorLoader</dt><dd class="cmt"><p>The actor loader to use to load the relay for kernel
+                   messages
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -183,6 +184,97 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket#actorForwardRef" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="actorForwardRef:akka.actor.ActorSelection"></a>
+      <a id="actorForwardRef:ActorSelection"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">actorForwardRef</span><span class="result">: <span class="extype" name="akka.actor.ActorSelection">ActorSelection</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ZeromqKernelMessageSocket.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket">ZeromqKernelMessageSocket</a></dd></dl></div>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket#actorSocketRef" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="actorSocketRef:akka.actor.ActorRef"></a>
+      <a id="actorSocketRef:ActorRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">actorSocketRef</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ZeromqKernelMessageSocket.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket">ZeromqKernelMessageSocket</a></dd></dl></div>
+    </li><li name="akka.actor.Actor#aroundPostRestart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="aroundPostRestart(reason:Throwable):Unit"></a>
+      <a id="aroundPostRestart(Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">aroundPostRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="akka.actor.Actor#aroundPostStop" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="aroundPostStop():Unit"></a>
+      <a id="aroundPostStop():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">aroundPostStop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="akka.actor.Actor#aroundPreRestart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="aroundPreRestart(reason:Throwable,message:Option[Any]):Unit"></a>
+      <a id="aroundPreRestart(Throwable,Option[Any]):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">aroundPreRestart</span><span class="params">(<span name="reason">reason: <span class="extype" name="scala.Throwable">Throwable</span></span>, <span name="message">message: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Any">Any</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="akka.actor.Actor#aroundPreStart" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="aroundPreStart():Unit"></a>
+      <a id="aroundPreStart():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">aroundPreStart</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
+    </li><li name="akka.actor.Actor#aroundReceive" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="aroundReceive(receive:akka.actor.Actor.Receive,msg:Any):Unit"></a>
+      <a id="aroundReceive(akka.actor.Actor.Receive,Any):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">aroundReceive</span><span class="params">(<span name="receive">receive: <span class="extype" name="akka.actor.Actor.Receive">akka.actor.Actor.Receive</span></span>, <span name="msg">msg: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../../../../akka.html" class="extype" name="akka">akka</a>] </dd><dt>Definition Classes</dt><dd>Actor</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -481,8 +573,8 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.Shell#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="receive:Shell.this.Receive"></a>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket#receive" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="receive:ZeromqKernelMessageSocket.this.Receive"></a>
       <a id="receive:Receive"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -493,7 +585,7 @@
         <span class="name">receive</span><span class="result">: <a href="#Receive=akka.actor.Actor.Receive" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.Shell.Receive">Receive</a></span>
       </span>
       </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.Shell">Shell</a> → Actor</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ZeromqKernelMessageSocket.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket">ZeromqKernelMessageSocket</a> → Actor</dd></dl></div>
     </li><li name="akka.actor.Actor#self" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="self:akka.actor.ActorRef"></a>
       <a id="self:ActorRef"></a>
@@ -508,31 +600,18 @@
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
     </li><li name="akka.actor.Actor#sender" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="sender:akka.actor.ActorRef"></a>
-      <a id="sender:ActorRef"></a>
+      <a id="sender():akka.actor.ActorRef"></a>
+      <a id="sender():ActorRef"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">sender</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+        <span class="name">sender</span><span class="params">()</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Actor</dd></dl></div>
-    </li><li name="com.ibm.spark.kernel.protocol.v5.kernel.socket.Shell#socket" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="socket:akka.actor.ActorRef"></a>
-      <a id="socket:ActorRef"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">socket</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
-      </span>
-      </h4>
-      
     </li><li name="akka.actor.Actor#supervisorStrategy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="supervisorStrategy:akka.actor.SupervisorStrategy"></a>
       <a id="supervisorStrategy:SupervisorStrategy"></a>
@@ -651,7 +730,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="com.ibm.spark.utils.MessageLogSupport">
+        <div class="parent" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket">
+              <h3>Inherited from <a href="ZeromqKernelMessageSocket.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.kernel.socket.ZeromqKernelMessageSocket">ZeromqKernelMessageSocket</a></h3>
+            </div><div class="parent" name="com.ibm.spark.utils.MessageLogSupport">
               <h3>Inherited from <a href="../../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></h3>
             </div><div class="parent" name="com.ibm.spark.utils.LogLike">
               <h3>Inherited from <a href="../../../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></h3>

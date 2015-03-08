@@ -221,6 +221,19 @@ directories or expanding star in a path.</p></div><dl class="paramcmts block"><d
       </h4>
       <p class="shortcomment cmt">Binds a variable in the interpreter to a value.</p><div class="fullcomment"><div class="comment cmt"><p>Binds a variable in the interpreter to a value.</p></div><dl class="paramcmts block"><dt class="param">variableName</dt><dd class="cmt"><p>The name to expose the value in the interpreter</p></dd><dt class="param">typeName</dt><dd class="cmt"><p>The type of the variable, must be the fully qualified class name</p></dd><dt class="param">value</dt><dd class="cmt"><p>The value of the variable binding</p></dd><dt class="param">modifiers</dt><dd class="cmt"><p>Any annotation, scoping modifiers, etc on the variable
 </p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.ibm.spark.interpreter.ScalaInterpreter">ScalaInterpreter</a> → <a href="Interpreter.html" class="extype" name="com.ibm.spark.interpreter.Interpreter">Interpreter</a></dd></dl></div>
+    </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#buildModifierList" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="buildModifierList(termNameString:String):List[String]"></a>
+      <a id="buildModifierList(String):List[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">buildModifierList</span><span class="params">(<span name="termNameString">termNameString: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.collection.immutable.List">List</span>[<span class="extype" name="java.lang.String">String</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#classServerURI" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="classServerURI:String"></a>
       <a id="classServerURI:String"></a>
@@ -268,6 +281,32 @@ directories or expanding star in a path.</p></div><dl class="paramcmts block"><d
       </h4>
       <p class="shortcomment cmt">Attempts to perform code completion via the &lt;TAB&gt; command.</p><div class="fullcomment"><div class="comment cmt"><p>Attempts to perform code completion via the &lt;TAB&gt; command.</p></div><dl class="paramcmts block"><dt class="param">code</dt><dd class="cmt"><p>The current cell to complete</p></dd><dt class="param">pos</dt><dd class="cmt"><p>The cursor position</p></dd><dt>returns</dt><dd class="cmt"><p>The cursor position and list of possible completions
 </p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.ibm.spark.interpreter.ScalaInterpreter">ScalaInterpreter</a> → <a href="Interpreter.html" class="extype" name="com.ibm.spark.interpreter.Interpreter">Interpreter</a></dd></dl></div>
+    </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#convertAnnotationsToModifiers" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="convertAnnotationsToModifiers(annotationInfos:List[scala.tools.nsc.Global#AnnotationInfo]):List[String]"></a>
+      <a id="convertAnnotationsToModifiers(List[scala.tools.nsc.Global.AnnotationInfo]):List[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">convertAnnotationsToModifiers</span><span class="params">(<span name="annotationInfos">annotationInfos: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.reflect.internal.AnnotationInfos.AnnotationInfo">scala.tools.nsc.Global.AnnotationInfo</span>]</span>)</span><span class="result">: <span class="extype" name="scala.collection.immutable.List">List</span>[<span class="extype" name="java.lang.String">String</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#convertScopeToModifiers" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="convertScopeToModifiers(scopeSymbol:scala.tools.nsc.Global#Symbol):List[String]"></a>
+      <a id="convertScopeToModifiers(scala.tools.nsc.Global.Symbol):List[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">convertScopeToModifiers</span><span class="params">(<span name="scopeSymbol">scopeSymbol: <span class="extype" name="scala.reflect.internal.Symbols.Symbol">scala.tools.nsc.Global.Symbol</span></span>)</span><span class="result">: <span class="extype" name="scala.collection.immutable.List">List</span>[<span class="extype" name="java.lang.String">String</span>]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#doQuietly" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="doQuietly[T](body:=&gt;T):T"></a>
       <a id="doQuietly[T](⇒T):T"></a>
@@ -394,6 +433,19 @@ directories or expanding star in a path.</p></div><dl class="paramcmts block"><d
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#interpretLine" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="interpretLine(line:String,silent:Boolean):(com.ibm.spark.interpreter.Results.Result,Either[com.ibm.spark.interpreter.ExecuteOutput,com.ibm.spark.interpreter.ExecuteFailure])"></a>
+      <a id="interpretLine(String,Boolean):(Result,Either[ExecuteOutput,ExecuteFailure])"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">interpretLine</span><span class="params">(<span name="line">line: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="silent">silent: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: (<a href="Results$$Result.html" class="extype" name="com.ibm.spark.interpreter.Results.Result">Result</a>, <span class="extype" name="scala.Either">Either</span>[<a href="package.html#ExecuteOutput=String" class="extmbr" name="com.ibm.spark.interpreter.ExecuteOutput">ExecuteOutput</a>, <a href="ExecuteFailure.html" class="extype" name="com.ibm.spark.interpreter.ExecuteFailure">ExecuteFailure</a>])</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#interpretMapToCustomResult" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="interpretMapToCustomResult(future:scala.concurrent.Future[tools.nsc.interpreter.IR.Result]):scala.concurrent.Future[ProductwithSerializablewithcom.ibm.spark.interpreter.Results.Result]"></a>
       <a id="interpretMapToCustomResult(Future[Result]):Future[ProductwithSerializablewithResult]"></a>
@@ -430,6 +482,19 @@ directories or expanding star in a path.</p></div><dl class="paramcmts block"><d
       </span>
       <span class="symbol">
         <span class="name">interpretMapToResultAndOutput</span><span class="params">(<span name="future">future: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Results$$Result.html" class="extype" name="com.ibm.spark.interpreter.Results.Result">Result</a>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[(<a href="Results$$Result.html" class="extype" name="com.ibm.spark.interpreter.Results.Result">Result</a>, <span class="extype" name="java.lang.String">String</span>)]</span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#interpretRec" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="interpretRec(lines:List[String],silent:Boolean,results:(com.ibm.spark.interpreter.Results.Result,Either[com.ibm.spark.interpreter.ExecuteOutput,com.ibm.spark.interpreter.ExecuteFailure])):(com.ibm.spark.interpreter.Results.Result,Either[com.ibm.spark.interpreter.ExecuteOutput,com.ibm.spark.interpreter.ExecuteFailure])"></a>
+      <a id="interpretRec(List[String],Boolean,(Result,Either[ExecuteOutput,ExecuteFailure])):(Result,Either[ExecuteOutput,ExecuteFailure])"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">interpretRec</span><span class="params">(<span name="lines">lines: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="silent">silent: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="results">results: (<a href="Results$$Result.html" class="extype" name="com.ibm.spark.interpreter.Results.Result">Result</a>, <span class="extype" name="scala.Either">Either</span>[<a href="package.html#ExecuteOutput=String" class="extmbr" name="com.ibm.spark.interpreter.ExecuteOutput">ExecuteOutput</a>, <a href="ExecuteFailure.html" class="extype" name="com.ibm.spark.interpreter.ExecuteFailure">ExecuteFailure</a>])</span>)</span><span class="result">: (<a href="Results$$Result.html" class="extype" name="com.ibm.spark.interpreter.Results.Result">Result</a>, <span class="extype" name="scala.Either">Either</span>[<a href="package.html#ExecuteOutput=String" class="extmbr" name="com.ibm.spark.interpreter.ExecuteOutput">ExecuteOutput</a>, <a href="ExecuteFailure.html" class="extype" name="com.ibm.spark.interpreter.ExecuteFailure">ExecuteFailure</a>])</span>
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
@@ -569,6 +634,19 @@ interpreter.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieves t
 interpreter.</p></div><dl class="paramcmts block"><dt class="param">variableName</dt><dd class="cmt"><p>The name of the variable whose contents to read</p></dd><dt>returns</dt><dd class="cmt"><p>An option containing the variable contents or None if the
         variable does not exist
 </p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.ibm.spark.interpreter.ScalaInterpreter">ScalaInterpreter</a> → <a href="Interpreter.html" class="extype" name="com.ibm.spark.interpreter.Interpreter">Interpreter</a></dd></dl></div>
+    </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#refreshDefinitions" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="refreshDefinitions():Unit"></a>
+      <a id="refreshDefinitions():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">refreshDefinitions</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#reinitializeSymbols" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="reinitializeSymbols():Unit"></a>
       <a id="reinitializeSymbols():Unit"></a>
@@ -662,6 +740,19 @@ interpreter.</p></div><dl class="paramcmts block"><dt class="param">variableName
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#truncateResult" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="truncateResult(result:String,showType:Boolean,noTruncate:Boolean):String"></a>
+      <a id="truncateResult(String,Boolean,Boolean):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">truncateResult</span><span class="params">(<span name="result">result: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="showType">showType: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="noTruncate">noTruncate: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      
     </li><li name="com.ibm.spark.interpreter.ScalaInterpreter#updateCompilerClassPath" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="updateCompilerClassPath(jars:java.net.URL*):Unit"></a>
       <a id="updateCompilerClassPath(URL*):Unit"></a>

@@ -2,9 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html>
         <head>
-          <title>ExecutionCounter - com.ibm.spark.utils.ExecutionCounter</title>
-          <meta name="description" content="ExecutionCounter - com.ibm.spark.utils.ExecutionCounter" />
-          <meta name="keywords" content="ExecutionCounter com.ibm.spark.utils.ExecutionCounter" />
+          <title>KeyValuePairUtils - com.ibm.spark.utils.KeyValuePairUtils</title>
+          <meta name="description" content="KeyValuePairUtils - com.ibm.spark.utils.KeyValuePairUtils" />
+          <meta name="keywords" content="KeyValuePairUtils com.ibm.spark.utils.KeyValuePairUtils" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -12,7 +12,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../../index.html';
-            var hash = 'com.ibm.spark.utils.ExecutionCounter$';
+            var hash = 'com.ibm.spark.utils.KeyValuePairUtils$';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -26,7 +26,7 @@
       <div id="definition">
         <img src="../../../../lib/object_big.png" />
         <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.ibm">ibm</a>.<a href="../package.html" class="extype" name="com.ibm.spark">spark</a>.<a href="package.html" class="extype" name="com.ibm.spark.utils">utils</a></p>
-        <h1>ExecutionCounter</h1>
+        <h1>KeyValuePairUtils</h1>
       </div>
 
       <h4 id="signature" class="signature">
@@ -35,11 +35,11 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">ExecutionCounter</span>
+        <span class="name">KeyValuePairUtils</span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A class to keep track of execution counts for sessions.
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Provides utility methods for jsimple-opt key pair values.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -60,7 +60,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.ibm.spark.utils.ExecutionCounter"><span>ExecutionCounter</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.ibm.spark.utils.KeyValuePairUtils"><span>KeyValuePairUtils</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -151,6 +151,19 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.ibm.spark.utils.KeyValuePairUtils#DefaultDelimiter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DefaultDelimiter:String"></a>
+      <a id="DefaultDelimiter:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">DefaultDelimiter</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -254,21 +267,6 @@
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="com.ibm.spark.utils.ExecutionCounter#incr" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="incr(key:com.ibm.spark.kernel.protocol.v5.UUID):Int"></a>
-      <a id="incr(UUID):Int"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">incr</span><span class="params">(<span name="key">key: <a href="../kernel/protocol/v5/package.html#UUID=String" class="extmbr" name="com.ibm.spark.kernel.protocol.v5.UUID">UUID</a></span>)</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">This function will increase, by 1, an integer value associated with the given key.</p><div class="fullcomment"><div class="comment cmt"><p>This function will increase, by 1, an integer value associated with the given key. The incremented value
-will be returned. If the key has no value associated value, 1 will be returned.</p></div><dl class="paramcmts block"><dt class="param">key</dt><dd class="cmt"><p>The key for incrementing the value.</p></dd><dt>returns</dt><dd class="cmt"><p>The incremented value
-</p></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -282,6 +280,20 @@ will be returned. If the key has no value associated value, 1 will be returned.<
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.ibm.spark.utils.KeyValuePairUtils#keyValuePairSeqToString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="keyValuePairSeqToString(keyValuePairSeq:Seq[joptsimple.util.KeyValuePair],delimiter:String):String"></a>
+      <a id="keyValuePairSeqToString(Seq[KeyValuePair],String):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">keyValuePairSeqToString</span><span class="params">(<span name="keyValuePairSeq">keyValuePairSeq: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="joptsimple.util.KeyValuePair">KeyValuePair</span>]</span>, <span name="delimiter">delimiter: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="#DefaultDelimiter:String">DefaultDelimiter</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Transforms the provided list of KeyValuePair elements into a string.</p><div class="fullcomment"><div class="comment cmt"><p>Transforms the provided list of KeyValuePair elements into a string.</p></div><dl class="paramcmts block"><dt class="param">keyValuePairSeq</dt><dd class="cmt"><p>The sequence of KeyValuePair objects</p></dd><dt class="param">delimiter</dt><dd class="cmt"><p>The separator between string KeyValuePair</p></dd><dt>returns</dt><dd class="cmt"><p>The resulting string from the list of KeyValuePair objects
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -321,6 +333,21 @@ will be returned. If the key has no value associated value, 1 will be returned.<
       </span>
       </h4>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.ibm.spark.utils.KeyValuePairUtils#stringToKeyValuePairSeq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="stringToKeyValuePairSeq(keyValuePairString:String,delimiter:String):Seq[joptsimple.util.KeyValuePair]"></a>
+      <a id="stringToKeyValuePairSeq(String,String):Seq[KeyValuePair]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stringToKeyValuePairSeq</span><span class="params">(<span name="keyValuePairString">keyValuePairString: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="delimiter">delimiter: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="#DefaultDelimiter:String">DefaultDelimiter</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="joptsimple.util.KeyValuePair">KeyValuePair</span>]</span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Transforms the provided string into a list of KeyValuePair objects.</p><div class="fullcomment"><div class="comment cmt"><p>Transforms the provided string into a list of KeyValuePair objects.</p></div><dl class="paramcmts block"><dt class="param">keyValuePairString</dt><dd class="cmt"><p>The string representing the series of keys and
+                          values</p></dd><dt class="param">delimiter</dt><dd class="cmt"><p>The delimiter used for splitting up the string</p></dd><dt>returns</dt><dd class="cmt"><p>The list of KeyValuePair objects
+</p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

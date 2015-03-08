@@ -264,6 +264,39 @@ Router/Dealer message routing</a>.
       </span>
       </h4>
       
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.SocketFactory#StdinClient" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="StdinClient(system:akka.actor.ActorSystem,listener:akka.actor.ActorRef):akka.actor.ActorRef"></a>
+      <a id="StdinClient(ActorSystem,ActorRef):ActorRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">StdinClient</span><span class="params">(<span name="system">system: <span class="extype" name="akka.actor.ActorSystem">ActorSystem</span></span>, <span name="listener">listener: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>)</span><span class="result">: <span class="extype" name="akka.actor.ActorRef">ActorRef</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Creates a ZeroMQ reply socket representing the client endpoint for stdin
+messages.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a ZeroMQ reply socket representing the client endpoint for stdin
+messages. Generates an id for
+<a href="http://api.zeromq.org/2-1:zmq-setsockopt#toc6">
+Router/Dealer message routing</a>.
+</p></div><dl class="paramcmts block"><dt class="param">system</dt><dd class="cmt"><p>The actor system the socket actor will belong</p></dd><dt class="param">listener</dt><dd class="cmt"><p>The actor who will receive
+</p></dd><dt>returns</dt><dd class="cmt"><p>The ActorRef created for the socket connection
+</p></dd></dl></div>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.SocketFactory#StdinConnection" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StdinConnection:com.ibm.spark.kernel.protocol.v5.client.socket.SocketConnection"></a>
+      <a id="StdinConnection:SocketConnection"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">StdinConnection</span><span class="result">: <a href="SocketConnection.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.client.socket.SocketConnection">SocketConnection</a></span>
+      </span>
+      </h4>
+      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
