@@ -23,9 +23,13 @@ import java.io.{InputStream, OutputStream, PrintStream}
  * standard input and output.
  */
 object StreamState {
-  private val _inputStream = System.in
-  private val _outputStream = System.out
-  private val _errorStream = System.err
+  private val _baseInputStream = System.in
+  private val _baseOutputStream = System.out
+  private val _baseErrorStream = System.err
+
+  @volatile private var _inputStream = _baseInputStream
+  @volatile private var _outputStream = _baseOutputStream
+  @volatile private var _errorStream = _baseErrorStream
 
   private def init(in: InputStream, out: OutputStream, err: OutputStream) =
     synchronized {
@@ -40,29 +44,38 @@ object StreamState {
     }
 
   private def reset(): Unit = synchronized {
-    System.setIn(_inputStream)
-    Console.setIn(_inputStream)
+    System.setIn(_baseInputStream)
+    Console.setIn(_baseInputStream)
 
-    System.setOut(_outputStream)
-    Console.setOut(_outputStream)
+    System.setOut(_baseOutputStream)
+    Console.setOut(_baseOutputStream)
 
-    System.setErr(_errorStream)
-    Console.setErr(_errorStream)
+    System.setErr(_baseErrorStream)
+    Console.setErr(_baseErrorStream)
   }
 
   /**
-   * Execute code block, mapping all input and output to the provided streams.
+   * Sets the internal streams to be used with the stream block.
    *
    * @param inputStream The input stream to map standard in
    * @param outputStream The output stream to map standard out
    * @param errorStream The output stream to map standard err
    */
-  def withStreams[T](
+  def setStreams(
     inputStream: InputStream = _inputStream,
     outputStream: OutputStream = _outputStream,
     errorStream: OutputStream = _errorStream
-  )(thunk: => T): T = synchronized {
-    init(inputStream, outputStream, errorStream)
+  ) = {
+    _inputStream = inputStream
+    _outputStream = new PrintStream(outputStream)
+    _errorStream = new PrintStream(errorStream)
+  }
+
+  /**
+   * Execute code block, mapping all input and output to the provided streams.
+   */
+  def withStreams[T](thunk: => T): T = synchronized {
+    init(_inputStream, _outputStream, _errorStream)
 
     val returnValue = thunk
 

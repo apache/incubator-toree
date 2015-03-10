@@ -45,34 +45,37 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
         val newOutputStream = buildOutputStream(outputStream, System.out)
         val newErrorStream = buildOutputStream(outputStream, System.err)
 
-        val (success, result) =
-          StreamState.withStreams(
-            newInputStream, newOutputStream, newErrorStream
-          ) {
+        // Update our global streams to be used by future output
+        // NOTE: This is not async-safe! This is expected to be broken when
+        //       running asynchronously! Use an alternative for data
+        //       communication!
+        StreamState.setStreams(newInputStream, newOutputStream, newErrorStream)
+
+        val (success, result) = {
             // Add our parent message with StreamInfo type included
-            interpreter.doQuietly {
-              interpreter.bind(
-                "$streamInfo",
-                "com.ibm.spark.kernel.api.StreamInfo",
-                new KernelMessage(
-                  ids = parentMessage.ids,
-                  signature = parentMessage.signature,
-                  header = parentMessage.header,
-                  parentHeader = parentMessage.parentHeader,
-                  metadata = parentMessage.metadata,
-                  contentString = parentMessage.contentString
-                ) with StreamInfo,
-                List( """@transient""", """implicit""")
-              )
+//            interpreter.doQuietly {
+//              interpreter.bind(
+//                "$streamInfo",
+//                "com.ibm.spark.kernel.api.StreamInfo",
+//                new KernelMessage(
+//                  ids = parentMessage.ids,
+//                  signature = parentMessage.signature,
+//                  header = parentMessage.header,
+//                  parentHeader = parentMessage.parentHeader,
+//                  metadata = parentMessage.metadata,
+//                  contentString = parentMessage.contentString
+//                ) with StreamInfo,
+//                List( """@transient""", """implicit""")
+//              )
               // TODO: Think of a cleaner wrapper to handle updating the Console
               //       input and output streams
-              interpreter.interpret(
-                """val $updateOutput = {
-                Console.setIn(System.in)
-                Console.setOut(System.out)
-                Console.setErr(System.err)
-              }""".trim)
-            }
+//              interpreter.interpret(
+//                """val $updateOutput = {
+//                Console.setIn(System.in)
+//                Console.setOut(System.out)
+//                Console.setErr(System.err)
+//              }""".trim)
+//            }
             interpreter.interpret(executeRequest.code.trim)
           }
 

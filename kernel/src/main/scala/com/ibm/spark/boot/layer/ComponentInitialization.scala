@@ -203,7 +203,11 @@ trait StandardComponentInitialization extends ComponentInitialization {
     var sparkContext: SparkContext = null
     val outStream = new KernelOutputStream(
       actorLoader, KMBuilder(), global.ScheduledTaskManager.instance)
-    global.StreamState.withStreams(System.in, outStream, outStream) {
+
+    // Update global stream state and use it to set the Console local variables
+    // for threads in the Spark threadpool
+    global.StreamState.setStreams(System.in, outStream, outStream)
+    global.StreamState.withStreams {
       sparkContext = new SparkContext(sparkConf)
     }
 
@@ -227,11 +231,15 @@ trait StandardComponentInitialization extends ComponentInitialization {
       //       to avoid the kernel's interpreter blowing up (must be done
       //       inside the interpreter)
       logger.debug("Initializing Spark cluster in interpreter")
-      interpreter.doQuietly {
+
+       interpreter.doQuietly {
         interpreter.interpret("""
-          var $toBeNulled = sc.emptyRDD.collect()
-          $toBeNulled = null
-                              """)
+        | val $toBeNulled = {
+        | var $toBeNulled = sc.emptyRDD.collect()
+        | $toBeNulled = null
+        |  }
+        |
+        |""".stripMargin)
       }
     }
 

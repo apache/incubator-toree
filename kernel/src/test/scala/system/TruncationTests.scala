@@ -37,6 +37,7 @@ import com.ibm.spark.boot.layer.SparkKernelDeployer
  *       kernel instance (to avoid death by slowness) and it is not guaranteed
  *       that previous tests will do proper cleanup!
  */
+@DoNotDiscover
 class TruncationTests
   extends NoArgSparkKernelTestKit
   with FunSpecLike with Matchers

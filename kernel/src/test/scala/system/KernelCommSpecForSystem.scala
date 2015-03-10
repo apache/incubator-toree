@@ -36,6 +36,7 @@ import test.utils.{NoArgSparkKernelTestKit}
  *       kernel instance (to avoid death by slowness) and it is not guaranteed
  *       that previous tests will do proper cleanup!
  */
+@DoNotDiscover
 class KernelCommSpecForSystem
   extends NoArgSparkKernelTestKit
   with FunSpecLike with Matchers
