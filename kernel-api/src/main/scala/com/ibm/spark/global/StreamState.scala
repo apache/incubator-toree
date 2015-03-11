@@ -74,7 +74,7 @@ object StreamState {
   /**
    * Execute code block, mapping all input and output to the provided streams.
    */
-  def withStreams[T](thunk: => T): T = synchronized {
+  def withStreams[T](thunk: => T): T = {
     init(_inputStream, _outputStream, _errorStream)
 
     val returnValue = thunk
