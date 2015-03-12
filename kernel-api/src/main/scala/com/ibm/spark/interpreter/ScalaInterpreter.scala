@@ -394,8 +394,8 @@ class ScalaInterpreter(
       //updatePrintStreams(System.in, multiOutputStream, multiOutputStream)
 
 //   ADD IMPORTS generates too many classes, client is responsible for adding import
-//      logger.debug("Adding org.apache.spark.SparkContext._ to imports")
-//      sparkIMain.addImports("org.apache.spark.SparkContext._")
+      logger.debug("Adding org.apache.spark.SparkContext._ to imports")
+      sparkIMain.addImports("org.apache.spark.SparkContext._")
     }
 
     this
