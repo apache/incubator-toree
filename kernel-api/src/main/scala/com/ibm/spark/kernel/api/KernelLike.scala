@@ -36,12 +36,9 @@ trait KernelLike {
    * Returns a collection of methods that can be used to stream data from the
    * kernel to the client.
    *
-   * @param streamInfo The underlying KernelMessage (as StreamInfo) to use as
-   *                   the parent for outgoing stream messages
-   *
    * @return The collection of stream methods
    */
-  def stream(implicit streamInfo: StreamInfo): StreamMethodsLike
+  def stream: StreamMethodsLike
 
   /**
    * Returns a print stream to be used for communication back to clients
@@ -50,7 +47,7 @@ trait KernelLike {
    * @return The print stream instance or an error if the stream info is
    *         not found
    */
-  def out(implicit streamInfo: StreamInfo): PrintStream
+  def out: PrintStream
 
   /**
    * Returns a print stream to be used for communication back to clients
@@ -59,7 +56,7 @@ trait KernelLike {
    * @return The print stream instance or an error if the stream info is
    *         not found
    */
-  def err(implicit streamInfo: StreamInfo): PrintStream
+  def err: PrintStream
 
   /**
    * Returns an input stream to be used to receive information from the client.
@@ -67,5 +64,5 @@ trait KernelLike {
    * @return The input stream instance or an error if the stream info is
    *         not found
    */
-  def in(implicit streamInfo: StreamInfo): InputStream
+  def in: InputStream
 }

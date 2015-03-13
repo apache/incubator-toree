@@ -18,7 +18,7 @@ package com.ibm.spark.kernel.protocol.v5.handler
 
 import akka.actor.ActorSelection
 import akka.pattern.ask
-import com.ibm.spark.global.ExecutionCounter
+import com.ibm.spark.global.{ExecuteRequestState, ExecutionCounter}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
@@ -42,6 +42,8 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
 {
 
   override def process(km: KernelMessage): Future[_] = {
+    // Mark the message as our new incoming kernel message for execution
+    ExecuteRequestState.processIncomingKernelMessage(km)
 
     val skeletonBuilder = KMBuilder().withParent(km).withIds(km.ids)
     val executionCount = ExecutionCounter.incr(km.header.session)

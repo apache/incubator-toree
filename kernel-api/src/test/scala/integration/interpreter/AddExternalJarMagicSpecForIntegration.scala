@@ -22,6 +22,7 @@ import java.util.UUID
 import com.ibm.spark.interpreter._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import com.ibm.spark.global.StreamState
 
 class AddExternalJarMagicSpecForIntegration
   extends FunSpec with Matchers with MockitoSugar with BeforeAndAfter
@@ -37,12 +38,7 @@ class AddExternalJarMagicSpecForIntegration
       with StandardSettingsProducer
     interpreter.start()
 
-    // TODO: Provide better system to wrap this output or consider using
-    //       contains(...) with results to match 'res3: String = "..."'
-    val randomVarName = "$var" + UUID.randomUUID().toString.replace("-", "")
-    interpreter.bind(
-      s"$randomVarName", outputResult.getClass.getName, outputResult, Nil)
-    interpreter.interpret(s"Console.setOut($randomVarName)")
+    StreamState.setStreams(outputStream = outputResult)
   }
 
   after {

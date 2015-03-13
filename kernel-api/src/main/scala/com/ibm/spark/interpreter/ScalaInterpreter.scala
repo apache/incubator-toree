@@ -37,6 +37,7 @@ import scala.util.{Try => UtilTry}
 
 import scala.language.reflectiveCalls
 import com.ibm.spark.kernel.api.KernelOptions
+import com.ibm.spark.global.StreamState
 
 class ScalaInterpreter(
   args: List[String],
@@ -283,16 +284,21 @@ class ScalaInterpreter(
     Await.result(futureResultAndExecuteInfo, Duration.Inf)
   }
 
-  protected def interpretAddTask(code: String, silent: Boolean) =
+  protected def interpretAddTask(code: String, silent: Boolean) = {
     taskManager.add {
-      if (silent) {
-        sparkIMain.beSilentDuring {
+      // Add a task using the given state of our streams
+      StreamState.withStreams {
+        if (silent) {
+          sparkIMain.beSilentDuring {
+            sparkIMain.interpret(code)
+          }
+        } else {
           sparkIMain.interpret(code)
         }
-      } else {
-        sparkIMain.interpret(code)
       }
     }
+  }
+
 
   protected def interpretMapToCustomResult(future: Future[IR.Result]) = {
     import scala.concurrent.ExecutionContext.Implicits.global
@@ -387,6 +393,7 @@ class ScalaInterpreter(
       //logger.info("Rerouting Console and System related input and output")
       //updatePrintStreams(System.in, multiOutputStream, multiOutputStream)
 
+//   ADD IMPORTS generates too many classes, client is responsible for adding import
       logger.debug("Adding org.apache.spark.SparkContext._ to imports")
       sparkIMain.addImports("org.apache.spark.SparkContext._")
     }
