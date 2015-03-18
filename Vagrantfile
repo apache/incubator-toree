@@ -52,21 +52,15 @@ if ! flag_is_set CORE_DEPS; then
 fi
 
 # Install IPython and ZeroMQ
-COMMIT="de9fe06e571ed3990600bf7c1badf071b1178b67"
-SUBMODULE="692ab15089220f91156a7761913e7c77bb834d2f"
-
-# Alternatively
-# COMMIT="4ad9a496424fea42f5f25891701fd94d9b925b33"
+IPYTHON_VERSION=3.0.0
 
 if ! flag_is_set IPYTHON; then
   apt-get -f -y install && \
   apt-get -y install python-pip python-dev libzmq-dev build-essential && \
   cd /src && \
   pip install pyzmq tornado runipy jsonschema jinja2 && \
-  pip install -e git+https://github.com/ipython/ipython.git@${COMMIT}#egg=ipython && \
-  chown -R vagrant.vagrant ./src && \
-  (cd src/ipython/IPython/html/static/components && git checkout ${SUBMODULE}) && \
-  (cd src/ipython && pip install -e ".[notebook]" --user) && \
+  pip install -e git+https://github.com/ipython/ipython.git@rel-${IPYTHON_VERSION}#egg=ipython
+  pip install -e src/ipython[notebook]
   ipython profile create && \
   set_flag IPYTHON
 fi
