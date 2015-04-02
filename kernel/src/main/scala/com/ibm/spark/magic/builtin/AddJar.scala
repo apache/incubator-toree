@@ -33,7 +33,7 @@ class AddJar
   //       keep the jars around forever.
   private[magic] val JarStorageLocation = "/tmp"
 
-  private val HtmlJarRegex = """.*?\/([^\/]*?)$""".r
+  private val HtmlJarRegex = """.*?\/([^\/]*?)(?:\?.*)*$""".r
 
   // Option to mark re-downloading of jars
   private val _force =
