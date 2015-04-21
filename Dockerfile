@@ -23,7 +23,7 @@ RUN apt-get --no-install-recommends -y --force-yes install openjdk-7-jre mesos=0
 ENV MESOS_NATIVE_LIBRARY /usr/local/lib/libmesos.so
 
 #   Setup the binary we will run
-ENTRYPOINT JVM_OPT="-XX:PermSize=256m ${JVM_OPT} -Dlog4j.logLevel=${LOG_LEVEL}" /app/bin/sparkkernel
+ENTRYPOINT JVM_OPT="-XX:PermSize=256m -Dlog4j.logLevel=${LOG_LEVEL} ${JVM_OPT}" /app/bin/sparkkernel
 
 #   Install the pack elements
 ADD kernel/target/pack /app
