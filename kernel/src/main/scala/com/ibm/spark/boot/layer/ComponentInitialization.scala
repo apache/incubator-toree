@@ -119,8 +119,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
     val maxInterpreterThreads = config.getInt("max_interpreter_threads")
 
-    logger.info(s"Constructing interpreter $maxInterpreterThreads threads and" +
-      " with arguments: " + interpreterArgs.mkString(" "))
+    logger.info(
+      s"Constructing interpreter with $maxInterpreterThreads threads and " +
+      "with arguments: " + interpreterArgs.mkString(" "))
     val interpreter = new ScalaInterpreter(interpreterArgs, Console.out)
       with StandardSparkIMainProducer
       with TaskManagerProducerLike
@@ -144,8 +145,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
     // TODO: Refactor this construct to a cleaner implementation (for future
     //       multi-interpreter design)
-    logger.info(s"Constructing interpreter $maxInterpreterThreads threads and" +
-      " with arguments: " + interpreterArgs.mkString(" "))
+    logger.info(
+      s"Constructing interpreter with $maxInterpreterThreads threads and " +
+        "with arguments: " + interpreterArgs.mkString(" "))
     val kernelInterpreter = new ScalaInterpreter(interpreterArgs, Console.out)
       with TaskManagerProducerLike
       with StandardSettingsProducer
