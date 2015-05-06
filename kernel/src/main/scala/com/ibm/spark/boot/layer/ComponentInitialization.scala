@@ -31,7 +31,7 @@ import com.ibm.spark.kernel.protocol.v5.stream.KernelOutputStream
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
-import com.ibm.spark.utils.{KeyValuePairUtils, LogLike}
+import com.ibm.spark.utils.{TaskManager, KeyValuePairUtils, LogLike}
 import com.typesafe.config.Config
 import joptsimple.util.KeyValuePair
 import org.apache.spark.{SparkContext, SparkConf}
@@ -117,13 +117,17 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
   protected def initializeInterpreter(config: Config) = {
     val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
+    val maxInterpreterThreads = config.getInt("max_interpreter_threads")
 
-    logger.info("Constructing interpreter with arguments: " +
-      interpreterArgs.mkString(" "))
+    logger.info(s"Constructing interpreter $maxInterpreterThreads threads and" +
+      " with arguments: " + interpreterArgs.mkString(" "))
     val interpreter = new ScalaInterpreter(interpreterArgs, Console.out)
       with StandardSparkIMainProducer
-      with StandardTaskManagerProducer
-      with StandardSettingsProducer
+      with TaskManagerProducerLike
+      with StandardSettingsProducer {
+      override def newTaskManager(): TaskManager =
+        new TaskManager(maxWorkers = maxInterpreterThreads)
+    }
 
     logger.debug("Starting interpreter")
     interpreter.start()
@@ -136,15 +140,19 @@ trait StandardComponentInitialization extends ComponentInitialization {
   ) = {
     val interpreterArgs =
       config.getStringList("interpreter_args").asScala.toList
+    val maxInterpreterThreads = config.getInt("max_interpreter_threads")
 
     // TODO: Refactor this construct to a cleaner implementation (for future
     //       multi-interpreter design)
-    logger.info("Constructing interpreter with arguments: " +
-      interpreterArgs.mkString(" "))
+    logger.info(s"Constructing interpreter $maxInterpreterThreads threads and" +
+      " with arguments: " + interpreterArgs.mkString(" "))
     val kernelInterpreter = new ScalaInterpreter(interpreterArgs, Console.out)
-      with StandardTaskManagerProducer
+      with TaskManagerProducerLike
       with StandardSettingsProducer
       with SparkIMainProducerLike {
+      override def newTaskManager(): TaskManager =
+        new TaskManager(maxWorkers = maxInterpreterThreads)
+
       override def newSparkIMain(settings: Settings, out: JPrintWriter) = {
         interpreter.asInstanceOf[ScalaInterpreter].sparkIMain
       }
