@@ -50,15 +50,25 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
     describe("#add") {
       // TODO: How to verify the (Runnable, Promise[_]) stored in private queue?
 
+      it("should throw an exception if not started") {
+        intercept[AssertionError] {
+          taskManager.add {}
+        }
+      }
+
       it("should return a Future[_] based on task provided") {
+        taskManager.start()
+
         // Cannot check inner Future type due to type erasure
         taskManager.add { } shouldBe an [Future[_]]
+
+        taskManager.stop()
       }
 
       it("should work for a task that returns nothing") {
-        val f = taskManager.add { }
-
         taskManager.start()
+
+        val f = taskManager.add { }
 
         whenReady(f) { result =>
           result shouldBe a [BoxedUnit]
@@ -67,10 +77,10 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
 
       it("should construct a Runnable that invokes a Promise on success") {
+        taskManager.start()
+
         val returnValue = 3
         val f = taskManager.add { returnValue }
-
-        taskManager.start()
 
         whenReady(f) { result =>
           result should be (returnValue)
@@ -79,10 +89,10 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
 
       it("should construct a Runnable that invokes a Promise on failure") {
+        taskManager.start()
+
         val error = new Throwable("ERROR")
         val f = taskManager.add { throw error }
-
-        taskManager.start()
 
         whenReady(f.failed) { result =>
           result should be (error)
@@ -91,44 +101,26 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
     }
 
-    describe("#tasks") {
-      it("should return a sequence of Runnables not yet executed") {
-        // TODO: Investigate how to validate tasks better than just a count
-        for (x <- 1 to 50) taskManager.add { }
-
-        taskManager.tasks should have size 50
-      }
-    }
-
-    describe("#thread") {
-      it("should return Some(Thread) if running") {
-        taskManager.start()
-
-        taskManager.thread should not be (None)
-
-        taskManager.stop()
-      }
-
-      it("should return None if not running") {
-        taskManager.thread should be (None)
-      }
-    }
-
     describe("#size") {
       it("should be zero when no tasks have been added") {
         taskManager.size should be (0)
       }
 
-      it("should be one when a new task has been added") {
-        taskManager.add {}
+      it("should be one when a there is one task in the queue") {
+        val taskManager = new TaskManager(maxWorkers = 1)
+        taskManager.start()
+
+        // Fill up the task manager and then add another task to the queue
+        taskManager.add { while (true) { Thread.sleep(1000) } }
+        taskManager.add { while (true) { Thread.sleep(1000) } }
 
         taskManager.size should be (1)
       }
 
       it("should be zero when the only task is currently being executed") {
-        taskManager.add { while (true) { Thread.sleep(1000) } }
-
         taskManager.start()
+
+        taskManager.add { while (true) { Thread.sleep(1000) } }
 
         // Wait until task is being executed to check if the task is still in
         // the queue
@@ -145,16 +137,21 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
         taskManager.hasTaskInQueue should be (false)
       }
 
-      it("should be true when one task has been added but not started") {
-        taskManager.add {}
+      it("should be true where there are tasks remaining in the queue") {
+        val taskManager = new TaskManager(maxWorkers = 1)
+        taskManager.start()
+
+        // Fill up the task manager and then add another task to the queue
+        taskManager.add { while (true) { Thread.sleep(1000) } }
+        taskManager.add { while (true) { Thread.sleep(1000) } }
 
         taskManager.hasTaskInQueue should be (true)
       }
 
       it("should be false when the only task is currently being executed") {
-        taskManager.add { while (true) { Thread.sleep(1000) } }
-
         taskManager.start()
+
+        taskManager.add { while (true) { Thread.sleep(1000) } }
 
         // Wait until task is being executed to check if the task is still in
         // the queue
@@ -194,54 +191,13 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
     }
 
-    describe("#currentTask") {
-      it("should be None when there are no tasks") {
-        taskManager.currentTask should be (None)
-      }
-
-      it("should be None when there are tasks, but none are running") {
-        taskManager.add { }
-
-        taskManager.currentTask should be (None)
-      }
-
-      it("should be Some(...) when a task is being executed") {
-        taskManager.add { while (true) { Thread.sleep(1000) } }
-        taskManager.start()
-
-        // Wait until executing task
-        while (!taskManager.isExecutingTask) Thread.sleep(1)
-
-        taskManager.currentTask should not be (None)
-
-        taskManager.stop()
-      }
-    }
-
-    describe("#isRunning") {
-      it("should be false when not started") {
-        taskManager.isRunning should be (false)
-      }
-
-      it("should be true after being started") {
-        taskManager.start()
-        taskManager.isRunning should be (true)
-        taskManager.stop()
-      }
-
-      it("should be false after being stopped") {
-        taskManager.start(); taskManager.stop()
-        taskManager.isRunning should be (false)
-      }
-    }
-
     describe("#await") {
       it("should block until all tasks are completed") {
+        taskManager.start()
+
         // TODO: Need better way to ensure tasks are still running while
         // awaiting their return
         for (x <- 1 to 50) taskManager.add { Thread.sleep(1) }
-
-        taskManager.start()
 
         assume(taskManager.hasTaskInQueue)
         taskManager.await()
@@ -254,10 +210,10 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
     }
 
     describe("#start") {
-      it("should create an internal thread and start it") {
+      it("should create an internal thread pool executor") {
         taskManager.start()
 
-        taskManager.thread should not be (None)
+        taskManager.executor should not be (None)
 
         taskManager.stop()
       }
@@ -267,11 +223,11 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       it("should stop & erase the old internal thread and create a new one") {
         taskManager.start()
 
-        val oldThread = taskManager.thread
+        val oldExecutor = taskManager.executor
 
         taskManager.restart()
 
-        taskManager.thread should not be (oldThread)
+        taskManager.executor should not be (oldExecutor)
 
         taskManager.stop()
       }
@@ -279,8 +235,8 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
 
     describe("#stop") {
       it("should attempt to interrupt the currently-running task") {
-        val f = taskManager.add { while (true) { Thread.sleep(1000) } }
         taskManager.start()
+        val f = taskManager.add { while (true) { Thread.sleep(1000) } }
 
         // Wait for the task to start
         while (!taskManager.isExecutingTask) Thread.sleep(1)
@@ -295,7 +251,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
         }
       }
 
-      it("should kill the thread if interrupts failed and kill enabled") {
+      ignore("should kill the thread if interrupts failed and kill enabled") {
         val f = taskManager.add { var x = 0; while (true) { x += 1 } }
         taskManager.start()
 
@@ -303,7 +259,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
         while (!taskManager.isExecutingTask) Thread.sleep(1)
 
         // Kill the task
-        taskManager.stop(true, 0)
+        taskManager.stop()
 
         // Future should return ThreadDeath when killed
         whenReady(f.failed) { result =>
