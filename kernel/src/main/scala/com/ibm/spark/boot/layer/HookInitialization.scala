@@ -29,11 +29,8 @@ trait HookInitialization {
    * Initializes and registers all hooks.
    *
    * @param interpreter The main interpreter
-   * @param kernelInterpreter The interpreter bound to the kernel instance
    */
-  def initializeHooks(
-    interpreter: Interpreter, kernelInterpreter: Interpreter
-  ): Unit
+  def initializeHooks(interpreter: Interpreter): Unit
 }
 
 /**
@@ -46,18 +43,13 @@ trait StandardHookInitialization extends HookInitialization {
    * Initializes and registers all hooks.
    *
    * @param interpreter The main interpreter
-   * @param kernelInterpreter The interpreter bound to the kernel instance
    */
-  def initializeHooks(
-    interpreter: Interpreter, kernelInterpreter: Interpreter
-  ): Unit = {
-    registerInterruptHook(interpreter, kernelInterpreter)
+  def initializeHooks(interpreter: Interpreter): Unit = {
+    registerInterruptHook(interpreter)
     registerShutdownHook()
   }
 
-  private def registerInterruptHook(
-    interpreter: Interpreter, kernelInterpreter: Interpreter
-  ): Unit = {
+  private def registerInterruptHook(interpreter: Interpreter): Unit = {
     val self = this
 
     import sun.misc.{Signal, SignalHandler}
@@ -73,7 +65,6 @@ trait StandardHookInitialization extends HookInitialization {
         if (currentTime - lastSignalReceived > MaxSignalTime) {
           logger.info("Resetting code execution!")
           interpreter.interrupt()
-          kernelInterpreter.interrupt()
 
           // TODO: Cancel group representing current code execution
           //sparkContext.cancelJobGroup()

@@ -27,6 +27,19 @@ import scala.collection.JavaConverters._
 class CommandLineOptionsSpec extends FunSpec with Matchers {
 
   describe("CommandLineOptions") {
+    describe("when received --max-interpreter-threads=<int>") {
+      it("should set the configuration to the specified value") {
+        val expected = 999
+        val options = new CommandLineOptions(
+          s"--max-interpreter-threads=$expected" :: Nil
+        )
+
+        val actual = options.toConfig.getInt("max_interpreter_threads")
+
+        actual should be (expected)
+      }
+    }
+
     describe("when received --help") {
       it("should set the help flag to true") {
         val options = new CommandLineOptions("--help" :: Nil)

@@ -79,6 +79,11 @@ class CommandLineOptions(args: Seq[String]) {
     parser.accepts("magic-url", "path to a magic jar")
       .withRequiredArg().ofType(classOf[String])
 
+  private val _max_interpreter_threads = parser.accepts(
+    "max-interpreter-threads",
+    "total number of worker threads to use to execute code"
+  ).withRequiredArg().ofType(classOf[Int])
+
   private val options = parser.parse(args: _*)
 
   /*
@@ -130,7 +135,8 @@ class CommandLineOptions(args: Seq[String]) {
           .flatMap(list => if (list.isEmpty) None else Some(list)),
         "spark_configuration" -> getAll(_spark_configuration)
           .map(list => KeyValuePairUtils.keyValuePairSeqToString(list))
-          .flatMap(str => if (str.nonEmpty) Some(str) else None)
+          .flatMap(str => if (str.nonEmpty) Some(str) else None),
+        "max_interpreter_threads" -> get(_max_interpreter_threads)
     ).flatMap(removeEmptyOptions).asInstanceOf[Map[String, AnyRef]].asJava)
 
     commandLineConfig.withFallback(profileConfig).withFallback(ConfigFactory.load)

@@ -73,7 +73,7 @@ class KernelBootstrap(config: Config) extends LogLike {
 
     // Initialize components needed elsewhere
     val (commStorage, commRegistrar, commManager, interpreter,
-      kernelInterpreter, kernel, sparkContext, dependencyDownloader,
+      kernel, sparkContext, dependencyDownloader,
       magicLoader, responseMap) =
       initializeComponents(
         config      = config,
@@ -81,7 +81,7 @@ class KernelBootstrap(config: Config) extends LogLike {
         actorLoader = actorLoader
       )
     this.sparkContext = sparkContext
-    this.interpreters ++= Seq(interpreter, kernelInterpreter)
+    this.interpreters ++= Seq(interpreter)
 
     // Initialize our handlers that take care of processing messages
     initializeHandlers(
@@ -96,8 +96,7 @@ class KernelBootstrap(config: Config) extends LogLike {
 
     // Initialize our hooks that handle various JVM events
     initializeHooks(
-      interpreter = interpreter,
-      kernelInterpreter = kernelInterpreter
+      interpreter = interpreter
     )
 
     logger.debug("Initializing security manager")
