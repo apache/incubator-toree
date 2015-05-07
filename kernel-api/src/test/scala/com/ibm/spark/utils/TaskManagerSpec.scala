@@ -16,10 +16,10 @@
 
 package com.ibm.spark.utils
 
-import java.util.concurrent.ExecutionException
+import java.util.concurrent.{RejectedExecutionException, ExecutionException}
 
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
-import org.scalatest.concurrent.{Eventually, ScalaFutures}
+import org.scalatest.concurrent.{Timeouts, Eventually, ScalaFutures}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
@@ -30,7 +30,7 @@ import scala.runtime.BoxedUnit
 
 class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
   with BeforeAndAfter with ScalaFutures with UncaughtExceptionSuppression
-  with Eventually
+  with Eventually with Timeouts
 {
   private var taskManager: TaskManager = _
   implicit override val patienceConfig = PatienceConfig(
@@ -48,11 +48,20 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
 
   describe("TaskManager") {
     describe("#add") {
-      // TODO: How to verify the (Runnable, Promise[_]) stored in private queue?
-
       it("should throw an exception if not started") {
         intercept[AssertionError] {
           taskManager.add {}
+        }
+      }
+
+      it("should throw an exception if more tasks are added than max task size") {
+        val taskManager = new TaskManager(maximumWorkers = 1, maxTasks = 1)
+
+        taskManager.start()
+
+        // Should fail from having too many tasks added
+        intercept[RejectedExecutionException] {
+          for (i <- 1 to 500) taskManager.add {}
         }
       }
 
@@ -99,6 +108,17 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
           taskManager.stop()
         }
       }
+
+      it("should not block when adding more tasks than available threads") {
+        val taskManager = new TaskManager(maximumWorkers = 1)
+
+        taskManager.start()
+
+        failAfter(Span(100, Milliseconds)) {
+          taskManager.add { while (true) { Thread.sleep(1) } }
+          taskManager.add { while (true) { Thread.sleep(1) } }
+        }
+      }
     }
 
     describe("#size") {
@@ -106,18 +126,18 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
         taskManager.size should be (0)
       }
 
-      it("should be one when a there is one task in the queue") {
-        val taskManager = new TaskManager(maxWorkers = 1)
+      it("should reflect queued tasks and executing tasks") {
+        val taskManager = new TaskManager(maximumWorkers = 1)
         taskManager.start()
 
         // Fill up the task manager and then add another task to the queue
         taskManager.add { while (true) { Thread.sleep(1000) } }
         taskManager.add { while (true) { Thread.sleep(1000) } }
 
-        taskManager.size should be (1)
+        taskManager.size should be (2)
       }
 
-      it("should be zero when the only task is currently being executed") {
+      it("should be one if there is only one executing task and no queued ones") {
         taskManager.start()
 
         taskManager.add { while (true) { Thread.sleep(1000) } }
@@ -126,7 +146,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
         // the queue
         while (!taskManager.isExecutingTask) Thread.sleep(1)
 
-        taskManager.size should be (0)
+        taskManager.size should be (1)
 
         taskManager.stop()
       }
@@ -138,7 +158,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
       }
 
       it("should be true where there are tasks remaining in the queue") {
-        val taskManager = new TaskManager(maxWorkers = 1)
+        val taskManager = new TaskManager(maximumWorkers = 1)
         taskManager.start()
 
         // Fill up the task manager and then add another task to the queue
@@ -193,11 +213,13 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
 
     describe("#await") {
       it("should block until all tasks are completed") {
+        val taskManager = new TaskManager(maximumWorkers = 1, maxTasks = 500)
+
         taskManager.start()
 
         // TODO: Need better way to ensure tasks are still running while
         // awaiting their return
-        for (x <- 1 to 50) taskManager.add { Thread.sleep(1) }
+        for (x <- 1 to 500) taskManager.add { Thread.sleep(1) }
 
         assume(taskManager.hasTaskInQueue)
         taskManager.await()
@@ -251,9 +273,11 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
         }
       }
 
+      // TODO: Refactoring task manager to be parallelizable broke this ability
+      //       so this will need to be reimplemented or abandoned
       ignore("should kill the thread if interrupts failed and kill enabled") {
-        val f = taskManager.add { var x = 0; while (true) { x += 1 } }
         taskManager.start()
+        val f = taskManager.add { var x = 0; while (true) { x += 1 } }
 
         // Wait for the task to start
         while (!taskManager.isExecutingTask) Thread.sleep(1)

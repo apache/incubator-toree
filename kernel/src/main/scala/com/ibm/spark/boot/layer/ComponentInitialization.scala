@@ -16,7 +16,6 @@
 
 package com.ibm.spark.boot.layer
 
-import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor.ActorRef
@@ -33,13 +32,10 @@ import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
 import com.ibm.spark.utils.{TaskManager, KeyValuePairUtils, LogLike}
 import com.typesafe.config.Config
-import joptsimple.util.KeyValuePair
 import org.apache.spark.{SparkContext, SparkConf}
 
 import scala.collection.JavaConverters._
 
-import scala.tools.nsc.Settings
-import scala.tools.nsc.interpreter.JPrintWriter
 import scala.util.Try
 
 /**
@@ -56,7 +52,7 @@ trait ComponentInitialization {
    */
   def initializeComponents(
     config: Config, appName: String, actorLoader: ActorLoader
-  ): (CommStorage, CommRegistrar, CommManager, Interpreter, Interpreter,
+  ): (CommStorage, CommRegistrar, CommManager, Interpreter,
     Kernel, SparkContext, DependencyDownloader, MagicLoader,
     collection.mutable.Map[String, ActorRef])
 }
@@ -80,17 +76,16 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val (commStorage, commRegistrar, commManager) =
       initializeCommObjects(actorLoader)
     val interpreter = initializeInterpreter(config)
-    val kernelInterpreter = initializeKernelInterpreter(config, interpreter)
     val sparkContext = initializeSparkContext(
       config, appName, actorLoader, interpreter)
     val dependencyDownloader = initializeDependencyDownloader(config)
     val magicLoader = initializeMagicLoader(
-      config, interpreter, kernelInterpreter, sparkContext, dependencyDownloader)
+      config, interpreter, sparkContext, dependencyDownloader)
     val kernel = initializeKernel(
-      actorLoader, interpreter, kernelInterpreter, commManager, magicLoader)
+      actorLoader, interpreter, commManager, magicLoader)
     val responseMap = initializeResponseMap()
-    (commStorage, commRegistrar, commManager, interpreter, kernelInterpreter,
-      kernel, sparkContext, dependencyDownloader, magicLoader, responseMap)
+    (commStorage, commRegistrar, commManager, interpreter, kernel,
+      sparkContext, dependencyDownloader, magicLoader, responseMap)
   }
 
   private def initializeCommObjects(actorLoader: ActorLoader) = {
@@ -127,42 +122,13 @@ trait StandardComponentInitialization extends ComponentInitialization {
       with TaskManagerProducerLike
       with StandardSettingsProducer {
       override def newTaskManager(): TaskManager =
-        new TaskManager(maxWorkers = maxInterpreterThreads)
+        new TaskManager(maximumWorkers = maxInterpreterThreads)
     }
 
     logger.debug("Starting interpreter")
     interpreter.start()
 
     interpreter
-  }
-
-  private def initializeKernelInterpreter(
-    config: Config, interpreter: Interpreter
-  ) = {
-    val interpreterArgs =
-      config.getStringList("interpreter_args").asScala.toList
-    val maxInterpreterThreads = config.getInt("max_interpreter_threads")
-
-    // TODO: Refactor this construct to a cleaner implementation (for future
-    //       multi-interpreter design)
-    logger.info(
-      s"Constructing interpreter with $maxInterpreterThreads threads and " +
-        "with arguments: " + interpreterArgs.mkString(" "))
-    val kernelInterpreter = new ScalaInterpreter(interpreterArgs, Console.out)
-      with TaskManagerProducerLike
-      with StandardSettingsProducer
-      with SparkIMainProducerLike {
-      override def newTaskManager(): TaskManager =
-        new TaskManager(maxWorkers = maxInterpreterThreads)
-
-      override def newSparkIMain(settings: Settings, out: JPrintWriter) = {
-        interpreter.asInstanceOf[ScalaInterpreter].sparkIMain
-      }
-    }
-    logger.debug("Starting interpreter")
-    kernelInterpreter.start()
-
-    kernelInterpreter
   }
 
   // TODO: Think of a better way to test without exposing this
@@ -293,27 +259,24 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
   private def initializeKernel(
     actorLoader: ActorLoader,
-    interpreterToDoBinding: Interpreter,
-    interpreterToBind: Interpreter,
+    interpreter: Interpreter,
     commManager: CommManager,
     magicLoader: MagicLoader
   ) = {
-    //interpreter.doQuietly {
-    val kernel = new Kernel(
-      actorLoader, interpreterToBind, commManager, magicLoader
-    )
-    interpreterToDoBinding.bind(
-      "kernel", "com.ibm.spark.kernel.api.Kernel",
-      kernel, List( """@transient implicit""")
-    )
-    //}
+    val kernel = new Kernel(actorLoader, interpreter, commManager, magicLoader)
+    interpreter.doQuietly {
+      interpreter.bind(
+        "kernel", "com.ibm.spark.kernel.api.Kernel",
+        kernel, List( """@transient implicit""")
+      )
+    }
     magicLoader.dependencyMap.setKernel(kernel)
 
     kernel
   }
 
   private def initializeMagicLoader(
-    config: Config, interpreter: Interpreter, kernelInterpreter: Interpreter, sparkContext: SparkContext,
+    config: Config, interpreter: Interpreter, sparkContext: SparkContext,
     dependencyDownloader: DependencyDownloader
   ) = {
     logger.debug("Constructing magic loader")
@@ -321,8 +284,8 @@ trait StandardComponentInitialization extends ComponentInitialization {
     logger.debug("Building dependency map")
     val dependencyMap = new DependencyMap()
       .setInterpreter(interpreter)
+      .setKernelInterpreter(interpreter) // This is deprecated
       .setSparkContext(sparkContext)
-      .setKernelInterpreter(kernelInterpreter)
       .setDependencyDownloader(dependencyDownloader)
 
     logger.debug("Creating BuiltinLoader")

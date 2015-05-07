@@ -53,6 +53,7 @@ class DependencyMap {
    * Sets the Interpreter for this map.
    * @param interpreter The new Interpreter
    */
+  //@deprecated("Use setInterpreter with IncludeInterpreter!", "2015.05.06")
   def setKernelInterpreter(interpreter: Interpreter) = {
     internalMap(typeOf[IncludeKernelInterpreter]) =
       PartialFunction[Magic, Unit](
@@ -123,7 +124,7 @@ class DependencyMap {
 
   /**
    * Sets the MagicLoader for this map.
-   * @param kernel The new Kernel
+   * @param magicLoader The new MagicLoader
    */
   def setMagicLoader(magicLoader: MagicLoader) = {
     internalMap(typeOf[IncludeMagicLoader]) =

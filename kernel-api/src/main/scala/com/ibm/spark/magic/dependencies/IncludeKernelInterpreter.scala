@@ -19,6 +19,7 @@ package com.ibm.spark.magic.dependencies
 import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.magic.Magic
 
+//@deprecated("Use IncludeInterpreter instead!", "2015.05.06")
 trait IncludeKernelInterpreter {
   this: Magic =>
 
