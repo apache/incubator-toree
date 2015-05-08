@@ -16,7 +16,7 @@
 
 package com.ibm.spark.utils.json
 
-import org.apache.spark.sql.SchemaRDD
+import org.apache.spark.sql.{DataFrame, SchemaRDD}
 import play.api.libs.json.{JsObject, JsString, Json}
 
 /**
@@ -26,15 +26,16 @@ object RddToJson {
 
   /**
    * Converts a SchemaRDD to a JSON table format.
-   * @param rdd
-   * @return
+   *
+   * @param rdd The schema rdd (now a dataframe) to convert
+   *
+   * @return The resulting string representing the JSON
    */
-  def convert(rdd: SchemaRDD, limit: Int = 10): String =
+  def convert(rdd: DataFrame, limit: Int = 10): String =
     JsObject(Seq(
       "type" -> JsString("rdd/schema"),
-      "columns" -> Json.toJson(rdd.schema.fieldNames.toArray),
-      "rows" -> Json.toJson(rdd.map(row => row.foldLeft(Array[String]()) {
-        (acc, i) => acc :+ i.toString
-      }).take(limit))
-    )).toString
+      "columns" -> Json.toJson(rdd.schema.fieldNames),
+      "rows" -> Json.toJson(rdd.map(row =>
+        row.toSeq.map(_.toString).toArray).take(limit))
+    )).toString()
 }

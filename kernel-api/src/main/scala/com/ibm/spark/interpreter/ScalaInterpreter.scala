@@ -351,7 +351,11 @@ class ScalaInterpreter(
       case Some(e) if e != null =>
         val ex = e.asInstanceOf[Throwable]
         // Clear runtime error message
-        sparkIMain.directBind[Throwable](ExecutionExceptionName, null)
+        sparkIMain.directBind(
+          ExecutionExceptionName,
+          classOf[Throwable].getName,
+          null
+        )
         ExecuteError(
           ex.getClass.getName,
           ex.getLocalizedMessage,
@@ -359,7 +363,7 @@ class ScalaInterpreter(
         )
       // Compile time error, need to check internal reporter
       case _ =>
-        if (sparkIMain.reporter.hasErrors)
+        if (sparkIMain.isReportingErrors)
         // TODO: This wrapper is not needed when just getting compile
         // error that we are not parsing... maybe have it be purely
         // output and have the error check this?
@@ -443,7 +447,7 @@ class ScalaInterpreter(
 
   def classServerURI = {
     require(sparkIMain != null)
-    sparkIMain.classServer.uri
+    sparkIMain.classServerUri
   }
 
   override def doQuietly[T](body: => T): T = {

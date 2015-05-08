@@ -17,7 +17,8 @@
 package com.ibm.spark.utils.json
 
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{SchemaRDD, StructType}
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.types.StructType
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpec}
 import org.mockito.Mockito._
@@ -26,22 +27,22 @@ import play.api.libs.json.{JsArray, JsString, Json}
 
 class RddToJsonSpec extends FunSpec with MockitoSugar with Matchers {
 
-  val mockSchemaRdd = mock[SchemaRDD]
+  val mockDataFrame = mock[DataFrame]
   val mockRdd = mock[RDD[Any]]
   val mockStruct = mock[StructType]
-  val columns = Seq("foo", "bar")
+  val columns = Seq("foo", "bar").toArray
   val rows = Array( Array("a", "b"), Array("c", "d") )
 
-  doReturn(mockStruct).when(mockSchemaRdd).schema
+  doReturn(mockStruct).when(mockDataFrame).schema
   doReturn(columns).when(mockStruct).fieldNames
-  doReturn(mockRdd).when(mockSchemaRdd).map(any())(any())
+  doReturn(mockRdd).when(mockDataFrame).map(any())(any())
   doReturn(rows).when(mockRdd).take(anyInt())
 
   describe("RddToJson") {
     describe("#convert(SchemaRDD)") {
       it("should convert to valid JSON object") {
 
-        val json = RddToJson.convert(mockSchemaRdd)
+        val json = RddToJson.convert(mockDataFrame)
         val jsValue = Json.parse(json)
 
         jsValue \ "columns" should be (JsArray(Seq(JsString("foo"), JsString("bar"))))

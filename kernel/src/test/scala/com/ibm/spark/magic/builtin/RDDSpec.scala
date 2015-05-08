@@ -20,7 +20,8 @@ import com.ibm.spark.interpreter.Results.Result
 import com.ibm.spark.interpreter.{Results, ExecuteAborted, ExecuteError, Interpreter}
 import com.ibm.spark.kernel.protocol.v5.MIMEType
 import com.ibm.spark.magic.dependencies.{IncludeKernelInterpreter, IncludeInterpreter}
-import org.apache.spark.sql.{SchemaRDD, StructType}
+import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.types.StructType
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
@@ -32,15 +33,15 @@ class RDDSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfte
   val resOutput = "res1: org.apache.spark.sql.SchemaRDD ="
 
   val mockInterpreter = mock[Interpreter]
-  val mockSchemaRdd = mock[SchemaRDD]
+  val mockDataFrame = mock[DataFrame]
   val mockRdd = mock[org.apache.spark.rdd.RDD[Any]]
   val mockStruct = mock[StructType]
-  val columns = Seq("foo", "bar")
+  val columns = Seq("foo", "bar").toArray
   val rows = Array( Array("a", "b"), Array("c", "d") )
 
-  doReturn(mockStruct).when(mockSchemaRdd).schema
+  doReturn(mockStruct).when(mockDataFrame).schema
   doReturn(columns).when(mockStruct).fieldNames
-  doReturn(mockRdd).when(mockSchemaRdd).map(any())(any())
+  doReturn(mockRdd).when(mockDataFrame).map(any())(any())
   doReturn(rows).when(mockRdd).take(anyInt())
 
   val rddMagic = new RDD with IncludeKernelInterpreter {
@@ -49,7 +50,7 @@ class RDDSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfte
 
   before {
     doReturn("someRDD").when(mockInterpreter).mostRecentVar
-    doReturn(Some(mockSchemaRdd)).when(mockInterpreter).read(anyString())
+    doReturn(Some(mockDataFrame)).when(mockInterpreter).read(anyString())
     doReturn((Results.Success, Left(resOutput)))
       .when(mockInterpreter).interpret(anyString(), anyBoolean())
   }

@@ -41,6 +41,7 @@ import scala.tools.nsc.interpreter.JPrintWriter
 import scala.tools.nsc.io.AbstractFile
 import scala.tools.nsc.util.MergedClassPath
 import scala.tools.nsc.interpreter._
+import scala.collection.JavaConverters._
 
 class ScalaInterpreterSpec extends FunSpec
   with Matchers with MockitoSugar with BeforeAndAfter
@@ -277,7 +278,18 @@ class ScalaInterpreterSpec extends FunSpec
         // NOTE: Can mock the class through reflection, but cannot verify
         //       a method was called on it since treated as type Any
         //val mockHttpServer = org.mockito.Mockito.mock(httpServerClass)
-        doReturn(httpServer).when(mockSparkIMain).classServer
+        doAnswer(new Answer[String] {
+          override def answer(invocation: InvocationOnMock): String = {
+            val exceptionClass =
+              java.lang.Class.forName("org.apache.spark.ServerStateException")
+            val exception = exceptionClass
+              .getConstructor(classOf[String])
+              .newInstance("")
+              .asInstanceOf[Exception]
+            throw exception
+          }
+        }
+        ).when(mockSparkIMain).classServerUri
 
         interpreterNoPrintStreams.start()
 
@@ -286,6 +298,7 @@ class ScalaInterpreterSpec extends FunSpec
         // we have called the uri method of the server
         try {
           interpreterNoPrintStreams.classServerURI
+          fail()
         } catch {
           // Have to catch this way because... of course... the exception is
           // also private
