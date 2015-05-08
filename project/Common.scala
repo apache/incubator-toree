@@ -63,7 +63,7 @@ object Common {
     isSnapshot := snapshot,
     sparkVersion := {
       val sparkEnvironmentVariable = "APACHE_SPARK_VERSION"
-      val defaultSparkVersion = "1.2.1"
+      val defaultSparkVersion = "1.3.1"
 
       val _sparkVersion = Properties.envOrNone(sparkEnvironmentVariable)
 
