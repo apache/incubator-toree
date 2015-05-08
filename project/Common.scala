@@ -37,7 +37,6 @@ object Common {
     else versionNumber
   private val buildScalaVersion = "2.10.4"
   private val buildSbtVersion   = "0.13.7"
-  val sparkVersion              = "1.2.1"
 
   // Global dependencies provided to all projects
   private val buildLibraryDependencies = Seq(
@@ -50,6 +49,8 @@ object Common {
     "org.mockito" % "mockito-all" % "1.9.5" % "test"   // MIT
   )
 
+  lazy val sparkVersion = settingKey[String]("The Apache Spark version to use")
+
   // The prefix used for our custom artifact names
   private val artifactPrefix = "ibm-spark"
 
@@ -60,6 +61,32 @@ object Common {
     sbtVersion := buildSbtVersion,
     libraryDependencies ++= buildLibraryDependencies,
     isSnapshot := snapshot,
+    sparkVersion := {
+      val sparkEnvironmentVariable = "APACHE_SPARK_VERSION"
+      val defaultSparkVersion = "1.2.1"
+
+      val _sparkVersion = Properties.envOrNone(sparkEnvironmentVariable)
+
+      if (_sparkVersion.isEmpty) {
+        scala.Console.err.println(s"""
+          |[ERROR] No version of Apache Spark was specified! Please provide a
+          |version using the environment variable $sparkEnvironmentVariable!
+          |""".stripMargin.trim.replace('\n', ' ')
+        )
+
+        // TODO: Remove this "default value" and throw an exception in the
+        //       future?
+        scala.Console.err.println(s"""
+          |[WARN] Defaulting to Apache Spark $defaultSparkVersion! This is not
+          |a guarantee in the future! Please specify the version explicitly!
+          |""".stripMargin.trim.replace('\n', ' ')
+        )
+
+        defaultSparkVersion
+      } else {
+        _sparkVersion.get
+      }
+    },
 
     scalacOptions in (Compile, doc) ++= Seq(
       // Ignore packages (for Scaladoc) not from our project

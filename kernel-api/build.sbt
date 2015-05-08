@@ -1,4 +1,5 @@
 import xerial.sbt.Pack._
+import Common._
 /*
  * Copyright 2014 IBM Corp.
  *
@@ -39,21 +40,17 @@ libraryDependencies ++= Seq(
 //
 // NOTE: Currently, version must match deployed Spark cluster version.
 //
-// TODO: Could kernel dynamically link to Spark library to allow multiple
-// TODO: Spark versions? E.g. Spark 1.0.0 and Spark 1.0.1
-//
-val sparkVersion = Common.sparkVersion
 
 // TODO: Mark these as provided and bring them in via the kernel project
 //       so users wanting to implement a magic do not bring in Spark itself
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % sparkVersion excludeAll   // Apache v2
+  "org.apache.spark" %% "spark-core" % sparkVersion.value excludeAll   // Apache v2
     ExclusionRule(organization = "org.apache.hadoop"),
-  "org.apache.spark" %% "spark-streaming" % sparkVersion,        // Apache v2
-  "org.apache.spark" %% "spark-sql" % sparkVersion,              // Apache v2
-  "org.apache.spark" %% "spark-mllib" % sparkVersion,            // Apache v2
-  "org.apache.spark" %% "spark-graphx" % sparkVersion,           // Apache v2
-  "org.apache.spark" %% "spark-repl" % sparkVersion excludeAll   // Apache v2
+  "org.apache.spark" %% "spark-streaming" % sparkVersion.value,        // Apache v2
+  "org.apache.spark" %% "spark-sql" % sparkVersion.value,              // Apache v2
+  "org.apache.spark" %% "spark-mllib" % sparkVersion.value,            // Apache v2
+  "org.apache.spark" %% "spark-graphx" % sparkVersion.value,           // Apache v2
+  "org.apache.spark" %% "spark-repl" % sparkVersion.value excludeAll   // Apache v2
     ExclusionRule(organization = "org.apache.hadoop")
 )
 
