@@ -122,7 +122,7 @@ trait SubProjects extends Settings with TestTasks {
     sourceGenerators in Compile <+= buildInfo,
     buildInfoKeys ++= Seq[BuildInfoKey](
       version, scalaVersion,
-      "sparkVersion" -> Common.sparkVersion,
+      "sparkVersion" -> Common.sparkVersion.value,
       "buildDate" -> {
         val simpleDateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss")
         val now = Calendar.getInstance.getTime
