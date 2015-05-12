@@ -84,7 +84,13 @@ object Common {
 
         defaultSparkVersion
       } else {
-        _sparkVersion.get
+        val version = _sparkVersion.get
+        scala.Console.out.println(
+          s"""
+             |[INFO] Using Apache Spark $version provided from
+             |$sparkEnvironmentVariable!
+           """.stripMargin.trim.replace('\n', ' '))
+        version
       }
     },
 
