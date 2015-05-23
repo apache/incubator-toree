@@ -16,6 +16,8 @@
 
 package com.ibm.spark.boot
 
+import org.zeromq.{ZMQ, ZeroMQ, ZeroMQLibrary}
+
 import akka.actor.{ActorRef, ActorSystem}
 import com.ibm.spark.boot.layer._
 import com.ibm.spark.interpreter.Interpreter
@@ -147,6 +149,12 @@ class KernelBootstrap(config: Config) extends LogLike {
   @inline private def displayVersionInfo() = {
     logger.info("Kernel version: " + SparkKernelInfo.implementationVersion)
     logger.info("Scala version: " + SparkKernelInfo.languageVersion)
+    logger.info("ZeroMQ version: " + ZMQ.getVersionString)
+
+    // Display warning regarding bad ZeroMQ version
+    if (ZMQ.getFullVersion > ZMQ.makeVersion(2, 2, 0)) {
+      logger.warn("ZeroMQ version is greater than 2.2.0! Kernel will not respond!")
+    }
   }
 }
 
