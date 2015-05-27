@@ -18,6 +18,7 @@ pairs:
   sw: Sean Welleck; swelleck
   zcm: Zack Morris; zmorris
   pb: Phil Berkland; berkland
+  mp: Michael Poplavski; mpoplavs
 email:
   prefix: pair
   domain: us.ibm.com

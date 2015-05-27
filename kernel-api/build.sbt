@@ -71,7 +71,11 @@ libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.6" // MIT
 // MAGIC DEPENDENCIES
 //
 libraryDependencies ++= Seq(
-  "org.apache.ivy" % "ivy" % "2.4.0-rc1" // Apache v2
+  // Used to find and download jars from Maven-based repositories
+  "org.apache.ivy" % "ivy" % "2.4.0-rc1" // Apache v2,
+
+  // Used for multi class loader implementation
+//  "org.apache.openjpa" % "openjpa" % "2.4.0" // Apache v2
 )
 
 // Brought in in order to simplify the reading of each project's ivy.xml file

@@ -30,7 +30,7 @@ import com.ibm.spark.kernel.protocol.v5.stream.KernelOutputStream
 import com.ibm.spark.magic.MagicLoader
 import com.ibm.spark.magic.builtin.BuiltinLoader
 import com.ibm.spark.magic.dependencies.DependencyMap
-import com.ibm.spark.utils.{TaskManager, KeyValuePairUtils, LogLike}
+import com.ibm.spark.utils.{MultiClassLoader, TaskManager, KeyValuePairUtils, LogLike}
 import com.typesafe.config.Config
 import org.apache.spark.{SparkContext, SparkConf}
 
@@ -300,11 +300,16 @@ trait StandardComponentInitialization extends ComponentInitialization {
       logger.info("Using magics from the following locations: " +
         magicUrlArray.map(_.getPath).mkString(","))
 
+    val multiClassLoader = new MultiClassLoader(
+      builtinLoader,
+      interpreter.classLoader
+    )
+
     logger.debug("Creating MagicLoader")
     val magicLoader = new MagicLoader(
       dependencyMap = dependencyMap,
       urls = magicUrlArray,
-      parentLoader = builtinLoader
+      parentLoader = multiClassLoader
     )
     magicLoader.dependencyMap.setMagicLoader(magicLoader)
     magicLoader

@@ -211,8 +211,6 @@ class TruncationTests
           """%showtypes off
             |1
           """.stripMargin,actorLoader,ioPub) should be ("1")
-
-
       }
     }
     it("should truncate or not turncate based on %truncate") {

@@ -108,5 +108,11 @@ trait Interpreter {
    * Returns the most recent variable name.
    * @return the String name
    */
-  def mostRecentVar : String
+  def mostRecentVar: String
+
+  /**
+   * Returns the class loader used by this interpreter.
+   * @return The runtime class loader used by this interpreter
+   */
+  def classLoader: ClassLoader
 }

@@ -28,8 +28,7 @@ class MagicLoader(
   val dependencyMap: DependencyMap = new DependencyMap(),
   urls: Array[URL] = Array(),
   parentLoader: ClassLoader = null
-) extends URLClassLoader(urls, parentLoader)
-{
+) extends URLClassLoader(urls, parentLoader) {
   private val magicPackage = "com.ibm.spark.magic.builtin"
 
   /**

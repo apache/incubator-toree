@@ -6,6 +6,8 @@ Spark Kernel
 [![Scaladoc][scaladoc-badge]][scaladoc-url]
 [![License][license-badge]][license-url]
 
+Requires JDK 1.7 or higher!
+
 The Spark Kernel has one main goal: provide the foundation for interactive applications to connect and use [Apache Spark][1].
 
 Overview

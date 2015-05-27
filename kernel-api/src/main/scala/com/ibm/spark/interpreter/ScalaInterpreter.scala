@@ -487,5 +487,7 @@ class ScalaInterpreter(
 
     (result.cursor, result.candidates)
   }
+
+  override def classLoader: ClassLoader = _runtimeClassloader
 }
 
