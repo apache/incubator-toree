@@ -24,11 +24,15 @@ import com.ibm.spark.kernel.protocol.v5.client.{SimpleActorLoader, SparkKernelCl
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 
-class ClientBootstrap(config: Config) extends LogLike {
+class ClientBootstrap(
+  config: Config,
+  actorSystemName: String =
+    "spark-client-actor-system-" + java.util.UUID.randomUUID().toString
+) extends LogLike {
   this: SystemInitialization with HandlerInitialization =>
 
   // set up our actor system and configure the socket factory
-  private val actorSystem = ActorSystem("spark-client-actor-system")
+  private val actorSystem = ActorSystem(actorSystemName)
   private val actorLoader = SimpleActorLoader(actorSystem)
   private val socketFactory =
     new SocketFactory(SocketConfig.fromConfig(config))
