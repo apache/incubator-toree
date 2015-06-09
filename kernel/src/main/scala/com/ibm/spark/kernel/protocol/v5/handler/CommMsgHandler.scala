@@ -67,6 +67,9 @@ class CommMsgHandler(
 
         // TODO: Should we be checking the return values? Probably not.
         callbacks.executeMsgCallbacks(commWriter, commId, data)
+          .filter(_.isFailure).map(_.failed).foreach(throwable => {
+            logger.error("Comm msg callback encountered an error!", throwable)
+          })
     }
   }
 

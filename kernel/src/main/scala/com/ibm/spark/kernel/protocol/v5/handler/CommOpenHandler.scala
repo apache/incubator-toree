@@ -71,6 +71,9 @@ class CommOpenHandler(
 
         // TODO: Should we be checking the return values? Probably not.
         callbacks.executeOpenCallbacks(commWriter, commId, targetName, data)
+          .filter(_.isFailure).map(_.failed).foreach(throwable => {
+            logger.error("Comm open callback encountered an error!", throwable)
+          })
     }
   }
 
