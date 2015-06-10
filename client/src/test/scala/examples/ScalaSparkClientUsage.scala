@@ -36,7 +36,7 @@ object ScalaSparkClientUsage extends App {
   //  Setup
   val client = (new ClientBootstrap(config)
     with StandardSystemInitialization
-    with StandardHandlerInitialization).createClient
+    with StandardHandlerInitialization).createClient()
 
   def printStreamContent(content:StreamContent) = {
     println(s"Stream content on channel ${content.name} was: ${content.text}")

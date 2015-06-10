@@ -41,6 +41,6 @@ object SparkKernelClientDeployer {
      val config: Config = ConfigFactory.parseString(profileJSON)
      (new ClientBootstrap(config)
        with StandardSystemInitialization
-       with StandardHandlerInitialization).createClient
+       with StandardHandlerInitialization).createClient()
    }
  }

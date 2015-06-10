@@ -24,43 +24,43 @@ import com.ibm.spark.kernel.protocol.v5.client.{SimpleActorLoader, SparkKernelCl
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 
-class ClientBootstrap(
-  config: Config,
-  actorSystemName: String =
+object ClientBootstrap {
+  /**
+   * Generates a new unique name for a client actor system.
+   *
+   * @return The unique name as a string
+   */
+  def newActorSystemName(): String =
     "spark-client-actor-system-" + java.util.UUID.randomUUID().toString
-) extends LogLike {
+}
+
+class ClientBootstrap(config: Config) extends LogLike {
   this: SystemInitialization with HandlerInitialization =>
 
-  // set up our actor system and configure the socket factory
-  private val actorSystem = ActorSystem(actorSystemName)
-  private val actorLoader = SimpleActorLoader(actorSystem)
-  private val socketFactory =
-    new SocketFactory(SocketConfig.fromConfig(config))
-
-  // TODO: All clients share the same storage (for testing purposes), this needs
-  //       to be updated in the future
-  private var commStorage: CommStorage = _
-
   /**
-   * @return an instance of a SparkKernelClient
+   * Creates a new Spark Kernel client instance.
+   *
+   * @return The new client instance
    */
-  def createClient: SparkKernelClient = {
-    val commRegistrar = new CommRegistrar(commStorage)
-    val client = new SparkKernelClient(
-      actorLoader, actorSystem, commRegistrar)
-    client
-  }
+  def createClient(
+    actorSystemName: String = ClientBootstrap.newActorSystemName()
+  ): SparkKernelClient = {
+    logger.trace(s"Creating new kernel client actor system, '$actorSystemName'")
+    val actorSystem = ActorSystem(actorSystemName)
 
-  /**
-   * Initializes all kernel systems.
-   */
-  def initialize(): Unit = {
-    val (_,_,_,_,_,s) = initializeSystem(actorSystem, actorLoader, socketFactory)
+    logger.trace(s"Creating actor loader for actor system, '$actorSystemName'")
+    val actorLoader = SimpleActorLoader(actorSystem)
 
-    this.commStorage = s
+    logger.trace(s"Creating socket factory for actor system, '$actorSystemName")
+    val socketFactory = new SocketFactory(SocketConfig.fromConfig(config))
 
+    logger.trace(s"Initializing underlying system for, '$actorSystemName'")
+    val (_, _, _, _, commRegistrar, _) =
+      initializeSystem(actorSystem, actorLoader, socketFactory)
+
+    logger.trace(s"Initializing handlers for, '$actorSystemName'")
     initializeHandlers(actorSystem, actorLoader)
-  }
 
-  initialize()
+    new SparkKernelClient(actorLoader, actorSystem, commRegistrar)
+  }
 }

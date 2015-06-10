@@ -138,7 +138,7 @@ object SparkClientDeployer extends LogLike{
 
     logger.debug("Finished initializing Client Bootstrap! Testing can now start!")
 
-    clientBootstrap.createClient
+    clientBootstrap.createClient()
   }
 
   /**

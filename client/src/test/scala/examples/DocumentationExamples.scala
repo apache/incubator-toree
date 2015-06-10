@@ -43,7 +43,7 @@ object DocumentationExamples extends App {
   val config: Config = ConfigFactory.parseString(profileJSON)
   val client = (new ClientBootstrap(config)
       with StandardSystemInitialization
-      with StandardHandlerInitialization).createClient
+      with StandardHandlerInitialization).createClient()
 
   /********************
   *   Executing Code  *
