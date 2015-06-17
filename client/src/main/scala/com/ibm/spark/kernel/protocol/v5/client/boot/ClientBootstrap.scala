@@ -23,6 +23,7 @@ import com.ibm.spark.kernel.protocol.v5.client.socket.{SocketConfig, SocketFacto
 import com.ibm.spark.kernel.protocol.v5.client.{SimpleActorLoader, SparkKernelClient}
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
+import org.zeromq.ZMQ
 
 object ClientBootstrap {
   /**
@@ -60,6 +61,8 @@ class ClientBootstrap(config: Config) extends LogLike {
 
     logger.trace(s"Initializing handlers for, '$actorSystemName'")
     initializeHandlers(actorSystem, actorLoader)
+
+    logger.trace(s"ZeroMQ (JeroMQ) version: ${ZMQ.getVersionString}")
 
     new SparkKernelClient(actorLoader, actorSystem, commRegistrar)
   }

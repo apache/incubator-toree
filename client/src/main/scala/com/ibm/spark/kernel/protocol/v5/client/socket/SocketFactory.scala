@@ -36,7 +36,7 @@ class  SocketFactory(socketConfig: SocketConfig) {
   /**
    * Represents the identity shared between Shell and Stdin connections.
    */
-  private val ZmqIdentity = UUID.randomUUID().toString.getBytes("UTF-8")
+  private val ZmqIdentity = UUID.randomUUID().toString
 
   val HeartbeatConnection = SocketConnection(
     socketConfig.transport, socketConfig.ip, socketConfig.hb_port)
@@ -57,7 +57,7 @@ class  SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def HeartbeatClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
-    system.actorOf(Props(classOf[ReqSocketActor], ZmqIdentity, HeartbeatConnection.toString, listener))
+    system.actorOf(Props(classOf[ReqSocketActor], HeartbeatConnection.toString, listener))
 //    ZeroMQExtension(system).newReqSocket(Array(
 //      Listener(listener), Connect(HeartbeatConnection.toString)
 //    ))

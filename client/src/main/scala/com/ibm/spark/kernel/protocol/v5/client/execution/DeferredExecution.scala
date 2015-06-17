@@ -112,15 +112,14 @@ case class DeferredExecution() extends LogLike {
       case (Some(executeReply), Some(executeResult)) if executeReply.status.equals("ok") =>
         callResultCallbacks(executeResult)
         callSuccessCallbacks(executeReply)
-      case (Some(executeReply), None) =>
+      case (Some(executeReply), None) if executeReply.status.equals("ok") =>
         callSuccessCallbacks(executeReply)
       case value =>
         logger.debug(
-          s"""
-              Did not invoke client callbacks.
-              ExecuteReply was: ${executeReplyOption}
-              ExecuteResult was: ${executeResultOption}
-           """.stripMargin)
+          s"""|Did not invoke client callbacks.
+              |ExecuteReply was: ${executeReplyOption}
+              |ExecuteResult was: ${executeResultOption}
+           """.stripMargin.trim)
     }
   }
 
