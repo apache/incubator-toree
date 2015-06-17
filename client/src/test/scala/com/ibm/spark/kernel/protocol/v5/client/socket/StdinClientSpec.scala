@@ -18,7 +18,7 @@ package com.ibm.spark.kernel.protocol.v5.client.socket
 
 import akka.actor.{ActorRef, Props, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import akka.zeromq.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.client.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
 import com.ibm.spark.kernel.protocol.v5.content.{InputReply, InputRequest, ClearOutput, ExecuteRequest}

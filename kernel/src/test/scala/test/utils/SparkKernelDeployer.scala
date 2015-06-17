@@ -21,7 +21,7 @@ import java.io.OutputStream
 import akka.actor.Actor.Receive
 import akka.actor.{Actor, Props, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, TestActorRef}
-import akka.zeromq.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
 import com.ibm.spark.boot.layer._
 import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
 import com.ibm.spark.interpreter.{StandardSettingsProducer, StandardTaskManagerProducer, StandardSparkIMainProducer, ScalaInterpreter}

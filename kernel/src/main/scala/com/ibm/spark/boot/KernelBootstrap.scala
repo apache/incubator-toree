@@ -56,7 +56,8 @@ class KernelBootstrap(config: Config) extends LogLike {
     // E.G. System.setOut(customPrintStream) ... all new threads will have
     //      customPrintStream as their initial Console.out value
     //
-    
+
+    println("POTATO FISH~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~0")
     displayVersionInfo()
 
     // Initialize the bare minimum to report a starting message

@@ -27,7 +27,7 @@ import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatest.time.{Milliseconds, Millis, Seconds, Span}
 import scala.concurrent.{Promise, Future}
 import scala.concurrent.duration._
-import akka.zeromq.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.client.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen, StreamContent}
 import Utilities._

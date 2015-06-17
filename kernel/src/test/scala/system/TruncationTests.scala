@@ -17,7 +17,7 @@
 package system
 
 import akka.testkit.TestProbe
-import akka.zeromq.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import Utilities._
 import com.ibm.spark.kernel.protocol.v5

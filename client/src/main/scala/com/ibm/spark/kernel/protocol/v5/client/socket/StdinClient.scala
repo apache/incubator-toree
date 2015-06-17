@@ -17,7 +17,7 @@
 package com.ibm.spark.kernel.protocol.v5.client.socket
 
 import akka.actor.Actor
-import akka.zeromq.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.client.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.{HeaderBuilder, KMBuilder, KernelMessage}
 import com.ibm.spark.kernel.protocol.v5.content.{InputReply, InputRequest}
 import com.ibm.spark.utils.LogLike

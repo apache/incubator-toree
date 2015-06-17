@@ -19,7 +19,7 @@ package com.ibm.spark.kernel.protocol.v5.kernel.socket
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.util.ByteString
-import akka.zeromq.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._

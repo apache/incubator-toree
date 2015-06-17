@@ -18,8 +18,7 @@ package com.ibm.spark.kernel.protocol.v5.client.socket
 
 import java.util.UUID
 
-import akka.actor.{ActorRef, ActorSystem}
-import akka.zeromq._
+import akka.actor.{Props, ActorRef, ActorSystem}
 
 object SocketFactory {
   def apply(socketConfig: SocketConfig) = {
@@ -58,9 +57,10 @@ class  SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def HeartbeatClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
-    ZeroMQExtension(system).newReqSocket(Array(
-      Listener(listener), Connect(HeartbeatConnection.toString)
-    ))
+    system.actorOf(Props(classOf[ReqSocketActor], ZmqIdentity, HeartbeatConnection.toString, listener))
+//    ZeroMQExtension(system).newReqSocket(Array(
+//      Listener(listener), Connect(HeartbeatConnection.toString)
+//    ))
   }
 
   /**
@@ -75,10 +75,12 @@ class  SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def ShellClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
-    ZeroMQExtension(system).newDealerSocket(Array(
-      Listener(listener), Connect(ShellConnection.toString),
-      Identity(ZmqIdentity)
-    ))
+    system.actorOf(Props(classOf[DealerSocketActor], ZmqIdentity, ShellConnection.toString, listener))
+    //socket.setIdentity(ZmqIdentity)
+//    ZeroMQExtension(system).newDealerSocket(Array(
+//      Listener(listener), Connect(ShellConnection.toString),
+//      Identity(ZmqIdentity)
+//    ))
   }
 
   /**
@@ -93,10 +95,12 @@ class  SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def StdinClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
-    ZeroMQExtension(system).newDealerSocket(Array(
-      Listener(listener), Connect(StdinConnection.toString),
-      Identity(ZmqIdentity)
-    ))
+    system.actorOf(Props(classOf[DealerSocketActor], ZmqIdentity, StdinConnection.toString, listener))
+    //socket.setIdentity(ZmqIdentity)
+//    ZeroMQExtension(system).newDealerSocket(Array(
+//      Listener(listener), Connect(StdinConnection.toString),
+//      Identity(ZmqIdentity)
+//    ))
   }
 
   /**
@@ -109,8 +113,10 @@ class  SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def IOPubClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
-    ZeroMQExtension(system).newSubSocket(Array(
-      Listener(listener), Connect(IOPubConnection.toString), SubscribeAll
-    ))
+    system.actorOf(Props(classOf[SubSocketActor], IOPubConnection.toString, listener))
+    //socket.subscribe(ZMQ.SUBSCRIPTION_ALL)
+//    ZeroMQExtension(system).newSubSocket(Array(
+//      Listener(listener), Connect(IOPubConnection.toString), SubscribeAll
+//    ))
   }
 }

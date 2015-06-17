@@ -17,7 +17,6 @@
 package com.ibm.spark.kernel.protocol.v5.kernel
 
 import akka.util.ByteString
-import akka.zeromq.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
 import org.scalatest.{FunSpec, Matchers}
 

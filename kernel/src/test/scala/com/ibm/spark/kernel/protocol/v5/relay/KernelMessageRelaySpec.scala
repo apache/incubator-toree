@@ -30,7 +30,7 @@ import org.mockito.Matchers.{eq => mockEq}
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import scala.concurrent.duration._
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import akka.zeromq.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
 import scala.concurrent._
 import akka.pattern.pipe
 import scala.util.Random
