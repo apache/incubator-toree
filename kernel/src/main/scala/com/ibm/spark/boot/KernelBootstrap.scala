@@ -16,8 +16,6 @@
 
 package com.ibm.spark.boot
 
-import org.zeromq.{ZMQ, ZeroMQ, ZeroMQLibrary}
-
 import akka.actor.{ActorRef, ActorSystem}
 import com.ibm.spark.boot.layer._
 import com.ibm.spark.interpreter.Interpreter
@@ -28,6 +26,7 @@ import com.ibm.spark.security.KernelSecurityManager
 import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
+import org.zeromq.ZMQ
 
 class KernelBootstrap(config: Config) extends LogLike {
   this: BareInitialization with ComponentInitialization
@@ -57,7 +56,6 @@ class KernelBootstrap(config: Config) extends LogLike {
     //      customPrintStream as their initial Console.out value
     //
 
-    println("POTATO FISH~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~0")
     displayVersionInfo()
 
     // Initialize the bare minimum to report a starting message
@@ -150,12 +148,7 @@ class KernelBootstrap(config: Config) extends LogLike {
   @inline private def displayVersionInfo() = {
     logger.info("Kernel version: " + SparkKernelInfo.implementationVersion)
     logger.info("Scala version: " + SparkKernelInfo.languageVersion)
-    logger.info("ZeroMQ version: " + ZMQ.getVersionString)
-
-    // Display warning regarding bad ZeroMQ version
-    if (ZMQ.getFullVersion > ZMQ.makeVersion(2, 2, 0)) {
-      logger.warn("ZeroMQ version is greater than 2.2.0! Kernel will not respond!")
-    }
+    logger.info("ZeroMQ (JeroMQ) version: " + ZMQ.getVersionString)
   }
 }
 
