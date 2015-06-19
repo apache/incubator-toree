@@ -17,10 +17,9 @@
 package system
 
 import akka.testkit.{TestKit, TestProbe}
-import com.ibm.spark.kernel.protocol.v5.client.ZMQMessage
+import com.ibm.spark.communication.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.client.Utilities
-import Utilities._
+import com.ibm.spark.kernel.protocol.v5.client.Utilities._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.{KMBuilder, KernelMessage, SocketType}
 import org.scalatest.concurrent.Eventually

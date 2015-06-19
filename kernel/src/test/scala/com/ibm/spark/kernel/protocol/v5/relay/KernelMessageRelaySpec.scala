@@ -18,6 +18,7 @@ package com.ibm.spark.kernel.protocol.v5.relay
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import com.ibm.spark.communication.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import Utilities._
@@ -30,7 +31,6 @@ import org.mockito.Matchers.{eq => mockEq}
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import scala.concurrent.duration._
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
 import scala.concurrent._
 import akka.pattern.pipe
 import scala.util.Random

@@ -1,4 +1,4 @@
-package com.ibm.spark.kernel.protocol.v5.client
+package com.ibm.spark.communication
 
 import akka.util.ByteString
 

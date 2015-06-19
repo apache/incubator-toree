@@ -19,6 +19,7 @@ package com.ibm.spark.kernel.protocol.v5.client.socket
 import java.util.UUID
 
 import akka.actor.{Props, ActorRef, ActorSystem}
+import com.ibm.spark.communication.actors.{DealerSocketActor, ReqSocketActor, SubSocketActor}
 
 object SocketFactory {
   def apply(socketConfig: SocketConfig) = {
@@ -75,7 +76,7 @@ class  SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def ShellClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
-    system.actorOf(Props(classOf[DealerSocketActor], ZmqIdentity, ShellConnection.toString, listener))
+    system.actorOf(Props(classOf[DealerSocketActor], ShellConnection.toString, listener))
     //socket.setIdentity(ZmqIdentity)
 //    ZeroMQExtension(system).newDealerSocket(Array(
 //      Listener(listener), Connect(ShellConnection.toString),
@@ -95,7 +96,7 @@ class  SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def StdinClient(system: ActorSystem, listener: ActorRef) : ActorRef = {
-    system.actorOf(Props(classOf[DealerSocketActor], ZmqIdentity, StdinConnection.toString, listener))
+    system.actorOf(Props(classOf[DealerSocketActor], StdinConnection.toString, listener))
     //socket.setIdentity(ZmqIdentity)
 //    ZeroMQExtension(system).newDealerSocket(Array(
 //      Listener(listener), Connect(StdinConnection.toString),

@@ -17,6 +17,7 @@
 package com.ibm.spark.kernel.protocol.v5.kernel.socket
 
 import akka.actor.{Props, ActorRef, ActorSystem}
+import com.ibm.spark.communication.actors.{RouterSocketActor, RepSocketActor, PubSocketActor}
 
 object SocketFactory {
   def apply(socketConfig: SocketConfig) = {
@@ -47,7 +48,7 @@ class SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def Heartbeat(system: ActorSystem, listener: ActorRef) : ActorRef =
-    system.actorOf(Props(classOf[ReplySocketActor], HeartbeatConnection.toString, listener))
+    system.actorOf(Props(classOf[RepSocketActor], HeartbeatConnection.toString, listener))
 //    ZeroMQExtension(system).newRepSocket(
 //      Array(Listener(listener), Bind(HeartbeatConnection.toString))
 //    )

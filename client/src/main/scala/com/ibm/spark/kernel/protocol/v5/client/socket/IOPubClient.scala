@@ -17,7 +17,7 @@
 package com.ibm.spark.kernel.protocol.v5.client.socket
 
 import akka.actor.Actor
-import com.ibm.spark.kernel.protocol.v5.client.ZMQMessage
+import com.ibm.spark.communication.ZMQMessage
 import com.ibm.spark.comm.{CommStorage, CommRegistrar, ClientCommWriter}
 import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, Utilities}
 import Utilities._

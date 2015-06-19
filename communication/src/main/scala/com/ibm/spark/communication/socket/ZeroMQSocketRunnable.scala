@@ -1,0 +1,121 @@
+package com.ibm.spark.communication.socket
+
+import com.ibm.spark.utils.LogLike
+import org.zeromq.{ZMsg, ZMQ}
+import org.zeromq.ZMQ.Context
+
+import scala.collection.JavaConverters._
+import scala.util.Try
+
+/**
+ * Represents the runnable component of a socket that processes messages
+ */
+class ZeroMQSocketRunnable(
+  private val context: Context,
+  private val socketType: SocketType,
+  private val inboundMessageCallback: Option[(Seq[String]) => Unit],
+  private val socketOptions: SocketOption*
+) extends SocketRunnable[ZMsg](inboundMessageCallback)
+  with LogLike {
+  require(socketOptions.count {
+    case _: Bind    => true
+    case _: Connect => true
+    case _          => false
+  } == 1, "ZeroMQ socket needs exactly one bind or connect!")
+
+  @volatile private var notClosed: Boolean = true
+
+  /**
+   * Processes the provided options, performing associated actions on the
+   * specified socket.
+   *
+   * @param socket The socket to apply actions on
+   */
+  private def processOptions(socket: ZMQ.Socket): Unit = {
+    val socketOptionsString = socketOptions.map("\n- " + _.toString).mkString("")
+    logger.trace(
+      s"Processing options for socket $socketType: $socketOptionsString"
+    )
+
+    // Split our options based on connection (bind/connect) and everything else
+    val (connectionOptions, otherOptions) = socketOptions.partition {
+      case Bind(_) | Connect(_) => true
+      case _ => false
+    }
+
+    // Apply non-connection options first since some (like identity) must be
+    // run before the socket does a bind/connect
+    otherOptions.foreach {
+      case Linger(milliseconds) => socket.setLinger(milliseconds)
+      case Subscribe(topic)     => socket.subscribe(topic)
+      case Identity(identity)   => socket.setIdentity(identity)
+      case option               => logger.warn(s"Unknown option: $option")
+    }
+
+    // Perform our bind or connect
+    connectionOptions.foreach {
+      case Bind(address)        => socket.bind(address)
+      case Connect(address)     => socket.connect(address)
+      case option               =>
+        logger.warn(s"Unknown connection option: $option")
+    }
+  }
+
+  /**
+   * Sends the next outbound message from the outbound message queue.
+   *
+   * @param socket The socket to use when sending the message
+   *
+   * @return True if a message was sent, otherwise false
+   */
+  protected def processNextOutboundMessage(socket: ZMQ.Socket): Boolean = {
+    val message = Option(outboundMessages.poll())
+
+    message.foreach(_.send(socket))
+
+    message.nonEmpty
+  }
+
+  /**
+   * Retrieves the next inbound message (if available) and invokes the
+   * inbound message callback.
+   *
+   * @param socket The socket whose next incoming message to retrieve
+   */
+  protected def processNextInboundMessage(
+    socket: ZMQ.Socket,
+    flags: Int = ZMQ.DONTWAIT
+  ): Unit = {
+    Option(ZMsg.recvMsg(socket, flags)).foreach(zMsg => {
+      inboundMessageCallback.foreach(_(zMsg.asScala.toSeq
+        .map(zFrame => new String(zFrame.getData, ZMQ.CHARSET))
+      ))
+    })
+  }
+
+  override def run(): Unit = {
+    val socket = context.socket(socketType.`type`)
+    processOptions(socket)
+
+    try {
+      while (notClosed && !Thread.interrupted()) {
+        Try(processNextOutboundMessage(socket)).failed.foreach(
+          logger.error("Failed to send next outgoing message!", _: Throwable)
+        )
+        Try(processNextInboundMessage(socket)).failed.foreach(
+          logger.error("Failed to retrieve next incoming message!", _: Throwable)
+        )
+        Thread.sleep(1)
+      }
+    } finally {
+      socket.close()
+
+      // NOTE: Currently we will be creating a single context per socket. However,
+      //       this may change in the future, which will require this method to be
+      //       invoked elsewhere.
+      context.close()
+    }
+  }
+
+  override def close(): Unit = notClosed = false
+}

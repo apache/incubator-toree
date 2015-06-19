@@ -20,7 +20,7 @@ import java.nio.charset.Charset
 
 import akka.actor.{ActorSelection, ActorSystem, ActorRef, Actor}
 import akka.util.ByteString
-import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
+import com.ibm.spark.communication.ZMQMessage
 
 //import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.KernelMessage

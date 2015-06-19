@@ -52,7 +52,7 @@ object Build extends Build with Settings with SubProjects with TestTasks {
         publishArtifact := false,
         publishLocal := {}
       )
-  ).aggregate(client, kernel, kernel_api, protocol, macros).dependsOn(
+  ).aggregate(client, kernel, kernel_api, communication, protocol, macros).dependsOn(
     client % "test->test",
     kernel % "test->test"
   )
@@ -82,8 +82,9 @@ trait SubProjects extends Settings with TestTasks {
     settings = fullSettings
   )) dependsOn(
     macros % "test->test;compile->compile",
-    protocol % "test->test;compile->compile"
-    )
+    protocol % "test->test;compile->compile",
+    communication % "test->test;compile->compile"
+  )
 
   /**
    * Project representing the kernel code for the Spark Kernel backend.
@@ -98,6 +99,7 @@ trait SubProjects extends Settings with TestTasks {
   )) dependsOn(
     macros % "test->test;compile->compile",
     protocol % "test->test;compile->compile",
+    communication % "test->test;compile->compile",
     kernel_api % "test->test;compile->compile"
   )
 
@@ -130,6 +132,19 @@ trait SubProjects extends Settings with TestTasks {
       }
     ),
     buildInfoPackage := "com.ibm.spark.kernel"
+  )
+
+  /**
+   * Project representing forms of communication used as input/output for the
+   * client/kernel.
+   */
+  lazy val communication = addTestTasksToProject(Project(
+    id = "communication",
+    base = file("communication"),
+    settings = fullSettings
+  )) dependsOn(
+    macros % "test->test;compile->compile",
+    protocol % "test->test;compile->compile"
   )
 
   /**

@@ -18,7 +18,7 @@ package com.ibm.spark.kernel.protocol.v5.kernel.socket
 
 import akka.actor.Actor
 import akka.util.ByteString
-import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
+import com.ibm.spark.communication.ZMQMessage
 import com.ibm.spark.utils.LogLike
 
 /**

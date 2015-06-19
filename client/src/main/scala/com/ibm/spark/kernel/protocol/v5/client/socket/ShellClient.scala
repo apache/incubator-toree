@@ -18,7 +18,7 @@ package com.ibm.spark.kernel.protocol.v5.client.socket
 
 import akka.actor.Actor
 import akka.util.Timeout
-import com.ibm.spark.kernel.protocol.v5.client.ZMQMessage
+import com.ibm.spark.communication.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.client.Utilities
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, UUID}
 import Utilities._

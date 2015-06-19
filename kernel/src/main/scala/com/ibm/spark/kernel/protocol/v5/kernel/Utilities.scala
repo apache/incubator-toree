@@ -19,6 +19,7 @@ package com.ibm.spark.kernel.protocol.v5.kernel
 import java.nio.charset.Charset
 
 import akka.util.{ByteString, Timeout}
+import com.ibm.spark.communication.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.utils.LogLike
 import play.api.data.validation.ValidationError

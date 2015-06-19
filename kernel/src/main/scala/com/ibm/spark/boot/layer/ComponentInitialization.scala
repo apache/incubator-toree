@@ -239,6 +239,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
         // Protocol project
         getJarPathFor(classOf[com.ibm.spark.kernel.protocol.v5.KernelMessage]),
 
+        // Communication project
+        getJarPathFor(classOf[com.ibm.spark.communication.SocketManager]),
+
         // Kernel-api project
         getJarPathFor(classOf[com.ibm.spark.kernel.api.KernelLike]),
 

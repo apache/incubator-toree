@@ -18,7 +18,7 @@ package com.ibm.spark.kernel.protocol.v5.kernel.socket
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
+import com.ibm.spark.communication.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.kernel.Utilities
 import com.ibm.spark.kernel.protocol.v5Test._
 import Utilities._

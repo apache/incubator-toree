@@ -21,7 +21,7 @@ import java.nio.charset.Charset
 import akka.actor.{Props, ActorSelection, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import akka.util.ByteString
-import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
+import com.ibm.spark.communication.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5.kernel.Utilities._
 import com.ibm.spark.kernel.protocol.v5Test._
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, SystemActorType}

@@ -1,7 +1,5 @@
-import Common._
-import xerial.sbt.Pack._
 /*
- * Copyright 2014 IBM Corp.
+ * Copyright 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +13,11 @@ import xerial.sbt.Pack._
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pack <<= pack dependsOn (rebuildIvyXml dependsOn deliverLocal)
 
-packArchive <<= packArchive dependsOn (rebuildIvyXml dependsOn deliverLocal)
-
-//
-// TEST DEPENDENCIES
-//
-libraryDependencies +=
-  "org.spark-project.akka" %% "akka-testkit" % "2.3.4-spark" % "test" // MIT
-
-//
-// CUSTOM TASKS
-//
-
-lazy val kill = taskKey[Unit]("Executing the shell script.")
-
-kill := {
-  "sh scripts/terminate_spark_kernels.sh".!
-}
+libraryDependencies ++= Seq(
+  // LGPL with static linking exception
+  "org.zeromq"        % "jeromq"        % "0.3.4",
+  "com.typesafe.akka" %% "akka-actor"   % "2.3.4",
+  "com.typesafe.akka" %% "akka-slf4j"   % "2.3.4",
+  "com.typesafe.akka" %% "akka-testkit" % "2.3.4" % "test"
+)
