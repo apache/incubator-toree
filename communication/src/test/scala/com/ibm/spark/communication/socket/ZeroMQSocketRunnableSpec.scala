@@ -1,177 +1,224 @@
 package com.ibm.spark.communication.socket
 
-import org.mockito.invocation.InvocationOnMock
-import org.mockito.stubbing.Answer
+import org.scalatest.concurrent.Eventually
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.time.{Milliseconds, Span}
+import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 import org.zeromq.ZMQ
-import org.scalatest.concurrent.Eventually._
+import org.zeromq.ZMQ.{Socket, Context}
 
-import org.mockito.Mockito._
-import org.mockito.Matchers._
+import scala.util.Try
 
 class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
-  with OneInstancePerTest with MockitoSugar {
+  with MockitoSugar with Eventually with BeforeAndAfter {
+
+  implicit override val patienceConfig = PatienceConfig(
+    timeout = scaled(Span(2000, Milliseconds)),
+    interval = scaled(Span(5, Milliseconds))
+  )
 
   private val TestAddress = "inproc://test-address"
-  private val mockContext = mock[ZMQ.Context]
-  private val mockSocketType = mock[SocketType]
-  private val spySocket = spy(ZMQ.context(1).socket(PubSocket.`type`))
+  private var mockSocketType: SocketType = _
+  private var zmqContext: ZMQ.Context = _
+  private var pubSocket: ZMQ.Socket = _
 
-  when(mockContext.socket(anyInt())).thenReturn(spySocket)
+  private class TestRunnable(
+    private val socket: ZMQ.Socket,
+    private val context: Context,
+    private val socketType: SocketType,
+    private val inboundMessageCallback: Option[(Seq[String]) => Unit],
+    private val socketOptions: SocketOption*
+  ) extends ZeroMQSocketRunnable(
+    context,
+    socketType,
+    inboundMessageCallback,
+    socketOptions: _*
+  ) {
+    override protected def newZmqSocket(zmqContext: Context, socketType: Int): Socket = socket
+  }
+
+  before {
+    mockSocketType = mock[SocketType]
+    zmqContext = ZMQ.context(1)
+    pubSocket = zmqContext.socket(PubSocket.`type`)
+  }
+
+  after {
+    Try(zmqContext.close())
+  }
 
   describe("ZeroMQSocketRunnable") {
     describe("constructor") {
       it("should throw an exception if there is no bind or connect") {
         intercept[IllegalArgumentException] {
-          new ZeroMQSocketRunnable(mockContext, mockSocketType, None)
+          new ZeroMQSocketRunnable(zmqContext, mockSocketType, None)
         }
+        pubSocket.close()
       }
 
       it("should throw an exception if there is more than one connect") {
         intercept[IllegalArgumentException] {
           new ZeroMQSocketRunnable(
-            mockContext,
+            zmqContext,
             mockSocketType,
             None,
             Connect(TestAddress),
             Connect(TestAddress)
           )
         }
+        pubSocket.close()
       }
 
       it("should throw an exception if there is more than one bind") {
         intercept[IllegalArgumentException] {
           new ZeroMQSocketRunnable(
-            mockContext,
+            zmqContext,
             mockSocketType,
             None,
             Bind(TestAddress),
             Bind(TestAddress)
           )
         }
+        pubSocket.close()
       }
 
       it("should throw an exception if there is a connect and bind") {
         intercept[IllegalArgumentException] {
           new ZeroMQSocketRunnable(
-            mockContext,
+            zmqContext,
             mockSocketType,
             None,
             Connect(""),
             Bind("")
           )
         }
+        pubSocket.close()
       }
     }
 
     describe("#run"){
-      it("should construct a socket with the specified type") {
-        val thread = new Thread(new ZeroMQSocketRunnable(
-          mockContext,
-          PubSocket,
-          None,
-          Connect(TestAddress)
-        ))
-
-        thread.start()
-
-        eventually {
-          verify(mockContext).socket(PubSocket.`type`)
-        }
-
-        thread.interrupt()
-      }
-
-
       it("should set the linger option when provided") {
         val expected = 999
 
-        val thread = new Thread(new ZeroMQSocketRunnable(
-          mockContext,
+        val runnable: TestRunnable = new TestRunnable(
+          pubSocket,
+          zmqContext,
           PubSocket,
           None,
           Connect(TestAddress),
           Linger(expected)
-        ))
+        )
+        val thread = new Thread(runnable)
 
         thread.start()
 
         eventually {
-          val actual = spySocket.getLinger
+          val actual = pubSocket.getLinger
           actual should be (expected)
         }
 
-        thread.interrupt()
+        runnable.close()
       }
 
       it("should set the identity option when provided") {
         val expected = "my identity".getBytes(ZMQ.CHARSET)
 
-        val thread = new Thread(new ZeroMQSocketRunnable(
-          mockContext,
+        val runnable: TestRunnable = new TestRunnable(
+          pubSocket,
+          zmqContext,
           PubSocket,
           None,
           Connect(TestAddress),
           Identity(expected)
-        ))
+        )
+        val thread = new Thread(runnable)
 
         thread.start()
 
         eventually {
-          val actual = spySocket.getIdentity
+          val actual = pubSocket.getIdentity
           actual should be (expected)
         }
 
-        thread.interrupt()
+        runnable.close()
       }
 
-      ignore("should set non-connection options before connection options") {
-        doAnswer(new Answer[Unit] {
-          override def answer(invocation: InvocationOnMock): Unit = {
-            verify(spySocket, never).connect(TestAddress)
-          }
-        }).when(spySocket).setLinger(0)
-
-        when(spySocket.connect(TestAddress)).thenAnswer(new Answer[Unit] {
-          override def answer(invocation: InvocationOnMock): Unit = {
-            verify(spySocket).setLinger(0)
-            verify(spySocket).subscribe(ZMQ.SUBSCRIPTION_ALL)
-            verify(spySocket).setIdentity("".getBytes(ZMQ.CHARSET))
-          }
-        })
-
-        new ZeroMQSocketRunnable(
-          mockContext,
+      it("should close the thread when closed"){
+        val runnable = new TestRunnable(
+          pubSocket,
+          zmqContext,
           PubSocket,
           None,
-          Connect(TestAddress),
-          Linger(0),
-          Subscribe(ZMQ.SUBSCRIPTION_ALL),
-          Identity("".getBytes(ZMQ.CHARSET))
-        ).run()
-      }
-      ignore("should set the subscribe option when provided") {
-        val expected = ZMQ.SUBSCRIPTION_ALL
+          Connect(TestAddress)
+        )
 
-        new Thread(new ZeroMQSocketRunnable(
-          mockContext,
-          PubSocket,
-          None,
-          Connect(TestAddress),
-          Subscribe(expected)
-        )).start()
+        val thread = new Thread(runnable)
+
+        thread.start()
 
         eventually {
-          val actual = spySocket.base().getsockopt(zmq.ZMQ.ZMQ_SUBSCRIBE)
-          actual should be(expected)
+          runnable.isProcessing should be (true)
+        }
+
+        runnable.close()
+
+        eventually{
+          thread.isAlive should be (false)
         }
       }
     }
+
+    describe("#isProcessing") {
+      it("should be false when the runnable is closed") {
+        val runnable = new TestRunnable(
+          pubSocket,
+          zmqContext,
+          PubSocket,
+          None,
+          Connect(TestAddress)
+        )
+
+        val thread = new Thread(runnable)
+
+        thread.start()
+
+        eventually {
+          runnable.isProcessing should be (true)
+        }
+
+        runnable.close()
+
+        eventually {
+          runnable.isProcessing should be (false)
+        }
+      }
+
+      it("should eventually be true when the runnable is started") {
+        val runnable = new TestRunnable(
+          pubSocket,
+          zmqContext,
+          PubSocket,
+          None,
+          Connect(TestAddress)
+        )
+
+        val thread = new Thread(runnable)
+
+        thread.start()
+
+        eventually{
+          runnable.isProcessing should be (true)
+        }
+
+        runnable.close()
+      }
+    }
+
     describe("#close"){
       it("should close the thread"){
-          val runnable = new ZeroMQSocketRunnable(
-            mockContext,
+          val runnable = new TestRunnable(
+            pubSocket,
+            zmqContext,
             PubSocket,
             None,
             Connect(TestAddress)
@@ -180,6 +227,11 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
           val thread = new Thread(runnable)
 
           thread.start()
+
+          eventually {
+            runnable.isProcessing should be (true)
+          }
+
           runnable.close()
 
           eventually{

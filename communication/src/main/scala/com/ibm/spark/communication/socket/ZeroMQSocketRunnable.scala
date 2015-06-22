@@ -8,7 +8,14 @@ import scala.collection.JavaConverters._
 import scala.util.Try
 
 /**
- * Represents the runnable component of a socket that processes messages
+ * Represents the runnable component of a socket that processes messages and
+ * sends messages placed on an outbound queue.
+ *
+ * @param context The ZMQ context to use with this runnable to create a socket
+ * @param socketType The type of socket to create
+ * @param inboundMessageCallback The callback to invoke when receiving a message
+ *                               on the socket created
+ * @param socketOptions The options to use when creating the socket
  */
 class ZeroMQSocketRunnable(
   private val context: Context,
@@ -24,6 +31,14 @@ class ZeroMQSocketRunnable(
   } == 1, "ZeroMQ socket needs exactly one bind or connect!")
 
   @volatile private var notClosed: Boolean = true
+  @volatile private var _isProcessing: Boolean = false
+
+  /**
+   * Indicates the processing state of this runnable.
+   *
+   * @return True if processing messages, otherwise false
+   */
+  override def isProcessing: Boolean = _isProcessing
 
   /**
    * Processes the provided options, performing associated actions on the
@@ -31,7 +46,7 @@ class ZeroMQSocketRunnable(
    *
    * @param socket The socket to apply actions on
    */
-  private def processOptions(socket: ZMQ.Socket): Unit = {
+  protected def processOptions(socket: ZMQ.Socket): Unit = {
     val socketOptionsString = socketOptions.map("\n- " + _.toString).mkString("")
     logger.trace(
       s"Processing options for socket $socketType: $socketOptionsString"
@@ -59,6 +74,8 @@ class ZeroMQSocketRunnable(
       case option               =>
         logger.warn(s"Unknown connection option: $option")
     }
+
+    _isProcessing = true
   }
 
   /**
@@ -93,12 +110,24 @@ class ZeroMQSocketRunnable(
     })
   }
 
+  /**
+   * Creates a new instance of a ZMQ Socket.
+   *
+   * @param zmqContext The context to use to create the socket
+   * @param socketType The type of socket to create
+   *
+   * @return The new ZMQ.Socket instance
+   */
+  protected def newZmqSocket(zmqContext: ZMQ.Context, socketType: Int) =
+    zmqContext.socket(socketType)
+
   override def run(): Unit = {
-    val socket = context.socket(socketType.`type`)
-    processOptions(socket)
+    val socket = newZmqSocket(context, socketType.`type`)//context.socket(socketType.`type`)
 
     try {
-      while (notClosed && !Thread.interrupted()) {
+      processOptions(socket)
+
+      while (notClosed) {
         Try(processNextOutboundMessage(socket)).failed.foreach(
           logger.error("Failed to send next outgoing message!", _: Throwable)
         )
@@ -107,15 +136,29 @@ class ZeroMQSocketRunnable(
         )
         Thread.sleep(1)
       }
+    } catch {
+      case throwable: Throwable =>
+        logger.error("Unexpected exception in 0mq socket runnable!", throwable)
     } finally {
-      socket.close()
-
-      // NOTE: Currently we will be creating a single context per socket. However,
-      //       this may change in the future, which will require this method to be
-      //       invoked elsewhere.
-      context.close()
+      Try(socket.close()).failed.foreach {
+        case throwable: Throwable =>
+          logger.error("Failed to close socket!", _: Throwable)
+      }
     }
   }
 
-  override def close(): Unit = notClosed = false
+  /**
+   * Marks the runnable as closed such that it eventually stops processing
+   * messages and closes the socket.
+   *
+   * @throws AssertionError If the runnable is not processing messages or has
+   *                        already been closed
+   */
+  override def close(): Unit = {
+    assert(_isProcessing && notClosed,
+      "Runnable is not processing or is closed!")
+
+    _isProcessing = false
+    notClosed = false
+  }
 }
