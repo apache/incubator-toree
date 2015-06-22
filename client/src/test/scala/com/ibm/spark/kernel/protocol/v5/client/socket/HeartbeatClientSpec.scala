@@ -18,7 +18,7 @@ package com.ibm.spark.kernel.protocol.v5.client.socket
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import akka.zeromq.ZMQMessage
+import com.ibm.spark.communication.ZMQMessage
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
 import org.mockito.Matchers._

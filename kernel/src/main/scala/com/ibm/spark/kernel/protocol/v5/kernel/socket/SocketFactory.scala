@@ -16,8 +16,8 @@
 
 package com.ibm.spark.kernel.protocol.v5.kernel.socket
 
-import akka.actor.{ActorRef, ActorSystem}
-import akka.zeromq._
+import akka.actor.{Props, ActorRef, ActorSystem}
+import com.ibm.spark.communication.actors.{RouterSocketActor, RepSocketActor, PubSocketActor}
 
 object SocketFactory {
   def apply(socketConfig: SocketConfig) = {
@@ -48,9 +48,10 @@ class SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def Heartbeat(system: ActorSystem, listener: ActorRef) : ActorRef =
-    ZeroMQExtension(system).newRepSocket(
-      Array(Listener(listener), Bind(HeartbeatConnection.toString))
-    )
+    system.actorOf(Props(classOf[RepSocketActor], HeartbeatConnection.toString, listener))
+//    ZeroMQExtension(system).newRepSocket(
+//      Array(Listener(listener), Bind(HeartbeatConnection.toString))
+//    )
 
   /**
    * Creates a ZeroMQ reply socket representing the server endpoint for shell
@@ -60,9 +61,10 @@ class SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def Shell(system: ActorSystem, listener: ActorRef) : ActorRef =
-    ZeroMQExtension(system).newRouterSocket(
-      Array(Listener(listener), Bind(ShellConnection.toString))
-    )
+    system.actorOf(Props(classOf[RouterSocketActor], ShellConnection.toString, listener))
+//    ZeroMQExtension(system).newRouterSocket(
+//      Array(Listener(listener), Bind(ShellConnection.toString))
+//    )
 
   /**
    * Creates a ZeroMQ reply socket representing the server endpoint for stdin
@@ -72,9 +74,10 @@ class SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def Stdin(system: ActorSystem, listener: ActorRef) : ActorRef =
-    ZeroMQExtension(system).newRouterSocket(
-      Array(Listener(listener), Bind(StdinConnection.toString))
-    )
+    system.actorOf(Props(classOf[RouterSocketActor], StdinConnection.toString, listener))
+//    ZeroMQExtension(system).newRouterSocket(
+//      Array(Listener(listener), Bind(StdinConnection.toString))
+//    )
 
   /**
    * Creates a ZeroMQ reply socket representing the server endpoint for IOPub
@@ -83,7 +86,8 @@ class SocketFactory(socketConfig: SocketConfig) {
    * @return The ActorRef created for the socket connection
    */
   def IOPub(system: ActorSystem) : ActorRef =
-    ZeroMQExtension(system).newPubSocket(
-      Bind(IOPubConnection.toString)
-    )
+    system.actorOf(Props(classOf[PubSocketActor], IOPubConnection.toString))
+//    ZeroMQExtension(system).newPubSocket(
+//      Bind(IOPubConnection.toString)
+//    )
 }

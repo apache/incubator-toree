@@ -17,29 +17,31 @@
 package com.ibm.spark.kernel.protocol.v5.client.socket
 
 import java.util.UUID
+
 import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import akka.util.Timeout
-import com.ibm.spark.comm.{CommWriter, CommCallbacks, CommStorage, CommRegistrar}
-import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, Utilities}
-import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, DeferredExecutionManager}
-import org.scalatest.concurrent.{Eventually, ScalaFutures}
-import org.scalatest.time.{Milliseconds, Millis, Seconds, Span}
-import scala.concurrent.{Promise, Future}
-import scala.concurrent.duration._
-import akka.zeromq.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen, StreamContent}
-import Utilities._
-import com.typesafe.config.ConfigFactory
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpecLike}
-import org.mockito.Mockito._
-import org.mockito.Matchers.{eq => mockEq, _}
-import play.api.libs.json.Json
 import akka.pattern.ask
-import scala.util.Failure
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.util.Timeout
+import com.ibm.spark.comm.{CommCallbacks, CommRegistrar, CommStorage, CommWriter}
+import com.ibm.spark.communication.ZMQMessage
 import com.ibm.spark.kernel.protocol.v5
+import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.client.Utilities._
+import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, DeferredExecutionManager}
+import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, Utilities}
+import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen, StreamContent}
+import com.typesafe.config.ConfigFactory
+import org.mockito.Matchers.{eq => mockEq, _}
+import org.mockito.Mockito._
+import org.scalatest.concurrent.{Eventually, ScalaFutures}
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.time.{Milliseconds, Span}
+import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import play.api.libs.json.Json
+
+import scala.concurrent.duration._
+import scala.concurrent.{Future, Promise}
+import scala.util.Failure
 
 object IOPubClientSpec {
   val config ="""
