@@ -4,10 +4,17 @@ scala:
 jdk:
     - oraclejdk7
     - openjdk7
-before_install:
-    - sudo apt-get update -qq
-    - sudo apt-get remove -y libzmq3
-    - sudo apt-get install -y libzmq-dev
-script: "sbt clean coverage test -Dakka.test.timefactor=3"
-after_success: "sbt coveralls -Dakka.test.timefactor=3"
+script: 
+    - "sbt clean coverage test -Dakka.test.timefactor=3"
+    - find $HOME/.sbt -name "*.lock" | xargs rm
+    - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+after_success: 
+    - "sbt coveralls -Dakka.test.timefactor=3"
+    - find $HOME/.sbt -name "*.lock" | xargs rm
+    - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+sudo: false
+cache:
+    directories:
+        - $HOME/.ivy2/cache
+        - $HOME/.sbt/boot/
 
