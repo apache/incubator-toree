@@ -19,7 +19,8 @@ package com.ibm.spark.kernel.protocol.v5.client.socket
 import akka.actor.Actor
 import akka.util.Timeout
 import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.client.Utilities
+import com.ibm.spark.communication.security.SecurityActorType
+import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, Utilities}
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, UUID}
 import Utilities._
 import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, DeferredExecutionManager}
@@ -27,12 +28,16 @@ import com.ibm.spark.kernel.protocol.v5.content.ExecuteReply
 
 import com.ibm.spark.utils.LogLike
 import scala.concurrent.duration._
+import akka.pattern.ask
 
 /**
  * The client endpoint for Shell messages specified in the IPython Kernel Spec
  * @param socketFactory A factory to create the ZeroMQ socket connection
+ * @param actorLoader The loader used to retrieve actors
  */
-class ShellClient(socketFactory: SocketFactory) extends Actor with LogLike {
+class ShellClient(socketFactory: SocketFactory, actorLoader: ActorLoader)
+  extends Actor with LogLike
+{
   logger.debug("Created shell client actor")
   implicit val timeout = Timeout(21474835.seconds)
 
@@ -60,7 +65,17 @@ class ShellClient(socketFactory: SocketFactory) extends Actor with LogLike {
     // from handler
     case message: KernelMessage =>
       logger.trace(s"Sending kernel message ${message}")
-      val zmq: ZMQMessage = message
-      socket ! zmq
+      val signatureManager =
+        actorLoader.load(SecurityActorType.SignatureManager)
+
+      // TODO: Validate incoming message signature
+      val messageWithSignature = signatureManager ? message
+
+      import scala.concurrent.ExecutionContext.Implicits.global
+      messageWithSignature.map(_.asInstanceOf[KernelMessage]).foreach(kernelMessage => {
+        val zmqMessage: ZMQMessage = kernelMessage
+
+        socket ! zmqMessage
+      })
   }
 }

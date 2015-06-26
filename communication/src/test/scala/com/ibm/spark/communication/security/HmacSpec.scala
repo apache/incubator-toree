@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.security
+package com.ibm.spark.communication.security
 
 import java.security.NoSuchAlgorithmException
 

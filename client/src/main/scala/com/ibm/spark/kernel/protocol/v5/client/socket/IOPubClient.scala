@@ -176,6 +176,9 @@ class IOPubClient(
       // convert to KernelMessage using implicits in v5
       logger.debug("Received IOPub kernel message.")
       val kernelMessage: KernelMessage = message
+
+      // TODO: Validate incoming message signature
+
       logger.trace(s"Kernel message is $kernelMessage")
       val messageTypeString = kernelMessage.header.msg_type
 

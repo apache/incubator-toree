@@ -18,6 +18,8 @@ package com.ibm.spark.kernel.protocol.v5.client.socket
 
 import akka.actor.Actor
 import com.ibm.spark.communication.ZMQMessage
+import com.ibm.spark.communication.security.SecurityActorType
+import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.{HeaderBuilder, KMBuilder, KernelMessage}
 import com.ibm.spark.kernel.protocol.v5.content.{InputReply, InputRequest}
 import com.ibm.spark.utils.LogLike
@@ -25,6 +27,7 @@ import com.ibm.spark.kernel.protocol.v5.client.Utilities._
 import play.api.libs.json.Json
 
 import StdinClient._
+import akka.pattern.ask
 
 object StdinClient {
   type ResponseFunction = (String, Boolean) => String
@@ -34,9 +37,11 @@ object StdinClient {
 /**
  * The client endpoint for Stdin messages specified in the IPython Kernel Spec
  * @param socketFactory A factory to create the ZeroMQ socket connection
+ * @param actorLoader The loader used to retrieve actors
  */
 class StdinClient(
-  socketFactory: SocketFactory
+  socketFactory: SocketFactory,
+  actorLoader: ActorLoader
 ) extends Actor with LogLike {
   logger.debug("Created stdin client actor")
 
@@ -66,7 +71,7 @@ class StdinClient(
         val value = responseFunc(inputRequest.prompt, inputRequest.password)
         val inputReply = InputReply(value)
 
-        val responseZmqMessage: ZMQMessage = KMBuilder()
+        val newKernelMessage = KMBuilder()
           .withParent(kernelMessage)
           .withHeader(HeaderBuilder.empty.copy(
             msg_type = InputReply.toTypeString,
@@ -75,7 +80,16 @@ class StdinClient(
           .withContentString(inputReply)
           .build
 
-        socket ! responseZmqMessage
+        val signatureManager =
+          actorLoader.load(SecurityActorType.SignatureManager)
+        val messageWithSignature = signatureManager ? newKernelMessage
+
+        import scala.concurrent.ExecutionContext.Implicits.global
+        messageWithSignature.map(_.asInstanceOf[KernelMessage]).foreach(kernelMessage => {
+          val responseZmqMessage: ZMQMessage = kernelMessage
+
+          socket ! responseZmqMessage
+        })
       } else {
         logger.debug(s"Unknown message of type $messageType")
       }

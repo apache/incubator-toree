@@ -25,7 +25,7 @@ import com.ibm.spark.kernel.protocol.v5.client.boot.ClientBootstrap
 import com.ibm.spark.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
 import com.ibm.spark.kernel.protocol.v5.SocketType
 import com.ibm.spark.utils.LogLike
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 
 /**
  * Represents an object that can deploy a singleton Spark Client for tests,
@@ -72,7 +72,7 @@ object SparkClientDeployer extends LogLike{
     extends StandardSystemInitialization with LogLike
   {
     override def initializeSystem(
-      actorSystem: ActorSystem, actorLoader: ActorLoader,
+      config: Config, actorSystem: ActorSystem, actorLoader: ActorLoader,
       socketFactory: SocketFactory):
     (ActorRef, ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage) = {
       val commStorage = new CommStorage()
@@ -80,7 +80,7 @@ object SparkClientDeployer extends LogLike{
 
       heartbeatProbe = new TestProbe(actorSystem)
       val heartbeatClient = actorSystem.actorOf(
-        Props(classOf[HeartbeatClient], socketFactory)
+        Props(classOf[HeartbeatClient], socketFactory, actorLoader)
       )
       val heartbeatInterceptor = actorSystem.actorOf(
         Props(new ActorInterceptor(heartbeatProbe, heartbeatClient)),
@@ -89,7 +89,7 @@ object SparkClientDeployer extends LogLike{
 
       stdinProbe = new TestProbe(actorSystem)
       val stdinClient = actorSystem.actorOf(
-        Props(classOf[StdinClient], socketFactory)
+        Props(classOf[StdinClient], socketFactory, actorLoader)
       )
       val stdinInterceptor = actorSystem.actorOf(
         Props(new ActorInterceptor(stdinProbe, stdinClient)),
@@ -98,7 +98,7 @@ object SparkClientDeployer extends LogLike{
 
       shellProbe = new TestProbe(actorSystem)
       val shellClient = actorSystem.actorOf(
-        Props(classOf[ShellClient], socketFactory)
+        Props(classOf[ShellClient], socketFactory, actorLoader)
       )
       val shellInterceptor = actorSystem.actorOf(
         Props(new ActorInterceptor(shellProbe, shellClient)),

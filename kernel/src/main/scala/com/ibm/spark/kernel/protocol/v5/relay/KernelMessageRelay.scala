@@ -18,6 +18,7 @@ package com.ibm.spark.kernel.protocol.v5.relay
 
 import akka.pattern.ask
 import akka.util.Timeout
+import com.ibm.spark.communication.security.SecurityActorType
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, MessageType, _}
@@ -120,7 +121,7 @@ case class KernelMessageRelay(
         logger.trace(s"Verifying signature for incoming message " +
           s"${kernelMessage.header.msg_id}")
         val signatureManager =
-          actorLoader.load(SystemActorType.SignatureManager)
+          actorLoader.load(SecurityActorType.SignatureManager)
         val signatureVerificationFuture = signatureManager ? (
           (kernelMessage.signature, zmqStrings)
         )
@@ -151,7 +152,7 @@ case class KernelMessageRelay(
       if (useSignatureManager) {
         logger.trace(s"Creating signature for outgoing message " +
           s"${kernelMessage.header.msg_id}")
-        val signatureManager = actorLoader.load(SystemActorType.SignatureManager)
+        val signatureManager = actorLoader.load(SecurityActorType.SignatureManager)
         val signatureInsertFuture = signatureManager ? kernelMessage
 
         // TODO: Handle error case for mapTo and non-present onFailure

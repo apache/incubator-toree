@@ -19,7 +19,9 @@ package com.ibm.spark.kernel.protocol.v5.client.socket
 import akka.actor.{ActorRef, Props, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import com.ibm.spark.communication.ZMQMessage
+import com.ibm.spark.communication.security.SecurityActorType
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
 import com.ibm.spark.kernel.protocol.v5.content.{InputReply, InputRequest, ClearOutput, ExecuteRequest}
 import org.scalatest.mock.MockitoSugar
@@ -39,17 +41,23 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
   private val TestResponseFunc: ResponseFunction = (_, _) => TestReplyString
 
   private var mockSocketFactory: SocketFactory = _
+  private var mockActorLoader: ActorLoader = _
+  private var signatureManagerProbe: TestProbe = _
   private var socketProbe: TestProbe = _
   private var stdinClient: ActorRef = _
 
   before {
     socketProbe = TestProbe()
+    signatureManagerProbe = TestProbe()
     mockSocketFactory = mock[SocketFactory]
+    mockActorLoader = mock[ActorLoader]
+    doReturn(system.actorSelection(signatureManagerProbe.ref.path.toString))
+      .when(mockActorLoader).load(SecurityActorType.SignatureManager)
     doReturn(socketProbe.ref).when(mockSocketFactory)
       .StdinClient(any[ActorSystem], any[ActorRef])
 
     stdinClient = system.actorOf(Props(
-      classOf[StdinClient], mockSocketFactory
+      classOf[StdinClient], mockSocketFactory, mockActorLoader
     ))
 
     // Set the response function for our client socket
@@ -71,6 +79,13 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
           .build
 
         stdinClient ! inputRequestMessage
+
+        // Echo back the kernel message sent to have a signature injected
+        signatureManagerProbe.expectMsgPF() {
+          case kernelMessage: KernelMessage =>
+            signatureManagerProbe.reply(kernelMessage)
+            true
+        }
 
         socketProbe.expectMsgPF() {
           case zmqMessage: ZMQMessage =>
@@ -100,6 +115,13 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
 
         stdinClient ! inputRequestMessage
 
+        // Echo back the kernel message sent to have a signature injected
+        signatureManagerProbe.expectMsgPF() {
+          case kernelMessage: KernelMessage =>
+            signatureManagerProbe.reply(kernelMessage)
+            true
+        }
+
         socketProbe.expectMsgPF() {
           case zmqMessage: ZMQMessage =>
             val kernelMessage: KernelMessage = zmqMessage
@@ -116,6 +138,13 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
           .build
 
         stdinClient ! inputRequestMessage
+
+        // Echo back the kernel message sent to have a signature injected
+        signatureManagerProbe.expectMsgPF() {
+          case kernelMessage: KernelMessage =>
+            signatureManagerProbe.reply(kernelMessage)
+            true
+        }
 
         socketProbe.expectMsgPF() {
           case zmqMessage: ZMQMessage =>

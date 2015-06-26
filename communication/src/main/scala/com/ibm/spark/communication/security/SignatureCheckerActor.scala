@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.security
+package com.ibm.spark.communication.security
 
 import akka.actor.Actor
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import com.ibm.spark.security.Hmac
 import com.ibm.spark.utils.LogLike
-import play.api.libs.json.Json
 
 /**
- * Constructs a signature from any kernel message received.
- * @param hmac The HMAC to use for signature construction
+ * Verifies whether or not a kernel message has a valid signature.
+ * @param hmac The HMAC to use for signature validation
  */
-class SignatureProducerActor(
+class SignatureCheckerActor(
   private val hmac: Hmac
 ) extends Actor with LogLike {
   override def receive: Receive = {
-    case message: KernelMessage =>
-      val signature = hmac(
-        Json.stringify(Json.toJson(message.header)),
-        Json.stringify(Json.toJson(message.parentHeader)),
-        Json.stringify(Json.toJson(message.metadata)),
-        message.contentString
-      )
-      sender ! signature
+    case (signature: String, blob: Seq[_]) =>
+      val stringBlob: Seq[String] = blob.map(_.toString)
+      val hmacString = hmac(stringBlob: _*)
+      val isValidSignature = hmacString == signature
+      logger.trace(s"Signature ${signature} validity checked against " +
+        s"hmac ${hmacString} with outcome ${isValidSignature}")
+      sender ! isValidSignature
   }
 }

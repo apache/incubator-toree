@@ -18,9 +18,11 @@ package com.ibm.spark.kernel.protocol.v5.client.boot.layers
 
 import akka.actor.{Props, ActorRef, ActorSystem}
 import com.ibm.spark.comm.{CommRegistrar, CommStorage}
+import com.ibm.spark.communication.security.{SecurityActorType, SignatureManagerActor}
 import com.ibm.spark.kernel.protocol.v5.SocketType
 import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.client.socket._
+import com.typesafe.config.Config
 
 /**
  * Represents the system-related initialization such as socket actors.
@@ -29,6 +31,7 @@ trait SystemInitialization {
   /**
    * Initializes the system-related client objects.
    *
+   * @param config The configuration for the system
    * @param actorSystem The actor system used by the client
    * @param actorLoader The actor loader used by the client
    * @param socketFactory The socket factory used by the client
@@ -37,7 +40,7 @@ trait SystemInitialization {
    *         registrar and storage used for Comm callbacks
    */
   def initializeSystem(
-    actorSystem: ActorSystem, actorLoader: ActorLoader,
+    config: Config, actorSystem: ActorSystem, actorLoader: ActorLoader,
     socketFactory: SocketFactory
   ): (ActorRef, ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage)
 }
@@ -49,6 +52,7 @@ trait StandardSystemInitialization extends SystemInitialization {
   /**
    * Initializes the system-related client objects.
    *
+   * @param config The configuration for the system
    * @param actorSystem The actor system used by the client
    * @param actorLoader The actor loader used by the client
    * @param socketFactory The socket factory used by the client
@@ -56,7 +60,7 @@ trait StandardSystemInitialization extends SystemInitialization {
    * @return The heartbeat, shell, and IOPub client actors
    */
   override def initializeSystem(
-    actorSystem: ActorSystem, actorLoader: ActorLoader,
+    config: Config, actorSystem: ActorSystem, actorLoader: ActorLoader,
     socketFactory: SocketFactory
   ): (ActorRef, ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage) = {
     val commStorage = new CommStorage()
@@ -70,6 +74,8 @@ trait StandardSystemInitialization extends SystemInitialization {
       commStorage = commStorage
     )
 
+    val signatureManager = initializeSecurityActors(config, actorSystem)
+
     (heartbeat, stdin, shell, ioPub, commRegistrar, commStorage)
   }
 
@@ -79,17 +85,17 @@ trait StandardSystemInitialization extends SystemInitialization {
     commStorage: CommStorage
   ) = {
     val heartbeatClient = actorSystem.actorOf(
-      Props(classOf[HeartbeatClient], socketFactory),
+      Props(classOf[HeartbeatClient], socketFactory, actorLoader),
       name = SocketType.HeartbeatClient.toString
     )
 
     val stdinClient = actorSystem.actorOf(
-      Props(classOf[StdinClient], socketFactory),
+      Props(classOf[StdinClient], socketFactory, actorLoader),
       name = SocketType.StdInClient.toString
     )
 
     val shellClient = actorSystem.actorOf(
-      Props(classOf[ShellClient], socketFactory),
+      Props(classOf[ShellClient], socketFactory, actorLoader),
       name = SocketType.ShellClient.toString
     )
 
@@ -100,5 +106,20 @@ trait StandardSystemInitialization extends SystemInitialization {
     )
 
     (heartbeatClient, stdinClient, shellClient, ioPubClient)
+  }
+
+  private def initializeSecurityActors(
+    config: Config,
+    actorSystem: ActorSystem
+  ): ActorRef = {
+    val key = config.getString("key")
+    val signatureScheme = config.getString("signature_scheme").replace("-", "")
+
+    val signatureManager = actorSystem.actorOf(
+      Props(classOf[SignatureManagerActor], key, signatureScheme),
+      name = SecurityActorType.SignatureManager.toString
+    )
+
+    signatureManager
   }
 }

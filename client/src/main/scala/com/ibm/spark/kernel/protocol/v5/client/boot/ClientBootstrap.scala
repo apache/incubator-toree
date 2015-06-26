@@ -57,7 +57,7 @@ class ClientBootstrap(config: Config) extends LogLike {
 
     logger.trace(s"Initializing underlying system for, '$actorSystemName'")
     val (_, _, _, _, commRegistrar, _) =
-      initializeSystem(actorSystem, actorLoader, socketFactory)
+      initializeSystem(config, actorSystem, actorLoader, socketFactory)
 
     logger.trace(s"Initializing handlers for, '$actorSystemName'")
     initializeHandlers(actorSystem, actorLoader)

@@ -131,7 +131,6 @@ package object v5 {
     val KernelMessageRelay  = Value("kernel_message_relay")
     val ExecuteRequestRelay = Value("execute_request_relay")
     val Interpreter         = Value("interpreter")
-    val SignatureManager    = Value("signature_manager")
     val MagicManager        = Value("magic_manager")
     val StatusDispatch      = Value("status_dispatch")
   }

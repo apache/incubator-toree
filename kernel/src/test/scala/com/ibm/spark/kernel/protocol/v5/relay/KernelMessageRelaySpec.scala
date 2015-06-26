@@ -19,6 +19,7 @@ package com.ibm.spark.kernel.protocol.v5.relay
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.ibm.spark.communication.ZMQMessage
+import com.ibm.spark.communication.security.SecurityActorType
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import Utilities._
@@ -72,13 +73,13 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
     // return the associated ActorSelection
     signatureProbe = TestProbe()
     signatureSelection = system.actorSelection(signatureProbe.ref.path.toString)
-    when(actorLoader.load(SystemActorType.SignatureManager))
+    when(actorLoader.load(SecurityActorType.SignatureManager))
       .thenReturn(signatureSelection)
 
     // Create a probe to capture output from the relay for testing
     captureProbe = TestProbe()
     captureSelection = system.actorSelection(captureProbe.ref.path.toString)
-    when(actorLoader.load(mockNot(mockEq(SystemActorType.SignatureManager))))
+    when(actorLoader.load(mockNot(mockEq(SecurityActorType.SignatureManager))))
       .thenReturn(captureSelection)
 
     relayWithoutSignatureManager = system.actorOf(Props(
@@ -193,7 +194,7 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
             }
           ))
 
-          when(actorLoader.load(SystemActorType.SignatureManager))
+          when(actorLoader.load(SecurityActorType.SignatureManager))
             .thenReturn(system.actorSelection(chaoticActor.path))
 
           kernelMessageRelay ! true

@@ -21,7 +21,9 @@ import java.util.UUID
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import com.ibm.spark.communication.ZMQMessage
+import com.ibm.spark.communication.security.SecurityActorType
 import com.ibm.spark.kernel.protocol.v5._
+import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
@@ -34,12 +36,19 @@ class ShellClientSpec extends TestKit(ActorSystem("ShellActorSpec"))
 
   describe("ShellClientActor") {
     val socketFactory = mock[SocketFactory]
+    val mockActorLoader = mock[ActorLoader]
     val probe : TestProbe = TestProbe()
     when(socketFactory.ShellClient(
       any(classOf[ActorSystem]), any(classOf[ActorRef])
     )).thenReturn(probe.ref)
 
-    val shellClient = system.actorOf(Props(classOf[ShellClient], socketFactory))
+    val signatureManagerProbe = TestProbe()
+    doReturn(system.actorSelection(signatureManagerProbe.ref.path.toString))
+      .when(mockActorLoader).load(SecurityActorType.SignatureManager)
+
+    val shellClient = system.actorOf(Props(
+      classOf[ShellClient], socketFactory, mockActorLoader
+    ))
 
     describe("send execute request") {
       it("should send execute request") {
@@ -57,6 +66,11 @@ class ShellClientSpec extends TestKit(ActorSystem("ShellActorSpec"))
           Metadata(), Json.toJson(request).toString
         )
         shellClient ! kernelMessage
+
+        // Echo back the kernel message sent to have a signature injected
+        signatureManagerProbe.expectMsgClass(classOf[KernelMessage])
+        signatureManagerProbe.reply(kernelMessage)
+
         probe.expectMsgClass(classOf[ZMQMessage])
       }
     }

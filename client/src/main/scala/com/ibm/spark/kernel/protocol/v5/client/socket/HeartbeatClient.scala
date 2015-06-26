@@ -20,6 +20,7 @@ import akka.actor.{ActorRef, Actor}
 import akka.util.{ByteString, Timeout}
 import com.ibm.spark.communication.ZMQMessage
 import akka.pattern.ask
+import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
 import com.ibm.spark.utils.LogLike
 import com.ibm.spark.kernel.protocol.v5.UUID
 import scala.collection.concurrent.{Map, TrieMap}
@@ -31,8 +32,11 @@ object HeartbeatMessage {}
  * Spec.
  *
  * @param socketFactory A factory to create the ZeroMQ socket connection
+ * @param actorLoader The loader used to retrieve actors
  */
-class HeartbeatClient(socketFactory : SocketFactory) extends Actor with LogLike {
+class HeartbeatClient(socketFactory : SocketFactory, actorLoader: ActorLoader)
+  extends Actor with LogLike
+{
   logger.debug("Created new Heartbeat Client actor")
   implicit val timeout = Timeout(1.minute)
 

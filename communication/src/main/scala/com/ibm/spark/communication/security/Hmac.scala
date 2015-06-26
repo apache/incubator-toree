@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.security
+package com.ibm.spark.communication.security
 
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-import com.ibm.spark.security.HmacAlgorithm.HmacAlgorithm
+import com.ibm.spark.communication.security.HmacAlgorithm.HmacAlgorithm
 
 object HmacAlgorithm extends Enumeration {
   type HmacAlgorithm = Value

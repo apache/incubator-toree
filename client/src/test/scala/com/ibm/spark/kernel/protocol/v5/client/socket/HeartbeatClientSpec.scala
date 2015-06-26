@@ -19,6 +19,7 @@ package com.ibm.spark.kernel.protocol.v5.client.socket
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import com.ibm.spark.communication.ZMQMessage
+import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
 import org.mockito.Matchers._
@@ -29,10 +30,13 @@ class HeartbeatClientSpec extends TestKit(ActorSystem("HeartbeatActorSpec"))
 
   describe("HeartbeatClientActor") {
     val socketFactory = mock[SocketFactory]
+    val mockActorLoader = mock[ActorLoader]
     val probe : TestProbe = TestProbe()
     when(socketFactory.HeartbeatClient(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probe.ref)
 
-    val heartbeatClient = system.actorOf(Props(classOf[HeartbeatClient], socketFactory))
+    val heartbeatClient = system.actorOf(Props(
+      classOf[HeartbeatClient], socketFactory, mockActorLoader
+    ))
 
     describe("send heartbeat") {
       it("should send ping ZMQMessage") {

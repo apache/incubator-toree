@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5
+package com.ibm.spark.communication
 
 package object security {
+  object SecurityActorType extends Enumeration {
+    type SecurityActorType = Value
+
+    val SignatureManager    = Value("signature_manager")
+  }
+
   object SignatureManagerChildActorType extends Enumeration {
     type SignatureManagerChildActorType = Value
 

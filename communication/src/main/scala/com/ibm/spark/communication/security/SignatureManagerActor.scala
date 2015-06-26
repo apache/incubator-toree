@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.security
+package com.ibm.spark.communication.security
 
 import akka.actor.{Props, ActorRef, Actor}
 import akka.util.Timeout
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import com.ibm.spark.security.{Hmac, HmacAlgorithm}
 import com.ibm.spark.utils.LogLike
 
 import scala.concurrent.duration._
