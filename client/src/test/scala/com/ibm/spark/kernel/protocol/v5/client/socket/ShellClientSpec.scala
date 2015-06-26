@@ -33,6 +33,7 @@ import play.api.libs.json.Json
 
 class ShellClientSpec extends TestKit(ActorSystem("ShellActorSpec"))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+  private val SignatureEnabled = true
 
   describe("ShellClientActor") {
     val socketFactory = mock[SocketFactory]
@@ -47,7 +48,7 @@ class ShellClientSpec extends TestKit(ActorSystem("ShellActorSpec"))
       .when(mockActorLoader).load(SecurityActorType.SignatureManager)
 
     val shellClient = system.actorOf(Props(
-      classOf[ShellClient], socketFactory, mockActorLoader
+      classOf[ShellClient], socketFactory, mockActorLoader, SignatureEnabled
     ))
 
     describe("send execute request") {

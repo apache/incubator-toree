@@ -35,7 +35,7 @@ class HeartbeatClientSpec extends TestKit(ActorSystem("HeartbeatActorSpec"))
     when(socketFactory.HeartbeatClient(any(classOf[ActorSystem]), any(classOf[ActorRef]))).thenReturn(probe.ref)
 
     val heartbeatClient = system.actorOf(Props(
-      classOf[HeartbeatClient], socketFactory, mockActorLoader
+      classOf[HeartbeatClient], socketFactory, mockActorLoader, true
     ))
 
     describe("send heartbeat") {

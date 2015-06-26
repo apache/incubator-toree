@@ -29,6 +29,9 @@ import play.api.libs.json.Json
 import StdinClient._
 import akka.pattern.ask
 
+import scala.concurrent.duration._
+import scala.concurrent.Await
+
 object StdinClient {
   type ResponseFunction = (String, Boolean) => String
   val EmptyResponseFunction: ResponseFunction = (_, _) => ""
@@ -38,10 +41,12 @@ object StdinClient {
  * The client endpoint for Stdin messages specified in the IPython Kernel Spec
  * @param socketFactory A factory to create the ZeroMQ socket connection
  * @param actorLoader The loader used to retrieve actors
+ * @param signatureEnabled Whether or not to check and provide signatures
  */
 class StdinClient(
   socketFactory: SocketFactory,
-  actorLoader: ActorLoader
+  actorLoader: ActorLoader,
+  signatureEnabled: Boolean
 ) extends Actor with LogLike {
   logger.debug("Created stdin client actor")
 
@@ -80,16 +85,18 @@ class StdinClient(
           .withContentString(inputReply)
           .build
 
-        val signatureManager =
-          actorLoader.load(SecurityActorType.SignatureManager)
-        val messageWithSignature = signatureManager ? newKernelMessage
-
         import scala.concurrent.ExecutionContext.Implicits.global
-        messageWithSignature.map(_.asInstanceOf[KernelMessage]).foreach(kernelMessage => {
-          val responseZmqMessage: ZMQMessage = kernelMessage
+        val messageWithSignature = if (signatureEnabled) {
+          val signatureManager =
+            actorLoader.load(SecurityActorType.SignatureManager)
+          val signatureMessage = signatureManager ? newKernelMessage
+          Await.result(signatureMessage, 100.milliseconds)
+            .asInstanceOf[KernelMessage]
+        } else newKernelMessage
 
-          socket ! responseZmqMessage
-        })
+        val zmqMessage: ZMQMessage = messageWithSignature
+
+        socket ! zmqMessage
       } else {
         logger.debug(s"Unknown message of type $messageType")
       }

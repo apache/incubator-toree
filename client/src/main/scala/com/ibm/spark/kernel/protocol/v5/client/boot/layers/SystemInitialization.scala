@@ -22,6 +22,7 @@ import com.ibm.spark.communication.security.{SecurityActorType, SignatureManager
 import com.ibm.spark.kernel.protocol.v5.SocketType
 import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.client.socket._
+import com.ibm.spark.utils.LogLike
 import com.typesafe.config.Config
 
 /**
@@ -48,7 +49,7 @@ trait SystemInitialization {
 /**
  * Represents the standard implementation of SystemInitialization.
  */
-trait StandardSystemInitialization extends SystemInitialization {
+trait StandardSystemInitialization extends SystemInitialization with LogLike {
   /**
    * Initializes the system-related client objects.
    *
@@ -67,6 +68,7 @@ trait StandardSystemInitialization extends SystemInitialization {
     val commRegistrar = new CommRegistrar(commStorage)
 
     val (heartbeat, stdin, shell, ioPub) = initializeSystemActors(
+      config = config,
       actorSystem = actorSystem,
       actorLoader = actorLoader,
       socketFactory = socketFactory,
@@ -80,27 +82,30 @@ trait StandardSystemInitialization extends SystemInitialization {
   }
 
   private def initializeSystemActors(
-    actorSystem: ActorSystem, actorLoader: ActorLoader,
+    config: Config, actorSystem: ActorSystem, actorLoader: ActorLoader,
     socketFactory: SocketFactory, commRegistrar: CommRegistrar,
     commStorage: CommStorage
   ) = {
+    val signatureEnabled = config.getString("key").nonEmpty
+
     val heartbeatClient = actorSystem.actorOf(
-      Props(classOf[HeartbeatClient], socketFactory, actorLoader),
+      Props(classOf[HeartbeatClient],
+        socketFactory, actorLoader, signatureEnabled),
       name = SocketType.HeartbeatClient.toString
     )
 
     val stdinClient = actorSystem.actorOf(
-      Props(classOf[StdinClient], socketFactory, actorLoader),
+      Props(classOf[StdinClient], socketFactory, actorLoader, signatureEnabled),
       name = SocketType.StdInClient.toString
     )
 
     val shellClient = actorSystem.actorOf(
-      Props(classOf[ShellClient], socketFactory, actorLoader),
+      Props(classOf[ShellClient], socketFactory, actorLoader, signatureEnabled),
       name = SocketType.ShellClient.toString
     )
 
     val ioPubClient = actorSystem.actorOf(
-      Props(classOf[IOPubClient], socketFactory, actorLoader,
+      Props(classOf[IOPubClient], socketFactory, actorLoader, signatureEnabled,
         commRegistrar, commStorage),
       name = SocketType.IOPubClient.toString
     )
@@ -111,14 +116,21 @@ trait StandardSystemInitialization extends SystemInitialization {
   private def initializeSecurityActors(
     config: Config,
     actorSystem: ActorSystem
-  ): ActorRef = {
+  ): Option[ActorRef] = {
     val key = config.getString("key")
     val signatureScheme = config.getString("signature_scheme").replace("-", "")
 
-    val signatureManager = actorSystem.actorOf(
-      Props(classOf[SignatureManagerActor], key, signatureScheme),
-      name = SecurityActorType.SignatureManager.toString
-    )
+    var signatureManager: Option[ActorRef] = None
+
+    if (key.nonEmpty) {
+      logger.debug(s"Initializing client signatures with key '$key'!")
+      signatureManager = Some(actorSystem.actorOf(
+        Props(classOf[SignatureManagerActor], key, signatureScheme),
+        name = SecurityActorType.SignatureManager.toString
+      ))
+    } else {
+      logger.debug(s"Signatures disabled for client!")
+    }
 
     signatureManager
   }

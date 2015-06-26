@@ -27,6 +27,7 @@ import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, Def
 import com.ibm.spark.kernel.protocol.v5.content.ExecuteReply
 
 import com.ibm.spark.utils.LogLike
+import scala.concurrent.Await
 import scala.concurrent.duration._
 import akka.pattern.ask
 
@@ -34,10 +35,13 @@ import akka.pattern.ask
  * The client endpoint for Shell messages specified in the IPython Kernel Spec
  * @param socketFactory A factory to create the ZeroMQ socket connection
  * @param actorLoader The loader used to retrieve actors
+ * @param signatureEnabled Whether or not to check and provide signatures
  */
-class ShellClient(socketFactory: SocketFactory, actorLoader: ActorLoader)
-  extends Actor with LogLike
-{
+class ShellClient(
+  socketFactory: SocketFactory,
+  actorLoader: ActorLoader,
+  signatureEnabled: Boolean
+) extends Actor with LogLike {
   logger.debug("Created shell client actor")
   implicit val timeout = Timeout(21474835.seconds)
 
@@ -59,6 +63,9 @@ class ShellClient(socketFactory: SocketFactory, actorLoader: ActorLoader)
     case message: ZMQMessage =>
       logger.debug("Received shell kernel message.")
       val kernelMessage: KernelMessage = message
+
+      // TODO: Validate incoming message signature
+
       logger.trace(s"Kernel message is ${kernelMessage}")
       receiveExecuteReply(message.parentHeader.msg_id,kernelMessage)
 
@@ -68,14 +75,15 @@ class ShellClient(socketFactory: SocketFactory, actorLoader: ActorLoader)
       val signatureManager =
         actorLoader.load(SecurityActorType.SignatureManager)
 
-      // TODO: Validate incoming message signature
-      val messageWithSignature = signatureManager ? message
-
       import scala.concurrent.ExecutionContext.Implicits.global
-      messageWithSignature.map(_.asInstanceOf[KernelMessage]).foreach(kernelMessage => {
-        val zmqMessage: ZMQMessage = kernelMessage
+      val messageWithSignature = if (signatureEnabled) {
+        val signatureMessage = signatureManager ? message
+        Await.result(signatureMessage, 100.milliseconds)
+          .asInstanceOf[KernelMessage]
+      } else message
 
-        socket ! zmqMessage
-      })
+      val zMQMessage: ZMQMessage = messageWithSignature
+
+      socket ! zMQMessage
   }
 }

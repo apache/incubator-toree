@@ -60,6 +60,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
     timeout = scaled(Span(200, Milliseconds)),
     interval = scaled(Span(5, Milliseconds))
   )
+  private val SignatureEnabled = true
 
   private var clientSocketProbe: TestProbe = _
   private var mockClientSocketFactory: SocketFactory = _
@@ -93,7 +94,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
     //  Construct the object we will test against
     ioPubClient = system.actorOf(Props(
       classOf[IOPubClient], mockClientSocketFactory, mockActorLoader,
-      mockCommRegistrar, spyCommStorage
+      SignatureEnabled, mockCommRegistrar, spyCommStorage
     ))
   }
 

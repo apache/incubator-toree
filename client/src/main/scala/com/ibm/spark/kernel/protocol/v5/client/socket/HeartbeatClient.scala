@@ -33,10 +33,13 @@ object HeartbeatMessage {}
  *
  * @param socketFactory A factory to create the ZeroMQ socket connection
  * @param actorLoader The loader used to retrieve actors
+ * @param signatureEnabled Whether or not to check and provide signatures
  */
-class HeartbeatClient(socketFactory : SocketFactory, actorLoader: ActorLoader)
-  extends Actor with LogLike
-{
+class HeartbeatClient(
+  socketFactory : SocketFactory,
+  actorLoader: ActorLoader,
+  signatureEnabled: Boolean
+) extends Actor with LogLike {
   logger.debug("Created new Heartbeat Client actor")
   implicit val timeout = Timeout(1.minute)
 

@@ -37,6 +37,7 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter
 {
+  private val SignatureEnabled = true
   private val TestReplyString = "some value"
   private val TestResponseFunc: ResponseFunction = (_, _) => TestReplyString
 
@@ -57,7 +58,7 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
       .StdinClient(any[ActorSystem], any[ActorRef])
 
     stdinClient = system.actorOf(Props(
-      classOf[StdinClient], mockSocketFactory, mockActorLoader
+      classOf[StdinClient], mockSocketFactory, mockActorLoader, SignatureEnabled
     ))
 
     // Set the response function for our client socket

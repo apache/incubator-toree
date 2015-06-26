@@ -34,6 +34,7 @@ import scala.util.Failure
  */
 class IOPubClient(
   socketFactory: SocketFactory, actorLoader: ActorLoader,
+  signatureEnabled: Boolean,
   commRegistrar: CommRegistrar, commStorage: CommStorage
 ) extends Actor with LogLike {
   private val PARENT_HEADER_NULL_MESSAGE = "Parent Header was null in Kernel Message."

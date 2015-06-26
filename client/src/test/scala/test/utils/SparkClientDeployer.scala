@@ -75,12 +75,13 @@ object SparkClientDeployer extends LogLike{
       config: Config, actorSystem: ActorSystem, actorLoader: ActorLoader,
       socketFactory: SocketFactory):
     (ActorRef, ActorRef, ActorRef, ActorRef, CommRegistrar, CommStorage) = {
+      val signatureEnabled = config.getString("key").nonEmpty
       val commStorage = new CommStorage()
       val commRegistrar = new CommRegistrar(commStorage)
 
       heartbeatProbe = new TestProbe(actorSystem)
       val heartbeatClient = actorSystem.actorOf(
-        Props(classOf[HeartbeatClient], socketFactory, actorLoader)
+        Props(classOf[HeartbeatClient], socketFactory, actorLoader, signatureEnabled)
       )
       val heartbeatInterceptor = actorSystem.actorOf(
         Props(new ActorInterceptor(heartbeatProbe, heartbeatClient)),
@@ -89,7 +90,7 @@ object SparkClientDeployer extends LogLike{
 
       stdinProbe = new TestProbe(actorSystem)
       val stdinClient = actorSystem.actorOf(
-        Props(classOf[StdinClient], socketFactory, actorLoader)
+        Props(classOf[StdinClient], socketFactory, actorLoader, signatureEnabled)
       )
       val stdinInterceptor = actorSystem.actorOf(
         Props(new ActorInterceptor(stdinProbe, stdinClient)),
@@ -98,7 +99,7 @@ object SparkClientDeployer extends LogLike{
 
       shellProbe = new TestProbe(actorSystem)
       val shellClient = actorSystem.actorOf(
-        Props(classOf[ShellClient], socketFactory, actorLoader)
+        Props(classOf[ShellClient], socketFactory, actorLoader, signatureEnabled)
       )
       val shellInterceptor = actorSystem.actorOf(
         Props(new ActorInterceptor(shellProbe, shellClient)),
@@ -107,7 +108,7 @@ object SparkClientDeployer extends LogLike{
 
       ioPubProbe = new TestProbe(actorSystem)
       val ioPubClient = actorSystem.actorOf(
-        Props(classOf[IOPubClient], socketFactory, actorLoader,
+        Props(classOf[IOPubClient], socketFactory, actorLoader, signatureEnabled,
           commRegistrar, commStorage)
       )
       val ioPubInterceptor = actorSystem.actorOf(
