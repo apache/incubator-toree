@@ -20,17 +20,17 @@ import java.io.OutputStream
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import com.ibm.spark.kernel.protocol.v5.KernelStatusType.KernelStatusType
+import com.ibm.spark.kernel.api.{FactoryMethods, FactoryMethodsLike, Kernel}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5Test._
-import org.apache.spark.sql.catalyst.expressions.IsNull
-import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import play.api.libs.json.Json
 
+import org.mockito.Mockito._
+import org.mockito.Matchers._
 import scala.concurrent.duration._
 
 class ExecuteRequestHandlerSpec extends TestKit(
@@ -38,28 +38,38 @@ class ExecuteRequestHandlerSpec extends TestKit(
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter {
 
-  var actorLoader: ActorLoader = _
-  var handlerActor: ActorRef = _
-  var kernelMessageRelayProbe: TestProbe = _
-  var executeRequestRelayProbe: TestProbe = _
-  var statusDispatchProbe: TestProbe = _
+  private var mockActorLoader: ActorLoader = _
+  private var mockFactoryMethods: FactoryMethods = _
+  private var mockKernel: Kernel = _
+  private var handlerActor: ActorRef = _
+  private var kernelMessageRelayProbe: TestProbe = _
+  private var executeRequestRelayProbe: TestProbe = _
+  private var statusDispatchProbe: TestProbe = _
 
   before {
-    actorLoader = mock[ActorLoader]
+    mockActorLoader = mock[ActorLoader]
+    mockFactoryMethods = mock[FactoryMethods]
+    mockKernel = mock[Kernel]
+    doReturn(mockFactoryMethods).when(mockKernel)
+      .factory(any[KernelMessage], any[KMBuilder])
 
     // Add our handler and mock interpreter to the actor system
-    handlerActor = system.actorOf(Props(classOf[ExecuteRequestHandler], actorLoader))
+    handlerActor = system.actorOf(Props(
+      classOf[ExecuteRequestHandler],
+      mockActorLoader,
+      mockKernel
+    ))
 
     kernelMessageRelayProbe = new TestProbe(system)
-    when(actorLoader.load(SystemActorType.KernelMessageRelay))
+    when(mockActorLoader.load(SystemActorType.KernelMessageRelay))
       .thenReturn(system.actorSelection(kernelMessageRelayProbe.ref.path.toString))
 
     executeRequestRelayProbe = new TestProbe(system)
-    when(actorLoader.load(SystemActorType.ExecuteRequestRelay))
+    when(mockActorLoader.load(SystemActorType.ExecuteRequestRelay))
       .thenReturn(system.actorSelection(executeRequestRelayProbe.ref.path.toString))
 
     statusDispatchProbe = new TestProbe(system)
-    when(actorLoader.load(SystemActorType.StatusDispatch))
+    when(mockActorLoader.load(SystemActorType.StatusDispatch))
       .thenReturn(system.actorSelection(statusDispatchProbe.ref.path.toString))
   }
 

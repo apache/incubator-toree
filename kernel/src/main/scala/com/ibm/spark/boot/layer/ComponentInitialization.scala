@@ -82,7 +82,8 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val magicLoader = initializeMagicLoader(
       config, interpreter, sparkContext, dependencyDownloader)
     val kernel = initializeKernel(
-      actorLoader, interpreter, commManager, magicLoader)
+      config, actorLoader, interpreter, commManager, magicLoader
+    )
     val responseMap = initializeResponseMap()
     (commStorage, commRegistrar, commManager, interpreter, kernel,
       sparkContext, dependencyDownloader, magicLoader, responseMap)
@@ -162,7 +163,8 @@ trait StandardComponentInitialization extends ComponentInitialization {
     conf.set("spark.repl.class.uri", interpreter.classServerURI)
 
     val sparkContext = reallyInitializeSparkContext(
-      actorLoader, KMBuilder(), conf)
+      config, actorLoader, KMBuilder(), conf
+    )
 
     updateInterpreterWithSparkContext(
       config, sparkContext, interpreter)
@@ -172,13 +174,16 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
   // TODO: Think of a better way to test without exposing this
   protected[layer] def reallyInitializeSparkContext(
-    actorLoader: ActorLoader, kmBuilder: KMBuilder, sparkConf: SparkConf
+    config: Config, actorLoader: ActorLoader, kmBuilder: KMBuilder,
+    sparkConf: SparkConf
   ): SparkContext = {
     logger.debug("Constructing new Spark Context")
     // TODO: Inject stream redirect headers in Spark dynamically
     var sparkContext: SparkContext = null
     val outStream = new KernelOutputStream(
-      actorLoader, KMBuilder(), global.ScheduledTaskManager.instance)
+      actorLoader, KMBuilder(), global.ScheduledTaskManager.instance,
+      sendEmptyOutput = config.getBoolean("send_empty_output")
+    )
 
     // Update global stream state and use it to set the Console local variables
     // for threads in the Spark threadpool
@@ -261,12 +266,19 @@ trait StandardComponentInitialization extends ComponentInitialization {
     new ConcurrentHashMap[String, ActorRef]().asScala
 
   private def initializeKernel(
+    config: Config,
     actorLoader: ActorLoader,
     interpreter: Interpreter,
     commManager: CommManager,
     magicLoader: MagicLoader
   ) = {
-    val kernel = new Kernel(actorLoader, interpreter, commManager, magicLoader)
+    val kernel = new Kernel(
+      config,
+      actorLoader,
+      interpreter,
+      commManager,
+      magicLoader
+    )
     interpreter.doQuietly {
       interpreter.bind(
         "kernel", "com.ibm.spark.kernel.api.Kernel",

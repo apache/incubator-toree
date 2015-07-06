@@ -8,12 +8,13 @@ import com.ibm.spark.global
 import com.ibm.spark.interpreter.Results.Result
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
+import com.ibm.spark.kernel.protocol.v5.{KMBuilder, KernelMessage}
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.magic.MagicParser
 import com.ibm.spark.kernel.protocol.v5.stream.KernelInputStream
 import com.ibm.spark.magic.{MagicLoader, MagicExecutor}
 import com.ibm.spark.utils.LogLike
+import com.typesafe.config.Config
 import scala.util.DynamicVariable
 
 import scala.reflect.runtime.universe._
@@ -24,19 +25,19 @@ import com.ibm.spark.global.ExecuteRequestState
 /**
  * Represents the main kernel API to be used for interaction.
  *
+ * @param config The configuration used when starting the kernel
  * @param interpreter The interpreter to expose in this instance
  * @param comm The Comm manager to expose in this instance
  * @param actorLoader The actor loader to use for message relaying
  */
 @Experimental
 class Kernel (
+  private val config: Config,
   private val actorLoader: ActorLoader,
   val interpreter: Interpreter,
   val comm: CommManager,
   val magicLoader: MagicLoader
 ) extends KernelLike with LogLike {
-
-
   /**
    * Represents the current input stream used by the kernel for the specific
    * thread.
@@ -116,10 +117,54 @@ class Kernel (
     }).getOrElse((false, "Error!"))
   }
 
-  override def stream: StreamMethods = {
-    val parentMessage = lastKernelMessage()
+  /**
+   * Constructs a new instance of the stream methods using the latest
+   * kernel message instance.
+   *
+   * @return The collection of stream methods
+   */
+  override def stream: StreamMethods = stream()
 
+  /**
+   * Constructs a new instance of the stream methods using the specified
+   * kernel message instance.
+   *
+   * @param parentMessage The message to serve as the parent of outgoing
+   *                      messages sent as a result of using streaming methods
+   *
+   * @return The collection of streaming methods
+   */
+  private[spark] def stream(
+    parentMessage: v5.KernelMessage = lastKernelMessage()
+  ): StreamMethods = {
     new StreamMethods(actorLoader, parentMessage)
+  }
+
+  /**
+   * Constructs a new instance of the factory methods using the latest
+   * kernel message instance.
+   *
+   * @return The collection of factory methods
+   */
+  override def factory: FactoryMethods = factory()
+
+  /**
+   * Constructs a new instance of the factory methods using the specified
+   * kernel message and kernel message builder.
+   *
+   * @param parentMessage The message to serve as the parent of outgoing
+   *                      messages sent as a result of using an object created
+   *                      by the factory methods
+   * @param kmBuilder The builder to be used by objects created by factory
+   *                  methods
+   *
+   * @return The collection of factory methods
+   */
+  private[spark] def factory(
+    parentMessage: v5.KernelMessage = lastKernelMessage(),
+    kmBuilder: v5.KMBuilder = v5.KMBuilder()
+  ): FactoryMethods = {
+    new FactoryMethods(actorLoader, parentMessage, kmBuilder)
   }
 
   /**
@@ -132,13 +177,11 @@ class Kernel (
   override def out: PrintStream = {
     val kernelMessage = lastKernelMessage()
 
-    constructStream(currentOutputStream, currentOutputKernelMessage, kernelMessage, {
-      kernelMessage =>
-        val outputStream = new v5.stream.KernelOutputStream(
-          actorLoader, v5.KMBuilder().withParent(kernelMessage),
-          global.ScheduledTaskManager.instance, "stdout")
+    constructStream(currentOutputStream, currentOutputKernelMessage, kernelMessage, { kernelMessage =>
+      val outputStream = this.factory(parentMessage = kernelMessage)
+        .newKernelOutputStream("stdout")
 
-        new PrintStream(outputStream)
+      new PrintStream(outputStream)
     })
   }
 
@@ -153,9 +196,8 @@ class Kernel (
     val kernelMessage = lastKernelMessage()
 
     constructStream(currentErrorStream, currentErrorKernelMessage, kernelMessage, { kernelMessage =>
-      val outputStream = new v5.stream.KernelOutputStream(
-        actorLoader, v5.KMBuilder().withParent(kernelMessage),
-        global.ScheduledTaskManager.instance, "stderr")
+      val outputStream = this.factory(parentMessage = kernelMessage)
+        .newKernelOutputStream("stderr")
 
       new PrintStream(outputStream)
     })
@@ -171,12 +213,7 @@ class Kernel (
     val kernelMessage = lastKernelMessage()
 
     constructStream(currentInputStream, currentInputKernelMessage, kernelMessage, { kernelMessage =>
-      new KernelInputStream(
-        actorLoader,
-        v5.KMBuilder()
-          .withIds(kernelMessage.ids)
-          .withParent(kernelMessage)
-      )
+      this.factory(parentMessage = kernelMessage).newKernelInputStream()
     })
   }
 
@@ -232,6 +269,13 @@ class Kernel (
       false
     }
 
+  /**
+   * Retrieves the last kernel message received by the kernel.
+   *
+   * @throws IllegalArgumentException If no kernel message has been received
+   *
+   * @return The kernel message instance
+   */
   private def lastKernelMessage() = {
     val someKernelMessage = ExecuteRequestState.lastKernelMessage
     require(someKernelMessage.nonEmpty, "No kernel message received!")

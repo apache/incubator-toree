@@ -88,6 +88,7 @@ class KernelBootstrap(config: Config) extends LogLike {
     initializeHandlers(
       actorSystem   = actorSystem,
       actorLoader   = actorLoader,
+      kernel        = kernel,
       interpreter   = interpreter,
       commRegistrar = commRegistrar,
       commStorage   = commStorage,

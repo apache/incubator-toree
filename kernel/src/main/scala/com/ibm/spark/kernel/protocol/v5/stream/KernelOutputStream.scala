@@ -24,6 +24,12 @@ import com.ibm.spark.kernel.protocol.v5.{SystemActorType, MessageType, KMBuilder
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.utils.{LogLike, ScheduledTaskManager}
 import scala.collection.mutable.ListBuffer
+import KernelOutputStream._
+
+object KernelOutputStream {
+  val DefaultStreamType = "stdout"
+  val DefaultSendEmptyOutput = false
+}
 
 /**
  * Represents an OutputStream that sends data back to the clients connect to the
@@ -34,12 +40,15 @@ import scala.collection.mutable.ListBuffer
  * @param scheduledTaskManager The task manager used to schedule periodic
  *                             flushes to send data across the wire
  * @param streamType The type of stream (stdout/stderr)
+ * @param sendEmptyOutput If true, will allow empty output to be flushed and
+ *                        sent out to listening clients
  */
 class KernelOutputStream(
-  actorLoader: ActorLoader,
-  kmBuilder: KMBuilder,
-  scheduledTaskManager: ScheduledTaskManager,
-  streamType: String = "stdout"
+  private val actorLoader: ActorLoader,
+  private val kmBuilder: KMBuilder,
+  private val scheduledTaskManager: ScheduledTaskManager,
+  private val streamType: String = DefaultStreamType,
+  private val sendEmptyOutput: Boolean = DefaultSendEmptyOutput
 ) extends OutputStream with LogLike {
   private val EncodingType = Charset.forName("UTF-8")
   @volatile private var internalBytes: ListBuffer[Byte] = ListBuffer()
@@ -77,7 +86,19 @@ class KernelOutputStream(
       bytesToString
     }
 
-    logger.trace(s"Content to flush: $contents")
+    // Avoid building and sending a kernel message if the contents (when
+    // trimmed) are empty and the flag to send anyway is disabled
+    if (!sendEmptyOutput && contents.trim.isEmpty) {
+      val contentsWithVisibleWhitespace = contents
+        .replace("\n", "\\n")
+        .replace("\t", "\\t")
+        .replace("\r", "\\r")
+        .replace(" ", "\\s")
+      logger.warn(s"Suppressing empty output: '$contentsWithVisibleWhitespace'")
+      return
+    }
+
+    logger.trace(s"Content to flush: '$contents'")
 
     val streamContent = StreamContent(
       streamType, contents

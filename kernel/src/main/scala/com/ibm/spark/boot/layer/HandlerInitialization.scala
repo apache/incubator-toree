@@ -19,6 +19,7 @@ package com.ibm.spark.boot.layer
 import akka.actor.{ActorRef, ActorSystem, Props}
 import com.ibm.spark.comm.{CommRegistrar, CommStorage}
 import com.ibm.spark.interpreter.Interpreter
+import com.ibm.spark.kernel.api.Kernel
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
 import com.ibm.spark.kernel.protocol.v5.handler._
@@ -41,6 +42,7 @@ trait HandlerInitialization {
    *
    * @param actorSystem The actor system needed for registration
    * @param actorLoader The actor loader needed for registration
+   * @param kernel The kernel api needed for registration
    * @param interpreter The main interpreter needed for registration
    * @param magicLoader The magic loader needed for registration
    * @param commRegistrar The comm registrar needed for registration
@@ -48,6 +50,7 @@ trait HandlerInitialization {
    */
   def initializeHandlers(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
+    kernel: Kernel,
     interpreter: Interpreter, magicLoader: MagicLoader,
     commRegistrar: CommRegistrar, commStorage: CommStorage,
     responseMap: collection.mutable.Map[String, ActorRef]
@@ -65,6 +68,7 @@ trait StandardHandlerInitialization extends HandlerInitialization {
    *
    * @param actorSystem The actor system needed for registration
    * @param actorLoader The actor loader needed for registration
+   * @param kernel The kernel api needed for registration
    * @param interpreter The main interpreter needed for registration
    * @param magicLoader The magic loader needed for registration
    * @param commRegistrar The comm registrar needed for registration
@@ -72,12 +76,14 @@ trait StandardHandlerInitialization extends HandlerInitialization {
    */
   def initializeHandlers(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
+    kernel: Kernel,
     interpreter: Interpreter, magicLoader: MagicLoader,
     commRegistrar: CommRegistrar, commStorage: CommStorage,
     responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit = {
     initializeKernelHandlers(
-      actorSystem, actorLoader, commRegistrar, commStorage, responseMap)
+      actorSystem, actorLoader, kernel, commRegistrar, commStorage, responseMap
+    )
     initializeSystemActors(actorSystem, actorLoader, interpreter, magicLoader)
   }
 
@@ -104,13 +110,14 @@ trait StandardHandlerInitialization extends HandlerInitialization {
 
   private def initializeKernelHandlers(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
+    kernel: Kernel,
     commRegistrar: CommRegistrar, commStorage: CommStorage,
     responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit = {
-    def initializeRequestHandler[T](clazz: Class[T], messageType: MessageType) = {
+    def initializeRequestHandler[T](clazz: Class[T], messageType: MessageType, extraArguments: AnyRef*) = {
       logger.debug("Creating %s handler".format(messageType.toString))
       actorSystem.actorOf(
-        Props(clazz, actorLoader),
+        Props(clazz, actorLoader +: extraArguments: _*),
         name = messageType.toString
       )
     }
@@ -145,7 +152,7 @@ trait StandardHandlerInitialization extends HandlerInitialization {
 
     //  These are the handlers for messages coming into the
     initializeRequestHandler(classOf[ExecuteRequestHandler],
-      MessageType.Incoming.ExecuteRequest)
+      MessageType.Incoming.ExecuteRequest, kernel)
     initializeRequestHandler(classOf[KernelInfoRequestHandler],
       MessageType.Incoming.KernelInfoRequest)
     initializeRequestHandler(classOf[CodeCompleteHandler],

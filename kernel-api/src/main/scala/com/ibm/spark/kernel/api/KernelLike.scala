@@ -33,6 +33,14 @@ trait KernelLike {
   def eval(code: Option[String]): (Boolean, String)
 
   /**
+   * Returns a collection of methods that can be used to generate objects
+   * related to the kernel.
+   *
+   * @return The collection of factory methods
+   */
+  def factory: FactoryMethodsLike
+
+  /**
    * Returns a collection of methods that can be used to stream data from the
    * kernel to the client.
    *

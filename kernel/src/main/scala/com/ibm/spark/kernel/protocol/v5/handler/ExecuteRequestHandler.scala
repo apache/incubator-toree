@@ -19,6 +19,7 @@ package com.ibm.spark.kernel.protocol.v5.handler
 import akka.actor.ActorSelection
 import akka.pattern.ask
 import com.ibm.spark.global.{ExecuteRequestState, ExecutionCounter}
+import com.ibm.spark.kernel.api.{Kernel, KernelLike}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
@@ -36,11 +37,15 @@ import scala.util.{Failure, Success}
 /**
  * Receives an ExecuteRequest KernelMessage and forwards the ExecuteRequest
  * to the interpreter actor.
+ *
+ * @param actorLoader The loader to use when needing to retrieve actors for
+ *                    code execution and output
+ * @param kernel The kernel whose factory methods to use
  */
-class ExecuteRequestHandler(actorLoader: ActorLoader)
-  extends BaseHandler(actorLoader) with LogLike
-{
-
+class ExecuteRequestHandler(
+  private val actorLoader: ActorLoader,
+  private val kernel: Kernel
+) extends BaseHandler(actorLoader) with LogLike {
   override def process(km: KernelMessage): Future[_] = {
     // Mark the message as our new incoming kernel message for execution
     ExecuteRequestState.processIncomingKernelMessage(km)
@@ -60,9 +65,10 @@ class ExecuteRequestHandler(actorLoader: ActorLoader)
 
       // Construct our new set of streams
       // TODO: Add support for error streams
-      val outputStream = new KernelOutputStream(
-        actorLoader, skeletonBuilder,
-        kernelGlobal.ScheduledTaskManager.instance)
+      val outputStream = kernel.factory(
+        parentMessage = km,
+        kmBuilder = skeletonBuilder
+      ).newKernelOutputStream()
       val executeFuture = ask(
         actorLoader.load(SystemActorType.ExecuteRequestRelay),
         (executeRequest, km, outputStream)

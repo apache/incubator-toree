@@ -85,8 +85,12 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
       interpreter
     }
 
-    override protected[layer] def reallyInitializeSparkContext(actorLoader: ActorLoader, kmBuilder: KMBuilder, sparkConf: SparkConf): SparkContext =
-     {
+    override protected[layer] def reallyInitializeSparkContext(
+      config: Config,
+      actorLoader: ActorLoader,
+      kmBuilder: KMBuilder,
+      sparkConf: SparkConf
+    ): SparkContext = {
       logger.debug("Constructing new Spark Context")
       // TODO: Inject stream redirect headers in Spark dynamically
       var sparkContext: SparkContext = null

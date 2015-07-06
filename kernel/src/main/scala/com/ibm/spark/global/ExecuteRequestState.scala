@@ -1,5 +1,6 @@
 package com.ibm.spark.global
 
+import com.ibm.spark.kernel.api.Kernel
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
 
 /**

@@ -47,6 +47,9 @@ class KernelOuputStreamSpec
 
   private val ExecutionCount = 3
 
+  private val MaxMessageTimeout = 1.second
+  private val MaxNoMessageTimeout = 200.milliseconds
+
   private val GeneratedTaskId = UUID.randomUUID().toString
 
   private val skeletonBuilder = KMBuilder()
@@ -120,7 +123,7 @@ class KernelOuputStreamSpec
         Then("it should be appended to the internal list")
         kernelOutputStream.flush()
         val message = kernelOutputRelayProbe
-          .receiveOne(1.seconds).asInstanceOf[KernelMessage]
+          .receiveOne(MaxMessageTimeout).asInstanceOf[KernelMessage]
         val executeResult = Json.parse(message.contentString).as[StreamContent]
         executeResult.text should be (expected.toString)
       }
@@ -188,6 +191,42 @@ class KernelOuputStreamSpec
         mockScheduledTaskManager.verifyRemoveTaskNotCalled()
       }
 
+      it("should not send empty (whitespace) messages if flag is false") {
+        Given("a kernel output stream with send empty output set to false")
+        val kernelOutputStream = new KernelOutputStream(
+          mockActorLoader, skeletonBuilder, mockScheduledTaskManager,
+          sendEmptyOutput = false
+        )
+
+        When("whitespace is created and flushed")
+        val expected = "\r \r \n \t"
+        kernelOutputStream.write(expected.getBytes)
+        kernelOutputStream.flush()
+
+        Then("no message should be sent")
+        kernelOutputRelayProbe.expectNoMsg(MaxNoMessageTimeout)
+      }
+
+      it("should send empty (whitespace) messages if flag is true") {
+        Given("a kernel output stream with send empty output set to false")
+        val kernelOutputStream = new KernelOutputStream(
+          mockActorLoader, skeletonBuilder, mockScheduledTaskManager,
+          sendEmptyOutput = true
+        )
+
+        When("whitespace is created and flushed")
+        val expected = "\r \r \n \t"
+        kernelOutputStream.write(expected.getBytes)
+        kernelOutputStream.flush()
+
+        Then("the whitespace message should have been sent")
+        val message = kernelOutputRelayProbe
+          .receiveOne(MaxMessageTimeout).asInstanceOf[KernelMessage]
+        val actual = Json.parse(message.contentString).as[StreamContent].text
+
+        actual should be (expected)
+      }
+
       it("should set the ids of the kernel message") {
         Given("a kernel output stream with a skeleton kernel builder")
         val kernelOutputStream = new KernelOutputStream(
@@ -201,7 +240,7 @@ class KernelOuputStreamSpec
 
         Then("the ids should be set to execute_result")
         val message = kernelOutputRelayProbe
-          .receiveOne(1.seconds).asInstanceOf[KernelMessage]
+          .receiveOne(MaxMessageTimeout).asInstanceOf[KernelMessage]
         message.ids should be (Seq(MessageType.Outgoing.Stream.toString))
       }
 
@@ -218,7 +257,7 @@ class KernelOuputStreamSpec
 
         Then("the msg_type in the header should be execute_result")
         val message = kernelOutputRelayProbe
-          .receiveOne(1.seconds).asInstanceOf[KernelMessage]
+          .receiveOne(MaxMessageTimeout).asInstanceOf[KernelMessage]
         message.header.msg_type should be (MessageType.Outgoing.Stream.toString)
       }
 
@@ -235,7 +274,7 @@ class KernelOuputStreamSpec
 
         Then("the content string should have text/plain set to the string")
         val message = kernelOutputRelayProbe
-          .receiveOne(1.seconds).asInstanceOf[KernelMessage]
+          .receiveOne(MaxMessageTimeout).asInstanceOf[KernelMessage]
         val executeResult = Json.parse(message.contentString).as[StreamContent]
         executeResult.text should be (expected)
       }

@@ -92,7 +92,7 @@ case class ExecuteRequestRelay(
 
       // Store our old sender so we don't lose it in the callback
       // NOTE: Should point back to our KernelMessageRelay
-      val oldSender = sender
+      val oldSender = sender()
 
       // Sets the outputStream for this particular ExecuteRequest
       magicLoader.dependencyMap.setOutputStream(outputStream)

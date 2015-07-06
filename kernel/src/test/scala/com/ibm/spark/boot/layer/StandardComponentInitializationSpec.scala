@@ -63,7 +63,7 @@ class StandardComponentInitializationSpec extends FunSpec with Matchers
         // avoid failure when creating SparkContext
         doReturn(mockSparkContext).when(spyComponentInitialization)
           .reallyInitializeSparkContext(
-            any[ActorLoader], any[KMBuilder], any[SparkConf])
+            any[Config], any[ActorLoader], any[KMBuilder], any[SparkConf])
         doNothing().when(spyComponentInitialization)
           .updateInterpreterWithSparkContext(
             any[Config], any[SparkContext], any[Interpreter])
@@ -77,7 +77,8 @@ class StandardComponentInitializationSpec extends FunSpec with Matchers
         val sparkConf = {
           val sparkConfCaptor = ArgumentCaptor.forClass(classOf[SparkConf])
           verify(spyComponentInitialization).reallyInitializeSparkContext(
-            any[ActorLoader], any[KMBuilder], sparkConfCaptor.capture()
+            any[Config], any[ActorLoader], any[KMBuilder],
+            sparkConfCaptor.capture()
           )
           sparkConfCaptor.getValue
         }

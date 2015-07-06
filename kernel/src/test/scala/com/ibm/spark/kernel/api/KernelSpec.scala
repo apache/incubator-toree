@@ -7,6 +7,7 @@ import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.magic.MagicLoader
+import com.typesafe.config.Config
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
@@ -22,6 +23,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
     "Message: bad\n" +
     "StackTrace: 1"
 
+  private var mockConfig: Config = _
   private var mockActorLoader: ActorLoader = _
   private var mockInterpreter: Interpreter = _
   private var mockCommManager: CommManager = _
@@ -29,6 +31,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
   private var kernel: KernelLike = _
 
   before {
+    mockConfig = mock[Config]
     mockInterpreter = mock[Interpreter]
     when(mockInterpreter.interpret(BadCode.get))
       .thenReturn((Results.Incomplete, null))
@@ -42,7 +45,8 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
     mockMagicLoader = mock[MagicLoader]
 
     kernel = new Kernel(
-      mockActorLoader, mockInterpreter, mockCommManager, mockMagicLoader
+      mockConfig, mockActorLoader, mockInterpreter, mockCommManager,
+      mockMagicLoader
     )
   }
 
