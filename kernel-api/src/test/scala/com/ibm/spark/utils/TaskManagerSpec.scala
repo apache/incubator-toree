@@ -32,11 +32,12 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
   with BeforeAndAfter with ScalaFutures with UncaughtExceptionSuppression
   with Eventually with Timeouts
 {
-  private var taskManager: TaskManager = _
   implicit override val patienceConfig = PatienceConfig(
     timeout = scaled(Span(200, Milliseconds)),
     interval = scaled(Span(5, Milliseconds))
   )
+  private val MaxTestTasks = 50000
+  private var taskManager: TaskManager = _
 
   before {
     taskManager = new TaskManager
@@ -61,7 +62,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
 
         // Should fail from having too many tasks added
         intercept[RejectedExecutionException] {
-          for (i <- 1 to 500) taskManager.add {}
+          for (i <- 1 to MaxTestTasks) taskManager.add {}
         }
       }
 
@@ -214,13 +215,16 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
 
     describe("#await") {
       it("should block until all tasks are completed") {
-        val taskManager = new TaskManager(maximumWorkers = 1, maxTasks = 500)
+        val taskManager = new TaskManager(
+          maximumWorkers = 1,
+          maxTasks = MaxTestTasks
+        )
 
         taskManager.start()
 
         // TODO: Need better way to ensure tasks are still running while
         // awaiting their return
-        for (x <- 1 to 500) taskManager.add { Thread.sleep(1) }
+        for (x <- 1 to MaxTestTasks) taskManager.add { Thread.sleep(1) }
 
         assume(taskManager.hasTaskInQueue)
         taskManager.await()

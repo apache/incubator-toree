@@ -28,8 +28,8 @@ import org.zeromq.{ZMsg, ZMQ}
 class JeroMQSocketIntegrationSpec extends FunSpec
   with OneInstancePerTest with Matchers with Eventually {
   implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(Span(200, Milliseconds)),
-    interval = scaled(Span(5, Milliseconds))
+    timeout = scaled(Span(800, Milliseconds)),
+    interval = scaled(Span(10, Milliseconds))
   )
 
   private val context = ZMQ.context(0)
