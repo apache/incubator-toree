@@ -164,7 +164,7 @@ class Kernel (
     parentMessage: v5.KernelMessage = lastKernelMessage(),
     kmBuilder: v5.KMBuilder = v5.KMBuilder()
   ): FactoryMethods = {
-    new FactoryMethods(actorLoader, parentMessage, kmBuilder)
+    new FactoryMethods(config, actorLoader, parentMessage, kmBuilder)
   }
 
   /**

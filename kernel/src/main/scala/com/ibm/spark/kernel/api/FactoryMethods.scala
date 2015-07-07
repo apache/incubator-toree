@@ -12,6 +12,7 @@ import com.typesafe.config.Config
  * Represents the methods available to stream data from the kernel to the
  * client.
  *
+ * @param config The kernel configuration to use during object creation
  * @param actorLoader The actor loader to use when retrieve actors needed for
  *                    object creation
  * @param parentMessage The parent message to use when needed for object
@@ -20,10 +21,13 @@ import com.typesafe.config.Config
  *                             messages inside objects created
  */
 class FactoryMethods(
+  private val config: Config,
   private val actorLoader: ActorLoader,
   private val parentMessage: KernelMessage,
   private val kernelMessageBuilder: KMBuilder
 ) extends FactoryMethodsLike {
+  require(parentMessage != null, "Parent message cannot be null!")
+
   private[api] val kmBuilder = kernelMessageBuilder.withParent(parentMessage)
 
   /**
@@ -56,7 +60,7 @@ class FactoryMethods(
    */
   override def newKernelOutputStream(
     streamType: String = KernelOutputStream.DefaultStreamType,
-    sendEmptyOutput: Boolean = KernelOutputStream.DefaultSendEmptyOutput
+    sendEmptyOutput: Boolean = config.getBoolean("send_empty_output")
   ): OutputStream = {
     new v5.stream.KernelOutputStream(
       actorLoader,
