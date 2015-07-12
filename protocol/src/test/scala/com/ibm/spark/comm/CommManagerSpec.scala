@@ -33,6 +33,14 @@ class CommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
   private val TestTargetName = "some target"
   private val TestCommId = java.util.UUID.randomUUID().toString
 
+  /** Creates a new Comm Manager, filling in the Comm writer method. */
+  private def newCommManager(
+    commRegistrar: CommRegistrar,
+    commWriter: CommWriter
+  ): CommManager = new CommManager(commRegistrar) {
+    override protected def newCommWriter(commId: UUID): CommWriter = commWriter
+  }
+
   private var mockCommWriter: CommWriter = _
   private var mockCommRegistrar: CommRegistrar = _
   private var commManager: CommManager = _
@@ -46,13 +54,21 @@ class CommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
       .addOpenHandler(any(classOf[OpenCallback]))
     doReturn(mockCommRegistrar).when(mockCommRegistrar)
       .addCloseHandler(any(classOf[CloseCallback]))
+    doReturn(mockCommRegistrar).when(mockCommRegistrar)
+      .withTarget(anyString())
 
-    commManager = new CommManager(mockCommRegistrar) {
-      override protected def newCommWriter(commId: UUID) = mockCommWriter
-    }
+    commManager = newCommManager(mockCommRegistrar, mockCommWriter)
   }
 
   describe("CommManager") {
+    describe("#withTarget") {
+      it("should return a registrar using the target name provided") {
+        val commRegistrar = commManager.withTarget(TestTargetName)
+
+        verify(commRegistrar).withTarget(TestTargetName)
+      }
+    }
+
     describe("#register") {
       it("should register the target name provided") {
         commManager.register(TestTargetName)
@@ -100,6 +116,54 @@ class CommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
         // Trigger the callback to test what it does
         unlinkFunc(mock[CommWriter], TestCommId, v5.Data())
         verify(mockCommRegistrar).unlink(TestCommId)
+      }
+    }
+
+    describe("#unregister") {
+      it("should remove the target from the collection of targets") {
+        val commManager = newCommManager(
+          new CommRegistrar(new CommStorage()),
+          mockCommWriter
+        )
+
+        commManager.register(TestTargetName)
+        commManager.unregister(TestTargetName)
+
+        commManager.isRegistered(TestTargetName) should be (false)
+      }
+    }
+
+    describe("#isRegistered") {
+      it("should return true if the target is currently registered") {
+        val commManager = newCommManager(
+          new CommRegistrar(new CommStorage()),
+          mockCommWriter
+        )
+
+        commManager.register(TestTargetName)
+
+        commManager.isRegistered(TestTargetName) should be (true)
+      }
+
+      it("should return false if the target is not currently registered") {
+        val commManager = newCommManager(
+          new CommRegistrar(new CommStorage()),
+          mockCommWriter
+        )
+
+        commManager.register(TestTargetName)
+        commManager.unregister(TestTargetName)
+
+        commManager.isRegistered(TestTargetName) should be (false)
+      }
+
+      it("should return false if the target has never been registered") {
+        val commManager = newCommManager(
+          new CommRegistrar(new CommStorage()),
+          mockCommWriter
+        )
+
+        commManager.isRegistered(TestTargetName) should be (false)
       }
     }
 

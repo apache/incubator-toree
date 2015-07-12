@@ -39,9 +39,9 @@ import com.ibm.spark.comm.CommCallbacks._
  */
 @Experimental
 class CommCallbacks(
-  private[comm] val openCallbacks: Seq[CommCallbacks.OpenCallback] = Nil,
-  private[comm] val msgCallbacks: Seq[CommCallbacks.MsgCallback] = Nil,
-  private[comm] val closeCallbacks: Seq[CommCallbacks.CloseCallback] = Nil
+  val openCallbacks: Seq[CommCallbacks.OpenCallback] = Nil,
+  val msgCallbacks: Seq[CommCallbacks.MsgCallback] = Nil,
+  val closeCallbacks: Seq[CommCallbacks.CloseCallback] = Nil
 ) {
 
   /**
@@ -84,6 +84,48 @@ class CommCallbacks(
       openCallbacks,
       msgCallbacks,
       closeCallbacks :+ closeCallback
+    )
+
+  /**
+   * Removes the specified open callback from the collection of callbacks.
+   *
+   * @param openCallback The open callback to remove
+   *
+   * @return The updated CommCallbacks instance
+   */
+  def removeOpenCallback(openCallback: OpenCallback): CommCallbacks =
+    new CommCallbacks(
+      openCallbacks.filterNot(_ == openCallback),
+      msgCallbacks,
+      closeCallbacks
+    )
+
+  /**
+   * Removes the specified msg callback from the collection of callbacks.
+   *
+   * @param msgCallback The msg callback to remove
+   *
+   * @return The updated CommCallbacks instance
+   */
+  def removeMsgCallback(msgCallback: MsgCallback): CommCallbacks =
+    new CommCallbacks(
+      openCallbacks,
+      msgCallbacks.filterNot(_ == msgCallback),
+      closeCallbacks
+    )
+
+  /**
+   * Removes the specified close callback from the collection of callbacks.
+   *
+   * @param closeCallback The close callback to remove
+   *
+   * @return The updated CommCallbacks instance
+   */
+  def removeCloseCallback(closeCallback: CloseCallback): CommCallbacks =
+    new CommCallbacks(
+      openCallbacks,
+      msgCallbacks,
+      closeCallbacks.filterNot(_ == closeCallback)
     )
 
   /**

@@ -19,6 +19,7 @@ import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommCallbacks._
 import com.ibm.spark.kernel.protocol.v5
 
+import scala.annotation.tailrec
 import scala.collection.immutable
 
 /**
@@ -34,6 +35,18 @@ class CommRegistrar(
   private val commStorage: CommStorage,
   private[comm] val defaultTargetName: Option[String] = None
 ) {
+
+  /**
+   * Returns an updated copy of the registrar that is using the specified
+   * target name as the default for chaining.
+   *
+   * @param targetName The name of the target to treat as the default
+   *
+   * @return The updated registrar (for chaining methods)
+   */
+  def withTarget(targetName: String): CommRegistrar = {
+    new CommRegistrar(commStorage, Some(targetName))
+  }
 
   /**
    * Registers a specific target for Comm communications.
@@ -53,6 +66,30 @@ class CommRegistrar(
   }
 
   /**
+   * Unregisters a specific target for Comm communications.
+   *
+   * @param targetName The name of the target to unregister
+   *
+   * @return Some collection of callbacks associated with the target if it was
+   *         registered, otherwise None
+   */
+  def unregister(targetName: String): Option[CommCallbacks] = {
+    commStorage.removeTargetCallbacks(targetName)
+  }
+
+  /**
+   * Indicates whether or not the specified target is currently registered
+   * with this registrar.
+   *
+   * @param targetName The name of the target
+   *
+   * @return True if the target is registered, otherwise false
+   */
+  def isRegistered(targetName: String): Boolean = {
+    commStorage.hasTargetCallbacks(targetName)
+  }
+
+  /**
    * Links a target and a specific Comm id together.
    *
    * @param targetName The name of the target to link
@@ -68,10 +105,12 @@ class CommRegistrar(
    *
    * @param commId The Comm Id to link
    *
+   * @throws AssertionError When not chaining off of a register call
+   *
    * @return The current registrar (for chaining methods)
    */
   def link(commId: v5.UUID): CommRegistrar = {
-    require(defaultTargetName.nonEmpty, "No default target name provided!")
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
 
     linkImpl(defaultTargetName.get)(commId)
   }
@@ -83,6 +122,35 @@ class CommRegistrar(
     commStorage.setTargetCommIds(targetName, commIds :+ commId)
 
     this
+  }
+
+  /**
+   * Retrieves the current links for the specified target.
+   *
+   * @param targetName The name of the target whose links to retrieve
+   *
+   * @return The collection of link ids
+   */
+  def getLinks(targetName: String): Seq[v5.UUID] =
+    getLinksImpl(targetName)
+
+  /**
+   * Retrieves the current links for the current target.
+   *
+   * @throws AssertionError When not chaining off of a register call
+   *
+   * @return The collection of link ids
+   */
+  def getLinks: Seq[v5.UUID] = {
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
+
+    getLinksImpl(defaultTargetName.get)
+  }
+
+  private def getLinksImpl(targetName: String): Seq[v5.UUID] = {
+    commStorage
+      .getCommIdsFromTarget(targetName)
+      .getOrElse(Nil)
   }
 
   /**
@@ -114,10 +182,12 @@ class CommRegistrar(
    *
    * @param func The handler function to trigger when an open is received
    *
+   * @throws AssertionError When not chaining off of a register call
+   *
    * @return The current registrar (for chaining methods)
    */
   def addOpenHandler(func: OpenCallback) = {
-    require(defaultTargetName.nonEmpty, "No default target name provided!")
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
 
     addOpenHandlerImpl(defaultTargetName.get)(func)
   }
@@ -128,6 +198,42 @@ class CommRegistrar(
 
     commStorage.setTargetCallbacks(
       targetName, commCallbacks.addOpenCallback(func))
+
+    this
+  }
+
+  /**
+   * Removes the specified callback from the list of open Comm handlers.
+   *
+   * @param targetName The name of the target to remove the open callback
+   * @param func The callback to remove
+   *
+   * @return The current registrar (for chaining methods)
+   */
+  def removeOpenHandler(targetName: String, func: OpenCallback) =
+    removeOpenHandlerImpl(targetName)(func)
+
+  /**
+   * Removes the specified callback from the list of open Comm handlers.
+   *
+   * @param func The callback to remove
+   *
+   * @throws AssertionError When not chaining off of a register call
+   *
+   * @return The current registrar (for chaining methods)
+   */
+  def removeOpenHandler(func: OpenCallback) = {
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
+
+    removeOpenHandlerImpl(defaultTargetName.get)(func)
+  }
+
+  private def removeOpenHandlerImpl(targetName: String)(func: OpenCallback) = {
+    val commCallbacks =
+      commStorage.getTargetCallbacks(targetName).getOrElse(new CommCallbacks())
+
+    commStorage.setTargetCallbacks(
+      targetName, commCallbacks.removeOpenCallback(func))
 
     this
   }
@@ -148,10 +254,12 @@ class CommRegistrar(
    *
    * @param func The handler function to trigger when a msg is received
    *
+   * @throws AssertionError When not chaining off of a register call
+   *
    * @return The current registrar (for chaining methods)
    */
   def addMsgHandler(func: MsgCallback) = {
-    require(defaultTargetName.nonEmpty, "No default target name provided!")
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
 
     addMsgHandlerImpl(defaultTargetName.get)(func)
   }
@@ -162,6 +270,42 @@ class CommRegistrar(
 
     commStorage.setTargetCallbacks(
       targetName, commCallbacks.addMsgCallback(func))
+
+    this
+  }
+
+  /**
+   * Removes the specified callback from the list of msg Comm handlers.
+   *
+   * @param targetName The name of the target to remove the msg callback
+   * @param func The callback to remove
+   *
+   * @return The current registrar (for chaining methods)
+   */
+  def removeMsgHandler(targetName: String, func: MsgCallback) =
+    removeMsgHandlerImpl(targetName)(func)
+
+  /**
+   * Removes the specified callback from the list of msg Comm handlers.
+   *
+   * @param func The callback to remove
+   *
+   * @throws AssertionError When not chaining off of a register call
+   *
+   * @return The current registrar (for chaining methods)
+   */
+  def removeMsgHandler(func: MsgCallback) = {
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
+
+    removeMsgHandlerImpl(defaultTargetName.get)(func)
+  }
+
+  private def removeMsgHandlerImpl(targetName: String)(func: MsgCallback) = {
+    val commCallbacks =
+      commStorage.getTargetCallbacks(targetName).getOrElse(new CommCallbacks())
+
+    commStorage.setTargetCallbacks(
+      targetName, commCallbacks.removeMsgCallback(func))
 
     this
   }
@@ -182,10 +326,12 @@ class CommRegistrar(
    *
    * @param func The handler function to trigger when a close is received
    *
+   * @throws AssertionError When not chaining off of a register call
+   *
    * @return The current registrar (for chaining methods)
    */
   def addCloseHandler(func: CloseCallback) = {
-    require(defaultTargetName.nonEmpty, "No default target name provided!")
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
 
     addCloseHandlerImpl(defaultTargetName.get)(func)
   }
@@ -198,5 +344,133 @@ class CommRegistrar(
       targetName, commCallbacks.addCloseCallback(func))
 
     this
+  }
+
+  /**
+   * Removes the specified callback from the list of close Comm handlers.
+   *
+   * @param targetName The name of the target to remove the close callback
+   * @param func The callback to remove
+   *
+   * @return The current registrar (for chaining methods)
+   */
+  def removeCloseHandler(targetName: String, func: CloseCallback) =
+    removeCloseHandlerImpl(targetName)(func)
+
+  /**
+   * Removes the specified callback from the list of close Comm handlers.
+   *
+   * @param func The callback to remove
+   *
+   * @throws AssertionError When not chaining off of a register call
+   *
+   * @return The current registrar (for chaining methods)
+   */
+  def removeCloseHandler(func: CloseCallback) = {
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
+
+    removeCloseHandlerImpl(defaultTargetName.get)(func)
+  }
+
+  private def removeCloseHandlerImpl(targetName: String)(
+    func: CloseCallback
+  ) = {
+    val commCallbacks =
+      commStorage.getTargetCallbacks(targetName).getOrElse(new CommCallbacks())
+
+    commStorage.setTargetCallbacks(
+      targetName, commCallbacks.removeCloseCallback(func))
+
+    this
+  }
+
+  /**
+   * Retrieves all open callbacks for the target.
+   *
+   * @param targetName The name of the target whose open callbacks to retrieve
+   *
+   * @return The collection of open callbacks
+   */
+  def getOpenHandlers(targetName: String): Seq[OpenCallback] =
+    getOpenHandlersImpl(targetName)
+
+  /**
+   * Retrieves all open callbacks for the current target.
+   *
+   * @throws AssertionError When not chaining off of a register call
+   *
+   * @return The collection of open callbacks
+   */
+  def getOpenHandlers: Seq[OpenCallback] = {
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
+
+    getOpenHandlersImpl(defaultTargetName.get)
+  }
+
+  private def getOpenHandlersImpl(targetName: String): Seq[OpenCallback] = {
+    commStorage
+      .getTargetCallbacks(targetName)
+      .map(_.openCallbacks)
+      .getOrElse(Nil)
+  }
+
+  /**
+   * Retrieves all msg callbacks for the target.
+   *
+   * @param targetName The name of the target whose msg callbacks to retrieve
+   *
+   * @return The collection of msg callbacks
+   */
+  def getMsgHandlers(targetName: String): Seq[MsgCallback] =
+    getMsgHandlersImpl(targetName)
+
+  /**
+   * Retrieves all msg callbacks for the current target.
+   *
+   * @throws AssertionError When not chaining off of a register call
+   *
+   * @return The collection of msg callbacks
+   */
+  def getMsgHandlers: Seq[MsgCallback] = {
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
+
+    getMsgHandlersImpl(defaultTargetName.get)
+  }
+
+  private def getMsgHandlersImpl(targetName: String): Seq[MsgCallback] = {
+    commStorage
+      .getTargetCallbacks(targetName)
+      .map(_.msgCallbacks)
+      .getOrElse(Nil)
+  }
+
+  /**
+   * Retrieves all close callbacks for the target.
+   *
+   * @param targetName The name of the target whose close callbacks to retrieve
+   *
+   * @return The collection of close callbacks
+   */
+  def getCloseHandlers(targetName: String): Seq[CloseCallback] =
+    getCloseHandlersImpl(targetName)
+
+  /**
+   * Retrieves all close callbacks for the current target.
+   *
+   * @throws AssertionError When not chaining off of a register call
+   *
+   * @return The collection of close callbacks
+   */
+  def getCloseHandlers: Seq[CloseCallback] = {
+    assert(defaultTargetName.nonEmpty, "No default target name provided!")
+
+    getCloseHandlersImpl(defaultTargetName.get)
+  }
+
+  private def getCloseHandlersImpl(targetName: String): Seq[CloseCallback] = {
+    commStorage
+      .getTargetCallbacks(targetName)
+      .map(_.closeCallbacks)
+      .getOrElse(Nil)
   }
 }

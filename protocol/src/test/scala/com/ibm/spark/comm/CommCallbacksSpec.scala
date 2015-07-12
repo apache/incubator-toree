@@ -63,6 +63,36 @@ class CommCallbacksSpec extends FunSpec with Matchers {
       }
     }
 
+    describe("#removeOpenCallback") {
+      it("should remove the callback from the internal list") {
+        val commCallbacks = new CommCallbacks()
+          .addOpenCallback(testOpenCallback)
+          .removeOpenCallback(testOpenCallback)
+
+        commCallbacks.openCallbacks should not contain (testOpenCallback)
+      }
+    }
+
+    describe("#removeMsgCallback") {
+      it("should remove the callback from the internal list") {
+        val commCallbacks = new CommCallbacks()
+          .addMsgCallback(testMsgCallback)
+          .removeMsgCallback(testMsgCallback)
+
+        commCallbacks.msgCallbacks should not contain (testMsgCallback)
+      }
+    }
+
+    describe("#removeCloseCallback") {
+      it("should remove the callback from the internal list") {
+        val commCallbacks = new CommCallbacks()
+          .addCloseCallback(testCloseCallback)
+          .removeCloseCallback(testCloseCallback)
+
+        commCallbacks.closeCallbacks should not contain (testCloseCallback)
+      }
+    }
+
     describe("#executeOpenCallbacks") {
       it("should return an empty sequence of results if no callbacks exist") {
         new CommCallbacks()

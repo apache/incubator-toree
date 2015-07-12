@@ -86,6 +86,17 @@ abstract class CommManager(private val commRegistrar: CommRegistrar) {
   }
 
   /**
+   * Loads the specified target and provides a registrar pointing to the target.
+   *
+   * @param targetName The name of the target to load
+   *
+   * @return The CommRegistrar pointing to the target
+   */
+  def withTarget(targetName: String):  CommRegistrar = {
+    commRegistrar.withTarget(targetName)
+  }
+
+  /**
    * Registers a new Comm for use on the kernel. Establishes default callbacks
    * to link and unlink specific Comm instances for the new target.
    *
@@ -98,6 +109,29 @@ abstract class CommManager(private val commRegistrar: CommRegistrar) {
       .addOpenHandler(linkFunc)
       .addCloseHandler(unlinkFunc)
   }
+
+  /**
+   * Unregisters the specified target used for Comm messages.
+   *
+   * @param targetName The name of the target to unregister
+   *
+   * @return Some collection of callbacks associated with the target if it was
+   *         registered, otherwise None
+   */
+  def unregister(targetName: String): Option[CommCallbacks] = {
+    commRegistrar.unregister(targetName)
+  }
+
+  /**
+   * Indicates whether or not the specified target is currently registered with
+   * this Comm manager.
+   *
+   * @param targetName The name of the target
+   *
+   * @return True if the target is registered, otherwise false
+   */
+  def isRegistered(targetName: String): Boolean =
+    commRegistrar.isRegistered(targetName)
 
   /**
    * Opens a new Comm connection. Establishes a new link between the specified
