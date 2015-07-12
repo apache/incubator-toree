@@ -135,6 +135,17 @@ class CommRegistrar(
     getLinksImpl(targetName)
 
   /**
+   * Retrieves the target associated with the specified link.
+   *
+   * @param commId The Comm id whose target to look up
+   *
+   * @return Some target name if found, otherwise None
+   */
+  def getTargetFromLink(commId: v5.UUID): Option[String] = {
+    commStorage.getTargetFromCommId(commId)
+  }
+
+  /**
    * Retrieves the current links for the current target.
    *
    * @throws AssertionError When not chaining off of a register call

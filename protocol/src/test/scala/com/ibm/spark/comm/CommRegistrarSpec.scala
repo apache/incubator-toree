@@ -162,6 +162,22 @@ class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar
       }
     }
 
+    describe("#getTargetFromLink") {
+      it("should return Some target name if found") {
+        val expected = TestTargetName
+
+        commRegistrar.register(expected).link(TestCommId)
+
+        val actual = commRegistrar.getTargetFromLink(TestCommId).get
+
+        actual should be (expected)
+      }
+
+      it("should return None if not found") {
+        commRegistrar.getTargetFromLink(TestCommId) should be (None)
+      }
+    }
+
     describe("#getLinks") {
       it("should return a collection of links for the target") {
         commRegistrar.register(TestTargetName).link(TestCommId)
