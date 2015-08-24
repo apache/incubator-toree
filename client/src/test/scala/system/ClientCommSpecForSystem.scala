@@ -63,7 +63,7 @@ class ClientCommSpecForSystem
   // Not using TestCommId to avoid problems if previous comm using that
   // id in tests was not properly closed
   private def buildZMQCommOpen(
-    targetName: String, data: v5.Data,
+    targetName: String, data: v5.MsgData,
     commId: v5.UUID = java.util.UUID.randomUUID().toString
   ): (v5.UUID, ZMQMessage) = {
     val kernelMessage = KMBuilder()
@@ -79,7 +79,7 @@ class ClientCommSpecForSystem
 
   // Not using TestCommId to avoid problems if previous comm using that
   // id in tests was not properly closed
-  private def buildZMQCommMsg(commId: v5.UUID, data: v5.Data): (v5.UUID, ZMQMessage) = {
+  private def buildZMQCommMsg(commId: v5.UUID, data: v5.MsgData): (v5.UUID, ZMQMessage) = {
     val kernelMessage = KMBuilder()
       .withHeader(CommMsg.toTypeString)
       .withContentString(CommMsg(
@@ -92,7 +92,7 @@ class ClientCommSpecForSystem
 
   // Not using TestCommId to avoid problems if previous comm using that
   // id in tests was not properly closed
-  private def buildZMQCommClose(commId: v5.UUID, data: v5.Data): (v5.UUID, ZMQMessage) = {
+  private def buildZMQCommClose(commId: v5.UUID, data: v5.MsgData): (v5.UUID, ZMQMessage) = {
     val kernelMessage = KMBuilder()
       .withHeader(CommClose.toTypeString)
       .withContentString(CommClose(
@@ -127,13 +127,12 @@ class ClientCommSpecForSystem
           val testTargetName = java.util.UUID.randomUUID().toString
 
           val commWriter = client.comm.open(testTargetName)
-          commWriter.writeMsg(v5.Data("key" -> "value"))
-
+          commWriter.writeMsg(v5.MsgData("key" -> "value"))
           // Should discover an outgoing kernel message for comm_msg
           shell.fishForMessage(MaxFishTime) {
             case KernelMessage(_, _, header, _, _, contentString)
               if header.msg_type == CommMsg.toTypeString =>
-              Json.parse(contentString).as[CommMsg].data("key") == "value"
+              (Json.parse(contentString).as[CommMsg].data \ "key").as[String] == "value"
             case _ => false
           }
         }
@@ -164,7 +163,7 @@ class ClientCommSpecForSystem
           val testTargetName = java.util.UUID.randomUUID().toString
 
           // Send a comm_open (as if a kernel did it)
-          val (_, message) = buildZMQCommOpen(testTargetName, v5.Data())
+          val (_, message) = buildZMQCommOpen(testTargetName, v5.MsgData.Empty)
           actorLoader.load(SocketType.IOPubClient) ! message
 
           // Should discover an outgoing kernel message for comm_close
@@ -186,7 +185,7 @@ class ClientCommSpecForSystem
           }
 
           // Send a comm_open (as if a kernel did it)
-          val (_, message) = buildZMQCommOpen(testTargetName, v5.Data())
+          val (_, message) = buildZMQCommOpen(testTargetName, v5.MsgData.Empty)
           actorLoader.load(SocketType.IOPubClient) ! message
 
           eventually { openExecuted should be (true) }
@@ -203,7 +202,7 @@ class ClientCommSpecForSystem
           }
 
           // Send a comm_open (as if a kernel did it)
-          val (_, message) = buildZMQCommOpen(testTargetName, v5.Data())
+          val (_, message) = buildZMQCommOpen(testTargetName, v5.MsgData.Empty)
           actorLoader.load(SocketType.IOPubClient) ! message
 
           eventually { openExecuted should be (true) }
@@ -223,7 +222,7 @@ class ClientCommSpecForSystem
             .addCloseHandler { (_, _, _) => msgExecuted = true }
 
           // Send a comm_close (as if a kernel did it)
-          val (_, msgMessage) = buildZMQCommMsg(testCommId, v5.Data())
+          val (_, msgMessage) = buildZMQCommMsg(testCommId, v5.MsgData.Empty)
           actorLoader.load(SocketType.IOPubClient) ! msgMessage
 
           intercept[TestFailedDueToTimeoutException] {
@@ -246,13 +245,13 @@ class ClientCommSpecForSystem
 
           // Send a comm_open (as if a kernel did it)
           val (_, openMessage) =
-            buildZMQCommOpen(testTargetName, v5.Data(), testCommId)
+            buildZMQCommOpen(testTargetName, v5.MsgData.Empty, testCommId)
           actorLoader.load(SocketType.IOPubClient) ! openMessage
 
           eventually { openExecuted should be (true) }
 
           // Send a comm_msg (as if a kernel did it)
-          val (_, msgMessage) = buildZMQCommMsg(testCommId, v5.Data())
+          val (_, msgMessage) = buildZMQCommMsg(testCommId, v5.MsgData.Empty)
           actorLoader.load(SocketType.IOPubClient) ! msgMessage
 
           eventually { msgExecuted should be (true) }
@@ -272,7 +271,7 @@ class ClientCommSpecForSystem
             .addCloseHandler { (_, _, _) => closeExecuted = true }
 
           // Send a comm_close (as if a kernel did it)
-          val (_, closeMessage) = buildZMQCommClose(testCommId, v5.Data())
+          val (_, closeMessage) = buildZMQCommClose(testCommId, v5.MsgData.Empty)
           actorLoader.load(SocketType.IOPubClient) ! closeMessage
 
           intercept[TestFailedDueToTimeoutException] {
@@ -295,13 +294,13 @@ class ClientCommSpecForSystem
 
           // Send a comm_open (as if a kernel did it)
           val (_, openMessage) =
-            buildZMQCommOpen(testTargetName, v5.Data(), testCommId)
+            buildZMQCommOpen(testTargetName, v5.MsgData.Empty, testCommId)
           actorLoader.load(SocketType.IOPubClient) ! openMessage
 
           eventually { openExecuted should be (true) }
 
           // Send a comm_close (as if a kernel did it)
-          val (_, closeMessage) = buildZMQCommClose(testCommId, v5.Data())
+          val (_, closeMessage) = buildZMQCommClose(testCommId, v5.MsgData.Empty)
           actorLoader.load(SocketType.IOPubClient) ! closeMessage
 
           eventually { closeExecuted should be (true) }
@@ -322,13 +321,13 @@ class ClientCommSpecForSystem
 
           // Send a comm_open (as if a kernel did it)
           val (_, openMessage) =
-            buildZMQCommOpen(testTargetName, v5.Data(), testCommId)
+            buildZMQCommOpen(testTargetName, v5.MsgData.Empty, testCommId)
           actorLoader.load(SocketType.IOPubClient) ! openMessage
 
           eventually { openExecuted should be (true) }
 
           // Send a comm_close (as if a kernel did it)
-          val (_, closeMessage1) = buildZMQCommClose(testCommId, v5.Data())
+          val (_, closeMessage1) = buildZMQCommClose(testCommId, v5.MsgData.Empty)
           actorLoader.load(SocketType.IOPubClient) ! closeMessage1
 
           eventually { closeExecuted should be (true) }
@@ -337,7 +336,7 @@ class ClientCommSpecForSystem
           closeExecuted = false
 
           // Send a comm_close (again)
-          val (_, closeMessage2) = buildZMQCommClose(testCommId, v5.Data())
+          val (_, closeMessage2) = buildZMQCommClose(testCommId, v5.MsgData.Empty)
           actorLoader.load(SocketType.IOPubClient) ! closeMessage2
 
           intercept[TestFailedDueToTimeoutException] {

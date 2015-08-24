@@ -93,7 +93,7 @@ class CommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
         verify(mockCommRegistrar).addOpenHandler(any(classOf[OpenCallback]))
 
         // Trigger the callback to test what it does
-        linkFunc(mock[CommWriter], TestCommId, TestTargetName, v5.Data())
+        linkFunc(mock[CommWriter], TestCommId, TestTargetName, v5.MsgData.Empty)
         verify(mockCommRegistrar).link(TestTargetName, TestCommId)
       }
 
@@ -114,7 +114,7 @@ class CommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
         verify(mockCommRegistrar).addCloseHandler(any(classOf[CloseCallback]))
 
         // Trigger the callback to test what it does
-        unlinkFunc(mock[CommWriter], TestCommId, v5.Data())
+        unlinkFunc(mock[CommWriter], TestCommId, v5.MsgData.Empty)
         verify(mockCommRegistrar).unlink(TestCommId)
       }
     }
@@ -169,7 +169,7 @@ class CommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
 
     describe("#open") {
       it("should return a new CommWriter instance that links during open") {
-        val commWriter = commManager.open(TestTargetName, v5.Data())
+        val commWriter = commManager.open(TestTargetName, v5.MsgData.Empty)
 
         commWriter.writeOpen(TestTargetName)
 
@@ -180,17 +180,17 @@ class CommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
       }
 
       it("should return a new CommWriter instance that unlinks during close") {
-        val commWriter = commManager.open(TestTargetName, v5.Data())
+        val commWriter = commManager.open(TestTargetName, v5.MsgData.Empty)
 
-        commWriter.writeClose(v5.Data())
+        commWriter.writeClose(v5.MsgData.Empty)
 
         verify(mockCommRegistrar).unlink(any[v5.UUID])
       }
 
       it("should initiate a comm_open") {
-        commManager.open(TestTargetName, v5.Data())
+        commManager.open(TestTargetName, v5.MsgData.Empty)
 
-        verify(mockCommWriter).writeOpen(TestTargetName, v5.Data())
+        verify(mockCommWriter).writeOpen(TestTargetName, v5.MsgData.Empty)
       }
     }
   }

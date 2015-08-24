@@ -123,7 +123,7 @@ class KernelCommWriterSpec extends TestKit(
       }
 
       it("should provide empty data in the message if no data is provided") {
-        val expected = Data()
+        val expected = MsgData.Empty
         kernelCommWriter.writeOpen(anyString())
 
         val actual = getNextMessageContents[CommOpen].data
@@ -132,7 +132,7 @@ class KernelCommWriterSpec extends TestKit(
       }
 
       it("should include the data in the message") {
-        val expected = Data("some key" -> "some value")
+        val expected = MsgData("some key" -> "some value")
         kernelCommWriter.writeOpen(anyString(), expected)
 
         val actual = getNextMessageContents[CommOpen].data
@@ -143,14 +143,14 @@ class KernelCommWriterSpec extends TestKit(
 
     describe("#writeMsg") {
       it("should send a comm_msg message to the relay") {
-        kernelCommWriter.writeMsg(Data())
+        kernelCommWriter.writeMsg(MsgData.Empty)
 
         getNextMessageType should be (CommMsg.toTypeString)
       }
 
       it("should include the comm_id in the message") {
         val expected = commId
-        kernelCommWriter.writeMsg(Data())
+        kernelCommWriter.writeMsg(MsgData.Empty)
 
         val actual = getNextMessageContents[CommMsg].comm_id
 
@@ -164,7 +164,7 @@ class KernelCommWriterSpec extends TestKit(
       }
 
       it("should include the data in the message") {
-        val expected = Data("some key" -> "some value")
+        val expected = MsgData("some key" -> "some value")
         kernelCommWriter.writeMsg(expected)
 
         val actual = getNextMessageContents[CommMsg].data
@@ -190,7 +190,7 @@ class KernelCommWriterSpec extends TestKit(
       }
 
       it("should provide empty data in the message if no data is provided") {
-        val expected = Data()
+        val expected = MsgData.Empty
         kernelCommWriter.writeClose()
 
         val actual = getNextMessageContents[CommClose].data
@@ -199,7 +199,7 @@ class KernelCommWriterSpec extends TestKit(
       }
 
       it("should include the data in the message") {
-        val expected = Data("some key" -> "some value")
+        val expected = MsgData("some key" -> "some value")
         kernelCommWriter.writeClose(expected)
 
         val actual = getNextMessageContents[CommClose].data
@@ -225,7 +225,7 @@ class KernelCommWriterSpec extends TestKit(
       }
 
       it("should package the string as part of the data with a 'message' key") {
-        val expected = Data("message" -> "a")
+        val expected = MsgData("message" -> "a")
         kernelCommWriter.write(Array('a'), 0, 1)
 
         val actual = getNextMessageContents[CommMsg].data
@@ -258,7 +258,7 @@ class KernelCommWriterSpec extends TestKit(
       }
 
       it("should provide empty data in the message") {
-        val expected = Data()
+        val expected = MsgData.Empty
         kernelCommWriter.close()
 
         val actual = getNextMessageContents[CommClose].data

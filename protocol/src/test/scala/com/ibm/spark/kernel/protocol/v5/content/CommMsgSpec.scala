@@ -19,7 +19,7 @@ package com.ibm.spark.kernel.protocol.v5.content
 import org.scalatest.{FunSpec, Matchers}
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
-import com.ibm.spark.kernel.protocol.v5.Data
+import com.ibm.spark.kernel.protocol.v5._
 
 class CommMsgSpec extends FunSpec with Matchers {
   val commMsgJson: JsValue = Json.parse("""
@@ -29,8 +29,30 @@ class CommMsgSpec extends FunSpec with Matchers {
   }
   """)
 
+  val commMsgJsonWithData: JsValue = Json.parse(
+    """
+    {
+      "comm_id": "<UUID>",
+      "data": {
+        "key" : {
+          "foo" : "bar",
+          "baz" : {
+            "qux" : 3
+          }
+        }
+      }
+    }
+    """.stripMargin)
+
   val commMsg = CommMsg(
-    "<UUID>", Data()
+    "<UUID>", MsgData.Empty
+  )
+
+  val commMsgWithData = CommMsg(
+    "<UUID>", MsgData("key" -> Json.obj(
+      "foo" -> "bar",
+      "baz" -> Map("qux" -> 3)
+    ))
   )
 
   describe("CommMsg") {
@@ -44,6 +66,11 @@ class CommMsgSpec extends FunSpec with Matchers {
       it("should implicitly convert from valid json to a CommMsg instance") {
         // This is the least safe way to convert as an error is thrown if it fails
         commMsgJson.as[CommMsg] should be (commMsg)
+      }
+
+      it("should implicitly convert json with a non-empty json data field " +
+         "to a CommMsg instance") {
+        commMsgJsonWithData.as[CommMsg] should be (commMsgWithData)
       }
 
       it("should also work with asOpt") {
@@ -66,6 +93,11 @@ class CommMsgSpec extends FunSpec with Matchers {
 
       it("should implicitly convert from a CommMsg instance to valid json") {
         Json.toJson(commMsg) should be (commMsgJson)
+      }
+
+      it("should implicitly convert a CommMsg instance with non-empty json " +
+         "data to valid json") {
+        Json.toJson(commMsgWithData) should be (commMsgJsonWithData)
       }
     }
   }

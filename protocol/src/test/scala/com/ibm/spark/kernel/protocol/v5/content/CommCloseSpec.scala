@@ -16,7 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
-import com.ibm.spark.kernel.protocol.v5.Data
+import com.ibm.spark.kernel.protocol.v5._
 import org.scalatest.{FunSpec, Matchers}
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
@@ -30,7 +30,7 @@ class CommCloseSpec extends FunSpec with Matchers {
   """)
 
   val commClose = CommClose(
-    "<UUID>", Data()
+    "<UUID>", MsgData.Empty
   )
 
   describe("CommClose") {

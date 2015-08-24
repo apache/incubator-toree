@@ -81,7 +81,7 @@ class CommMsgHandlerSpec extends TestKit(
         // Send a comm_open message with the test target
         commMsgHandler ! kmBuilder
           .withHeader(CommMsg.toTypeString)
-          .withContentString(CommMsg(TestCommId, v5.Data()))
+          .withContentString(CommMsg(TestCommId, v5.MsgData.Empty))
           .build
 
         // Should receive a busy and an idle message
@@ -89,7 +89,7 @@ class CommMsgHandlerSpec extends TestKit(
 
         // Verify that the msg callbacks were triggered along the way
         verify(mockCommCallbacks).executeMsgCallbacks(
-          any[CommWriter], any[v5.UUID], any[v5.Data])
+          any[CommWriter], any[v5.UUID], any[v5.MsgData])
       }
 
       it("should not execute msg callbacks if the id is not registered") {
@@ -99,7 +99,7 @@ class CommMsgHandlerSpec extends TestKit(
         // Send a comm_msg message with the test id
         commMsgHandler ! kmBuilder
           .withHeader(CommMsg.toTypeString)
-          .withContentString(CommMsg(TestCommId, v5.Data()))
+          .withContentString(CommMsg(TestCommId, v5.MsgData.Empty))
           .build
 
         // Should receive a busy and an idle message
@@ -107,7 +107,7 @@ class CommMsgHandlerSpec extends TestKit(
 
         // Verify that the msg callbacks were NOT triggered along the way
         verify(mockCommCallbacks, never()).executeMsgCallbacks(
-          any[CommWriter], any[v5.UUID], any[v5.Data])
+          any[CommWriter], any[v5.UUID], any[v5.MsgData])
       }
 
       it("should do nothing if there is a parsing error") {

@@ -96,14 +96,14 @@ class CommCallbacksSpec extends FunSpec with Matchers {
     describe("#executeOpenCallbacks") {
       it("should return an empty sequence of results if no callbacks exist") {
         new CommCallbacks()
-          .executeOpenCallbacks(null, "", "", Data()) shouldBe empty
+          .executeOpenCallbacks(null, "", "", MsgData.Empty) shouldBe empty
       }
 
       it("should return a sequence of try results if callbacks exist") {
         val commCallbacks = new CommCallbacks()
           .addOpenCallback(testOpenCallback)
 
-        val results = commCallbacks.executeOpenCallbacks(null, "", "", Data())
+        val results = commCallbacks.executeOpenCallbacks(null, "", "", MsgData.Empty)
 
         results.head.isSuccess should be (true)
       }
@@ -112,7 +112,7 @@ class CommCallbacksSpec extends FunSpec with Matchers {
         val commCallbacks = new CommCallbacks()
           .addOpenCallback(failOpenCallback)
 
-        val results = commCallbacks.executeOpenCallbacks(null, "", "", Data())
+        val results = commCallbacks.executeOpenCallbacks(null, "", "", MsgData.Empty)
 
         results.head.isFailure should be (true)
       }
@@ -121,14 +121,14 @@ class CommCallbacksSpec extends FunSpec with Matchers {
     describe("#executeMsgCallbacks") {
       it("should return an empty sequence of results if no callbacks exist") {
         new CommCallbacks()
-          .executeMsgCallbacks(null, "", Data()) shouldBe empty
+          .executeMsgCallbacks(null, "", MsgData.Empty) shouldBe empty
       }
 
       it("should return a sequence of try results if callbacks exist") {
         val commCallbacks = new CommCallbacks()
           .addMsgCallback(testMsgCallback)
 
-        val results = commCallbacks.executeMsgCallbacks(null, "", Data())
+        val results = commCallbacks.executeMsgCallbacks(null, "", MsgData.Empty)
 
         results.head.isSuccess should be (true)
       }
@@ -137,7 +137,7 @@ class CommCallbacksSpec extends FunSpec with Matchers {
         val commCallbacks = new CommCallbacks()
           .addMsgCallback(failMsgCallback)
 
-        val results = commCallbacks.executeMsgCallbacks(null, "", Data())
+        val results = commCallbacks.executeMsgCallbacks(null, "", MsgData.Empty)
 
         results.head.isFailure should be (true)
       }
@@ -146,14 +146,14 @@ class CommCallbacksSpec extends FunSpec with Matchers {
     describe("#executeCloseCallbacks") {
       it("should return an empty sequence of results if no callbacks exist") {
         new CommCallbacks()
-          .executeCloseCallbacks(null, "", Data()) shouldBe empty
+          .executeCloseCallbacks(null, "", MsgData.Empty) shouldBe empty
       }
 
       it("should return a sequence of try results if callbacks exist") {
         val commCallbacks = new CommCallbacks()
           .addCloseCallback(testCloseCallback)
 
-        val results = commCallbacks.executeCloseCallbacks(null, "", Data())
+        val results = commCallbacks.executeCloseCallbacks(null, "", MsgData.Empty)
 
         results.head.isSuccess should be (true)
       }
@@ -162,7 +162,7 @@ class CommCallbacksSpec extends FunSpec with Matchers {
         val commCallbacks = new CommCallbacks()
           .addCloseCallback(failCloseCallback)
 
-        val results = commCallbacks.executeCloseCallbacks(null, "", Data())
+        val results = commCallbacks.executeCloseCallbacks(null, "", MsgData.Empty)
 
         results.head.isFailure should be (true)
       }

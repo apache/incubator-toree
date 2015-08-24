@@ -64,7 +64,7 @@ class KernelCommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
   describe("KernelCommManager") {
     describe("#open") {
       it("should return a wrapped instance of KernelCommWriter") {
-        kernelCommManager.open(TestTargetName, v5.Data())
+        kernelCommManager.open(TestTargetName, v5.MsgData.Empty)
 
         // Exposed hackishly for testing
         generatedCommWriter shouldBe a [KernelCommWriter]

@@ -17,6 +17,7 @@
 package com.ibm.spark.kernel.protocol
 
 import com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType
+import play.api.libs.json.{JsValue, Json, JsObject}
 
 package object v5 {
   // Provide a UUID type representing a string (there is no object)
@@ -42,6 +43,13 @@ package object v5 {
   type Payloads = List[Map[String, String]]
   val Payloads = List
 
+  // Provide a MsgData type representing an arbitrary JSON value
+  type MsgData = JsValue
+  val MsgData = new {
+    def apply(xs: (String, Json.JsValueWrapper)*) = Json.obj(xs: _*)
+
+    val Empty = Json.obj()
+  }
 
   // TODO: Split this into client/server socket types and move them to their
   //       respective projects
