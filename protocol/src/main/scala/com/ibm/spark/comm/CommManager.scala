@@ -21,7 +21,7 @@ import java.util.UUID
 import com.ibm.spark.annotations.Experimental
 import com.ibm.spark.comm.CommCallbacks.{CloseCallback, OpenCallback}
 import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.{Data, KernelMessageContent}
+import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content.CommContent
 
 /**
@@ -62,7 +62,7 @@ abstract class CommManager(private val commRegistrar: CommRegistrar) {
     ](commContent: T): Unit = commWriter.sendCommKernelMessage(commContent)
 
     // Overridden to unlink before sending close message
-    override def writeClose(data: Data): Unit = {
+    override def writeClose(data: MsgData): Unit = {
       unlinkFunc(this, this.commId, data)
       commWriter.writeClose(data)
     }
@@ -74,12 +74,12 @@ abstract class CommManager(private val commRegistrar: CommRegistrar) {
     }
 
     // Overriden to link before sending open message
-    override def writeOpen(targetName: String, data: Data): Unit = {
+    override def writeOpen(targetName: String, data: MsgData): Unit = {
       linkFunc(this, this.commId, targetName, data)
       commWriter.writeOpen(targetName, data)
     }
 
-    override def writeMsg(data: Data): Unit = commWriter.writeMsg(data)
+    override def writeMsg(data: MsgData): Unit = commWriter.writeMsg(data)
     override def write(cbuf: Array[Char], off: Int, len: Int): Unit =
       commWriter.write(cbuf, off, len)
     override def flush(): Unit = commWriter.flush()
@@ -142,7 +142,7 @@ abstract class CommManager(private val commRegistrar: CommRegistrar) {
    *
    * @return The new CommWriter representing the connection
    */
-  def open(targetName: String, data: v5.Data = v5.Data()): CommWriter = {
+  def open(targetName: String, data: v5.MsgData = v5.MsgData.Empty): CommWriter = {
     val commId = UUID.randomUUID().toString
 
     // Create our CommWriter and wrap it to establish links and unlink on close

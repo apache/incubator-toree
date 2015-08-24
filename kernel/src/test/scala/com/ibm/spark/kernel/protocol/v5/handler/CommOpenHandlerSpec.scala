@@ -84,7 +84,7 @@ class CommOpenHandlerSpec extends TestKit(
         // Send a comm_open message with the test target
         commOpenHandler ! kmBuilder
           .withHeader(CommOpen.toTypeString)
-          .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
+          .withContentString(CommOpen(TestCommId, TestTargetName, v5.MsgData.Empty))
           .build
 
         // Should receive a busy and an idle message
@@ -92,7 +92,7 @@ class CommOpenHandlerSpec extends TestKit(
 
         // Verify that the open callbacks were triggered along the way
         verify(mockCommCallbacks).executeOpenCallbacks(
-          any[CommWriter], any[v5.UUID], anyString(), any[v5.Data])
+          any[CommWriter], any[v5.UUID], anyString(), any[v5.MsgData])
       }
 
       it("should close the comm connection if the target does not exist") {
@@ -102,7 +102,7 @@ class CommOpenHandlerSpec extends TestKit(
         // Send a comm_open message with the test target
         commOpenHandler ! kmBuilder
           .withHeader(CommOpen.toTypeString)
-          .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
+          .withContentString(CommOpen(TestCommId, TestTargetName, v5.MsgData.Empty))
           .build
 
         // Should receive a close message as a result of the target missing

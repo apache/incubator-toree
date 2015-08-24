@@ -16,10 +16,10 @@
 
 package com.ibm.spark.kernel.protocol.v5.content
 
-import com.ibm.spark.kernel.protocol.v5.{KernelMessageContent, Data, UUID}
+import com.ibm.spark.kernel.protocol.v5._
 import play.api.libs.json.Json
 
-case class CommOpen(comm_id: UUID, target_name: String, data: Data)
+case class CommOpen(comm_id: UUID, target_name: String, data: MsgData)
   extends KernelMessageContent with CommContent
 {
   override def content : String =

@@ -16,6 +16,7 @@
 package com.ibm.spark.comm
 
 import com.ibm.spark.annotations.Experimental
+import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 
@@ -40,7 +41,7 @@ abstract class CommWriter(
    * @param targetName The name of the target (used by the recipient)
    * @param data The optional data to send with the open message
    */
-  def writeOpen(targetName: String, data: Data = Data()) =
+  def writeOpen(targetName: String, data: MsgData = MsgData.Empty) =
     sendCommKernelMessage(CommOpen(commId, targetName, data))
 
   /**
@@ -48,7 +49,7 @@ abstract class CommWriter(
    *
    * @param data The data to send
    */
-  def writeMsg(data: Data) = {
+  def writeMsg(data: v5.MsgData) = {
     require(data != null)
 
     sendCommKernelMessage(CommMsg(commId, data))
@@ -59,7 +60,7 @@ abstract class CommWriter(
    *
    * @param data The optional data to send with the close message
    */
-  def writeClose(data: Data = Data()) =
+  def writeClose(data: v5.MsgData = MsgData.Empty) =
     sendCommKernelMessage(CommClose(commId, data))
 
   /**
@@ -93,7 +94,7 @@ abstract class CommWriter(
    * @return The resulting CommMsg wrapper
    */
   private def packageMessage(message: String) =
-    CommMsg(commId, Data(MessageFieldName -> message))
+    CommMsg(commId, MsgData(MessageFieldName -> message))
 
   /**
    * Sends the comm message (open/msg/close) to the actor responsible for

@@ -131,7 +131,7 @@ class TruncationTests
   // Not using TestCommId to avoid problems if previous comm using that
   // id in tests was not properly closed
   private def buildZMQCommOpen(
-    targetName: String, data: v5.Data,
+    targetName: String, data: v5.MsgData,
     commId: v5.UUID = java.util.UUID.randomUUID().toString
   ): (v5.UUID, ZMQMessage) = {
     val kernelMessage = KMBuilder()
@@ -147,7 +147,7 @@ class TruncationTests
 
   // Not using TestCommId to avoid problems if previous comm using that
   // id in tests was not properly closed
-  private def buildZMQCommMsg(commId: v5.UUID, data: v5.Data): (v5.UUID, ZMQMessage) = {
+  private def buildZMQCommMsg(commId: v5.UUID, data: v5.MsgData): (v5.UUID, ZMQMessage) = {
     val kernelMessage = KMBuilder()
       .withHeader(CommMsg.toTypeString)
       .withContentString(CommMsg(
@@ -160,7 +160,7 @@ class TruncationTests
 
   // Not using TestCommId to avoid problems if previous comm using that
   // id in tests was not properly closed
-  private def buildZMQCommClose(commId: v5.UUID, data: v5.Data): (v5.UUID, ZMQMessage) = {
+  private def buildZMQCommClose(commId: v5.UUID, data: v5.MsgData): (v5.UUID, ZMQMessage) = {
     val kernelMessage = KMBuilder()
       .withHeader(CommClose.toTypeString)
       .withContentString(CommClose(

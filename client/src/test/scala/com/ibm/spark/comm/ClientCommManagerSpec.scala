@@ -64,7 +64,7 @@ class ClientCommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
   describe("ClientCommManager") {
     describe("#open") {
       it("should return a wrapped instance of ClientCommWriter") {
-        clientCommManager.open(TestTargetName, v5.Data())
+        clientCommManager.open(TestTargetName, v5.MsgData.Empty)
 
         // Exposed hackishly for testing
         generatedCommWriter shouldBe a [ClientCommWriter]

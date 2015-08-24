@@ -22,9 +22,9 @@ import scala.util.Try
 
 @Experimental
 object CommCallbacks {
-  type OpenCallback = (CommWriter, UUID, String, Data) => Unit
-  type MsgCallback = (CommWriter, UUID, Data) => Unit
-  type CloseCallback = (CommWriter, UUID, Data) => Unit
+  type OpenCallback = (CommWriter, UUID, String, MsgData) => Unit
+  type MsgCallback = (CommWriter, UUID, MsgData) => Unit
+  type CloseCallback = (CommWriter, UUID, MsgData) => Unit
 }
 
 import com.ibm.spark.comm.CommCallbacks._
@@ -139,7 +139,7 @@ class CommCallbacks(
    * @return The sequence of results from trying to execute callbacks
    */
   def executeOpenCallbacks(
-    commWriter: CommWriter, commId: UUID, targetName: String, data: Data
+    commWriter: CommWriter, commId: UUID, targetName: String, data: MsgData
   ) = openCallbacks.map(f => Try(f(commWriter, commId, targetName, data)))
 
   /**
@@ -151,7 +151,7 @@ class CommCallbacks(
    *
    * @return The sequence of results from trying to execute callbacks
    */
-  def executeMsgCallbacks(commWriter: CommWriter, commId: UUID, data: Data) =
+  def executeMsgCallbacks(commWriter: CommWriter, commId: UUID, data: MsgData) =
     msgCallbacks.map(f => Try(f(commWriter, commId, data)))
 
   /**
@@ -163,6 +163,6 @@ class CommCallbacks(
    *
    * @return The sequence of results from trying to execute callbacks
    */
-  def executeCloseCallbacks(commWriter: CommWriter, commId: UUID, data: Data) =
+  def executeCloseCallbacks(commWriter: CommWriter, commId: UUID, data: MsgData) =
     closeCallbacks.map(f => Try(f(commWriter, commId, data)))
 }

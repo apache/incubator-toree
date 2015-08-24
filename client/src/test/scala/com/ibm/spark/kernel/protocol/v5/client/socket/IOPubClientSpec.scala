@@ -103,7 +103,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
       it("should execute all Comm open callbacks on comm_open message") {
         val message: ZMQMessage = kmBuilder
           .withHeader(CommOpen.toTypeString)
-          .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
+          .withContentString(CommOpen(TestCommId, TestTargetName, v5.MsgData.Empty))
           .build
 
         // Mark as target being provided
@@ -117,14 +117,14 @@ class IOPubClientSpec extends TestKit(ActorSystem(
         eventually {
           verify(mockCommCallbacks).executeOpenCallbacks(
             any[CommWriter], mockEq(TestCommId),
-            mockEq(TestTargetName), any[v5.Data])
+            mockEq(TestTargetName), any[v5.MsgData])
         }
       }
 
       it("should not execute Comm open callbacks if the target is not found") {
         val message: ZMQMessage = kmBuilder
           .withHeader(CommOpen.toTypeString)
-          .withContentString(CommOpen(TestCommId, TestTargetName, v5.Data()))
+          .withContentString(CommOpen(TestCommId, TestTargetName, v5.MsgData.Empty))
           .build
 
         // Mark as target NOT being provided
@@ -140,7 +140,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 
           verify(mockCommCallbacks, never()).executeOpenCallbacks(
             any[CommWriter], mockEq(TestCommId),
-            mockEq(TestTargetName), any[v5.Data])
+            mockEq(TestTargetName), any[v5.MsgData])
           verify(mockCommRegistrar, never()).link(TestTargetName, TestCommId)
         }
       }
@@ -148,7 +148,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
       it("should execute all Comm msg callbacks on comm_msg message") {
         val message: ZMQMessage = kmBuilder
           .withHeader(CommMsg.toTypeString)
-          .withContentString(CommMsg(TestCommId, v5.Data()))
+          .withContentString(CommMsg(TestCommId, v5.MsgData.Empty))
           .build
 
         // Mark as target being provided
@@ -161,14 +161,14 @@ class IOPubClientSpec extends TestKit(ActorSystem(
         // Check to see if "eventually" the callback is triggered
         eventually {
           verify(mockCommCallbacks).executeMsgCallbacks(
-            any[CommWriter], mockEq(TestCommId), any[v5.Data])
+            any[CommWriter], mockEq(TestCommId), any[v5.MsgData])
         }
       }
 
       it("should not execute Comm msg callbacks if the Comm id is not found") {
         val message: ZMQMessage = kmBuilder
           .withHeader(CommMsg.toTypeString)
-          .withContentString(CommMsg(TestCommId, v5.Data()))
+          .withContentString(CommMsg(TestCommId, v5.MsgData.Empty))
           .build
 
         // Mark as target NOT being provided
@@ -183,14 +183,14 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           verify(spyCommStorage).getCommIdCallbacks(TestCommId)
 
           verify(mockCommCallbacks, never()).executeMsgCallbacks(
-            any[CommWriter], mockEq(TestCommId), any[v5.Data])
+            any[CommWriter], mockEq(TestCommId), any[v5.MsgData])
         }
       }
 
       it("should execute all Comm close callbacks on comm_close message") {
         val message: ZMQMessage = kmBuilder
           .withHeader(CommClose.toTypeString)
-          .withContentString(CommClose(TestCommId, v5.Data()))
+          .withContentString(CommClose(TestCommId, v5.MsgData.Empty))
           .build
 
         // Mark as target being provided
@@ -203,14 +203,14 @@ class IOPubClientSpec extends TestKit(ActorSystem(
         // Check to see if "eventually" the callback is triggered
         eventually {
           verify(mockCommCallbacks).executeCloseCallbacks(
-            any[CommWriter], mockEq(TestCommId), any[v5.Data])
+            any[CommWriter], mockEq(TestCommId), any[v5.MsgData])
         }
       }
 
       it("should not execute Comm close callbacks if Comm id is not found") {
         val message: ZMQMessage = kmBuilder
           .withHeader(CommClose.toTypeString)
-          .withContentString(CommClose(TestCommId, v5.Data()))
+          .withContentString(CommClose(TestCommId, v5.MsgData.Empty))
           .build
 
         // Mark as target NOT being provided
@@ -225,7 +225,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           verify(spyCommStorage).getCommIdCallbacks(TestCommId)
 
           verify(mockCommCallbacks, never()).executeCloseCallbacks(
-            any[CommWriter], mockEq(TestCommId), any[v5.Data])
+            any[CommWriter], mockEq(TestCommId), any[v5.MsgData])
         }
       }
 
