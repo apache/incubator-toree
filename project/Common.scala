@@ -30,7 +30,7 @@ object Common {
   val repoEndpoint              = Properties.envOrElse("REPO_ENDPOINT", if(snapshot) "/nexus/content/repositories/snapshots/" else "/nexus/content/repositories/releases/")
   val repoUrl                   = Properties.envOrElse("REPO_URL", s"http://${repoHost}:${repoPort}${repoEndpoint}")
 
-  private val versionNumber     = "0.1.2"
+  private val versionNumber     = "0.1.3"
   private val buildOrganization = "com.ibm.spark"
   private val buildVersion      =
     if (snapshot) s"$versionNumber-SNAPSHOT"
@@ -68,20 +68,10 @@ object Common {
       val _sparkVersion = Properties.envOrNone(sparkEnvironmentVariable)
 
       if (_sparkVersion.isEmpty) {
-        scala.Console.err.println(s"""
-          |[ERROR] No version of Apache Spark was specified! Please provide a
-          |version using the environment variable $sparkEnvironmentVariable!
-          |""".stripMargin.trim.replace('\n', ' ')
-        )
-
-        // TODO: Remove this "default value" and throw an exception in the
-        //       future?
-        scala.Console.err.println(s"""
-          |[WARN] Defaulting to Apache Spark $defaultSparkVersion! This is not
-          |a guarantee in the future! Please specify the version explicitly!
-          |""".stripMargin.trim.replace('\n', ' ')
-        )
-
+        scala.Console.out.println(
+          s"""
+             |[INFO] Using default Apache Spark $defaultSparkVersion!
+           """.stripMargin.trim.replace('\n', ' '))
         defaultSparkVersion
       } else {
         val version = _sparkVersion.get
