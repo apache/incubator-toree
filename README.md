@@ -36,6 +36,20 @@ The kernel provides several key features for applications:
 
 The project intends to provide applications with the ability to send both packaged jars and code snippets. As it implements the latest IPython message protocol (5.0), the Spark Kernel can easily plug into the 3.x branch of IPython for quick, interactive data exploration. The Spark Kernel strives to be extensible, providing a [pluggable interface][3] for developers to add their own functionality.
 
+Version
+=======
+
+Branch                       | Spark Kernel Version | Apache Spark Version
+---------------------------- | -------------------- | --------------------
+[master][master]             | 0.1.5                | 1.5.0
+[branch-0.1.4][branch-0.1.4] | 0.1.4                | 1.4.1
+[branch-0.1.3][branch-0.1.3] | 0.1.3                | 1.3.1
+
+Please note that only the latest version of the Spark Kernel will be supported with new features!
+
+Resources
+=========
+
 __If you are new to the Spark Kernel, please see the [Getting Started][4] section.__
 
 __For more information, please visit the [Spark Kernel wiki][5].__
@@ -57,3 +71,7 @@ __For bug reporting and feature requests, please visit the [Spark Kernel issue l
 [scaladoc-url]: http://ibm-et.github.io/spark-kernel/latest/api
 [license-badge]: https://img.shields.io/badge/License-Apache%202-blue.svg?style=flat
 [license-url]: LICENSE
+
+[master]: https://github.com/ibm-et/spark-kernel
+[branch-0.1.4]: https://github.com/ibm-et/spark-kernel/tree/branch-0.1.4
+[branch-0.1.3]: https://github.com/ibm-et/spark-kernel/tree/branch-0.1.3
