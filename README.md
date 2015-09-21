@@ -5,6 +5,7 @@ Spark Kernel
 [![Coverage Status][coverage-badge]][coverage-url]
 [![Scaladoc][scaladoc-badge]][scaladoc-url]
 [![License][license-badge]][license-url]
+[![Join the chat at https://gitter.im/ibm-et/spark-kernel][gitter-badge]][gitter-url]
 
 Requires JDK 1.7 or higher!
 
@@ -71,6 +72,8 @@ __For bug reporting and feature requests, please visit the [Spark Kernel issue l
 [scaladoc-url]: http://ibm-et.github.io/spark-kernel/latest/api
 [license-badge]: https://img.shields.io/badge/License-Apache%202-blue.svg?style=flat
 [license-url]: LICENSE
+[gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
+[gitter-url]: https://gitter.im/ibm-et/spark-kernel
 
 [master]: https://github.com/ibm-et/spark-kernel
 [branch-0.1.4]: https://github.com/ibm-et/spark-kernel/tree/branch-0.1.4
