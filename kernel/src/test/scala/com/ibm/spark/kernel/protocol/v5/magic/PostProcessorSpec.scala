@@ -65,6 +65,9 @@ class PostProcessorSpec extends FunSpec with Matchers with MockitoSugar{
     it("should call matchCellMagic when the last variable is a Left") {
       val intp = mock[Interpreter]
       val left = Left("")
+      // Need to mock lastExecutionVariableName as it is being chained with
+      // the read method
+      doReturn(Some("")).when(intp).lastExecutionVariableName
       doReturn(Some(left)).when(intp).read(anyString())
 
       val processor = spy(new PostProcessor(intp))
@@ -76,6 +79,9 @@ class PostProcessorSpec extends FunSpec with Matchers with MockitoSugar{
     it("should call matchLineMagic when the last variable is a Right") {
       val intp = mock[Interpreter]
       val right = Right("")
+      // Need to mock lastExecutionVariableName as it is being chained with
+      // the read method
+      doReturn(Some("")).when(intp).lastExecutionVariableName
       doReturn(Some(right)).when(intp).read(anyString())
 
       val processor = spy(new PostProcessor(intp))
@@ -88,6 +94,9 @@ class PostProcessorSpec extends FunSpec with Matchers with MockitoSugar{
       "Left[CellMagicOutput, Nothing]") {
       val intp = mock[Interpreter]
       val left = Left("")
+      // Need to mock lastExecutionVariableName as it is being chained with
+      // the read method
+      doReturn(Some("")).when(intp).lastExecutionVariableName
       doReturn(Some(left)).when(intp).read(anyString())
 
       val processor = spy(new PostProcessor(intp))
@@ -100,6 +109,9 @@ class PostProcessorSpec extends FunSpec with Matchers with MockitoSugar{
        "Right[LineMagicOutput, Nothing]") {
       val intp = mock[Interpreter]
       val right = Right("")
+      // Need to mock lastExecutionVariableName as it is being chained with
+      // the read method
+      doReturn(Some("")).when(intp).lastExecutionVariableName
       doReturn(Some(right)).when(intp).read(anyString())
 
       val processor = spy(new PostProcessor(intp))

@@ -33,7 +33,7 @@ class RDD extends CellMagic with IncludeKernelInterpreter with LogLike {
     val (result, message) = kernelInterpreter.interpret(code)
     result match {
       case Results.Success =>
-        val rddVarName = kernelInterpreter.mostRecentVar
+        val rddVarName = kernelInterpreter.lastExecutionVariableName.getOrElse("")
         kernelInterpreter.read(rddVarName).map(rddVal => {
           try{
             CellMagicOutput(MIMEType.ApplicationJson -> RddToJson.convert(rddVal.asInstanceOf[SchemaRDD]))

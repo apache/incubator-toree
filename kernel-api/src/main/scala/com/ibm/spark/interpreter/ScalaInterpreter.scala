@@ -470,9 +470,19 @@ class ScalaInterpreter(
     else variable
   }
 
-  override def mostRecentVar: String = {
+  override def lastExecutionVariableName: Option[String] = {
     require(sparkIMain != null)
-    sparkIMain.mostRecentVar
+
+    // TODO: Get this API method changed back to public in Apache Spark
+    val lastRequestMethod = classOf[SparkIMain].getDeclaredMethod("lastRequest")
+    lastRequestMethod.setAccessible(true)
+
+    val request =
+      lastRequestMethod.invoke(sparkIMain).asInstanceOf[SparkIMain#Request]
+
+    val mostRecentVariableName = sparkIMain.mostRecentVar
+
+    request.definedNames.map(_.toString).find(_ == mostRecentVariableName)
   }
 
   override def completion(code: String, pos: Int): (Int, List[String]) = {

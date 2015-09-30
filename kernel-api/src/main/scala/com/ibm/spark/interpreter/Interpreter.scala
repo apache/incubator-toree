@@ -105,10 +105,10 @@ trait Interpreter {
   def completion(code: String, pos: Int): (Int, List[String] )
 
   /**
-   * Returns the most recent variable name.
-   * @return the String name
+   * Returns the name of the variable created from the last execution.
+   * @return Some String name if a variable was created, otherwise None
    */
-  def mostRecentVar: String
+  def lastExecutionVariableName: Option[String]
 
   /**
    * Returns the class loader used by this interpreter.
