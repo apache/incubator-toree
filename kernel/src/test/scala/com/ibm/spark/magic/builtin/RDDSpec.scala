@@ -49,7 +49,7 @@ class RDDSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfte
   }
 
   before {
-    doReturn("someRDD").when(mockInterpreter).mostRecentVar
+    doReturn(Some("someRDD")).when(mockInterpreter).lastExecutionVariableName
     doReturn(Some(mockDataFrame)).when(mockInterpreter).read(anyString())
     doReturn((Results.Success, Left(resOutput)))
       .when(mockInterpreter).interpret(anyString(), anyBoolean())
