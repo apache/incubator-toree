@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 IBM Corp.
+ * Copyright 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,11 @@ class CommandLineOptions(args: Seq[String]) {
     "total number of worker threads to use to execute code"
   ).withRequiredArg().ofType(classOf[Int])
 
+  private val _jar_dir = parser.accepts(
+    "jar-dir",
+    "directory where user added jars are stored (MUST EXIST)"
+  ).withRequiredArg().ofType(classOf[String])
+
   private val options = parser.parse(args: _*)
 
   /*
@@ -136,7 +141,8 @@ class CommandLineOptions(args: Seq[String]) {
         "spark_configuration" -> getAll(_spark_configuration)
           .map(list => KeyValuePairUtils.keyValuePairSeqToString(list))
           .flatMap(str => if (str.nonEmpty) Some(str) else None),
-        "max_interpreter_threads" -> get(_max_interpreter_threads)
+        "max_interpreter_threads" -> get(_max_interpreter_threads),
+        "jar_dir" -> get(_jar_dir)
     ).flatMap(removeEmptyOptions).asInstanceOf[Map[String, AnyRef]].asJava)
 
     commandLineConfig.withFallback(profileConfig).withFallback(ConfigFactory.load)
