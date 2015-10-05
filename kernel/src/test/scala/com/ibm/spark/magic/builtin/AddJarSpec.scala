@@ -21,7 +21,8 @@ import java.net.URL
 import java.nio.file.{FileSystems, Files}
 
 import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.magic.dependencies.{IncludeOutputStream, IncludeInterpreter, IncludeSparkContext}
+import com.ibm.spark.magic.dependencies.{IncludeConfig, IncludeOutputStream, IncludeInterpreter, IncludeSparkContext}
+import com.typesafe.config.ConfigFactory
 import org.apache.spark.SparkContext
 import org.scalatest.{Matchers, FunSpec}
 import org.scalatest.mock.MockitoSugar
@@ -39,16 +40,19 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val mockInterpreter = mock[Interpreter]
         val mockOutputStream = mock[OutputStream]
         val mockMagicLoader = mock[MagicLoader]
+        val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
           with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
+          with IncludeConfig
         {
           override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
           override lazy val magicLoader: MagicLoader = mockMagicLoader
+          override val config = testConfig
           override def downloadFile(fileUrl: URL, destinationUrl: URL): URL =
             new URL("file://someFile") // Cannot mock URL
         }
@@ -66,15 +70,18 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val mockOutputStream = mock[OutputStream]
         var downloadFileCalled = false  // Used to verify that downloadFile
                                         // was or was not called in this test
+        val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
           with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
+          with IncludeConfig
         {
           override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
+          override val config = testConfig
           override def downloadFile(fileUrl: URL, destinationUrl: URL): URL = {
             downloadFileCalled = true
             new URL("file://someFile") // Cannot mock URL
@@ -83,7 +90,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
 
         // Create a temporary file representing our jar to fake the cache
         val tmpFilePath = Files.createTempFile(
-          FileSystems.getDefault.getPath(addJarMagic.JarStorageLocation),
+          FileSystems.getDefault.getPath(AddJar.getJarDir(testConfig)),
           "someJar",
           ".jar"
         )
@@ -104,15 +111,18 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val mockOutputStream = mock[OutputStream]
         var downloadFileCalled = false  // Used to verify that downloadFile
                                         // was or was not called in this test
+        val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
           with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
+          with IncludeConfig
         {
           override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
+          override val config = testConfig
           override def downloadFile(fileUrl: URL, destinationUrl: URL): URL = {
             downloadFileCalled = true
             new URL("file://someFile") // Cannot mock URL
@@ -121,7 +131,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
 
         // Create a temporary file representing our jar to fake the cache
         val tmpFilePath = Files.createTempFile(
-          FileSystems.getDefault.getPath(addJarMagic.JarStorageLocation),
+          FileSystems.getDefault.getPath(AddJar.getJarDir(testConfig)),
           "someJar",
           ".jar"
         )
@@ -142,16 +152,19 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val mockInterpreter = mock[Interpreter]
         val mockOutputStream = mock[OutputStream]
         val mockMagicLoader = mock[MagicLoader]
+        val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
           with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
+          with IncludeConfig
         {
           override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
           override lazy val magicLoader: MagicLoader = mockMagicLoader
+          override val config = testConfig
         }
 
         addJarMagic.execute(
