@@ -2,8 +2,6 @@ Spark Kernel
 ============
 
 [![Build Status][build-badge]][build-url]
-[![Coverage Status][coverage-badge]][coverage-url]
-[![Scaladoc][scaladoc-badge]][scaladoc-url]
 [![License][license-badge]][license-url]
 [![Join the chat at https://gitter.im/ibm-et/spark-kernel][gitter-badge]][gitter-url]
 

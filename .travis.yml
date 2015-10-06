@@ -5,11 +5,7 @@ jdk:
     - oraclejdk7
     - openjdk7
 script: 
-    - "sbt clean coverage test -Dakka.test.timefactor=3"
-    - find $HOME/.sbt -name "*.lock" | xargs rm
-    - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
-after_success: 
-    - "sbt coveralls -Dakka.test.timefactor=3"
+    - "sbt clean test -Dakka.test.timefactor=3"
     - find $HOME/.sbt -name "*.lock" | xargs rm
     - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
 sudo: false
