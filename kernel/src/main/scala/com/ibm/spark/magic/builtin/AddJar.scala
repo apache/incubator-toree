@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 IBM Corp.
+ * Copyright 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,36 @@ package com.ibm.spark.magic.builtin
 
 import java.io.{File, PrintStream}
 import java.net.URL
+import java.nio.file.{Files, Paths}
 
-import com.ibm.spark.kernel.protocol.v5.MIMEType
 import com.ibm.spark.magic._
+import com.ibm.spark.magic.builtin.AddJar._
 import com.ibm.spark.magic.dependencies._
-import com.ibm.spark.utils.{ArgumentParsingSupport, DownloadSupport}
+import com.ibm.spark.utils.{ArgumentParsingSupport, DownloadSupport, LogLike}
+import com.typesafe.config.Config
+
+object AddJar {
+
+  private var jarDir:Option[String] = None
+  def getJarDir(config: Config): String = {
+    jarDir.getOrElse({
+      jarDir = Some(
+        if(config.hasPath("jar_dir") && Files.exists(Paths.get(config.getString("jar_dir")))) {
+          config.getString("jar_dir")
+        } else {
+          Files.createTempDirectory("spark_kernel_add_jars").toFile.getAbsolutePath
+        }
+      )
+      jarDir.get
+    })
+  }
+}
 
 class AddJar
   extends LineMagic with IncludeInterpreter with IncludeSparkContext
   with IncludeOutputStream with DownloadSupport with ArgumentParsingSupport
-  with IncludeKernel with IncludeMagicLoader
+  with IncludeKernel with IncludeMagicLoader with IncludeConfig with LogLike
 {
-  // TODO: Figure out where to put this AND a better location as /tmp does not
-  //       keep the jars around forever.
-  private[magic] val JarStorageLocation = "/tmp"
 
   private val HtmlJarRegex = """.*?\/([^\/]*?)(?:\?.*)*$""".r
 
@@ -70,7 +86,11 @@ class AddJar
 
     // Get the destination of the jar
     val HtmlJarRegex(jarName) = jarRemoteLocation
-    val downloadLocation = JarStorageLocation + "/" + jarName
+
+    val downloadLocation = getJarDir(config) + "/" + jarName
+
+    logger.debug( "Downloading jar to %s".format(downloadLocation) )
+
     val fileDownloadLocation = new File(downloadLocation)
 
     // Check if exists in cache or force applied

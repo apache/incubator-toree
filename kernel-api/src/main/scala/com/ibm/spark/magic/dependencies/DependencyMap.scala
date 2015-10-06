@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 IBM Corp.
+ * Copyright 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.OutputStream
 import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.magic.{MagicLoader, Magic}
+import com.typesafe.config.Config
 import org.apache.spark.SparkContext
 
 import scala.reflect.runtime.universe._
@@ -132,6 +133,21 @@ class DependencyMap {
         magic =>
           magic.asInstanceOf[IncludeMagicLoader]
             .magicLoader=(magicLoader)
+      )
+
+    this
+  }
+
+  /**
+   * Sets the Config Object for this map.
+   * @param config The config for the kernel
+   */
+  def setConfig(config: Config) = {
+    internalMap(typeOf[IncludeConfig]) =
+      PartialFunction[Magic, Unit](
+        magic =>
+          magic.asInstanceOf[IncludeConfig]
+            .config=(config)
       )
 
     this
