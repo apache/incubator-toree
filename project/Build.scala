@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 IBM Corp.
+ * Copyright 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,11 @@ object Build extends Build with Settings with SubProjects with TestTasks {
         publishArtifact := false,
         publishLocal := {}
       )
-  ).aggregate(client, kernel, kernel_api, communication, protocol, macros).dependsOn(
+  ).aggregate(
+    client, kernel, kernel_api, communication, protocol, macros,
+    pyspark_interpreter, scala_interpreter, sparkr_interpreter,
+    sql_interpreter
+  ).dependsOn(
     client % "test->test",
     kernel % "test->test"
   )
@@ -100,6 +104,58 @@ trait SubProjects extends Settings with TestTasks {
     macros % "test->test;compile->compile",
     protocol % "test->test;compile->compile",
     communication % "test->test;compile->compile",
+    kernel_api % "test->test;compile->compile",
+    pyspark_interpreter % "test->test;compile->compile",
+    scala_interpreter % "test->test;compile->compile",
+    sparkr_interpreter % "test->test;compile->compile",
+    sql_interpreter % "test->test;compile->compile"
+  )
+
+  /**
+   * Project represents the pyspark interpreter used by the Spark Kernel.
+   */
+  lazy val pyspark_interpreter = addTestTasksToProject(Project(
+    id = "pyspark-interpreter",
+    base = file("pyspark-interpreter"),
+    settings = fullSettings
+  )) dependsOn(
+    protocol % "test->test;compile->compile",
+    kernel_api % "test->test;compile->compile"
+  )
+
+  /**
+   * Project represents the scala interpreter used by the Spark Kernel.
+   */
+  lazy val scala_interpreter = addTestTasksToProject(Project(
+    id = "scala-interpreter",
+    base = file("scala-interpreter"),
+    settings = fullSettings
+  )) dependsOn(
+    protocol % "test->test;compile->compile",
+    kernel_api % "test->test;compile->compile"
+  )
+
+  /**
+   * Project represents the scala interpreter used by the Spark Kernel.
+   */
+  lazy val sparkr_interpreter = addTestTasksToProject(Project(
+    id = "sparkr-interpreter",
+    base = file("sparkr-interpreter"),
+    settings = fullSettings
+  )) dependsOn(
+    protocol % "test->test;compile->compile",
+    kernel_api % "test->test;compile->compile"
+  )
+
+  /**
+   * Project represents the sql interpreter used by the Spark Kernel.
+   */
+  lazy val sql_interpreter = addTestTasksToProject(Project(
+    id = "sql-interpreter",
+    base = file("sql-interpreter"),
+    settings = fullSettings
+  )) dependsOn(
+    protocol % "test->test;compile->compile",
     kernel_api % "test->test;compile->compile"
   )
 

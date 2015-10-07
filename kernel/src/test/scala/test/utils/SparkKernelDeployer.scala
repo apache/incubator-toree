@@ -18,13 +18,10 @@ package com.ibm.spark.boot.layer
 
 import java.io.OutputStream
 
-import akka.actor.Actor.Receive
 import akka.actor.{Actor, Props, ActorRef, ActorSystem}
-import akka.testkit.{TestProbe, TestActorRef}
-import com.ibm.spark.boot.layer._
+import akka.testkit.TestProbe
 import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.interpreter.{StandardSettingsProducer, StandardTaskManagerProducer, StandardSparkIMainProducer, ScalaInterpreter}
+import com.ibm.spark.kernel.interpreter.scala.{StandardTaskManagerProducer, StandardSparkIMainProducer, StandardSettingsProducer, ScalaInterpreter}
 import com.ibm.spark.kernel.protocol.v5.{KMBuilder, SocketType}
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.kernel.socket._
@@ -33,7 +30,6 @@ import com.typesafe.config.Config
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.Json
 import scala.collection.JavaConverters._
-import scala.tools.nsc.interpreter.JPrintWriter
 import test.utils.SparkContextProvider
 import org.apache.spark.{SparkContext, SparkConf}
 import com.ibm.spark.kernel.protocol.v5.stream.KernelOutputStream
