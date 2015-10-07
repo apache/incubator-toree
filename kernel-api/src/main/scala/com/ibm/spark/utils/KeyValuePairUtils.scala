@@ -58,7 +58,7 @@ object KeyValuePairUtils {
     require(keyValuePairSeq != null, "KeyValuePair sequence cannot be null!")
 
     keyValuePairSeq
-      .map(pair => pair.key + "=" + pair.value)
+      .map(pair => pair.key.trim + "=" + pair.value.trim)
       .mkString(delimiter)
   }
 }

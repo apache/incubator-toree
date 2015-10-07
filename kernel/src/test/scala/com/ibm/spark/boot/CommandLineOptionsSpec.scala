@@ -316,6 +316,25 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
         }
       }
     }
+
+    describe("when received options with surrounding whitespace") {
+      it("should trim whitespace") {
+        val master = "test"
+        val url1 = "url1"
+        val url2 = "url2"
+
+        val options = new CommandLineOptions(Seq(
+          s"--master=${master} ",
+          " --magic-url ", s" ${url1}\t",
+          "--magic-url", s" \t ${url2} \t"
+        ))
+        val config: Config = options.toConfig
+
+        config.getString("spark.master") should be(master)
+        config.getList("magic_urls").unwrapped.asScala should
+          be (Seq(url1, url2))
+      }
+    }
   }
 
 }
