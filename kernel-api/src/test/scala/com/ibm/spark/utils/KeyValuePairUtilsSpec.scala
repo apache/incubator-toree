@@ -93,6 +93,16 @@ class KeyValuePairUtilsSpec extends FunSpec with Matchers {
 
         actual should be (expected)
       }
+
+      it("should trim whitespace from keys and values") {
+        val expected = "key1=value1,key2=value2"
+        val actual = KeyValuePairUtils.keyValuePairSeqToString(Seq(
+          TestKeyValuePair(" key1", "  value1 "),
+          TestKeyValuePair("\tkey2 ", "value2\t")
+        ), ",")
+
+        actual should be (expected)
+      }
     }
   }
 }

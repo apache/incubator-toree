@@ -89,7 +89,7 @@ class CommandLineOptions(args: Seq[String]) {
     "directory where user added jars are stored (MUST EXIST)"
   ).withRequiredArg().ofType(classOf[String])
 
-  private val options = parser.parse(args: _*)
+  private val options = parser.parse(args.map(_.trim): _*)
 
   /*
    * Helpers to determine if an option is provided and the value with which it
