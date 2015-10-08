@@ -52,15 +52,13 @@ if ! flag_is_set CORE_DEPS; then
 fi
 
 # Install IPython and ZeroMQ
-IPYTHON_VERSION=3.0.0
+IPYTHON_VERSION=3.2.1
 
 if ! flag_is_set IPYTHON; then
   apt-get -f -y install && \
   apt-get -y install python-pip python-dev libzmq-dev build-essential && \
   cd /src && \
-  pip install pyzmq tornado runipy jsonschema jinja2 && \
-  pip install -e git+https://github.com/ipython/ipython.git@rel-${IPYTHON_VERSION}#egg=ipython
-  pip install -e src/ipython[notebook]
+  pip install ipython[notebook]==${IPYTHON_VERSION} && \
   ipython profile create && \
   set_flag IPYTHON
 fi
@@ -97,19 +95,39 @@ if ! flag_is_set SBT; then
   set_flag SBT
 fi
 
+# Downloading Spark
+SPARK_VERSION=1.5.1
+if ! flag_is_set SPARK; then
+  cd /opt && \
+  wget http://apache.arvixe.com/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.3.tgz && \
+  tar xvzf spark-${SPARK_VERSION}-bin-hadoop2.3.tgz && \
+  ln -s spark-${SPARK_VERSION}-bin-hadoop2.3 spark && \
+  set_flag SPARK
+fi
+
 # Add Spark Kernel json to IPython configuration
 echo "Adding kernel.json"
 mkdir -p /home/vagrant/.ipython/kernels/spark
 cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
 {
-    "display_name": "Spark 1.1.0 (Scala 2.10.4)",
+    "display_name": "Spark 1.5.1 (Scala 2.10.4)",
     "language_info": { "name": "scala" },
     "argv": [
         "/home/vagrant/local/bin/sparkkernel",
         "--profile",
         "{connection_file}"
     ],
-    "codemirror_mode": "scala"
+    "codemirror_mode": "scala",
+    "env": {
+        "JVM_OPT": "-Xms1024M -Xmx4096M -Dlog4j.logLevel=trace",
+        "MAX_INTERPRETER_THREADS": "16",
+        "SPARK_CONFIGURATION": "spark.cores.max=4",
+        "CAPTURE_STANDARD_OUT": "true",
+        "CAPTURE_STANDARD_ERR": "true",
+        "SEND_EMPTY_OUTPUT": "false",
+        "SPARK_HOME": "/opt/spark",
+        "PYTHONPATH": "/opt/spark/python:/opt/spark/python/lib/py4j-0.8.2.1-src.zip"
+     }
 }
 EOF
 
