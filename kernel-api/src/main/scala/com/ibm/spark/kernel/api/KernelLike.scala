@@ -73,4 +73,11 @@ trait KernelLike {
    *         not found
    */
   def in: InputStream
+
+  /**
+   * Represents data to be shared using the kernel as the middleman.
+   *
+   * @note Using Java structure to enable other languages to have easy access!
+   */
+  val data: java.util.Map[String, Any]
 }

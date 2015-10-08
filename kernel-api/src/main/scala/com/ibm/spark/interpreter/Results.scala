@@ -1,11 +1,11 @@
 /*
- * Copyright 2014 IBM Corp.
+ * Copyright 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,15 +24,15 @@ object Results {
   abstract sealed class Result
 
   /** The line was interpreted successfully. */
-  case object Success extends Result { override def toString =  "success" }
+  case object Success extends Result { override def toString = "success" }
 
   /** The line was erroneous in some way. */
-  case object Error extends Result { override def toString =  "error" }
+  case object Error extends Result { override def toString = "error" }
 
-    /** The input was incomplete.  The caller should request more input. */
-  case object Incomplete extends Result { override def toString =  "incomplete"}
+  /** The input was incomplete.  The caller should request more input. */
+  case object Incomplete extends Result { override def toString = "incomplete" }
 
-      /** The line was aborted before completed. */
-  case object Aborted extends Result { override def toString =  "aborted" }
+  /** The line was aborted before completed. */
+  case object Aborted extends Result { override def toString = "aborted" }
 }
 

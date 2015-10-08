@@ -1,7 +1,7 @@
 import xerial.sbt.Pack._
 import Common._
 /*
- * Copyright 2014 IBM Corp.
+ * Copyright 2015 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,11 @@ libraryDependencies ++= Seq(
   "org.apache.hadoop" % "hadoop-client" % "2.3.0" excludeAll
     ExclusionRule(organization = "javax.servlet")
 )
+
+//
+// EXECUTION DEPENDENCIES
+//
+libraryDependencies += "org.apache.commons" % "commons-exec" % "1.3"
 
 //
 // CLI DEPENDENCIES
