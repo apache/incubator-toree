@@ -1,5 +1,5 @@
 #
-# Copyright 2014 IBM Corp.
+# Copyright 2015 IBM Corp.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,12 +14,7 @@
 # limitations under the License.
 #
 
-#  Image Properties
-KERNEL_IMAGE?=spark-kernel
-KERNEL_BUILD_ID?=latest
-DOCKER_REGISTRY?=com.ibm.spark:5000
-FULL_IMAGE?=$(DOCKER_REGISTRY)/$(KERNEL_IMAGE):$(KERNEL_BUILD_ID)
-CACHE?="--no-cache"
+.PHONY: clean build build-image dev vagrantup
 
 #   Container Properties
 KERNEL_CONTAINER?=spark-kernel
@@ -31,41 +26,42 @@ HB_PORT?=48004
 IP?=0.0.0.0
 
 clean:
-	sbt clean
+	vagrant ssh -c "cd /src/spark-kernel/ && sbt clean"
 
-kernel/target/pack/bin/sparkkernel:
-	sbt compile  kernel/pack
+kernel/target/pack/bin/sparkkernel: vagrantup ${shell find ./*/src/main/**/*}
+	vagrant ssh -c "cd /src/spark-kernel/ && sbt compile && sbt pack"
+	vagrant ssh -c "cd /src/spark-kernel/kernel/target/pack && make install"
+
+build-image: IMAGE_NAME?cloudet/spark-kernel
+build-image: CACHE?=""
+build-image:
+	vagrant ssh -c "cd /src/spark-kernel && docker build $(CACHE) -t $(FULL_IMAGE) ."
+
+run-image: KERNEL_CONTAINER?=spark-kernel
+run-image: STDIN_PORT?=48000
+run-image: SHELL_PORT?=48001
+run-image: IOPUB_PORT?=48002
+run-image: CONTROL_PORT?=48003
+run-image: HB_PORT?=48004
+run-image: IP?=0.0.0.0
+run-image: build-image
+	vagrant ssh -c "docker rm -f $(KERNEL_CONTAINER) || true"
+	vagrant ssh -c "docker run -d \
+											--name=$(KERNEL_CONTAINER) \
+											-e "STDIN_PORT=$(STDIN_PORT)" \
+											-e "SHELL_PORT=$(SHELL_PORT)" \
+											-e "IOPUB_PORT=$(IOPUB_PORT)" \
+											-e "CONTROL_PORT=$(CONTROL_PORT)" \
+											-e "HB_PORT=$(HB_PORT)" -e "IP=$(IP)" \
+											$(FULL_IMAGE)"
+
+vagrantup:
+	vagrant up
 
 build: kernel/target/pack/bin/sparkkernel
 
-build-image:
-	docker build $(CACHE) -t $(FULL_IMAGE) .
+dev: build
+	vagrant ssh -c "cd ~ && ipython notebook --ip=* --no-browser"
 
-pack: build-image
-	sbt publish
-	docker push $(FULL_IMAGE)
-
-deploy:
-	(docker rm -f $(KERNEL_CONTAINER) || true)
-	docker run -d \
-	    --name=$(KERNEL_CONTAINER) \
-	    -e "STDIN_PORT=$(STDIN_PORT)" \
-	    -e "SHELL_PORT=$(SHELL_PORT)" \
-	    -e "IOPUB_PORT=$(IOPUB_PORT)" \
-	    -e "CONTROL_PORT=$(CONTROL_PORT)" \
-	    -e "HB_PORT=$(HB_PORT)" -e "IP=$(IP)" \
-	    $(FULL_IMAGE)
-
-integration:
-	printf "No integration tests at the moment"
-
-system:
-	printf "No system setup at the moment"
-
-tag:
-	docker tag $(FULL_IMAGE) ${NEW_IMAGE}
-	docker push ${NEW_IMAGE}
-
-tag-latest:
-	docker tag $(FULL_IMAGE) $(DOCKER_REGISTRY)/$(KERNEL_IMAGE):latest
-	docker push $(DOCKER_REGISTRY)/$(KERNEL_IMAGE):latest
+test: build
+	vagrant ssh -c "cd /src/spark-kernel/ && sbt test"

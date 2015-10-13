@@ -1,59 +1,64 @@
-Spark Kernel
-============
-
 [![Build Status][build-badge]][build-url]
 [![License][license-badge]][license-url]
 [![Join the chat at https://gitter.im/ibm-et/spark-kernel][gitter-badge]][gitter-url]
 
-Requires JDK 1.7 or higher!
-
-The Spark Kernel has one main goal: provide the foundation for interactive applications to connect and use [Apache Spark][1].
+Spark Kernel
+============
+The main goal of the Spark Kernel it to provide the foundation for interactive applications to connect and use [Apache Spark][1].
 
 Overview
 ========
+The Spark Kernel provides an interface that allows clients to interact with a Spark Cluster. Clients can send libraries and snippets of code that are interpreted and ran against a preconfigured Spark context. These snippets can do a variety of things:
+ 1. Define and run spark jobs of all kind
+ 2. Collect results from spark and push them to the client
+ 3. Load necessary dependencies for the running code
+ 4. Start and monitor a stream
+ 5. ...
 
-<!-- Embedding HTML so we can align right our image -->
-<!-- Using absolute cache path since cannot reference wiki image using normal relative url -->
-<img src="https://raw.githubusercontent.com/wiki/ibm-et/spark-kernel/overview.png" alt="Spark Kernel Overview" title="Spark Kernel Overview" align="right" width=500px />
+The kernel's main supported language is `Scala`, but it is also capable of processing both `Python` and `R`. It implements the latest Jupyter message protocol (5.0), so it can easily plug into the 3.x branch of Jupyter/IPython for quick, interactive data exploration.
 
-The kernel provides several key features for applications:
+Try It
+======
+A version of the Spark Kernel is deployed at part of [Try Jupyter!][try-jupyter] site. Select `Scala 2.10.4 (Spark 1.4.1)` under the `New` dropdown. Note that this version only support `Scala`.
 
-1. Define and run Spark Tasks
+Develop
+=======
+[Vagrant][vagrant] is used to simplify the development experience. That is the only requirement to be able to build and test the Spark Kernel on your development machine. 
 
-    - Executing Scala code dynamically in a similar fashion to the _Scala REPL_ and _Spark Shell_
+To interact with the Spark Kernel using Jupyter, run
+```
+make dev
+```
 
-2. Collect Results without a Datastore
+This will start a Jypyter notebook server accessible at `http://192.168.44.44:8888`. From here you can create notebooks that use the Spark Kernel configured for local mode.
 
-    - Send execution results and streaming data back via the Spark Kernel to your applications
 
-    - Use the [Comm API][2] - an abstraction of the IPython protocol - for more detailed data 
-      communication and synchronization between your applications and the Spark Kernel
+Build & Package
+===============
+To build and package up the Spark Kernel run
+```
+make build
+```
 
-3. Host and Manage Applications Separately from Apache Spark
+The resulting package of the kernel will be located at `./kernel/target/pack`. It contains a `Makefile` that can be used to install the Spark Kernel by running `make install` within the directory. More details about building and packaging can be found [here][4].
 
-    - The _Spark Kernel_ serves as a proxy for requests to the Apache Spark cluster
-
-The project intends to provide applications with the ability to send both packaged jars and code snippets. As it implements the latest IPython message protocol (5.0), the Spark Kernel can easily plug into the 3.x branch of IPython for quick, interactive data exploration. The Spark Kernel strives to be extensible, providing a [pluggable interface][3] for developers to add their own functionality.
 
 Version
 =======
+Our goal is maintain `master` up to date with the latest version of Spark. When new versions of Spark require code changes, we create a separate branch. The table below shows what is available now.
 
 Branch                       | Spark Kernel Version | Apache Spark Version
 ---------------------------- | -------------------- | --------------------
-[master][master]             | 0.1.5                | 1.5.0
+[master][master]             | 0.1.5                | 1.5.1
 [branch-0.1.4][branch-0.1.4] | 0.1.4                | 1.4.1
 [branch-0.1.3][branch-0.1.3] | 0.1.3                | 1.3.1
 
-Please note that only the latest version of the Spark Kernel will be supported with new features!
+Please note that for the most part, new features to Spark Kernel will only be added to the `master` branch.
 
 Resources
 =========
 
-__If you are new to the Spark Kernel, please see the [Getting Started][4] section.__
-
-__For more information, please visit the [Spark Kernel wiki][5].__
-
-__For bug reporting and feature requests, please visit the [Spark Kernel issue list][6].__
+There is more detailed information is available in our [Wiki][5] and our [Getting Started][4] guide.
 
 [1]: https://spark.apache.org/
 [2]: https://github.com/ibm-et/spark-kernel/wiki/Guide-to-the-Comm-API-of-the-Spark-Kernel-and-Spark-Kernel-Client
@@ -72,6 +77,8 @@ __For bug reporting and feature requests, please visit the [Spark Kernel issue l
 [license-url]: LICENSE
 [gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/ibm-et/spark-kernel
+[try-jupyter]: http://try.jupyter.org
+[vagrant]: https://www.vagrantup.com/
 
 [master]: https://github.com/ibm-et/spark-kernel
 [branch-0.1.4]: https://github.com/ibm-et/spark-kernel/tree/branch-0.1.4
