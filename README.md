@@ -4,12 +4,12 @@
 
 Spark Kernel
 ============
-The main goal of the Spark Kernel it to provide the foundation for interactive applications to connect and use [Apache Spark][1].
+The main goal of the Spark Kernel is to provide the foundation for interactive applications to connect to and use [Apache Spark][1].
 
 Overview
 ========
 The Spark Kernel provides an interface that allows clients to interact with a Spark Cluster. Clients can send libraries and snippets of code that are interpreted and ran against a preconfigured Spark context. These snippets can do a variety of things:
- 1. Define and run spark jobs of all kind
+ 1. Define and run spark jobs of all kinds
  2. Collect results from spark and push them to the client
  3. Load necessary dependencies for the running code
  4. Start and monitor a stream
@@ -19,23 +19,23 @@ The kernel's main supported language is `Scala`, but it is also capable of proce
 
 Try It
 ======
-A version of the Spark Kernel is deployed at part of [Try Jupyter!][try-jupyter] site. Select `Scala 2.10.4 (Spark 1.4.1)` under the `New` dropdown. Note that this version only support `Scala`.
+A version of the Spark Kernel is deployed as part of the [Try Jupyter!][try-jupyter] site. Select `Scala 2.10.4 (Spark 1.4.1)` under the `New` dropdown. Note that this version only supports `Scala`.
 
 Develop
 =======
-[Vagrant][vagrant] is used to simplify the development experience. That is the only requirement to be able to build and test the Spark Kernel on your development machine. 
+[Vagrant][vagrant] is used to simplify the development experience. It is the only requirement to be able to build and test the Spark Kernel on your development machine. 
 
 To interact with the Spark Kernel using Jupyter, run
 ```
 make dev
 ```
 
-This will start a Jypyter notebook server accessible at `http://192.168.44.44:8888`. From here you can create notebooks that use the Spark Kernel configured for local mode.
+This will start a Jupyter notebook server accessible at `http://192.168.44.44:8888`. From here you can create notebooks that use the Spark Kernel configured for local mode.
 
 
 Build & Package
 ===============
-To build and package up the Spark Kernel run
+To build and package up the Spark Kernel, run
 ```
 make build
 ```
@@ -45,7 +45,7 @@ The resulting package of the kernel will be located at `./kernel/target/pack`. I
 
 Version
 =======
-Our goal is maintain `master` up to date with the latest version of Spark. When new versions of Spark require code changes, we create a separate branch. The table below shows what is available now.
+Our goal is to keep `master` up to date with the latest version of Spark. When new versions of Spark require code changes, we create a separate branch. The table below shows what is available now.
 
 Branch                       | Spark Kernel Version | Apache Spark Version
 ---------------------------- | -------------------- | --------------------
@@ -58,7 +58,7 @@ Please note that for the most part, new features to Spark Kernel will only be ad
 Resources
 =========
 
-There is more detailed information is available in our [Wiki][5] and our [Getting Started][4] guide.
+There is more detailed information available in our [Wiki][5] and our [Getting Started][4] guide.
 
 [1]: https://spark.apache.org/
 [2]: https://github.com/ibm-et/spark-kernel/wiki/Guide-to-the-Comm-API-of-the-Spark-Kernel-and-Spark-Kernel-Client
