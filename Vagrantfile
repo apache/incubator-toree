@@ -56,9 +56,9 @@ IPYTHON_VERSION=3.2.1
 
 if ! flag_is_set IPYTHON; then
   apt-get -f -y install && \
-  apt-get -y install python-pip python-dev libzmq-dev build-essential && \
+  apt-get -y install python3-pip python-dev libzmq-dev build-essential && \
   cd /src && \
-  pip install ipython[notebook]==${IPYTHON_VERSION} && \
+  pip3 install ipython[notebook]==${IPYTHON_VERSION} && \
   ipython profile create && \
   set_flag IPYTHON
 fi
