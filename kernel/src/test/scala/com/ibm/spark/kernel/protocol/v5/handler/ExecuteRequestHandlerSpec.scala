@@ -17,6 +17,7 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
 import java.io.OutputStream
+import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
@@ -32,6 +33,8 @@ import play.api.libs.json.Json
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent._
 
 class ExecuteRequestHandlerSpec extends TestKit(
   ActorSystem("ExecuteRequestHandlerSpec")
@@ -140,6 +143,42 @@ class ExecuteRequestHandlerSpec extends TestKit(
           case KernelMessage(_, _, header, _, _, _) =>
             header.msg_type == ExecuteResult.toTypeString
         }
+      }
+
+      it("should send a status idle message after the reply and result") {
+        handlerActor ! MockExecuteRequestKernelMessage
+        replyToHandlerWithOkAndResult()
+
+        val msgCount = new AtomicInteger(0)
+        var statusMsgNum = -1
+        var statusReceived = false
+
+        val f1 = future {
+          kernelMessageRelayProbe.fishForMessage(4.seconds) {
+            case KernelMessage(_, _, header, _, _, _) =>
+              if (header.msg_type == ExecuteResult.toTypeString &&
+                    !statusReceived)
+                msgCount.incrementAndGet()
+              else if (header.msg_type == ExecuteReply.toTypeString &&
+                    !statusReceived)
+                msgCount.incrementAndGet()
+              statusReceived || (msgCount.get() >= 2)
+          }
+        }
+
+        val f2 = future {
+          statusDispatchProbe.fishForMessage(4.seconds) {
+            case (status, header) =>
+              if (status == KernelStatusIdle.toString)
+                statusReceived = true
+                statusMsgNum = msgCount.get()
+            statusReceived || (msgCount.get() >= 2)
+          }
+        }
+        val fs = (f1 zip f2)
+        Await.ready(fs, 5.seconds)
+
+        statusMsgNum should equal(2)
       }
 
       it("should send an execute input message") {

@@ -74,7 +74,7 @@ class ExecuteRequestHandler(
         (executeRequest, km, outputStream)
       ).mapTo[(ExecuteReply, ExecuteResult)]
 
-      executeFuture.onComplete {
+      executeFuture andThen {
         case Success(tuple) =>
           val (executeReply, executeResult) = updateCount(tuple, executionCount)
 
@@ -102,7 +102,6 @@ class ExecuteRequestHandler(
             Option(error.getStackTrace.map(_.toString).toList))
           relayErrorMessages(relayActor, replyError, skeletonBuilder)
       }
-      executeFuture
     }
 
     def parseErrorHandler(invalid: Seq[(JsPath, Seq[ValidationError])]) = {
