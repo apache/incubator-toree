@@ -51,6 +51,8 @@ object Common {
 
   lazy val sparkVersion = settingKey[String]("The Apache Spark version to use")
 
+  lazy val hadoopVersion = settingKey[String]("The Apache Hadoop version to use")
+
   // The prefix used for our custom artifact names
   private val artifactPrefix = "ibm-spark"
 
@@ -79,6 +81,28 @@ object Common {
           s"""
              |[INFO] Using Apache Spark $version provided from
              |$sparkEnvironmentVariable!
+           """.stripMargin.trim.replace('\n', ' '))
+        version
+      }
+    },
+    hadoopVersion := {
+      val hadoopEnvironmentVariable = "APACHE_HADOOP_VERSION"
+      val defaultHadoopVersion = "2.3.0"
+
+      val _hadoopVersion = Properties.envOrNone(hadoopEnvironmentVariable)
+
+      if (_hadoopVersion.isEmpty) {
+        scala.Console.out.println(
+          s"""
+             |[INFO] Using default Apache Hadoop $defaultHadoopVersion!
+           """.stripMargin.trim.replace('\n', ' '))
+        defaultHadoopVersion
+      } else {
+        val version = _hadoopVersion.get
+        scala.Console.out.println(
+          s"""
+             |[INFO] Using Apache Hadoop $version provided from
+             |$hadoopEnvironmentVariable!
            """.stripMargin.trim.replace('\n', ' '))
         version
       }
