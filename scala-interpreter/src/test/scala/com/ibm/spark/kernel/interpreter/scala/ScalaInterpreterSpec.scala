@@ -357,6 +357,17 @@ class ScalaInterpreterSpec extends FunSpec
         //  Results that don't match
         interpreter.truncateResult("resabc: Int = 38") should be("")
       }
+
+      it("should truncate res results that have tuple values") {
+        interpreter.truncateResult("res0: (String, Int) = (hello,1)") should
+          be("(hello,1)")
+      }
+
+      it("should truncate res results that have parameterized types") {
+        interpreter.truncateResult(
+          "res0: Class[_ <: (String, Int)] = class scala.Tuple2"
+        ) should be("class scala.Tuple2")
+      }
     }
   }
 }
