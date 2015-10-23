@@ -18,6 +18,7 @@ package com.ibm.spark.boot.layer
 
 import akka.actor.{ActorRef, Props, ActorSystem}
 import com.ibm.spark.kernel.protocol.v5.dispatch.StatusDispatch
+import com.ibm.spark.kernel.protocol.v5.handler.{GenericSocketMessageHandler, ShutdownHandler}
 import com.ibm.spark.kernel.protocol.v5.kernel.{SimpleActorLoader, ActorLoader}
 import com.ibm.spark.communication.security.{SecurityActorType, SignatureManagerActor}
 import com.ibm.spark.kernel.protocol.v5.kernel.socket._
@@ -57,7 +58,7 @@ trait StandardBareInitialization extends BareInitialization { this: LogLike =>
   def initializeBare(config: Config, actorSystemName: String) = {
     val actorSystem = createActorSystem(actorSystemName)
     val actorLoader = createActorLoader(actorSystem)
-    val (kernelMessageRelayActor, _, statusDispatch) =
+    val (kernelMessageRelayActor, _, statusDispatch, _, _) =
       initializeCoreActors(config, actorSystem, actorLoader)
     createSockets(config, actorSystem, actorLoader)
 
@@ -117,12 +118,22 @@ trait StandardBareInitialization extends BareInitialization { this: LogLike =>
       name = SystemActorType.StatusDispatch.toString
     )
 
-    (kernelMessageRelayActor, signatureManagerActor, statusDispatch)
+    logger.debug("Creating shutdown handler and sender actors")
+    val shutdownHandler = actorSystem.actorOf(
+      Props(classOf[ShutdownHandler], actorLoader),
+      name = MessageType.Incoming.ShutdownRequest.toString
+    )
+    val shutdownSender = actorSystem.actorOf(
+      Props(classOf[GenericSocketMessageHandler], actorLoader, SocketType.Control),
+      name = MessageType.Outgoing.ShutdownReply.toString
+    )
+
+    (kernelMessageRelayActor, signatureManagerActor, statusDispatch, shutdownHandler, shutdownSender)
   }
 
   protected def createSockets(
     config: Config, actorSystem: ActorSystem, actorLoader: ActorLoader
-  ) = {
+  ): Unit = {
     logger.debug("Creating sockets")
 
     val socketConfig: SocketConfig = SocketConfig.fromConfig(config)
@@ -153,13 +164,18 @@ trait StandardBareInitialization extends BareInitialization { this: LogLike =>
       name = SocketType.Shell.toString
     )
 
+    logger.debug("Initializing Control on port " +
+      socketConfig.control_port)
+    val controlActor = actorSystem.actorOf(
+      Props(classOf[Control], socketFactory, actorLoader),
+      name = SocketType.Control.toString
+    )
+
     logger.debug("Initializing IOPub on port " +
       socketConfig.iopub_port)
     val ioPubActor = actorSystem.actorOf(
       Props(classOf[IOPub], socketFactory),
       name = SocketType.IOPub.toString
     )
-
-    (heartbeatActor, stdinActor, shellActor, ioPubActor)
   }
 }

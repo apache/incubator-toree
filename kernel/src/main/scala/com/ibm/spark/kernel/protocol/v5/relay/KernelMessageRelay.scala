@@ -20,6 +20,7 @@ import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.communication.security.SecurityActorType
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
+import com.ibm.spark.kernel.protocol.v5.content.ShutdownRequest
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.{KernelMessage, MessageType, _}
 import com.ibm.spark.utils.MessageLogSupport
@@ -109,13 +110,14 @@ case class KernelMessageRelay(
         logger.info("Relay is now disabled!")
       }
 
+
     // Add incoming messages (when not ready) to buffer to be processed
-    case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if !isReady =>
+    case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if !isReady && kernelMessage.header.msg_type != ShutdownRequest.toTypeString =>
       logger.info("Not ready for messages! Stashing until ready!")
       stash()
 
     // Assuming these messages are incoming messages
-    case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if isReady =>
+    case (zmqStrings: Seq[_], kernelMessage: KernelMessage) if isReady || kernelMessage.header.msg_type == ShutdownRequest.toTypeString =>
       startProcessing()
       if (useSignatureManager) {
         logger.trace(s"Verifying signature for incoming message " +
