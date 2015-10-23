@@ -64,6 +64,45 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         verify(mockMagicLoader, times(0)).addJar(any())
       }
 
+      it("should raise exception if jar file does not end in .jar or .zip") {
+        val mockOutputStream = mock[OutputStream]
+
+        val addJarMagic = new AddJar
+          with IncludeOutputStream
+        {
+          override val outputStream: OutputStream = mockOutputStream
+        }
+
+        intercept[IllegalArgumentException] {
+          addJarMagic.execute("""http://www.example.com/""")
+        }
+        intercept[IllegalArgumentException] {
+          addJarMagic.execute("""http://www.example.com/not_a_jar""")
+        }
+      }
+
+      it("should extract jar file name from jar URL") {
+        val mockOutputStream = mock[OutputStream]
+
+        val addJarMagic = new AddJar
+          with IncludeOutputStream
+        {
+          override val outputStream: OutputStream = mockOutputStream
+        }
+
+        var url = """http://www.example.com/someJar.jar"""
+        var jarName = addJarMagic.getFileFromLocation(url)
+        assert(jarName == "someJar.jar")
+
+        url = """http://www.example.com/remotecontent?filepath=/path/to/someJar.jar"""
+        jarName = addJarMagic.getFileFromLocation(url)
+        assert(jarName == "someJar.jar")
+
+        url = """http://www.example.com/"""
+        jarName = addJarMagic.getFileFromLocation(url)
+        assert(jarName == "")
+      }
+
       it("should use a cached jar if the force option is not provided") {
         val mockSparkContext = mock[SparkContext]
         val mockInterpreter = mock[Interpreter]

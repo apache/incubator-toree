@@ -154,6 +154,7 @@ class ScalaInterpreter(
     val platform = sparkIMain.global.platform.asInstanceOf[JavaPlatform]
 
     val newClassPath = mergeJarsIntoClassPath(platform, jars:_*)
+    logger.debug(s"newClassPath: ${newClassPath}")
 
     // TODO: Investigate better way to set this... one thought is to provide
     //       a classpath in the currentClassPath (which is merged) that can be

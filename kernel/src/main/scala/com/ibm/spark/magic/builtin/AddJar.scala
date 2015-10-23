@@ -48,9 +48,6 @@ class AddJar
   with IncludeOutputStream with DownloadSupport with ArgumentParsingSupport
   with IncludeKernel with IncludeMagicLoader with IncludeConfig with LogLike
 {
-
-  private val HtmlJarRegex = """.*?\/([^\/]*?)(?:\?.*)*$""".r
-
   // Option to mark re-downloading of jars
   private val _force =
     parser.accepts("f", "forces re-download of specified jar")
@@ -61,6 +58,22 @@ class AddJar
 
   // Lazy because the outputStream is not provided at construction
   private lazy val printStream = new PrintStream(outputStream)
+
+  /**
+   * Retrieves file name from URL.
+   *
+   * @param location The remote location (URL) 
+   * @return The name of the remote URL, or an empty string if one does not exist
+   */
+  def getFileFromLocation(location: String): String = {
+    val url = new URL(location)
+    val file = url.getFile.split("/")
+    if (file.length > 0) {
+        file.last
+    } else {
+        ""
+    }
+  }
 
   /**
    * Downloads and adds the specified jar to the
@@ -85,7 +98,12 @@ class AddJar
     }
 
     // Get the destination of the jar
-    val HtmlJarRegex(jarName) = jarRemoteLocation
+    val jarName = getFileFromLocation(jarRemoteLocation)
+
+    // Ensure the URL actually contains a jar or zip file
+    if (!jarName.endsWith(".jar") && !jarName.endsWith(".zip")) {
+        throw new IllegalArgumentException(s"The jar file $jarName must end in .jar or .zip.")
+    }
 
     val downloadLocation = getJarDir(config) + "/" + jarName
 
