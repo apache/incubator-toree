@@ -28,6 +28,8 @@ import com.typesafe.config.Config
 import org.apache.spark.SparkContext
 import org.zeromq.ZMQ
 
+import scala.util.Try
+
 class KernelBootstrap(config: Config) extends LogLike {
   this: BareInitialization with ComponentInitialization
     with HandlerInitialization with HookInitialization =>
@@ -57,6 +59,10 @@ class KernelBootstrap(config: Config) extends LogLike {
     //
 
     displayVersionInfo()
+
+    // Do this first to support shutting down quickly before entire system
+    // is ready
+    initializeShutdownHook()
 
     // Initialize the bare minimum to report a starting message
     val (actorSystem, actorLoader, kernelMessageRelayActor, statusDispatch) =
@@ -96,7 +102,7 @@ class KernelBootstrap(config: Config) extends LogLike {
       responseMap   = responseMap
     )
 
-    // Initialize our hooks that handle various JVM events
+    // Initialize our non-shutdown hooks that handle various JVM events
     initializeHooks(
       interpreter = interpreter
     )
@@ -115,13 +121,19 @@ class KernelBootstrap(config: Config) extends LogLike {
    */
   def shutdown() = {
     logger.info("Shutting down Spark Context")
-    sparkContext.stop()
+    Try(sparkContext.stop()).failed.foreach(
+      logger.error("Failed to shutdown Spark Context", _: Throwable)
+    )
 
     logger.info("Shutting down interpreters")
-    interpreters.foreach(_.stop())
+    Try(interpreters.foreach(_.stop())).failed.foreach(
+      logger.error("Failed to shutdown interpreters", _: Throwable)
+    )
 
     logger.info("Shutting down actor system")
-    actorSystem.shutdown()
+    Try(actorSystem.shutdown()).failed.foreach(
+      logger.error("Failed to shutdown actor system", _: Throwable)
+    )
 
     this
   }

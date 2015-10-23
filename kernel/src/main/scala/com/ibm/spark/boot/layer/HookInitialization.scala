@@ -26,11 +26,16 @@ import com.ibm.spark.utils.LogLike
  */
 trait HookInitialization {
   /**
-   * Initializes and registers all hooks.
+   * Initializes and registers all hooks except shutdown.
    *
    * @param interpreter The main interpreter
    */
   def initializeHooks(interpreter: Interpreter): Unit
+
+  /**
+   * Initializes the shutdown hook.
+   */
+  def initializeShutdownHook(): Unit
 }
 
 /**
@@ -46,6 +51,12 @@ trait StandardHookInitialization extends HookInitialization {
    */
   def initializeHooks(interpreter: Interpreter): Unit = {
     registerInterruptHook(interpreter)
+  }
+
+  /**
+   * Initializes the shutdown hook.
+   */
+  def initializeShutdownHook(): Unit = {
     registerShutdownHook()
   }
 

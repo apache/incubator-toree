@@ -35,6 +35,8 @@ class SocketFactory(socketConfig: SocketConfig) {
     socketConfig.transport, socketConfig.ip, socketConfig.hb_port)
   val ShellConnection = SocketConnection(
     socketConfig.transport, socketConfig.ip, socketConfig.shell_port)
+  val ControlConnection = SocketConnection(
+    socketConfig.transport, socketConfig.ip, socketConfig.control_port)
   val IOPubConnection = SocketConnection(
     socketConfig.transport, socketConfig.ip, socketConfig.iopub_port)
   val StdinConnection = SocketConnection(
@@ -65,6 +67,16 @@ class SocketFactory(socketConfig: SocketConfig) {
 //    ZeroMQExtension(system).newRouterSocket(
 //      Array(Listener(listener), Bind(ShellConnection.toString))
 //    )
+
+  /**
+   * Creates a ZeroMQ reply socket representing the server endpoint for control
+   * messages
+   * @param system The actor system the socket actor will belong
+   * @param listener The actor who will receive
+   * @return The ActorRef created for the socket connection
+   */
+  def Control(system: ActorSystem, listener: ActorRef) : ActorRef =
+    system.actorOf(Props(classOf[RouterSocketActor], ControlConnection.toString, listener))
 
   /**
    * Creates a ZeroMQ reply socket representing the server endpoint for stdin
