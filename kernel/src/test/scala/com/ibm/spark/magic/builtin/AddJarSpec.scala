@@ -204,10 +204,12 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           override val outputStream: OutputStream = mockOutputStream
           override lazy val magicLoader: MagicLoader = mockMagicLoader
           override val config = testConfig
+          override def downloadFile(fileUrl: URL, destinationUrl: URL): URL =
+            new URL("file://someFile") // Cannot mock URL
         }
 
         addJarMagic.execute(
-          """--magic http://www.example.com/""")
+          """--magic http://www.example.com/someJar.jar""")
 
         verify(mockMagicLoader).addJar(any())
         verify(mockSparkContext, times(0)).addJar(anyString())
