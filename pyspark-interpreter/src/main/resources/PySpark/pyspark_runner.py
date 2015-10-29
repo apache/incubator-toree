@@ -51,7 +51,7 @@ bridge = gateway.entry_point
 state = bridge.state()
 state.markReady()
 
-jsc = bridge.javaSparkContext()
+#jsc = bridge.javaSparkContext()
 
 if sparkVersion.startswith("1.2"):
   java_import(gateway.jvm, "org.apache.spark.sql.SQLContext")
@@ -67,11 +67,11 @@ elif sparkVersion.startswith("1.4"):
 
 java_import(gateway.jvm, "scala.Tuple2")
 
-jconf = bridge.sparkConf()
-conf = SparkConf(_jvm = gateway.jvm, _jconf = jconf)
-sc = SparkContext(jsc = jsc, gateway = gateway, conf = conf)
-sqlc = SQLContext(sc, bridge.sqlContext())
-sqlContext = sqlc
+#jconf = bridge.sparkConf()
+#conf = SparkConf(_jvm = gateway.jvm, _jconf = jconf)
+#sc = SparkContext(jsc = jsc, gateway = gateway, conf = conf)
+#sqlc = SQLContext(sc, bridge.sqlContext())
+#sqlContext = sqlc
 kernel = bridge.kernel()
 
 class Logger(object):

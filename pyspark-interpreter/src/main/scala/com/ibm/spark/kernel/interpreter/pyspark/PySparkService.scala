@@ -17,6 +17,7 @@ package com.ibm.spark.kernel.interpreter.pyspark
 
 import com.ibm.spark.interpreter.broker.BrokerService
 import com.ibm.spark.kernel.interpreter.pyspark.PySparkTypes._
+import org.apache.spark.SparkContext
 import org.slf4j.LoggerFactory
 import py4j.GatewayServer
 
@@ -42,13 +43,14 @@ class PySparkService(
   @volatile private var _isRunning: Boolean = false
   override def isRunning: Boolean = _isRunning
 
+
   /** Represents the process used to execute Python code via the bridge. */
   private lazy val pySparkProcess = {
     val p = new PySparkProcess(
       pySparkBridge,
       pySparkProcessHandler,
       gatewayServer.getListeningPort,
-      pySparkBridge.javaSparkContext.version
+      org.apache.spark.SPARK_VERSION
     )
 
     // Update handlers to correctly reset and restart the process

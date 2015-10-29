@@ -21,6 +21,7 @@ import com.ibm.spark.interpreter.broker.BrokerProcess
 import org.apache.commons.exec.environment.EnvironmentUtils
 import org.apache.commons.exec._
 import org.apache.commons.io.IOUtils
+import org.apache.spark.SparkContext
 import org.slf4j.LoggerFactory
 
 /**
@@ -47,6 +48,7 @@ class PySparkProcess(
   brokerProcessHandler = pySparkProcessHandler,
   arguments = Seq(port.toString, sparkVersion)
 ) {
+
   override val brokerName: String = "PySpark"
   private val logger = LoggerFactory.getLogger(this.getClass)
 

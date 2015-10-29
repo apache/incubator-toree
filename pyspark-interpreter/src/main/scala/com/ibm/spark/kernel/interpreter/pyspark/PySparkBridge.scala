@@ -32,19 +32,16 @@ object PySparkBridge {
    *
    * @param brokerState The container of broker state to expose
    * @param kernel The kernel API to expose through the bridge
-   * @param sparkContext The SparkContext to expose through the bridge
    *
    * @return The new PySpark bridge
    */
   def apply(
     brokerState: BrokerState,
-    kernel: KernelLike,
-    sparkContext: SparkContext
+    kernel: KernelLike
   ): PySparkBridge = {
     new PySparkBridge(
       _brokerState = brokerState,
-      _kernel = kernel,
-      _sparkContext = sparkContext
+      _kernel = kernel
     ) with StandardJavaSparkContextProducer with StandardSQLContextProducer
   }
 }
@@ -55,14 +52,10 @@ object PySparkBridge {
  *
  * @param _brokerState The container of broker state to expose
  * @param _kernel The kernel API to expose through the bridge
- * @param _sparkContext The SparkContext to expose through the bridge
  */
 class PySparkBridge private (
   private val _brokerState: BrokerState,
-  private val _kernel: KernelLike,
-  private val _sparkContext: SparkContext
-) extends BrokerBridge(_brokerState, _kernel, _sparkContext) {
-  this: JavaSparkContextProducerLike with SQLContextProducerLike =>
-
+  private val _kernel: KernelLike
+) extends BrokerBridge(_brokerState, _kernel) {
   override val brokerName: String = "PySpark"
 }

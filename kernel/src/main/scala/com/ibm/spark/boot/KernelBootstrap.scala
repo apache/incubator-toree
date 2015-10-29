@@ -19,6 +19,7 @@ package com.ibm.spark.boot
 import akka.actor.{ActorRef, ActorSystem}
 import com.ibm.spark.boot.layer._
 import com.ibm.spark.interpreter.Interpreter
+import com.ibm.spark.kernel.api.Kernel
 import com.ibm.spark.kernel.protocol.v5.KernelStatusType._
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
@@ -41,6 +42,7 @@ class KernelBootstrap(config: Config) extends LogLike {
   private var actorLoader: ActorLoader          = _
   private var kernelMessageRelayActor: ActorRef = _
   private var statusDispatch: ActorRef          = _
+  private var kernel: Kernel                    = _
 
   private var sparkContext: SparkContext        = _
   private var interpreters: Seq[Interpreter]    = Nil
@@ -70,6 +72,7 @@ class KernelBootstrap(config: Config) extends LogLike {
         config = config,
         actorSystemName = DefaultActorSystemName
       )
+
     this.actorSystem = actorSystem
     this.actorLoader = actorLoader
     this.kernelMessageRelayActor = kernelMessageRelayActor
@@ -80,15 +83,17 @@ class KernelBootstrap(config: Config) extends LogLike {
 
     // Initialize components needed elsewhere
     val (commStorage, commRegistrar, commManager, interpreter,
-      kernel, sparkContext, dependencyDownloader,
+      kernel, dependencyDownloader,
       magicLoader, responseMap) =
       initializeComponents(
         config      = config,
         appName     = DefaultAppName,
         actorLoader = actorLoader
       )
-    this.sparkContext = sparkContext
+    //this.sparkContext = sparkContext
     this.interpreters ++= Seq(interpreter)
+
+    this.kernel = kernel
 
     // Initialize our handlers that take care of processing messages
     initializeHandlers(
@@ -121,7 +126,7 @@ class KernelBootstrap(config: Config) extends LogLike {
    */
   def shutdown() = {
     logger.info("Shutting down Spark Context")
-    Try(sparkContext.stop()).failed.foreach(
+    Try(kernel.sparkContext.stop()).failed.foreach(
       logger.error("Failed to shutdown Spark Context", _: Throwable)
     )
 

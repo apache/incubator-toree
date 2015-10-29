@@ -25,7 +25,7 @@ import scala.reflect.runtime.{universe => runtimeUniverse}
 import scala.collection.JavaConversions._
 
 class MagicLoader(
-  val dependencyMap: DependencyMap = new DependencyMap(),
+  var dependencyMap: DependencyMap = new DependencyMap(),
   urls: Array[URL] = Array(),
   parentLoader: ClassLoader = null
 ) extends URLClassLoader(urls, parentLoader) {

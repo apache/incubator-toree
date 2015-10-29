@@ -33,11 +33,9 @@ import scala.tools.nsc.interpreter.{InputStream, OutputStream}
  * and an implementation of R on the path.
  *
  * @param _kernel The kernel API to expose to the SparkR instance
- * @param _sparkContext The Spark context to expose to the SparkR instance
  */
 class SparkRInterpreter(
-  private val _kernel: KernelLike,
-  private val _sparkContext: SparkContext
+  private val _kernel: KernelLike
 ) extends Interpreter {
   private val logger = LoggerFactory.getLogger(this.getClass)
 
@@ -48,8 +46,7 @@ class SparkRInterpreter(
   /** Represents the bridge used by this interpreter's R instance. */
   private lazy val sparkRBridge = SparkRBridge(
     sparkRState,
-    _kernel,
-    _sparkContext
+    _kernel
   )
 
   /** Represents the interface for R to talk to JVM Spark components. */
