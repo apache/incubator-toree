@@ -67,6 +67,9 @@ elif sparkVersion.startswith("1.4"):
 
 java_import(gateway.jvm, "scala.Tuple2")
 
+
+sc = None
+
 #jconf = bridge.sparkConf()
 #conf = SparkConf(_jvm = gateway.jvm, _jconf = jconf)
 #sc = SparkContext(jsc = jsc, gateway = gateway, conf = conf)
@@ -116,6 +119,13 @@ while True :
         final_code += "\n" + s
       else:
         final_code = s
+
+    if sc is None:
+      jsc = kernel.javaSparkContext()
+      if jsc != None:
+        jconf = kernel.sparkConf()
+        conf = SparkConf(_jvm = gateway.jvm, _jconf = jconf)
+        sc = SparkContext(jsc = jsc, gateway = gateway, conf = conf)
 
     if final_code:
       compiled_code = compile(final_code, "<string>", "exec")

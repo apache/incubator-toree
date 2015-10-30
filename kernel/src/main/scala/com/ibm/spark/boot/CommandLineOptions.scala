@@ -93,6 +93,10 @@ class CommandLineOptions(args: Seq[String]) {
     parser.accepts("default-interpreter", "default interpreter for the kernel")
       .withRequiredArg().ofType(classOf[String])
 
+  private val _sparkcontext =
+    parser.accepts("sparkcontext", "should kernel create a spark context")
+      .withRequiredArg().ofType(classOf[String])
+
   private val options = parser.parse(args.map(_.trim): _*)
 
   /*
@@ -147,7 +151,8 @@ class CommandLineOptions(args: Seq[String]) {
         .flatMap(str => if (str.nonEmpty) Some(str) else None),
       "max_interpreter_threads" -> get(_max_interpreter_threads),
       "jar_dir" -> get(_jar_dir),
-      "default_interpreter" -> get(_default_interpreter)
+      "default_interpreter" -> get(_default_interpreter),
+      "sparkcontext" -> get(_sparkcontext)
     ).flatMap(removeEmptyOptions).asInstanceOf[Map[String, AnyRef]].asJava)
 
     commandLineConfig.withFallback(profileConfig).withFallback(ConfigFactory.load)

@@ -32,6 +32,7 @@ import com.ibm.spark.kernel.protocol.v5.stream.{KernelOutputStream, KernelInputS
 import com.ibm.spark.magic.{MagicLoader, MagicExecutor}
 import com.ibm.spark.utils.{KeyValuePairUtils, LogLike}
 import com.typesafe.config.Config
+import org.apache.spark.api.java.JavaSparkContext
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkContext, SparkConf}
 import scala.util.{Try, DynamicVariable}
@@ -85,6 +86,8 @@ class Kernel (
     new DynamicVariable[KernelMessage](null)
 
   private var _sparkContext:SparkContext = null;
+  private var _sparkConf:SparkConf = null;
+  private var _javaSparkContext:JavaSparkContext = null;
   private var _sqlContext:SQLContext = null;
 
   /**
@@ -312,7 +315,10 @@ class Kernel (
   }
 
   override def createSparkContext(conf: SparkConf): SparkContext = {
-    _sparkContext = initializeSparkContext(conf)
+    val t = initializeSparkContext(conf)
+    _sparkContext = t._1
+    _sparkConf = t._2
+    _javaSparkContext = new JavaSparkContext(_sparkContext)
     _sqlContext = new SQLContext(_sparkContext)
 
     magicLoader.dependencyMap =
@@ -352,7 +358,7 @@ class Kernel (
 
     updateInterpreterWithSparkContext(sparkContext)
 
-    sparkContext
+    (sparkContext, conf)
   }
 
   // TODO: Think of a better way to test without exposing this
@@ -454,6 +460,7 @@ class Kernel (
   }
 
   override def sparkContext: SparkContext = _sparkContext
-
+  override def sparkConf: SparkConf = _sparkConf
+  override def javaSparkContext: JavaSparkContext = _javaSparkContext
   override def sqlContext: SQLContext = _sqlContext
 }
