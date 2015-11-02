@@ -58,12 +58,14 @@ kernel <- callJMethod(bridge, "kernel")
 assign("kernel", kernel, .runnerEnv)
 
 # Acquire the SparkContext instance to expose
-sc <- callJMethod(bridge, "javaSparkContext")
-assign("sc", sc, .runnerEnv)
+#sc <- callJMethod(bridge, "javaSparkContext")
+#assign("sc", sc, .runnerEnv)
+sc = NULL
 
 # Acquire the SQLContext instance to expose
-sqlContext <- callJMethod(bridge, "sqlContext")
-assign("sqlContext", sqlContext, .runnerEnv)
+#sqlContext <- callJMethod(bridge, "sqlContext")
+#sqlContext <- callJMethod(kernel, "sqlContext")
+#assign("sqlContext", sqlContext, .runnerEnv)
 
 # TODO: Is there a way to control input/output (maybe use sink)
 repeat {
@@ -80,6 +82,14 @@ repeat {
   codeId <- callJMethod(codeContainer, "codeId")
   code <- callJMethod(codeContainer, "code")
 
+  if (is.null(sc)) {
+    sc <- callJMethod(kernel, "javaSparkContext")
+    if(!is.null(sc) {
+      assign("sc", sc, .runnerEnv)
+      sqlContext <- callJMethod(kernel, "sqlContext")
+      assign("sqlContext", sqlContext, .runnerEnv)
+    }
+  }
   print(paste("Received Id", codeId, "Code", code))
 
   # Parse the code into an expression to be evaluated
