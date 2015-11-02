@@ -60,7 +60,7 @@ assign("kernel", kernel, .runnerEnv)
 # Acquire the SparkContext instance to expose
 #sc <- callJMethod(bridge, "javaSparkContext")
 #assign("sc", sc, .runnerEnv)
-sc = NULL
+sc <- NULL
 
 # Acquire the SQLContext instance to expose
 #sqlContext <- callJMethod(bridge, "sqlContext")
@@ -84,7 +84,7 @@ repeat {
 
   if (is.null(sc)) {
     sc <- callJMethod(kernel, "javaSparkContext")
-    if(!is.null(sc) {
+    if(!is.null(sc)) {
       assign("sc", sc, .runnerEnv)
       sqlContext <- callJMethod(kernel, "sqlContext")
       assign("sqlContext", sqlContext, .runnerEnv)
