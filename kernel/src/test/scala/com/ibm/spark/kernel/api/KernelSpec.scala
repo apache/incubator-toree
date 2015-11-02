@@ -8,7 +8,10 @@ import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.magic.MagicLoader
 import com.typesafe.config.Config
+import org.apache.spark.{SparkConf, SparkContext}
+import org.mockito.ArgumentCaptor
 import org.mockito.Mockito._
+import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 import com.ibm.spark.global.ExecuteRequestState
@@ -24,15 +27,20 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
     "StackTrace: 1"
 
   private var mockConfig: Config = _
+  private var mockSparkContext: SparkContext = _
+  private var mockSparkConf: SparkConf = _
   private var mockActorLoader: ActorLoader = _
   private var mockInterpreter: Interpreter = _
   private var mockCommManager: CommManager = _
   private var mockMagicLoader: MagicLoader = _
-  private var kernel: KernelLike = _
+  private var kernel: Kernel = _
+  private var spyKernel: Kernel = _
 
   before {
     mockConfig = mock[Config]
     mockInterpreter = mock[Interpreter]
+    mockSparkContext = mock[SparkContext]
+    mockSparkConf = mock[SparkConf]
     when(mockInterpreter.interpret(BadCode.get))
       .thenReturn((Results.Incomplete, null))
     when(mockInterpreter.interpret(GoodCode.get))
@@ -48,6 +56,9 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
       mockConfig, mockActorLoader, mockInterpreter, mockCommManager,
       mockMagicLoader
     )
+
+    spyKernel = spy(kernel)
+
   }
 
   after {
@@ -138,6 +149,46 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
         )
 
         kernel.stream shouldBe a [StreamMethods]
+      }
+    }
+
+    describe("when spark.master is set in config") {
+
+      it("should create SparkConf") {
+        val expected = "some value"
+        doReturn(expected).when(mockConfig).getString("spark.master")
+        doReturn("").when(mockConfig).getString("spark_configuration")
+
+        // Provide stub for interpreter classServerURI since also executed
+        doReturn("").when(mockInterpreter).classServerURI
+
+        val sparkConf = kernel.createSparkConf(new SparkConf().setMaster(expected))
+
+        sparkConf.get("spark.master") should be (expected)
+      }
+
+      it("should not add ourselves as a jar if spark.master is not local") {
+        val sparkConf = new SparkConf().setMaster("local[*]")
+        doReturn("local[*]").when(mockConfig).getString("spark.master")
+        doReturn(sparkConf).when(mockSparkContext).getConf
+
+        kernel.updateInterpreterWithSparkContext(mockSparkContext)
+        verify(mockSparkContext, never()).addJar(anyString())
+      }
+
+      it("should add ourselves as a jar if spark.master is not local") {
+        val sparkConf = new SparkConf().setMaster("foo://bar")
+        doReturn("notlocal").when(mockConfig).getString("spark.master")
+        doReturn(sparkConf).when(mockSparkContext).getConf
+
+        // TODO: This is going to be outdated when we determine a way to
+        //       re-include all jars
+        val expected =
+          com.ibm.spark.SparkKernel.getClass.getProtectionDomain
+            .getCodeSource.getLocation.getPath
+
+        kernel.updateInterpreterWithSparkContext(mockSparkContext)
+        verify(mockSparkContext).addJar(expected)
       }
     }
   }

@@ -315,11 +315,12 @@ class Kernel (
   }
 
   override def createSparkContext(conf: SparkConf): SparkContext = {
-    val t = initializeSparkContext(conf)
-    _sparkContext = t._1
-    _sparkConf = t._2
+    _sparkConf = createSparkConf(conf)
+    _sparkContext = initializeSparkContext(sparkConf);
     _javaSparkContext = new JavaSparkContext(_sparkContext)
     _sqlContext = new SQLContext(_sparkContext)
+
+    updateInterpreterWithSparkContext(sparkContext)
 
     magicLoader.dependencyMap =
       magicLoader.dependencyMap.setSparkContext(_sparkContext)
@@ -334,7 +335,7 @@ class Kernel (
   }
 
   // TODO: Think of a better way to test without exposing this
-  private def initializeSparkContext(conf: SparkConf) = {
+  protected[kernel] def createSparkConf(conf: SparkConf) = {
 
     logger.info("Setting deployMode to client")
     conf.set("spark.submit.deployMode", "client")
@@ -354,15 +355,11 @@ class Kernel (
     logger.info("REPL Class Server Uri: " + interpreter.classServerURI)
     conf.set("spark.repl.class.uri", interpreter.classServerURI)
 
-    val sparkContext = reallyInitializeSparkContext(conf);
-
-    updateInterpreterWithSparkContext(sparkContext)
-
-    (sparkContext, conf)
+    conf
   }
 
   // TODO: Think of a better way to test without exposing this
-  private def reallyInitializeSparkContext(sparkConf: SparkConf): SparkContext = {
+  protected[kernel] def initializeSparkContext(sparkConf: SparkConf): SparkContext = {
 
     logger.debug("Constructing new Spark Context")
     // TODO: Inject stream redirect headers in Spark dynamically
@@ -383,7 +380,7 @@ class Kernel (
   }
 
   // TODO: Think of a better way to test without exposing this
-  private def updateInterpreterWithSparkContext(
+  protected[kernel] def updateInterpreterWithSparkContext(
     sparkContext: SparkContext
   ) = {
     interpreter.doQuietly {

@@ -52,6 +52,7 @@ class StandardComponentInitializationSpec extends FunSpec with Matchers
     spyComponentInitialization = spy(new TestComponentInitialization())
   }
 
+  /*
   describe("StandardComponentInitialization") {
     describe("when spark.master is set in config") {
       it("should set spark.master in SparkConf") {
@@ -109,4 +110,5 @@ class StandardComponentInitializationSpec extends FunSpec with Matchers
       }
     }
   }
+  */
 }

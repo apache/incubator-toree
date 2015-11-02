@@ -134,13 +134,17 @@ trait StandardComponentInitialization extends ComponentInitialization {
           interpreter
       }
 
-    if(config.getString("sparkcontext") != "no") {
-      kernel.createSparkContext(config.getString("spark.master"), appName)
-    }
+    initializeSparkContext(config, kernel, appName)
 
     (commStorage, commRegistrar, commManager, defaultInterpreter, kernel,
       dependencyDownloader, magicLoader, responseMap)
 
+  }
+
+  def initializeSparkContext(config:Config, kernel:Kernel, appName:String) = {
+    if(config.getString("sparkcontext") != "no") {
+      kernel.createSparkContext(config.getString("spark.master"), appName)
+    }
   }
 
   private def initializeCommObjects(actorLoader: ActorLoader) = {

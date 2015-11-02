@@ -21,6 +21,7 @@ import java.io.OutputStream
 import akka.actor.{Actor, Props, ActorRef, ActorSystem}
 import akka.testkit.TestProbe
 import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
+import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.kernel.interpreter.scala.{StandardTaskManagerProducer, StandardSparkIMainProducer, StandardSettingsProducer, ScalaInterpreter}
 import com.ibm.spark.kernel.protocol.v5.{KMBuilder, SocketType}
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
@@ -81,7 +82,9 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
       interpreter
     }
 
-    override protected[layer] def reallyInitializeSparkContext(
+
+    /*
+    def reallyInitializeSparkContext(
       config: Config,
       actorLoader: ActorLoader,
       kmBuilder: KMBuilder,
@@ -99,6 +102,7 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
 
       sparkContext
      }
+     */
 
   }
 
