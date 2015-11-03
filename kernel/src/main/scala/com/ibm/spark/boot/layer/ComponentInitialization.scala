@@ -142,7 +142,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
   }
 
   def initializeSparkContext(config:Config, kernel:Kernel, appName:String) = {
-    if(config.getString("sparkcontext") != "no") {
+    if(!config.getBoolean("nosparkcontext")) {
       kernel.createSparkContext(config.getString("spark.master"), appName)
     }
   }
