@@ -65,12 +65,21 @@ fi
 
 if [ -z `which docker` ]; then
   sudo apt-get update -y
-  sudo apt-get -y install openjdk-7-jdk apt-transport-https linux-image-extra-`uname -r`
+  sudo apt-get -y install apt-transport-https linux-image-extra-`uname -r`
   printf "deb https://get.docker.com/ubuntu docker main\n" > /etc/apt/sources.list.d/docker.list
   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 36A1D7869245C8950F966E92D8576A8BA88D21E9
   sudo apt-get update -y
   sudo apt-get install -y lxc-docker-1.4.1
   sudo chown vagrant:vagrant /var/run/docker.sock
+fi
+
+# Installing R
+if ! flag_is_set R; then
+  sudo sh -c 'printf "deb http://cran.cnr.Berkeley.edu/bin/linux/ubuntu trusty/" >> /etc/apt/sources.list' && \
+  sudo apt-get update -y && \
+  sudo apt-get install r-base r-base-dev && \
+  sudo chmod 777 /usr/local/lib/R/site-library && \
+  set_flag R
 fi
 
 # Install scala and sbt (if not already installed)
