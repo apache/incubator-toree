@@ -13,4 +13,7 @@ cache:
     directories:
         - $HOME/.ivy2/cache
         - $HOME/.sbt/boot/
+branches:
+  only:
+    - master
 
