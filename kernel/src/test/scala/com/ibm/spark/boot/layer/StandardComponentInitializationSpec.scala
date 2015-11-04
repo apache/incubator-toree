@@ -16,8 +16,9 @@
 
 package com.ibm.spark.boot.layer
 
-import com.ibm.spark.boot.KernelBootstrap
+import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
 import com.ibm.spark.interpreter.Interpreter
+import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.kernel.protocol.v5.KMBuilder
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.utils.LogLike
@@ -29,6 +30,8 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 
+import scala.collection.mutable
+import scala.collection.JavaConverters._
 class StandardComponentInitializationSpec extends FunSpec with Matchers
   with MockitoSugar with BeforeAndAfter
 {
@@ -38,6 +41,7 @@ class StandardComponentInitializationSpec extends FunSpec with Matchers
   private var mockActorLoader: ActorLoader = _
   private var mockSparkContext: SparkContext = _
   private var mockInterpreter: Interpreter = _
+  private var mockKernel: KernelLike = _
   private var spyComponentInitialization: StandardComponentInitialization = _
 
   private class TestComponentInitialization
@@ -48,67 +52,33 @@ class StandardComponentInitializationSpec extends FunSpec with Matchers
     mockActorLoader = mock[ActorLoader]
     mockSparkContext = mock[SparkContext]
     mockInterpreter = mock[Interpreter]
+    mockKernel = mock[KernelLike]
 
     spyComponentInitialization = spy(new TestComponentInitialization())
   }
 
-  /*
   describe("StandardComponentInitialization") {
-    describe("when spark.master is set in config") {
-      it("should set spark.master in SparkConf") {
-        val expected = "some value"
-        doReturn(expected).when(mockConfig).getString("spark.master")
-        doReturn("").when(mockConfig).getString("spark_configuration")
+    describe("#initializeInterpreterPlugins") {
+      it("should return a map with the DummyInterpreter") {
+        val conf = new CommandLineOptions(List(
+          "--interpreter-plugin", "dummy:test.utils.DummyInterpreter",
+          "--interpreter-plugin", "dummy2:test.utils.DummyInterpreter"
+        )).toConfig
 
-        // Stub out other helper methods to avoid long init process and to
-        // avoid failure when creating SparkContext
-        doReturn(mockSparkContext).when(spyComponentInitialization)
-          .reallyInitializeSparkContext(
-            any[Config], any[ActorLoader], any[KMBuilder], any[SparkConf])
-        doNothing().when(spyComponentInitialization)
-          .updateInterpreterWithSparkContext(
-            any[Config], any[SparkContext], any[Interpreter])
+        val m = spyComponentInitialization
+          .initializeInterpreterPlugins(mockKernel, conf)
 
-        // Provide stub for interpreter classServerURI since also executed
-        doReturn("").when(mockInterpreter).classServerURI
-
-        val sparkContext = spyComponentInitialization.initializeSparkContext(
-          mockConfig, TestAppName, mockActorLoader, mockInterpreter)
-
-        val sparkConf = {
-          val sparkConfCaptor = ArgumentCaptor.forClass(classOf[SparkConf])
-          verify(spyComponentInitialization).reallyInitializeSparkContext(
-            any[Config], any[ActorLoader], any[KMBuilder],
-            sparkConfCaptor.capture()
-          )
-          sparkConfCaptor.getValue
-        }
-
-        sparkConf.get("spark.master") should be (expected)
+        m.get("dummy") should not be None
+        m.get("dummy2") should not be None
       }
+      it("should return an empty map") {
+        val conf = new CommandLineOptions(List()).toConfig
 
-      it("should not add ourselves as a jar if spark.master is not local") {
-        doReturn("local[*]").when(mockConfig).getString("spark.master")
+        val m = spyComponentInitialization
+          .initializeInterpreterPlugins(mockKernel, conf)
 
-        spyComponentInitialization.updateInterpreterWithSparkContext(
-          mockConfig, mockSparkContext, mockInterpreter)
-        verify(mockSparkContext, never()).addJar(anyString())
-      }
-
-      it("should add ourselves as a jar if spark.master is not local") {
-        doReturn("notlocal").when(mockConfig).getString("spark.master")
-
-        // TODO: This is going to be outdated when we determine a way to
-        //       re-include all jars
-        val expected =
-          com.ibm.spark.SparkKernel.getClass.getProtectionDomain
-            .getCodeSource.getLocation.getPath
-
-        spyComponentInitialization.updateInterpreterWithSparkContext(
-          mockConfig, mockSparkContext, mockInterpreter)
-        verify(mockSparkContext).addJar(expected)
+        m.isEmpty shouldBe true
       }
     }
   }
-  */
 }
