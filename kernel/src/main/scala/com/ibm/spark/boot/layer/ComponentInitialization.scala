@@ -86,8 +86,11 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val dependencyDownloader = initializeDependencyDownloader(config)
     val magicLoader = initializeMagicLoader(
       config, interpreter, dependencyDownloader)
+    //val kernel = initializeKernel(
+    //  config, actorLoader, interpreter, commManager, magicLoader
+    //)
     val kernel = initializeKernel(
-      config, actorLoader, interpreter, commManager, magicLoader
+      config, actorLoader, null, commManager, magicLoader
     )
     val responseMap = initializeResponseMap()
 
@@ -118,6 +121,12 @@ trait StandardComponentInitialization extends ComponentInitialization {
       config.getString("default_interpreter").toLowerCase match {
         case "scala" =>
           logger.info("Using Scala interpreter as default!")
+          interpreter.doQuietly {
+            interpreter.bind(
+              "kernel", "com.ibm.spark.kernel.api.Kernel",
+              kernel, List( """@transient implicit""")
+            )
+          }
           interpreter
         case "pyspark" =>
           logger.info("Using PySpark interpreter as default!")
@@ -135,6 +144,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
           interpreter
       }
 
+    kernel.interpreter = defaultInterpreter
     initializeSparkContext(config, kernel, appName)
 
     (commStorage, commRegistrar, commManager, defaultInterpreter, kernel,
@@ -279,12 +289,14 @@ trait StandardComponentInitialization extends ComponentInitialization {
       commManager,
       magicLoader
     )
+    /*
     interpreter.doQuietly {
       interpreter.bind(
         "kernel", "com.ibm.spark.kernel.api.Kernel",
         kernel, List( """@transient implicit""")
       )
     }
+    */
     magicLoader.dependencyMap.setKernel(kernel)
 
     kernel

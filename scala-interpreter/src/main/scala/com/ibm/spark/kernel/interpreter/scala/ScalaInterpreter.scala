@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutionException
 import akka.actor.Actor
 import akka.actor.Actor.Receive
 import com.ibm.spark.global.StreamState
+import com.ibm.spark.interpreter
 import com.ibm.spark.interpreter._
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
 import com.ibm.spark.kernel.api.KernelOptions
@@ -456,6 +457,35 @@ class ScalaInterpreter(
   override def doQuietly[T](body: => T): T = {
     require(sparkIMain != null)
     sparkIMain.beQuietDuring[T](body)
+  }
+
+  override def bindSparkContext(sparkContext: SparkContext) = {
+
+    doQuietly {
+      logger.debug("Binding context into interpreter")
+      bind(
+        "sc", "org.apache.spark.SparkContext",
+        sparkContext, List( """@transient"""))
+
+      // NOTE: This is needed because interpreter blows up after adding
+      //       dependencies to SparkContext and Interpreter before the
+      //       cluster has been used... not exactly sure why this is the case
+      // TODO: Investigate why the cluster has to be initialized in the kernel
+      //       to avoid the kernel's interpreter blowing up (must be done
+      //       inside the interpreter)
+      logger.debug("Initializing Spark cluster in interpreter")
+
+      doQuietly {
+        interpret("""
+                                | val $toBeNulled = {
+                                | var $toBeNulled = sc.emptyRDD.collect()
+                                | $toBeNulled = null
+                                |  }
+                                |
+                                |""".stripMargin)
+      }
+    }
+
   }
 
   override def bind(

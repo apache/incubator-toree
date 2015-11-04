@@ -18,6 +18,8 @@ package com.ibm.spark.interpreter
 
 import java.net.URL
 
+import org.apache.spark.SparkContext
+
 import scala.tools.nsc.interpreter._
 
 trait Interpreter {
@@ -67,6 +69,8 @@ trait Interpreter {
    * @return The return value of body
    */
   def doQuietly[T](body: => T): T
+
+  def bindSparkContext(sparkContext: SparkContext): Unit = ???
 
   /**
    * Binds a variable in the interpreter to a value.

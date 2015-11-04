@@ -54,7 +54,7 @@ import com.ibm.spark.global.ExecuteRequestState
 class Kernel (
   private val config: Config,
   private val actorLoader: ActorLoader,
-  val interpreter: Interpreter,
+  var interpreter: Interpreter,
   val comm: CommManager,
   val magicLoader: MagicLoader
 ) extends KernelLike with LogLike {
@@ -383,6 +383,9 @@ class Kernel (
   protected[kernel] def updateInterpreterWithSparkContext(
     sparkContext: SparkContext
   ) = {
+
+    interpreter.bindSparkContext(sparkContext)
+    /*
     interpreter.doQuietly {
       logger.debug("Binding context into interpreter")
       interpreter.bind(
@@ -407,6 +410,7 @@ class Kernel (
                                 |""".stripMargin)
       }
     }
+    */
 
     // Add ourselves as a dependency
     // TODO: Provide ability to point to library as commandline argument
