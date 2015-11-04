@@ -58,7 +58,7 @@ trait ComponentInitialization {
   def initializeComponents(
     config: Config, appName: String, actorLoader: ActorLoader
   ): (CommStorage, CommRegistrar, CommManager, Interpreter,
-    Kernel, SparkContext, DependencyDownloader, MagicLoader,
+    Kernel, DependencyDownloader, MagicLoader,
     collection.mutable.Map[String, ActorRef])
 }
 
@@ -81,14 +81,17 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val (commStorage, commRegistrar, commManager) =
       initializeCommObjects(actorLoader)
     val interpreter = initializeInterpreter(config)
-    val sparkContext = initializeSparkContext(
-      config, appName, actorLoader, interpreter)
-    val sqlContext = initializeSqlContext(sparkContext)
-    updateInterpreterWithSqlContext(sqlContext, interpreter)
+
+    //val sparkContext = null
+    //val sparkContext = initializeSparkContext(
+    //  config, appName, actorLoader, interpreter)
+    //val sqlContext = null
+    //val sqlContext = initializeSqlContext(sparkContext)
+    //updateInterpreterWithSqlContext(sqlContext, interpreter)
 
     val dependencyDownloader = initializeDependencyDownloader(config)
     val magicLoader = initializeMagicLoader(
-      config, interpreter, sparkContext, dependencyDownloader)
+      config, interpreter, dependencyDownloader)
     val kernel = initializeKernel(
       config, actorLoader, interpreter, commManager, magicLoader
     )
@@ -96,17 +99,17 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
     // NOTE: Tested via initializing the following and returning this
     //       interpreter instead of the Scala one
-    val pySparkInterpreter = new PySparkInterpreter(kernel, sparkContext)
+    val pySparkInterpreter = new PySparkInterpreter(kernel)
     //pySparkInterpreter.start()
     kernel.data.put("PySpark", pySparkInterpreter)
 
     // NOTE: Tested via initializing the following and returning this
     //       interpreter instead of the Scala one
-    val sparkRInterpreter = new SparkRInterpreter(kernel, sparkContext)
+    val sparkRInterpreter = new SparkRInterpreter(kernel)
     //sparkRInterpreter.start()
     kernel.data.put("SparkR", sparkRInterpreter)
 
-    val sqlInterpreter = new SqlInterpreter(sqlContext)
+    val sqlInterpreter = new SqlInterpreter(kernel)
     //sqlInterpreter.start()
     kernel.data.put("SQL", sqlInterpreter)
 
@@ -131,8 +134,17 @@ trait StandardComponentInitialization extends ComponentInitialization {
           interpreter
       }
 
+    initializeSparkContext(config, kernel, appName)
+
     (commStorage, commRegistrar, commManager, defaultInterpreter, kernel,
-      sparkContext, dependencyDownloader, magicLoader, responseMap)
+      dependencyDownloader, magicLoader, responseMap)
+
+  }
+
+  def initializeSparkContext(config:Config, kernel:Kernel, appName:String) = {
+    if(!config.getBoolean("nosparkcontext")) {
+      kernel.createSparkContext(config.getString("spark.master"), appName)
+    }
   }
 
   private def initializeCommObjects(actorLoader: ActorLoader) = {
@@ -179,6 +191,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
   }
 
   // TODO: Think of a better way to test without exposing this
+  /*
   protected[layer] def initializeSparkContext(
     config: Config, appName: String, actorLoader: ActorLoader,
     interpreter: Interpreter
@@ -319,6 +332,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
       logger.info("Running in local mode! Not adding self as dependency!")
     }
   }
+  */
 
   protected[layer] def initializeSqlContext(sparkContext: SparkContext) = {
     val sqlContext: SQLContext = try {
@@ -394,7 +408,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
   }
 
   private def initializeMagicLoader(
-    config: Config, interpreter: Interpreter, sparkContext: SparkContext,
+    config: Config, interpreter: Interpreter,
     dependencyDownloader: DependencyDownloader
   ) = {
     logger.debug("Constructing magic loader")
@@ -403,7 +417,6 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val dependencyMap = new DependencyMap()
       .setInterpreter(interpreter)
       .setKernelInterpreter(interpreter) // This is deprecated
-      .setSparkContext(sparkContext)
       .setDependencyDownloader(dependencyDownloader)
       .setConfig(config)
 

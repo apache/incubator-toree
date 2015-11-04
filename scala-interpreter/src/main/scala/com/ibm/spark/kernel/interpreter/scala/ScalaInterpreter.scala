@@ -21,11 +21,14 @@ import java.net.{URL, URLClassLoader}
 import java.nio.charset.Charset
 import java.util.concurrent.ExecutionException
 
+import akka.actor.Actor
+import akka.actor.Actor.Receive
 import com.ibm.spark.global.StreamState
 import com.ibm.spark.interpreter._
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
 import com.ibm.spark.kernel.api.KernelOptions
 import com.ibm.spark.utils.{MultiOutputStream, TaskManager}
+import org.apache.spark.SparkContext
 import org.apache.spark.repl.{SparkIMain, SparkJLineCompletion}
 import org.slf4j.LoggerFactory
 

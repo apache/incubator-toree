@@ -29,26 +29,11 @@ class BrokerBridgeSpec extends FunSpec with Matchers with OneInstancePerTest
 {
   private val mockBrokerState = mock[BrokerState]
   private val mockKernel = mock[KernelLike]
-  private val mockSparkConf = mock[SparkConf]
-  private val mockSparkContext = mock[SparkContext]
-
-  private val mockJavaSparkContext = mock[JavaSparkContext]
-  doReturn(mockSparkContext).when(mockJavaSparkContext).sc
-  private val mockSqlContext = mock[SQLContext]
-  doReturn(mockSparkContext).when(mockSqlContext).sparkContext
-
-  // A new SQLContext is created per request, meaning this needs mocking
-  doReturn(mockSparkConf).when(mockSparkContext).getConf
-  doReturn(Array[(String, String)]()).when(mockSparkConf).getAll
 
   private val brokerBridge = new BrokerBridge(
     mockBrokerState,
-    mockKernel,
-    mockSparkContext
-  ) with JavaSparkContextProducerLike with SQLContextProducerLike {
-    override def newJavaSparkContext(sparkContext: SparkContext): JavaSparkContext = mockJavaSparkContext
-    override def newSQLContext(sparkContext: SparkContext): SQLContext = mockSqlContext
-  }
+    mockKernel
+  )
 
   describe("BrokerBridge") {
     describe("#state") {
@@ -57,27 +42,9 @@ class BrokerBridgeSpec extends FunSpec with Matchers with OneInstancePerTest
       }
     }
 
-    describe("#javaSparkContext") {
-      it("should return a JavaSparkContext wrapping the SparkContext") {
-        brokerBridge.javaSparkContext.sc should be (mockSparkContext)
-      }
-    }
-
-    describe("#sqlContext") {
-      it("should return a SQLContext wrapping the SparkContext") {
-        brokerBridge.sqlContext.sparkContext should be (mockSparkContext)
-      }
-    }
-
     describe("#kernel") {
       it("should return the kernel from the constructor") {
         brokerBridge.kernel should be (mockKernel)
-      }
-    }
-
-    describe("#sparkConf") {
-      it("should return the configuration from the SparkContext") {
-        brokerBridge.sparkConf should be (mockSparkConf)
       }
     }
   }

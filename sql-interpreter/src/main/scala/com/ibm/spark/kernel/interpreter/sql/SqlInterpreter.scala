@@ -19,6 +19,7 @@ import java.net.URL
 
 import com.ibm.spark.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter}
 import com.ibm.spark.interpreter.Results.Result
+import com.ibm.spark.kernel.api.KernelLike
 import org.apache.spark.sql.SQLContext
 
 import scala.concurrent.duration._
@@ -28,8 +29,8 @@ import scala.tools.nsc.interpreter.{OutputStream, InputStream}
 /**
  * Represents an interpreter interface to Spark SQL.
  */
-class SqlInterpreter(private val sqlContext: SQLContext) extends Interpreter {
-  private lazy val sqlService = new SqlService(sqlContext)
+class SqlInterpreter(private val kernel: KernelLike) extends Interpreter {
+  private lazy val sqlService = new SqlService(kernel)
   private lazy val sqlTransformer = new SqlTransformer
 
   /**

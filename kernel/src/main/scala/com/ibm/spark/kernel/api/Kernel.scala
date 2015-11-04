@@ -28,11 +28,14 @@ import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.{KMBuilder, KernelMessage}
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.magic.MagicParser
-import com.ibm.spark.kernel.protocol.v5.stream.KernelInputStream
+import com.ibm.spark.kernel.protocol.v5.stream.{KernelOutputStream, KernelInputStream}
 import com.ibm.spark.magic.{MagicLoader, MagicExecutor}
-import com.ibm.spark.utils.LogLike
+import com.ibm.spark.utils.{KeyValuePairUtils, LogLike}
 import com.typesafe.config.Config
-import scala.util.DynamicVariable
+import org.apache.spark.api.java.JavaSparkContext
+import org.apache.spark.sql.SQLContext
+import org.apache.spark.{SparkContext, SparkConf}
+import scala.util.{Try, DynamicVariable}
 
 import scala.reflect.runtime.universe._
 
@@ -81,6 +84,11 @@ class Kernel (
     new DynamicVariable[PrintStream](null)
   private val currentErrorKernelMessage =
     new DynamicVariable[KernelMessage](null)
+
+  private var _sparkContext:SparkContext = null;
+  private var _sparkConf:SparkConf = null;
+  private var _javaSparkContext:JavaSparkContext = null;
+  private var _sqlContext:SQLContext = null;
 
   /**
    * Represents magics available through the kernel.
@@ -305,4 +313,151 @@ class Kernel (
     require(someKernelMessage.nonEmpty, "No kernel message received!")
     someKernelMessage.get
   }
+
+  override def createSparkContext(conf: SparkConf): SparkContext = {
+    _sparkConf = createSparkConf(conf)
+    _sparkContext = initializeSparkContext(sparkConf);
+    _javaSparkContext = new JavaSparkContext(_sparkContext)
+    _sqlContext = new SQLContext(_sparkContext)
+
+    updateInterpreterWithSparkContext(sparkContext)
+
+    magicLoader.dependencyMap =
+      magicLoader.dependencyMap.setSparkContext(_sparkContext)
+
+    _sparkContext
+  }
+
+  override def createSparkContext(
+    master: String, appName: String
+  ): SparkContext = {
+    createSparkContext(new SparkConf().setMaster(master).setAppName(appName))
+  }
+
+  // TODO: Think of a better way to test without exposing this
+  protected[kernel] def createSparkConf(conf: SparkConf) = {
+
+    logger.info("Setting deployMode to client")
+    conf.set("spark.submit.deployMode", "client")
+
+    KeyValuePairUtils.stringToKeyValuePairSeq(
+      config.getString("spark_configuration")
+    ).foreach { keyValuePair =>
+      logger.info(s"Setting ${keyValuePair.key} to ${keyValuePair.value}")
+      Try(conf.set(keyValuePair.key, keyValuePair.value))
+    }
+
+    // TODO: Move SparkIMain to private and insert in a different way
+    logger.warn("Locked to Scala interpreter with SparkIMain until decoupled!")
+
+    // TODO: Construct class server outside of SparkIMain
+    logger.warn("Unable to control initialization of REPL class server!")
+    logger.info("REPL Class Server Uri: " + interpreter.classServerURI)
+    conf.set("spark.repl.class.uri", interpreter.classServerURI)
+
+    conf
+  }
+
+  // TODO: Think of a better way to test without exposing this
+  protected[kernel] def initializeSparkContext(sparkConf: SparkConf): SparkContext = {
+
+    logger.debug("Constructing new Spark Context")
+    // TODO: Inject stream redirect headers in Spark dynamically
+    var sparkContext: SparkContext = null
+    val outStream = new KernelOutputStream(
+      actorLoader, KMBuilder(), global.ScheduledTaskManager.instance,
+      sendEmptyOutput = config.getBoolean("send_empty_output")
+    )
+
+    // Update global stream state and use it to set the Console local variables
+    // for threads in the Spark threadpool
+    global.StreamState.setStreams(System.in, outStream, outStream)
+    global.StreamState.withStreams {
+      sparkContext = new SparkContext(sparkConf)
+    }
+
+    sparkContext
+  }
+
+  // TODO: Think of a better way to test without exposing this
+  protected[kernel] def updateInterpreterWithSparkContext(
+    sparkContext: SparkContext
+  ) = {
+    interpreter.doQuietly {
+      logger.debug("Binding context into interpreter")
+      interpreter.bind(
+        "sc", "org.apache.spark.SparkContext",
+        sparkContext, List( """@transient"""))
+
+      // NOTE: This is needed because interpreter blows up after adding
+      //       dependencies to SparkContext and Interpreter before the
+      //       cluster has been used... not exactly sure why this is the case
+      // TODO: Investigate why the cluster has to be initialized in the kernel
+      //       to avoid the kernel's interpreter blowing up (must be done
+      //       inside the interpreter)
+      logger.debug("Initializing Spark cluster in interpreter")
+
+      interpreter.doQuietly {
+        interpreter.interpret("""
+                                | val $toBeNulled = {
+                                | var $toBeNulled = sc.emptyRDD.collect()
+                                | $toBeNulled = null
+                                |  }
+                                |
+                                |""".stripMargin)
+      }
+    }
+
+    // Add ourselves as a dependency
+    // TODO: Provide ability to point to library as commandline argument
+    // TODO: Provide better method to determine if can add ourselves
+    // TODO: Avoid duplicating request for master twice (initializeSparkContext
+    //       also does this)
+    val master = sparkContext.getConf.get("spark.master")
+
+    // If in local mode, do not need to add our jars as dependencies
+    if (!master.toLowerCase.startsWith("local")) {
+      @inline def getJarPathFor(klass: Class[_]): String =
+        klass.getProtectionDomain.getCodeSource.getLocation.getPath
+
+      // TODO: Provide less hard-coded solution in case additional dependencies
+      //       are added or classes are refactored to different projects
+      val jarPaths = Seq(
+        // Macro project
+        classOf[com.ibm.spark.annotations.Experimental],
+
+        // Protocol project
+        classOf[com.ibm.spark.kernel.protocol.v5.KernelMessage],
+
+        // Communication project
+        classOf[com.ibm.spark.communication.SocketManager],
+
+        // Kernel-api project
+        classOf[com.ibm.spark.kernel.api.KernelLike],
+
+        // Scala-interpreter project
+        classOf[com.ibm.spark.kernel.interpreter.scala.ScalaInterpreter],
+
+        // PySpark-interpreter project
+        classOf[com.ibm.spark.kernel.interpreter.pyspark.PySparkInterpreter],
+
+        // SparkR-interpreter project
+        classOf[com.ibm.spark.kernel.interpreter.sparkr.SparkRInterpreter],
+
+        // Kernel project
+        classOf[com.ibm.spark.boot.KernelBootstrap]
+      ).map(getJarPathFor)
+
+      logger.info("Adding kernel jars to cluster:\n- " +
+        jarPaths.mkString("\n- "))
+      jarPaths.foreach(sparkContext.addJar)
+    } else {
+      logger.info("Running in local mode! Not adding self as dependency!")
+    }
+  }
+
+  override def sparkContext: SparkContext = _sparkContext
+  override def sparkConf: SparkConf = _sparkConf
+  override def javaSparkContext: JavaSparkContext = _javaSparkContext
+  override def sqlContext: SQLContext = _sqlContext
 }

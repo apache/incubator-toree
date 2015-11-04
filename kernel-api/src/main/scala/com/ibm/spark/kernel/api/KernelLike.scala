@@ -18,10 +18,19 @@ package com.ibm.spark.kernel.api
 
 import java.io.{PrintStream, InputStream, OutputStream}
 
+import org.apache.spark.api.java.JavaSparkContext
+import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.sql.SQLContext
+
 /**
  * Interface for the kernel API. This does not include exposed variables.
  */
 trait KernelLike {
+
+  def createSparkContext(conf: SparkConf): SparkContext
+
+  def createSparkContext(master: String, appName: String): SparkContext
+
   /**
    * Executes a block of code represented as a string and returns the result.
    *
@@ -80,4 +89,12 @@ trait KernelLike {
    * @note Using Java structure to enable other languages to have easy access!
    */
   val data: java.util.Map[String, Any]
+
+  def sparkContext: SparkContext
+
+  def sparkConf: SparkConf
+
+  def javaSparkContext: JavaSparkContext
+
+  def sqlContext: SQLContext
 }

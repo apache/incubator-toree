@@ -71,10 +71,10 @@ class InterpreterActorSpecForIntegration extends TestKit(
     interpreter.doQuietly({
       conf.set("spark.repl.class.uri", interpreter.classServerURI)
       //context = new SparkContext(conf) with NoSparkLogging
-      context = SparkContextProvider.sparkContext
-      interpreter.bind(
-        "sc", "org.apache.spark.SparkContext",
-        context, List( """@transient"""))
+      //context = SparkContextProvider.sparkContext
+      //interpreter.bind(
+      //  "sc", "org.apache.spark.SparkContext",
+      //  context, List( """@transient"""))
     })
   }
 

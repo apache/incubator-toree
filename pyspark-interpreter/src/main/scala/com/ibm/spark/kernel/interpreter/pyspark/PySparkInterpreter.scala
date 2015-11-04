@@ -34,11 +34,9 @@ import scala.tools.nsc.interpreter.{InputStream, OutputStream}
  * where it is accessible to the Spark Kernel.
  *
  * @param _kernel The kernel API to expose to the PySpark instance
- * @param _sparkContext The Spark context to expose to the PySpark instance
  */
 class PySparkInterpreter(
-  private val _kernel: KernelLike,
-  private val _sparkContext: SparkContext
+  private val _kernel: KernelLike
 ) extends Interpreter {
   private val logger = LoggerFactory.getLogger(this.getClass)
 
@@ -49,8 +47,7 @@ class PySparkInterpreter(
   /** Represents the bridge used by this interpreter's Python interface. */
   private lazy val pySparkBridge = PySparkBridge(
     pySparkState,
-    _kernel,
-    _sparkContext
+    _kernel
   )
 
   /** Represents the interface for Python to talk to JVM Spark components. */

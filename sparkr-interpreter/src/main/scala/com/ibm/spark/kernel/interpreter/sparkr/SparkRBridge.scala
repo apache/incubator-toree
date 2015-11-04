@@ -49,19 +49,16 @@ object SparkRBridge {
    *
    * @param brokerState The container of broker state to expose
    * @param kernel The kernel API to expose through the bridge
-   * @param sparkContext The SparkContext to expose through the bridge
    *
    * @return The new SparkR bridge
    */
   def apply(
     brokerState: BrokerState,
-    kernel: KernelLike,
-    sparkContext: SparkContext
+    kernel: KernelLike
     ): SparkRBridge = {
     new SparkRBridge(
       _brokerState = brokerState,
-      _kernel = kernel,
-      _sparkContext = sparkContext
+      _kernel = kernel
     ) with StandardJavaSparkContextProducer with StandardSQLContextProducer
   }
 }
@@ -72,14 +69,10 @@ object SparkRBridge {
  *
  * @param _brokerState The container of broker state to expose
  * @param _kernel The kernel API to expose through the bridge
- * @param _sparkContext The SparkContext to expose through the bridge
  */
 class SparkRBridge private (
   private val _brokerState: BrokerState,
-  private val _kernel: KernelLike,
-  private val _sparkContext: SparkContext
-) extends BrokerBridge(_brokerState, _kernel, _sparkContext) {
-  this: JavaSparkContextProducerLike with SQLContextProducerLike =>
-
+  private val _kernel: KernelLike
+) extends BrokerBridge(_brokerState, _kernel) {
   override val brokerName: String = "SparkR"
 }
