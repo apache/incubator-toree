@@ -86,14 +86,15 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val dependencyDownloader = initializeDependencyDownloader(config)
     val magicLoader = initializeMagicLoader(
       config, interpreter, dependencyDownloader)
-    //val kernel = initializeKernel(
-    //  config, actorLoader, interpreter, commManager, magicLoader
-    //)
+    val manager =  InterpreterManager(config)
+      .addInterpreter("Scala",interpreter)
     val kernel = initializeKernel(
-      config, actorLoader, null, commManager, magicLoader
+      config, actorLoader, manager, commManager, magicLoader
     )
     val responseMap = initializeResponseMap()
 
+
+    /*
     // NOTE: Tested via initializing the following and returning this
     //       interpreter instead of the Scala one
     val pySparkInterpreter = new PySparkInterpreter(kernel)
@@ -144,10 +145,12 @@ trait StandardComponentInitialization extends ComponentInitialization {
           interpreter
       }
 
-    kernel.interpreter = defaultInterpreter
+    */
+    //kernel.interpreter = defaultInterpreter
     initializeSparkContext(config, kernel, appName)
 
-    (commStorage, commRegistrar, commManager, defaultInterpreter, kernel,
+    (commStorage, commRegistrar, commManager,
+      manager.defaultInterpreter.getOrElse(null), kernel,
       dependencyDownloader, magicLoader, responseMap)
 
   }
@@ -278,14 +281,14 @@ trait StandardComponentInitialization extends ComponentInitialization {
   private def initializeKernel(
     config: Config,
     actorLoader: ActorLoader,
-    interpreter: Interpreter,
+    interpreterManager: InterpreterManager,
     commManager: CommManager,
     magicLoader: MagicLoader
   ) = {
     val kernel = new Kernel(
       config,
       actorLoader,
-      interpreter,
+      interpreterManager,
       commManager,
       magicLoader
     )

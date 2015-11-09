@@ -96,7 +96,7 @@ class CommandLineOptions(args: Seq[String]) {
   private val _nosparkcontext =
     parser.accepts("nosparkcontext", "kernel should not create a spark context")
 
-  private val _plugins = parser.accepts(
+  private val _interpreter_plugin = parser.accepts(
     "interpreter-plugin"
   ).withRequiredArg().ofType(classOf[String])
 
@@ -178,8 +178,19 @@ class CommandLineOptions(args: Seq[String]) {
   }
 
   private def interpreterPlugins: Option[java.util.List[String]] = {
-    val p = getAll(_plugins)
-    p.map(_.asJava)
+    val defaults = List[String](
+      "PySpark:com.ibm.spark.kernel.interpreter.pyspark.PySparkInterpreter",
+      "SparkR:com.ibm.spark.kernel.interpreter.sparkr.SparkRInterpreter",
+      "SQL:com.ibm.spark.kernel.interpreter.sql.SqlInterpreter"
+    )
+
+    val userDefined = getAll(_interpreter_plugin) match {
+      case Some(l) => l
+      case _ => List[String]()
+    }
+
+    val p = defaults ++ userDefined
+    Some(p.asJava)
   }
 
   /**

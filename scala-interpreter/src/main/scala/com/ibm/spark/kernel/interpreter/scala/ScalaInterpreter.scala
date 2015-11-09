@@ -27,7 +27,7 @@ import com.ibm.spark.global.StreamState
 import com.ibm.spark.interpreter
 import com.ibm.spark.interpreter._
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
-import com.ibm.spark.kernel.api.KernelOptions
+import com.ibm.spark.kernel.api.{KernelLike, KernelOptions}
 import com.ibm.spark.utils.{MultiOutputStream, TaskManager}
 import org.apache.spark.SparkContext
 import org.apache.spark.repl.{SparkIMain, SparkJLineCompletion}
@@ -188,6 +188,17 @@ class ScalaInterpreter(
       allClassPaths,
       platform.classPath.context
     )
+  }
+
+  override def init(kernel: KernelLike): Interpreter = {
+    doQuietly {
+      bind(
+        "kernel", "com.ibm.spark.kernel.api.Kernel",
+        kernel, List( """@transient implicit""")
+      )
+    }
+
+    this
   }
 
   override def interrupt(): Interpreter = {

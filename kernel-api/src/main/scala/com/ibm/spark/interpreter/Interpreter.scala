@@ -18,11 +18,20 @@ package com.ibm.spark.interpreter
 
 import java.net.URL
 
+import com.ibm.spark.kernel.api.KernelLike
 import org.apache.spark.SparkContext
 
 import scala.tools.nsc.interpreter._
 
 trait Interpreter {
+
+  /**
+   * Initializes the interpreter.
+   * @param kernel The kernel
+   * @return The newly initialized interpreter
+   */
+  def init(kernel: KernelLike): Interpreter
+
   /**
    * Starts the interpreter, initializing any internal state.
    * @return A reference to the interpreter

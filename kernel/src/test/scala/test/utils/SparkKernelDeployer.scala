@@ -83,6 +83,7 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
     }
 
 
+
     /*
     def reallyInitializeSparkContext(
       config: Config,

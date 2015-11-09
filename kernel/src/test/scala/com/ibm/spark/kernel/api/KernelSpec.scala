@@ -2,6 +2,7 @@ package com.ibm.spark.kernel.api
 
 import java.io.{InputStream, PrintStream}
 
+import com.ibm.spark.boot.layer.InterpreterManager
 import com.ibm.spark.comm.CommManager
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.protocol.v5._
@@ -31,6 +32,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
   private var mockSparkConf: SparkConf = _
   private var mockActorLoader: ActorLoader = _
   private var mockInterpreter: Interpreter = _
+  private var mockInterpreterManager: InterpreterManager = _
   private var mockCommManager: CommManager = _
   private var mockMagicLoader: MagicLoader = _
   private var kernel: Kernel = _
@@ -39,8 +41,13 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
   before {
     mockConfig = mock[Config]
     mockInterpreter = mock[Interpreter]
+    mockInterpreterManager = mock[InterpreterManager]
     mockSparkContext = mock[SparkContext]
     mockSparkConf = mock[SparkConf]
+    when(mockInterpreterManager.defaultInterpreter())
+      .thenReturn(Some(mockInterpreter))
+    when(mockInterpreterManager.interpreters)
+      .thenReturn(Map[String, com.ibm.spark.interpreter.Interpreter]())
     when(mockInterpreter.interpret(BadCode.get))
       .thenReturn((Results.Incomplete, null))
     when(mockInterpreter.interpret(GoodCode.get))
@@ -48,12 +55,13 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
     when(mockInterpreter.interpret(ErrorCode.get))
       .thenReturn((Results.Error, Right(ExecuteError("error","bad", List("1")))))
 
+
     mockCommManager = mock[CommManager]
     mockActorLoader = mock[ActorLoader]
     mockMagicLoader = mock[MagicLoader]
 
     kernel = new Kernel(
-      mockConfig, mockActorLoader, mockInterpreter, mockCommManager,
+      mockConfig, mockActorLoader, mockInterpreterManager, mockCommManager,
       mockMagicLoader
     )
 

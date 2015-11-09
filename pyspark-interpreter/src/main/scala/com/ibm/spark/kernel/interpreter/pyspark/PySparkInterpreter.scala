@@ -33,12 +33,11 @@ import scala.tools.nsc.interpreter.{InputStream, OutputStream}
  * SPARK_HOME, PYTHONPATH pointing to Spark's Python source, and py4j installed
  * where it is accessible to the Spark Kernel.
  *
- * @param _kernel The kernel API to expose to the PySpark instance
  */
 class PySparkInterpreter(
-  private val _kernel: KernelLike
 ) extends Interpreter {
   private val logger = LoggerFactory.getLogger(this.getClass)
+  private var _kernel:KernelLike = _
 
   // TODO: Replace hard-coded maximum queue count
   /** Represents the state used by this interpreter's Python instance. */
@@ -49,6 +48,7 @@ class PySparkInterpreter(
     pySparkState,
     _kernel
   )
+
 
   /** Represents the interface for Python to talk to JVM Spark components. */
   private lazy val gatewayServer = new GatewayServer(pySparkBridge, 0)
@@ -67,6 +67,21 @@ class PySparkInterpreter(
     pySparkProcessHandler
   )
   private lazy val pySparkTransformer = new PySparkTransformer
+
+  /**
+   * Initializes the interpreter.
+   * @param kernel The kernel
+   * @return The newly initialized interpreter
+   */
+  override def init(kernel: KernelLike): Interpreter = {
+    _kernel = kernel
+    this
+  }
+
+
+  override def bindSparkContext(sparkContext: SparkContext) = {
+
+  }
 
   /**
    * Executes the provided code with the option to silence output.
@@ -128,7 +143,7 @@ class PySparkInterpreter(
   override def updatePrintStreams(in: InputStream, out: OutputStream, err: OutputStream): Unit = ???
 
   // Unsupported
-  override def classServerURI: String = ???
+  override def classServerURI: String = ""
 
   // Unsupported
   override def interrupt(): Interpreter = ???
@@ -141,4 +156,5 @@ class PySparkInterpreter(
 
   // Unsupported
   override def doQuietly[T](body: => T): T = ???
+
 }

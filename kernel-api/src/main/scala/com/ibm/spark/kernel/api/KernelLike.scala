@@ -90,6 +90,9 @@ trait KernelLike {
    */
   val data: java.util.Map[String, Any]
 
+
+  def interpreter(name: String): Option[com.ibm.spark.interpreter.Interpreter]
+
   def sparkContext: SparkContext
 
   def sparkConf: SparkConf

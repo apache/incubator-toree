@@ -102,4 +102,11 @@ class DummyInterpreter(kernel: KernelLike) extends Interpreter {
    * @return The cursor position and list of possible completions
    */
   override def completion(code: String, pos: Int): (Int, List[String]) = ???
+
+  /**
+   * Initializes the interpreter.
+   * @param kernel The kernel
+   * @return The newly initialized interpreter
+   */
+  override def init(kernel: KernelLike): Interpreter = ???
 }

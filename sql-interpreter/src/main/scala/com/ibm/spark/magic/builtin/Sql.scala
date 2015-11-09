@@ -26,7 +26,7 @@ import com.ibm.spark.magic.dependencies.IncludeKernel
  */
 class Sql extends CellMagic with IncludeKernel {
   override def execute(code: String): CellMagicOutput = {
-    val sparkR = Option(kernel.data.get("SQL"))
+    val sparkR = kernel.interpreter("SQL")
 
     if (sparkR.isEmpty || sparkR.get == null)
       throw new SqlException("SQL is not available!")
