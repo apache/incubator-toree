@@ -322,7 +322,7 @@ class Kernel (
 
   override def createSparkContext(conf: SparkConf): SparkContext = {
     _sparkConf = createSparkConf(conf)
-    _sparkContext = initializeSparkContext(sparkConf);
+    _sparkContext = initializeSparkContext(sparkConf)
     _javaSparkContext = new JavaSparkContext(_sparkContext)
     _sqlContext = new SQLContext(_sparkContext)
 

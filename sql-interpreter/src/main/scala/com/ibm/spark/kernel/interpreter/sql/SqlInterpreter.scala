@@ -30,7 +30,7 @@ import scala.tools.nsc.interpreter.{OutputStream, InputStream}
 /**
  * Represents an interpreter interface to Spark SQL.
  */
-class SqlInterpreter(private val kernel: KernelLike) extends Interpreter {
+class SqlInterpreter() extends Interpreter {
   private var _kernel: KernelLike = _
   private lazy val sqlService = new SqlService(_kernel)
   private lazy val sqlTransformer = new SqlTransformer
