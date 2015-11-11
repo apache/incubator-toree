@@ -178,19 +178,20 @@ class CommandLineOptions(args: Seq[String]) {
   }
 
   private def interpreterPlugins: Option[java.util.List[String]] = {
-    val defaults = List[String](
-      "PySpark:com.ibm.spark.kernel.interpreter.pyspark.PySparkInterpreter",
-      "SparkR:com.ibm.spark.kernel.interpreter.sparkr.SparkRInterpreter",
-      "SQL:com.ibm.spark.kernel.interpreter.sql.SqlInterpreter"
-    )
+    //val defaults = getAll(_default_interpreter_plugin).getOrElse(List())
+    //val defaults = List[String](
+    //  "PySpark:com.ibm.spark.kernel.interpreter.pyspark.PySparkInterpreter",
+    //  "SparkR:com.ibm.spark.kernel.interpreter.sparkr.SparkRInterpreter",
+    //  "SQL:com.ibm.spark.kernel.interpreter.sql.SqlInterpreter"
+    //)
 
     val userDefined = getAll(_interpreter_plugin) match {
       case Some(l) => l
       case _ => List[String]()
     }
 
-    val p = defaults ++ userDefined
-    Some(p.asJava)
+    //val p = defaults ++ userDefined
+    Some(userDefined.asJava)
   }
 
   /**

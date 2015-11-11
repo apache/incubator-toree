@@ -5,10 +5,13 @@ import com.typesafe.config.Config
 import com.ibm.spark.interpreter._
 import scala.collection.JavaConverters._
 
+import org.slf4j.LoggerFactory
+
 case class InterpreterManager(
   default: String = "Scala",
   interpreters: Map[String, Interpreter] = Map[String, Interpreter]()
 ) {
+
 
   def initializeInterpreters(kernel: KernelLike): Unit = {
     interpreters.values.foreach(interpreter =>
@@ -30,12 +33,13 @@ case class InterpreterManager(
 
 object InterpreterManager {
 
-  def apply(config: Config): InterpreterManager = {
-    val p = config
-      .getStringList("interpreter_plugins")
-      .listIterator().asScala
+  protected val logger = LoggerFactory.getLogger(this.getClass.getName)
 
-    val m = p.foldLeft(Map[String, Interpreter]())( (acc, v) => {
+  def apply(config: Config): InterpreterManager = {
+    val ip = config.getStringList("interpreter_plugins").asScala ++
+      config.getStringList("default_interpreter_plugin").asScala
+
+    val m = ip.foldLeft(Map[String, Interpreter]())( (acc, v) => {
       v.split(":") match {
         case Array(name, className) =>
           try {
@@ -46,7 +50,10 @@ object InterpreterManager {
             acc + (name -> i)
           }
           catch {
-            case _:Throwable => acc
+            case e:Throwable =>
+              logger.error("Error loading interpreter class " + className)
+              logger.error(e.getMessage())
+              acc
           }
         case _ => acc
       }
