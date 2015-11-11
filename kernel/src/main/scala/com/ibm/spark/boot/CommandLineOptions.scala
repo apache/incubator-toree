@@ -42,10 +42,6 @@ class CommandLineOptions(args: Seq[String]) {
     parser.accepts("profile", "path to IPython JSON connection file")
       .withRequiredArg().ofType(classOf[File])
 
-  private val _master =
-    parser.accepts("master", "location of master Spark node")
-      .withRequiredArg().ofType(classOf[String])
-
   private val _ip =
     parser.accepts("ip", "ip used to bind sockets")
       .withRequiredArg().ofType(classOf[String])
@@ -139,7 +135,6 @@ class CommandLineOptions(args: Seq[String]) {
     }
 
     val commandLineConfig: Config = ConfigFactory.parseMap(Map(
-      "spark.master" -> get(_master),
       "stdin_port" -> get(_stdin_port),
       "shell_port" -> get(_shell_port),
       "iopub_port" -> get(_iopub_port),

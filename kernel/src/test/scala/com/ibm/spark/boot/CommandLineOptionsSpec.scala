@@ -132,31 +132,6 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       }
     }
 
-    describe("when received --master=<value>") {
-      it("should error if value is not set") {
-        intercept[OptionException] {
-          new CommandLineOptions(Seq("--master"))
-        }
-      }
-
-      describe("#toConfig") {
-        it("should set master to specified value") {
-          val expected = "test"
-          val options = new CommandLineOptions(s"--master=${expected}" :: Nil)
-          val config: Config = options.toConfig
-
-          config.getString("spark.master") should be(expected)
-        }
-
-        it("should set master to local[*]") {
-          val options = new CommandLineOptions(Nil)
-          val config: Config = options.toConfig
-
-          config.getString("spark.master") should be("local[*]")
-        }
-      }
-    }
-
     describe("when received --profile=<path>") {
       it("should error if path is not set") {
         intercept[OptionException] {
@@ -308,7 +283,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
           config.getString("ip") should be(expected)
         }
 
-        it("should set master to local[*]") {
+        it("should set ip to 127.0.0.1") {
           val options = new CommandLineOptions(Nil)
           val config: Config = options.toConfig
 
@@ -319,18 +294,15 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
 
     describe("when received options with surrounding whitespace") {
       it("should trim whitespace") {
-        val master = "test"
         val url1 = "url1"
         val url2 = "url2"
 
         val options = new CommandLineOptions(Seq(
-          s"--master=${master} ",
           " --magic-url ", s" ${url1}\t",
           "--magic-url", s" \t ${url2} \t"
         ))
         val config: Config = options.toConfig
 
-        config.getString("spark.master") should be(master)
         config.getList("magic_urls").unwrapped.asScala should
           be (Seq(url1, url2))
       }
