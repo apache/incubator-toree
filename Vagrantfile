@@ -111,6 +111,7 @@ if ! flag_is_set SPARK; then
   wget http://apache.arvixe.com/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.3.tgz && \
   tar xvzf spark-${SPARK_VERSION}-bin-hadoop2.3.tgz && \
   ln -s spark-${SPARK_VERSION}-bin-hadoop2.3 spark && \
+  export SPARK_HOME=/opt/spark && \
   set_flag SPARK
 fi
 
@@ -122,13 +123,13 @@ cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
     "display_name": "Spark 1.5.1 (Scala 2.10.4)",
     "language_info": { "name": "scala" },
     "argv": [
-        "/home/vagrant/local/bin/sparkkernel",
+        "/src/spark-kernel/dist/spark-kernel/bin/spark-kernel",
         "--profile",
         "{connection_file}"
     ],
     "codemirror_mode": "scala",
     "env": {
-        "JVM_OPT": "-Xms1024M -Xmx4096M -Dlog4j.logLevel=trace",
+        "SPARK_OPTS": "--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=trace"
         "MAX_INTERPRETER_THREADS": "16",
         "SPARK_CONFIGURATION": "spark.cores.max=4",
         "CAPTURE_STANDARD_OUT": "true",

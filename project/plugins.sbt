@@ -33,6 +33,9 @@ addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 // using `sbt pack` or `sbt pack-archive` to generate a *.tar.gz file
 addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.6.1")
 
+// Provides abilit to create an uber-jar
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.0")
+
 //  Provides the ability to package our project as a docker image
 addSbtPlugin("se.marcuslonnberg" % "sbt-docker" % "0.5.2")
 

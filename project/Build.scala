@@ -27,6 +27,7 @@ import sbtunidoc.Plugin._
 import scoverage.ScoverageSbtPlugin
 import xerial.sbt.Pack._
 import com.typesafe.sbt.SbtGit.{GitKeys => git}
+import sbtassembly.AssemblyKeys._
 
 object Build extends Build with Settings with SubProjects with TestTasks {
   /**
@@ -98,7 +99,8 @@ trait SubProjects extends Settings with TestTasks {
     base = file("kernel"),
     settings = fullSettings ++
       packSettings ++ Seq(
-        packMain := Map("sparkkernel" -> "com.ibm.spark.SparkKernel")
+        packMain := Map("sparkkernel" -> "com.ibm.spark.SparkKernel"),
+        test in assembly := {}
       )
   )) dependsOn(
     macros % "test->test;compile->compile",

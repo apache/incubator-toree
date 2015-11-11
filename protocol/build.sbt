@@ -22,7 +22,9 @@ resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/release
 // JSON DEPENDENCIES
 //
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-json" % "2.3.6", // Apache v2
+  "com.typesafe.play" %% "play-json" % "2.3.6" excludeAll( // Apache v2
+      ExclusionRule(organization = "com.fasterxml.jackson.core")
+    ),
   "org.slf4j" % "slf4j-api" % "1.7.5" // MIT
 )
 

@@ -24,13 +24,11 @@ IOPUB_PORT?=48002
 CONTROL_PORT?=48003
 HB_PORT?=48004
 IP?=0.0.0.0
+VERSION?=0.1.5-SNAPSHOT
 
 clean:
 	vagrant ssh -c "cd /src/spark-kernel/ && sbt clean"
-
-kernel/target/pack/bin/sparkkernel: vagrantup ${shell find ./*/src/main/**/*}
-	vagrant ssh -c "cd /src/spark-kernel/ && sbt compile && sbt pack"
-	vagrant ssh -c "cd /src/spark-kernel/kernel/target/pack && make install"
+	@-rm -r dist
 
 build-image: IMAGE_NAME?cloudet/spark-kernel
 build-image: CACHE?=""
@@ -58,10 +56,18 @@ run-image: build-image
 vagrantup:
 	vagrant up
 
-build: kernel/target/pack/bin/sparkkernel
+kernel/target/scala-2.10/kernel-assembly-$(VERSION).jar: ${shell find ./*/src/main/**/*}
+	vagrant ssh -c "cd /src/spark-kernel/ && sbt kernel/assembly"
 
-dev: build
+build: kernel/target/scala-2.10/kernel-assembly-$(VERSION).jar
+
+dev: dist
 	vagrant ssh -c "cd ~ && ipython notebook --ip=* --no-browser"
 
-test: build
-	vagrant ssh -c "cd /src/spark-kernel/ && sbt test"
+test:
+	vagrant ssh -c "cd /src/spark-kernel/ && sbt compile test"
+
+dist: build
+	@mkdir -p dist/spark-kernel/bin dist/spark-kernel/lib
+	@cp -r etc/bin/* dist/spark-kernel/bin/.
+	@cp kernel/target/scala-2.10/kernel-assembly-*.jar dist/spark-kernel/lib/.

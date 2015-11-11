@@ -38,8 +38,11 @@ object Common {
   private val buildScalaVersion = "2.10.4"
   private val buildSbtVersion   = "0.13.7"
 
+  lazy val sparkVersion = settingKey[String]("The Apache Spark version to use")
+
   // Global dependencies provided to all projects
-  private val buildLibraryDependencies = Seq(
+  private var buildLibraryDependencies = Seq(
+
     // Needed to force consistent typesafe config with play json and spark
     "com.typesafe" % "config" % "1.2.1",
     "org.slf4j" % "slf4j-log4j12" % "1.7.5" % "test",
@@ -48,8 +51,6 @@ object Common {
     "org.scalactic" %% "scalactic" % "2.2.0" % "test", // Apache v2
     "org.mockito" % "mockito-all" % "1.9.5" % "test"   // MIT
   )
-
-  lazy val sparkVersion = settingKey[String]("The Apache Spark version to use")
 
   lazy val hadoopVersion = settingKey[String]("The Apache Hadoop version to use")
 
@@ -108,6 +109,9 @@ object Common {
       }
     },
 
+
+
+
     scalacOptions in (Compile, doc) ++= Seq(
       // Ignore packages (for Scaladoc) not from our project
       "-skip-packages", Seq(
@@ -161,6 +165,25 @@ object Common {
     // Add rebuild ivy xml to the following tasks
     compile <<= (compile in Compile) dependsOn (rebuildIvyXml dependsOn deliverLocal)
   ) ++ rebuildIvyXmlSettings // Include our rebuild ivy xml settings
+
+
+  buildLibraryDependencies ++= Seq( "org.apache.spark" %% "spark-core" % "1.5.1"  % "provided" excludeAll( // Apache v2
+    ExclusionRule(organization = "org.apache.hadoop"),
+
+    // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
+    ExclusionRule(
+      organization = "org.jboss.netty",
+      name = "netty"
+    )
+    ),
+    "org.apache.spark" %% "spark-streaming" % "1.5.1" % "provided",      // Apache v2
+    "org.apache.spark" %% "spark-sql" % "1.5.1" % "provided",            // Apache v2
+    "org.apache.spark" %% "spark-mllib" % "1.5.1" % "provided",          // Apache v2
+    "org.apache.spark" %% "spark-graphx" % "1.5.1" % "provided",         // Apache v2
+    "org.apache.spark" %% "spark-repl" % "1.5.1"  % "provided" excludeAll // Apache v2
+      ExclusionRule(organization = "org.apache.hadoop"),
+    "org.apache.hadoop" % "hadoop-client" % "2.3.0" % "provided" excludeAll
+      ExclusionRule(organization = "javax.servlet"))
 
   // ==========================================================================
   // = REBUILD IVY XML SETTINGS BELOW

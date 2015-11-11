@@ -43,31 +43,31 @@ libraryDependencies ++= Seq(
 
 // TODO: Mark these as provided and bring them in via the kernel project
 //       so users wanting to implement a magic do not bring in Spark itself
-libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % sparkVersion.value excludeAll( // Apache v2
-    ExclusionRule(organization = "org.apache.hadoop"),
-
-    // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
-    ExclusionRule(
-      organization = "org.jboss.netty",
-      name = "netty"
-    )
-  ),
-  "org.apache.spark" %% "spark-streaming" % sparkVersion.value,      // Apache v2
-  "org.apache.spark" %% "spark-sql" % sparkVersion.value,            // Apache v2
-  "org.apache.spark" %% "spark-mllib" % sparkVersion.value,          // Apache v2
-  "org.apache.spark" %% "spark-graphx" % sparkVersion.value,         // Apache v2
-  "org.apache.spark" %% "spark-repl" % sparkVersion.value excludeAll // Apache v2
-    ExclusionRule(organization = "org.apache.hadoop")
-)
+//libraryDependencies ++= Seq(
+//  "org.apache.spark" %% "spark-core" % sparkVersion.value excludeAll( // Apache v2
+//    ExclusionRule(organization = "org.apache.hadoop"),
+//
+//    // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
+//    ExclusionRule(
+//      organization = "org.jboss.netty",
+//      name = "netty"
+//    )
+//  ),
+//  "org.apache.spark" %% "spark-streaming" % sparkVersion.value,      // Apache v2
+//  "org.apache.spark" %% "spark-sql" % sparkVersion.value,            // Apache v2
+//  "org.apache.spark" %% "spark-mllib" % sparkVersion.value,          // Apache v2
+//  "org.apache.spark" %% "spark-graphx" % sparkVersion.value,         // Apache v2
+//  "org.apache.spark" %% "spark-repl" % sparkVersion.value excludeAll // Apache v2
+//    ExclusionRule(organization = "org.apache.hadoop")
+//)
 
 //
 // HADOOP DEPENDENCIES
 //
-libraryDependencies ++= Seq(
-  "org.apache.hadoop" % "hadoop-client" % hadoopVersion.value excludeAll
-    ExclusionRule(organization = "javax.servlet")
-)
+//libraryDependencies ++= Seq(
+//  "org.apache.hadoop" % "hadoop-client" % hadoopVersion.value excludeAll
+//    ExclusionRule(organization = "javax.servlet")
+//)
 
 //
 // EXECUTION DEPENDENCIES
