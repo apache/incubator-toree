@@ -26,7 +26,7 @@ case class InterpreterManager(
     copy(interpreters = interpreters + (name -> interpreter))
   }
 
-  def defaultInterpreter(): Option[Interpreter] = {
+  def defaultInterpreter: Option[Interpreter] = {
     interpreters.get(default)
   }
 }

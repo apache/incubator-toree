@@ -21,11 +21,13 @@ import java.io.{ByteArrayOutputStream, OutputStream}
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.ibm.spark.interpreter._
+import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.kernel.interpreter.scala.{StandardTaskManagerProducer, StandardSparkIMainProducer, StandardSettingsProducer, ScalaInterpreter}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
+import com.ibm.spark.utils.MultiOutputStream
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.mock.MockitoSugar
@@ -52,11 +54,25 @@ class InterpreterActorSpecForIntegration extends TestKit(
   with MockitoSugar with UncaughtExceptionSuppression {
 
   private val output = new ByteArrayOutputStream()
-  private val interpreter = new ScalaInterpreter(List(), output)
-    with StandardSparkIMainProducer
-    with StandardTaskManagerProducer
-    with StandardSettingsProducer
+  private val interpreter = new ScalaInterpreter {
+    override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
+    override def init(kernel: KernelLike): Interpreter = {
+      settings = newSettings(List[String]())
 
+      val urls = _thisClassloader match {
+        case cl: java.net.URLClassLoader => cl.getURLs.toList
+        case a => // TODO: Should we really be using sys.error here?
+          sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
+      }
+      val classpath = urls.map(_.toString)
+
+      settings.classpath.value =
+        classpath.distinct.mkString(java.io.File.pathSeparator)
+      settings.embeddedDefaults(_runtimeClassloader)
+
+      this
+    }
+  }
   private val conf = new SparkConf()
     .setMaster("local[*]")
     .setAppName("Test Kernel")
@@ -65,6 +81,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
 
   before {
     output.reset()
+    interpreter.init(mock[KernelLike])
     interpreter.start()
 
 

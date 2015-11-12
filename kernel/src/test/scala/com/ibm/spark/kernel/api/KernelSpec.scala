@@ -44,7 +44,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
     mockInterpreterManager = mock[InterpreterManager]
     mockSparkContext = mock[SparkContext]
     mockSparkConf = mock[SparkConf]
-    when(mockInterpreterManager.defaultInterpreter())
+    when(mockInterpreterManager.defaultInterpreter)
       .thenReturn(Some(mockInterpreter))
     when(mockInterpreterManager.interpreters)
       .thenReturn(Map[String, com.ibm.spark.interpreter.Interpreter]())

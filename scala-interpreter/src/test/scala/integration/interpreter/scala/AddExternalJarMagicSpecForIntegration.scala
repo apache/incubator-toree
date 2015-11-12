@@ -20,7 +20,9 @@ import java.io.{ByteArrayOutputStream, OutputStream}
 
 import com.ibm.spark.global.StreamState
 import com.ibm.spark.interpreter._
+import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.kernel.interpreter.scala.{ScalaInterpreter, StandardSettingsProducer, StandardSparkIMainProducer, StandardTaskManagerProducer}
+import com.ibm.spark.utils.MultiOutputStream
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 
@@ -32,10 +34,26 @@ class AddExternalJarMagicSpecForIntegration
   private var interpreter: Interpreter = _
 
   before {
-    interpreter = new ScalaInterpreter(Nil, mock[OutputStream])
-      with StandardSparkIMainProducer
-      with StandardTaskManagerProducer
-      with StandardSettingsProducer
+    interpreter = new ScalaInterpreter {
+      override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
+      override def init(kernel: KernelLike): Interpreter = {
+        settings = newSettings(List[String]())
+
+        val urls = _thisClassloader match {
+          case cl: java.net.URLClassLoader => cl.getURLs.toList
+          case a => // TODO: Should we really be using sys.error here?
+            sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
+        }
+        val classpath = urls.map(_.toString)
+
+        settings.classpath.value =
+          classpath.distinct.mkString(java.io.File.pathSeparator)
+        settings.embeddedDefaults(_runtimeClassloader)
+
+        this
+      }
+    }
+    interpreter.init(mock[KernelLike])
     interpreter.start()
 
     StreamState.setStreams(outputStream = outputResult)

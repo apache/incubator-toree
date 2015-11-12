@@ -25,10 +25,6 @@ import com.ibm.spark.dependencies.{DependencyDownloader, IvyDependencyDownloader
 import com.ibm.spark.global
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.api.{KernelLike, Kernel}
-import com.ibm.spark.kernel.interpreter.pyspark.PySparkInterpreter
-import com.ibm.spark.kernel.interpreter.sparkr.SparkRInterpreter
-import com.ibm.spark.kernel.interpreter.scala.{TaskManagerProducerLike, StandardSparkIMainProducer, StandardSettingsProducer, ScalaInterpreter}
-import com.ibm.spark.kernel.interpreter.sql.SqlInterpreter
 import com.ibm.spark.kernel.protocol.v5.KMBuilder
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.kernel.protocol.v5.stream.KernelOutputStream
@@ -81,105 +77,28 @@ trait StandardComponentInitialization extends ComponentInitialization {
   ) = {
     val (commStorage, commRegistrar, commManager) =
       initializeCommObjects(actorLoader)
-    val interpreter = initializeInterpreter(config)
+
+    val manager =  InterpreterManager(config)
+    val scalaInterpreter = manager.interpreters.get("Scala").orNull
 
     val dependencyDownloader = initializeDependencyDownloader(config)
     val magicLoader = initializeMagicLoader(
-      config, interpreter, dependencyDownloader)
-    val manager =  InterpreterManager(config)
-      .addInterpreter("Scala",interpreter)
+      config, scalaInterpreter, dependencyDownloader)
+
     val kernel = initializeKernel(
       config, actorLoader, manager, commManager, magicLoader
     )
+
     val responseMap = initializeResponseMap()
 
-
-    /*
-    // NOTE: Tested via initializing the following and returning this
-    //       interpreter instead of the Scala one
-    val pySparkInterpreter = new PySparkInterpreter(kernel)
-    //pySparkInterpreter.start()
-    kernel.data.put("PySpark", pySparkInterpreter)
-
-    // NOTE: Tested via initializing the following and returning this
-    //       interpreter instead of the Scala one
-    val sparkRInterpreter = new SparkRInterpreter(kernel)
-    //sparkRInterpreter.start()
-    kernel.data.put("SparkR", sparkRInterpreter)
-
-    val sqlInterpreter = new SqlInterpreter(kernel)
-    //sqlInterpreter.start()
-    kernel.data.put("SQL", sqlInterpreter)
-
-
-    val plugins = initializeInterpreterPlugins(kernel, config)
-
-    kernel.data.putAll(plugins.asJava)
-
-    // Add Scala to available data map
-    kernel.data.put("Scala", interpreter)
-    val defaultInterpreter: Interpreter =
-      config.getString("default_interpreter").toLowerCase match {
-        case "scala" =>
-          logger.info("Using Scala interpreter as default!")
-          interpreter.doQuietly {
-            interpreter.bind(
-              "kernel", "com.ibm.spark.kernel.api.Kernel",
-              kernel, List( """@transient implicit""")
-            )
-          }
-          interpreter
-        case "pyspark" =>
-          logger.info("Using PySpark interpreter as default!")
-          pySparkInterpreter
-        case "sparkr" =>
-          logger.info("Using SparkR interpreter as default!")
-          sparkRInterpreter
-        case "sql" =>
-          logger.info("Using SQL interpreter as default!")
-          sqlInterpreter
-        case p if(kernel.data.containsKey(p)) =>
-          kernel.data.get(p).asInstanceOf[Interpreter]
-        case unknown =>
-          logger.warn(s"Unknown interpreter '$unknown'! Defaulting to Scala!")
-          interpreter
-      }
-
-    */
-    //kernel.interpreter = defaultInterpreter
     initializeSparkContext(config, kernel, appName)
 
     (commStorage, commRegistrar, commManager,
-      manager.defaultInterpreter.getOrElse(null), kernel,
+      manager.defaultInterpreter.orNull, kernel,
       dependencyDownloader, magicLoader, responseMap)
 
   }
 
-  def initializeInterpreterPlugins(
-    kernel: KernelLike,
-    config: Config
-  ): Map[String, Interpreter] = {
-    val p = config
-      .getStringList("interpreter_plugins")
-      .listIterator().asScala
-
-    p.foldLeft(Map[String, Interpreter]())( (acc, v) => {
-      v.split(":") match {
-        case Array(name, className) =>
-          try {
-            acc + (name -> Class
-              .forName(className)
-              .getConstructor(classOf[KernelLike])
-              .newInstance(kernel)
-              .asInstanceOf[Interpreter])
-          }
-          catch {
-            case _:Throwable => acc
-          }
-        case _ => acc
-      }
-    })
-  }
 
   def initializeSparkContext(config:Config, kernel:Kernel, appName:String) = {
     if(!config.getBoolean("nosparkcontext")) {
@@ -207,27 +126,6 @@ trait StandardComponentInitialization extends ComponentInitialization {
     )
 
     dependencyDownloader
-  }
-
-  protected def initializeInterpreter(config: Config) = {
-    val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
-    val maxInterpreterThreads = config.getInt("max_interpreter_threads")
-
-    logger.info(
-      s"Constructing interpreter with $maxInterpreterThreads threads and " +
-      "with arguments: " + interpreterArgs.mkString(" "))
-    val interpreter = new ScalaInterpreter(interpreterArgs, Console.out)
-      with StandardSparkIMainProducer
-      with TaskManagerProducerLike
-      with StandardSettingsProducer {
-      override def newTaskManager(): TaskManager =
-        new TaskManager(maximumWorkers = maxInterpreterThreads)
-    }
-
-    logger.debug("Starting interpreter")
-    interpreter.start()
-
-    interpreter
   }
 
   protected[layer] def initializeSqlContext(sparkContext: SparkContext) = {

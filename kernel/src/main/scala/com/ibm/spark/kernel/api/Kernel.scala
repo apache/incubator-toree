@@ -46,19 +46,20 @@ import com.ibm.spark.global.ExecuteRequestState
 /**
  * Represents the main kernel API to be used for interaction.
  *
- * @param config The configuration used when starting the kernel
+ * @param _config The configuration used when starting the kernel
  * @param interpreterManager The interpreter manager to expose in this instance
  * @param comm The Comm manager to expose in this instance
  * @param actorLoader The actor loader to use for message relaying
  */
 @Experimental
 class Kernel (
-  private val config: Config,
+  private val _config: Config,
   private val actorLoader: ActorLoader,
   val interpreterManager: InterpreterManager,
   val comm: CommManager,
   val magicLoader: MagicLoader
 ) extends KernelLike with LogLike {
+
   /**
    * Represents the current input stream used by the kernel for the specific
    * thread.
@@ -111,7 +112,7 @@ class Kernel (
 
   interpreterManager.initializeInterpreters(this)
 
-  val interpreter = interpreterManager.defaultInterpreter().get
+  val interpreter = interpreterManager.defaultInterpreter.get
 
   /**
    * Handles the output of interpreting code.
@@ -134,6 +135,10 @@ class Kernel (
         // let the user know.
         (false, "Syntax Error!")
     }
+  }
+
+  override def config:Config = {
+    _config
   }
 
   /**
@@ -202,7 +207,7 @@ class Kernel (
     parentMessage: v5.KernelMessage = lastKernelMessage(),
     kmBuilder: v5.KMBuilder = v5.KMBuilder()
   ): FactoryMethods = {
-    new FactoryMethods(config, actorLoader, parentMessage, kmBuilder)
+    new FactoryMethods(_config, actorLoader, parentMessage, kmBuilder)
   }
 
   /**
@@ -347,7 +352,7 @@ class Kernel (
     conf.set("spark.submit.deployMode", "client")
 
     KeyValuePairUtils.stringToKeyValuePairSeq(
-      config.getString("spark_configuration")
+      _config.getString("spark_configuration")
     ).foreach { keyValuePair =>
       logger.info(s"Setting ${keyValuePair.key} to ${keyValuePair.value}")
       Try(conf.set(keyValuePair.key, keyValuePair.value))
@@ -372,7 +377,7 @@ class Kernel (
     var sparkContext: SparkContext = null
     val outStream = new KernelOutputStream(
       actorLoader, KMBuilder(), global.ScheduledTaskManager.instance,
-      sendEmptyOutput = config.getBoolean("send_empty_output")
+      sendEmptyOutput = _config.getBoolean("send_empty_output")
     )
 
     // Update global stream state and use it to set the Console local variables

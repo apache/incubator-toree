@@ -18,8 +18,11 @@ package integration
 
 import java.io.OutputStream
 
+import com.ibm.spark.interpreter.Interpreter
+import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.kernel.interpreter.scala.{StandardSettingsProducer, StandardTaskManagerProducer, StandardSparkIMainProducer, ScalaInterpreter}
 import com.ibm.spark.kernel.protocol.v5.magic.PostProcessor
+import com.ibm.spark.utils.MultiOutputStream
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
 
@@ -32,10 +35,26 @@ class PostProcessorSpecForIntegration extends FunSpec with Matchers
   before {
     // TODO: Move instantiation and start of interpreter to a beforeAll
     //       for performance improvements
-    scalaInterpreter = new ScalaInterpreter(Nil, mock[OutputStream])
-      with StandardSparkIMainProducer
-      with StandardTaskManagerProducer
-      with StandardSettingsProducer
+    scalaInterpreter = new ScalaInterpreter {
+      override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
+      override def init(kernel: KernelLike): Interpreter = {
+        settings = newSettings(List[String]())
+
+        val urls = _thisClassloader match {
+          case cl: java.net.URLClassLoader => cl.getURLs.toList
+          case a => // TODO: Should we really be using sys.error here?
+            sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
+        }
+        val classpath = urls.map(_.toString)
+
+        settings.classpath.value =
+          classpath.distinct.mkString(java.io.File.pathSeparator)
+        settings.embeddedDefaults(_runtimeClassloader)
+
+        this
+      }
+    }
+    scalaInterpreter.init(mock[KernelLike])
 
     scalaInterpreter.start()
 
