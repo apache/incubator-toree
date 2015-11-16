@@ -121,6 +121,33 @@ class CommMsgHandlerSpec extends TestKit(
         //       limit? Is there a different logical approach?
         kernelMessageRelayProbe.expectNoMsg(200.milliseconds)
       }
+
+      it("should include the parent's header in the parent header of " +
+         "outgoing messages"){
+
+        // Register a callback that sends a message using the comm writer
+        val msgCallback: CommCallbacks.MsgCallback =
+          new CommCallbacks.MsgCallback() {
+            def apply(v1: CommWriter, v2: v5.UUID, v3: v5.MsgData): Unit =
+              v1.writeMsg(MsgData.Empty)
+          }
+        val callbacks = (new CommCallbacks).addMsgCallback(msgCallback)
+        doReturn(Some(callbacks)).when(spyCommStorage)
+          .getCommIdCallbacks(TestCommId)
+
+        // Send a comm_msg message with the test id
+        val msg = kmBuilder
+          .withHeader(CommMsg.toTypeString)
+          .withContentString(CommMsg(TestCommId, v5.MsgData.Empty))
+          .build
+        commMsgHandler ! msg
+
+        // Verify that the message sent by the handler has the desired property
+        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+          case KernelMessage(_, _, _, parentHeader, _, _) =>
+            parentHeader == msg.header
+        }
+      }
     }
   }
 }
