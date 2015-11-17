@@ -23,7 +23,7 @@ import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import com.ibm.spark.kernel.protocol.v5
 import com.ibm.spark.kernel.protocol.v5.content.{ClearOutput, CommClose}
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.{SystemActorType, KMBuilder}
+import com.ibm.spark.kernel.protocol.v5.{KernelMessage, SystemActorType, KMBuilder}
 import com.ibm.spark.comm.{CommRegistrar, CommWriter, CommCallbacks, CommStorage}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
@@ -122,6 +122,33 @@ class CommCloseHandlerSpec extends TestKit(
         // TODO: Is there a better way to test for this without an upper time
         //       limit? Is there a different logical approach?
         kernelMessageRelayProbe.expectNoMsg(200.milliseconds)
+      }
+
+      it("should include the parent's header in the parent header of " +
+        "outgoing messages"){
+
+        // Register a callback that sends a message using the comm writer
+        val closeCallback: CommCallbacks.CloseCallback =
+          new CommCallbacks.CloseCallback() {
+            def apply(v1: CommWriter, v2: v5.UUID, v4: v5.MsgData) =
+              v1.writeMsg(v5.MsgData.Empty)
+          }
+        val callbacks = (new CommCallbacks).addCloseCallback(closeCallback)
+        doReturn(Some(callbacks)).when(spyCommStorage)
+          .getCommIdCallbacks(TestCommId)
+
+        // Send a comm close message
+        val msg = kmBuilder
+          .withHeader(CommClose.toTypeString)
+          .withContentString(CommClose(TestCommId, v5.MsgData.Empty))
+          .build
+        commCloseHandler ! msg
+
+        // Verify that the message sent by the handler has the desired property
+        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+          case KernelMessage(_, _, _, parentHeader, _, _) =>
+            parentHeader == msg.header
+        }
       }
     }
   }

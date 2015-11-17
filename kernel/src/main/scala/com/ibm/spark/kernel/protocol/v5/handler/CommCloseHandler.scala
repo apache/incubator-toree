@@ -42,22 +42,24 @@ class CommCloseHandler(
 {
   override def process(kernelMessage: KernelMessage): Future[_] = future {
     logKernelMessageAction("Initiating Comm Close for", kernelMessage)
+
+    val kmBuilder = KMBuilder().withParent(kernelMessage)
+
     Utilities.parseAndHandle(
       kernelMessage.contentString,
       CommClose.commCloseReads,
-      handler = handleCommClose,
+      handler = handleCommClose(kmBuilder),
       errHandler = handleParseError
     )
   }
 
-  private def handleCommClose(commClose: CommClose) = {
+  private def handleCommClose(kmBuilder: KMBuilder)(commClose: CommClose) = {
     val commId = commClose.comm_id
     val data = commClose.data
 
     logger.debug(s"Received comm_close with id '$commId'")
 
-    // TODO: Should we be reusing something from the KernelMessage?
-    val commWriter = new KernelCommWriter(actorLoader, KMBuilder(), commId)
+    val commWriter = new KernelCommWriter(actorLoader, kmBuilder, commId)
 
     commStorage.getCommIdCallbacks(commId) match {
       case None             =>
