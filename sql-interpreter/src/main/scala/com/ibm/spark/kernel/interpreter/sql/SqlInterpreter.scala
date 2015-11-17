@@ -20,6 +20,7 @@ import java.net.URL
 import com.ibm.spark.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter}
 import com.ibm.spark.interpreter.Results.Result
 import com.ibm.spark.kernel.api.KernelLike
+import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 
 import scala.concurrent.duration._
@@ -29,9 +30,15 @@ import scala.tools.nsc.interpreter.{OutputStream, InputStream}
 /**
  * Represents an interpreter interface to Spark SQL.
  */
-class SqlInterpreter(private val kernel: KernelLike) extends Interpreter {
-  private lazy val sqlService = new SqlService(kernel)
+class SqlInterpreter() extends Interpreter {
+  private var _kernel: KernelLike = _
+  private lazy val sqlService = new SqlService(_kernel)
   private lazy val sqlTransformer = new SqlTransformer
+
+  override def init(kernel: KernelLike): Interpreter = {
+    _kernel = kernel
+    this
+  }
 
   /**
    * Executes the provided code with the option to silence output.
@@ -93,7 +100,9 @@ class SqlInterpreter(private val kernel: KernelLike) extends Interpreter {
   override def updatePrintStreams(in: InputStream, out: OutputStream, err: OutputStream): Unit = ???
 
   // Unsupported
-  override def classServerURI: String = ???
+  override def classServerURI: String = ""
+
+  override def bindSparkContext(sparkContext: SparkContext): Unit = {}
 
   // Unsupported
   override def interrupt(): Interpreter = ???

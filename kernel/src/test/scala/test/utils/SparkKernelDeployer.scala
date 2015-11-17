@@ -62,49 +62,7 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
     }
   }
 
-  private trait ExposedComponentInitialization extends StandardComponentInitialization
-    with LogLike {
-    override protected def initializeInterpreter(config: Config): ScalaInterpreter
-      with StandardSparkIMainProducer with StandardTaskManagerProducer
-      with StandardSettingsProducer = {
-      val interpreterArgs = config.getStringList("interpreter_args").asScala.toList
 
-      logger.info("Constructing interpreter with arguments: " +
-        interpreterArgs.mkString(" "))
-      val interpreter = new ScalaInterpreter(interpreterArgs, mock[OutputStream])
-        with StandardSparkIMainProducer
-        with StandardTaskManagerProducer
-        with StandardSettingsProducer
-
-      logger.debug("Starting interpreter")
-      interpreter.start()
-
-      interpreter
-    }
-
-
-    /*
-    def reallyInitializeSparkContext(
-      config: Config,
-      actorLoader: ActorLoader,
-      kmBuilder: KMBuilder,
-      sparkConf: SparkConf
-    ): SparkContext = {
-      logger.debug("Constructing new Spark Context")
-      // TODO: Inject stream redirect headers in Spark dynamically
-      var sparkContext: SparkContext = null
-      val outStream = new KernelOutputStream(
-        actorLoader, KMBuilder(), global.ScheduledTaskManager.instance)
-      global.StreamState.setStreams(System.in, outStream, outStream)
-      global.StreamState.withStreams {
-        sparkContext = SparkContextProvider.sparkContext
-      }
-
-      sparkContext
-     }
-     */
-
-  }
 
   /**
    * Runs bare initialization, wrapping socket actors with test logic to
@@ -199,7 +157,7 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
     val kernelBootstrap =
       (new KernelBootstrap(new CommandLineOptions(Nil).toConfig)
         with ExposedBareInitialization
-        with ExposedComponentInitialization
+        with StandardComponentInitialization
         with StandardHandlerInitialization
         with StandardHookInitialization).initialize()
 

@@ -21,11 +21,13 @@ import java.io.{ByteArrayOutputStream, OutputStream}
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.ibm.spark.interpreter._
+import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.kernel.interpreter.scala.{StandardTaskManagerProducer, StandardSparkIMainProducer, StandardSettingsProducer, ScalaInterpreter}
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.content._
 import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
 import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
+import com.ibm.spark.utils.{TaskManager, MultiOutputStream}
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.mock.MockitoSugar
@@ -52,10 +54,19 @@ class InterpreterActorSpecForIntegration extends TestKit(
   with MockitoSugar with UncaughtExceptionSuppression {
 
   private val output = new ByteArrayOutputStream()
-  private val interpreter = new ScalaInterpreter(List(), output)
-    with StandardSparkIMainProducer
-    with StandardTaskManagerProducer
-    with StandardSettingsProducer
+  private val interpreter = new ScalaInterpreter {
+    override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
+
+    override protected def interpreterArgs(kernel: KernelLike): List[String] = {
+      Nil
+    }
+
+    override protected def maxInterpreterThreads(kernel: KernelLike): Int = {
+      TaskManager.DefaultMaximumWorkers
+    }
+
+    override protected def bindKernelVarialble(kernel: KernelLike): Unit = { }
+  }
 
   private val conf = new SparkConf()
     .setMaster("local[*]")
@@ -65,8 +76,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
 
   before {
     output.reset()
-    interpreter.start()
-
+    interpreter.init(mock[KernelLike])
 
     interpreter.doQuietly({
       conf.set("spark.repl.class.uri", interpreter.classServerURI)

@@ -24,12 +24,13 @@ import java.util.concurrent.ExecutionException
 import akka.actor.Actor
 import akka.actor.Actor.Receive
 import com.ibm.spark.global.StreamState
+import com.ibm.spark.interpreter
 import com.ibm.spark.interpreter._
 import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
-import com.ibm.spark.kernel.api.KernelOptions
+import com.ibm.spark.kernel.api.{KernelLike, KernelOptions}
 import com.ibm.spark.utils.{MultiOutputStream, TaskManager}
 import org.apache.spark.SparkContext
-import org.apache.spark.repl.{SparkIMain, SparkJLineCompletion}
+import org.apache.spark.repl.{SparkCommandLine, SparkIMain, SparkJLineCompletion}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.{Await, Future}
@@ -41,43 +42,42 @@ import scala.tools.nsc.util.MergedClassPath
 import scala.tools.nsc.{Global, Settings, io}
 import scala.util.{Try => UtilTry}
 
-class ScalaInterpreter(
-  args: List[String],
-  out: OutputStream
-) extends Interpreter {
-  this: SparkIMainProducerLike
-    with TaskManagerProducerLike
-    with SettingsProducerLike =>
+class ScalaInterpreter() extends Interpreter {
 
   protected val logger = LoggerFactory.getLogger(this.getClass.getName)
 
   private val ExecutionExceptionName = "lastException"
-  val settings: Settings = newSettings(args)
+  protected var settings: Settings = null
 
-  private val _thisClassloader = this.getClass.getClassLoader
+  protected val _thisClassloader = this.getClass.getClassLoader
   protected val _runtimeClassloader =
     new URLClassLoader(Array(), _thisClassloader) {
       def addJar(url: URL) = this.addURL(url)
     }
 
-  /* Add scala.runtime libraries to interpreter classpath */ {
-    val urls = _thisClassloader match {
-      case cl: java.net.URLClassLoader => cl.getURLs.toList
-      case a => // TODO: Should we really be using sys.error here?
-        sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
-    }
-    val classpath = urls.map(_.toString)
 
-    settings.classpath.value =
-      classpath.distinct.mkString(java.io.File.pathSeparator)
-    settings.embeddedDefaults(_runtimeClassloader)
-  }
-
-  private val lastResultOut = new ByteArrayOutputStream()
-  private val multiOutputStream = MultiOutputStream(List(out, lastResultOut))
+  protected val lastResultOut = new ByteArrayOutputStream()
+  protected val multiOutputStream = MultiOutputStream(List(Console.out, lastResultOut))
   private var taskManager: TaskManager = _
   var sparkIMain: SparkIMain = _
   protected var jLineCompleter: SparkJLineCompletion = _
+
+  protected def newSparkIMain(
+    settings: Settings, out: JPrintWriter
+  ): SparkIMain = {
+    val s = new SparkIMain(settings, out)
+    s.initializeSynchronous()
+
+    s
+  }
+
+  private var maxInterpreterThreads:Int = TaskManager.DefaultMaximumWorkers
+
+  protected def newTaskManager(): TaskManager =
+    new TaskManager(maximumWorkers = maxInterpreterThreads)
+
+  protected def newSettings(args: List[String]): Settings =
+    new SparkCommandLine(args).settings
 
   /**
    * Adds jars to the runtime and compile time classpaths. Does not work with
@@ -187,6 +187,47 @@ class ScalaInterpreter(
       allClassPaths,
       platform.classPath.context
     )
+  }
+
+  override def init(kernel: KernelLike): Interpreter = {
+    val args = interpreterArgs(kernel)
+    this.settings = newSettings(args)
+
+    val urls = _thisClassloader match {
+      case cl: java.net.URLClassLoader => cl.getURLs.toList
+      case a => // TODO: Should we really be using sys.error here?
+        sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
+    }
+    val classpath = urls.map(_.toString)
+
+    this.settings.classpath.value =
+      classpath.distinct.mkString(java.io.File.pathSeparator)
+    this.settings.embeddedDefaults(_runtimeClassloader)
+
+    maxInterpreterThreads = maxInterpreterThreads(kernel)
+
+    start()
+    bindKernelVarialble(kernel)
+
+    this
+  }
+
+  protected def interpreterArgs(kernel: KernelLike): List[String] = {
+    import scala.collection.JavaConverters._
+    kernel.config.getStringList("interpreter_args").asScala.toList
+  }
+
+  protected def maxInterpreterThreads(kernel: KernelLike): Int = {
+    kernel.config.getInt("max_interpreter_threads")
+  }
+
+  protected def bindKernelVarialble(kernel: KernelLike): Unit = {
+    doQuietly {
+      bind(
+        "kernel", "com.ibm.spark.kernel.api.Kernel",
+        kernel, List( """@transient implicit""")
+      )
+    }
   }
 
   override def interrupt(): Interpreter = {
@@ -456,6 +497,35 @@ class ScalaInterpreter(
   override def doQuietly[T](body: => T): T = {
     require(sparkIMain != null)
     sparkIMain.beQuietDuring[T](body)
+  }
+
+  override def bindSparkContext(sparkContext: SparkContext) = {
+
+    doQuietly {
+      logger.debug("Binding context into interpreter")
+      bind(
+        "sc", "org.apache.spark.SparkContext",
+        sparkContext, List( """@transient"""))
+
+      // NOTE: This is needed because interpreter blows up after adding
+      //       dependencies to SparkContext and Interpreter before the
+      //       cluster has been used... not exactly sure why this is the case
+      // TODO: Investigate why the cluster has to be initialized in the kernel
+      //       to avoid the kernel's interpreter blowing up (must be done
+      //       inside the interpreter)
+      logger.debug("Initializing Spark cluster in interpreter")
+
+      doQuietly {
+        interpret("""
+                                | val $toBeNulled = {
+                                | var $toBeNulled = sc.emptyRDD.collect()
+                                | $toBeNulled = null
+                                |  }
+                                |
+                                |""".stripMargin)
+      }
+    }
+
   }
 
   override def bind(

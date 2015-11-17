@@ -20,6 +20,7 @@ import java.io.{OutputStream, InputStream, PrintStream}
 import java.util.concurrent.ConcurrentHashMap
 
 import com.ibm.spark.annotations.Experimental
+import com.ibm.spark.boot.layer.InterpreterManager
 import com.ibm.spark.comm.CommManager
 import com.ibm.spark.global
 import com.ibm.spark.interpreter.Results.Result
@@ -45,19 +46,20 @@ import com.ibm.spark.global.ExecuteRequestState
 /**
  * Represents the main kernel API to be used for interaction.
  *
- * @param config The configuration used when starting the kernel
- * @param interpreter The interpreter to expose in this instance
+ * @param _config The configuration used when starting the kernel
+ * @param interpreterManager The interpreter manager to expose in this instance
  * @param comm The Comm manager to expose in this instance
  * @param actorLoader The actor loader to use for message relaying
  */
 @Experimental
 class Kernel (
-  private val config: Config,
+  private val _config: Config,
   private val actorLoader: ActorLoader,
-  val interpreter: Interpreter,
+  val interpreterManager: InterpreterManager,
   val comm: CommManager,
   val magicLoader: MagicLoader
 ) extends KernelLike with LogLike {
+
   /**
    * Represents the current input stream used by the kernel for the specific
    * thread.
@@ -107,6 +109,11 @@ class Kernel (
    */
   val data: java.util.Map[String, Any] = new ConcurrentHashMap[String, Any]()
 
+
+  interpreterManager.initializeInterpreters(this)
+
+  val interpreter = interpreterManager.defaultInterpreter.get
+
   /**
    * Handles the output of interpreting code.
    * @param output the output of the interpreter
@@ -128,6 +135,10 @@ class Kernel (
         // let the user know.
         (false, "Syntax Error!")
     }
+  }
+
+  override def config:Config = {
+    _config
   }
 
   /**
@@ -196,7 +207,7 @@ class Kernel (
     parentMessage: v5.KernelMessage = lastKernelMessage(),
     kmBuilder: v5.KMBuilder = v5.KMBuilder()
   ): FactoryMethods = {
-    new FactoryMethods(config, actorLoader, parentMessage, kmBuilder)
+    new FactoryMethods(_config, actorLoader, parentMessage, kmBuilder)
   }
 
   /**
@@ -316,7 +327,7 @@ class Kernel (
 
   override def createSparkContext(conf: SparkConf): SparkContext = {
     _sparkConf = createSparkConf(conf)
-    _sparkContext = initializeSparkContext(sparkConf);
+    _sparkContext = initializeSparkContext(sparkConf)
     _javaSparkContext = new JavaSparkContext(_sparkContext)
     _sqlContext = new SQLContext(_sparkContext)
 
@@ -341,7 +352,7 @@ class Kernel (
     conf.set("spark.submit.deployMode", "client")
 
     KeyValuePairUtils.stringToKeyValuePairSeq(
-      config.getString("spark_configuration")
+      _config.getString("spark_configuration")
     ).foreach { keyValuePair =>
       logger.info(s"Setting ${keyValuePair.key} to ${keyValuePair.value}")
       Try(conf.set(keyValuePair.key, keyValuePair.value))
@@ -366,7 +377,7 @@ class Kernel (
     var sparkContext: SparkContext = null
     val outStream = new KernelOutputStream(
       actorLoader, KMBuilder(), global.ScheduledTaskManager.instance,
-      sendEmptyOutput = config.getBoolean("send_empty_output")
+      sendEmptyOutput = _config.getBoolean("send_empty_output")
     )
 
     // Update global stream state and use it to set the Console local variables
@@ -383,6 +394,9 @@ class Kernel (
   protected[kernel] def updateInterpreterWithSparkContext(
     sparkContext: SparkContext
   ) = {
+
+    interpreter.bindSparkContext(sparkContext)
+    /*
     interpreter.doQuietly {
       logger.debug("Binding context into interpreter")
       interpreter.bind(
@@ -407,6 +421,7 @@ class Kernel (
                                 |""".stripMargin)
       }
     }
+    */
 
     // Add ourselves as a dependency
     // TODO: Provide ability to point to library as commandline argument
@@ -420,9 +435,12 @@ class Kernel (
       @inline def getJarPathFor(klass: Class[_]): String =
         klass.getProtectionDomain.getCodeSource.getLocation.getPath
 
+      val interpreterC = interpreterManager.interpreters.values.map(_.getClass)
+
       // TODO: Provide less hard-coded solution in case additional dependencies
       //       are added or classes are refactored to different projects
-      val jarPaths = Seq(
+      val classDep = Seq(
+
         // Macro project
         classOf[com.ibm.spark.annotations.Experimental],
 
@@ -436,17 +454,19 @@ class Kernel (
         classOf[com.ibm.spark.kernel.api.KernelLike],
 
         // Scala-interpreter project
-        classOf[com.ibm.spark.kernel.interpreter.scala.ScalaInterpreter],
+        //classOf[com.ibm.spark.kernel.interpreter.scala.ScalaInterpreter],
 
         // PySpark-interpreter project
-        classOf[com.ibm.spark.kernel.interpreter.pyspark.PySparkInterpreter],
+        //classOf[com.ibm.spark.kernel.interpreter.pyspark.PySparkInterpreter],
 
         // SparkR-interpreter project
-        classOf[com.ibm.spark.kernel.interpreter.sparkr.SparkRInterpreter],
+        //classOf[com.ibm.spark.kernel.interpreter.sparkr.SparkRInterpreter],
 
         // Kernel project
         classOf[com.ibm.spark.boot.KernelBootstrap]
-      ).map(getJarPathFor)
+      )
+
+      val jarPaths = (interpreterC ++ classDep).map(getJarPathFor)
 
       logger.info("Adding kernel jars to cluster:\n- " +
         jarPaths.mkString("\n- "))
@@ -454,6 +474,10 @@ class Kernel (
     } else {
       logger.info("Running in local mode! Not adding self as dependency!")
     }
+  }
+
+  override def interpreter(name: String): Option[Interpreter] = {
+    interpreterManager.interpreters.get(name)
   }
 
   override def sparkContext: SparkContext = _sparkContext

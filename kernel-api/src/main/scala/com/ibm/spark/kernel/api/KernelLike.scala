@@ -18,6 +18,7 @@ package com.ibm.spark.kernel.api
 
 import java.io.{PrintStream, InputStream, OutputStream}
 
+import com.typesafe.config.Config
 import org.apache.spark.api.java.JavaSparkContext
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SQLContext
@@ -89,6 +90,11 @@ trait KernelLike {
    * @note Using Java structure to enable other languages to have easy access!
    */
   val data: java.util.Map[String, Any]
+
+
+  def interpreter(name: String): Option[com.ibm.spark.interpreter.Interpreter]
+
+  def config: Config
 
   def sparkContext: SparkContext
 

@@ -32,12 +32,11 @@ import scala.tools.nsc.interpreter.{InputStream, OutputStream}
  * SPARK_HOME pointing to a binary distribution (needs packaged SparkR library)
  * and an implementation of R on the path.
  *
- * @param _kernel The kernel API to expose to the SparkR instance
  */
 class SparkRInterpreter(
-  private val _kernel: KernelLike
 ) extends Interpreter {
   private val logger = LoggerFactory.getLogger(this.getClass)
+  private var _kernel: KernelLike = _
 
   // TODO: Replace hard-coded maximum queue count
   /** Represents the state used by this interpreter's R instance. */
@@ -66,6 +65,11 @@ class SparkRInterpreter(
     sparkRProcessHandler
   )
   private lazy val sparkRTransformer = new SparkRTransformer
+
+  override def init(kernel: KernelLike): Interpreter = {
+    _kernel = kernel
+    this
+  }
 
   /**
    * Executes the provided code with the option to silence output.
@@ -127,7 +131,9 @@ class SparkRInterpreter(
   override def updatePrintStreams(in: InputStream, out: OutputStream, err: OutputStream): Unit = ???
 
   // Unsupported
-  override def classServerURI: String = ???
+  override def classServerURI: String = ""
+
+  override def bindSparkContext(sparkContext: SparkContext): Unit = {}
 
   // Unsupported
   override def interrupt(): Interpreter = ???

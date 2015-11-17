@@ -86,10 +86,7 @@ class ScalaInterpreterSpec extends FunSpec
   }
 
   class StubbedStartInterpreter
-    extends ScalaInterpreter(mock[List[String]], mock[OutputStream])
-    with SparkIMainProducerLike
-    with TaskManagerProducerLike
-    with SettingsProducerLike
+    extends ScalaInterpreter
   {
     override def newSparkIMain(settings: Settings, out: JPrintWriter): SparkIMain = mockSparkIMain
     override def newTaskManager(): TaskManager = mockTaskManager

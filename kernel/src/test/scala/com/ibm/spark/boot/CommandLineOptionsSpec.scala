@@ -335,6 +335,22 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
           be (Seq(url1, url2))
       }
     }
+
+    describe("when received --interpreter-plugin") {
+      it("should return the interpreter-plugin along with the defaults") {
+        val options = new CommandLineOptions(Seq(
+          "--interpreter-plugin",
+          "dummy:test.utils.DummyInterpreter"
+        ))
+
+        val config: Config = options.toConfig
+
+        val p = config.getList("interpreter_plugins")
+
+        p should not be empty
+
+      }
+    }
   }
 
 }

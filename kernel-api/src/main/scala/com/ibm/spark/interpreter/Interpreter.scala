@@ -18,9 +18,20 @@ package com.ibm.spark.interpreter
 
 import java.net.URL
 
+import com.ibm.spark.kernel.api.KernelLike
+import org.apache.spark.SparkContext
+
 import scala.tools.nsc.interpreter._
 
 trait Interpreter {
+
+  /**
+   * Initializes the interpreter.
+   * @param kernel The kernel
+   * @return The newly initialized interpreter
+   */
+  def init(kernel: KernelLike): Interpreter
+
   /**
    * Starts the interpreter, initializing any internal state.
    * @return A reference to the interpreter
@@ -67,6 +78,8 @@ trait Interpreter {
    * @return The return value of body
    */
   def doQuietly[T](body: => T): T
+
+  def bindSparkContext(sparkContext: SparkContext): Unit = ???
 
   /**
    * Binds a variable in the interpreter to a value.
