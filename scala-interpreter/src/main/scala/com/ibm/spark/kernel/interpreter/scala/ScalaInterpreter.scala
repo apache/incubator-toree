@@ -190,8 +190,7 @@ class ScalaInterpreter() extends Interpreter {
   }
 
   override def init(kernel: KernelLike): Interpreter = {
-    import scala.collection.JavaConverters._
-    val args = kernel.config.getStringList("interpreter_args").asScala.toList
+    val args = interpreterArgs(kernel)
     this.settings = newSettings(args)
 
     val urls = _thisClassloader match {
@@ -205,20 +204,31 @@ class ScalaInterpreter() extends Interpreter {
       classpath.distinct.mkString(java.io.File.pathSeparator)
     this.settings.embeddedDefaults(_runtimeClassloader)
 
-    maxInterpreterThreads = kernel.config.getInt("max_interpreter_threads")
+    maxInterpreterThreads = maxInterpreterThreads(kernel)
 
     start()
+    bindKernelVarialble(kernel)
 
+    this
+  }
+
+  protected def interpreterArgs(kernel: KernelLike): List[String] = {
+    import scala.collection.JavaConverters._
+    kernel.config.getStringList("interpreter_args").asScala.toList
+  }
+
+  protected def maxInterpreterThreads(kernel: KernelLike): Int = {
+    kernel.config.getInt("max_interpreter_threads")
+  }
+
+  protected def bindKernelVarialble(kernel: KernelLike): Unit = {
     doQuietly {
       bind(
         "kernel", "com.ibm.spark.kernel.api.Kernel",
         kernel, List( """@transient implicit""")
       )
     }
-
-    this
   }
-
 
   override def interrupt(): Interpreter = {
     require(sparkIMain != null && taskManager != null)

@@ -22,7 +22,7 @@ import com.ibm.spark.interpreter.Interpreter
 import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.kernel.interpreter.scala.{StandardSettingsProducer, StandardTaskManagerProducer, StandardSparkIMainProducer, ScalaInterpreter}
 import com.ibm.spark.kernel.protocol.v5.magic.PostProcessor
-import com.ibm.spark.utils.MultiOutputStream
+import com.ibm.spark.utils.{TaskManager, MultiOutputStream}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
 
@@ -37,26 +37,18 @@ class PostProcessorSpecForIntegration extends FunSpec with Matchers
     //       for performance improvements
     scalaInterpreter = new ScalaInterpreter {
       override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
-      override def init(kernel: KernelLike): Interpreter = {
-        settings = newSettings(List[String]())
 
-        val urls = _thisClassloader match {
-          case cl: java.net.URLClassLoader => cl.getURLs.toList
-          case a => // TODO: Should we really be using sys.error here?
-            sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
-        }
-        val classpath = urls.map(_.toString)
-
-        settings.classpath.value =
-          classpath.distinct.mkString(java.io.File.pathSeparator)
-        settings.embeddedDefaults(_runtimeClassloader)
-
-        this
+      override protected def interpreterArgs(kernel: KernelLike): List[String] = {
+        Nil
       }
+
+      override protected def maxInterpreterThreads(kernel: KernelLike): Int = {
+        TaskManager.DefaultMaximumWorkers
+      }
+
+      override protected def bindKernelVarialble(kernel: KernelLike): Unit = { }
     }
     scalaInterpreter.init(mock[KernelLike])
-
-    scalaInterpreter.start()
 
     postProcessor = new PostProcessor(scalaInterpreter)
   }

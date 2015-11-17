@@ -22,7 +22,7 @@ import com.ibm.spark.global.StreamState
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.kernel.interpreter.scala.{ScalaInterpreter, StandardSettingsProducer, StandardSparkIMainProducer, StandardTaskManagerProducer}
-import com.ibm.spark.utils.MultiOutputStream
+import com.ibm.spark.utils.{TaskManager, MultiOutputStream}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 
@@ -36,25 +36,18 @@ class AddExternalJarMagicSpecForIntegration
   before {
     interpreter = new ScalaInterpreter {
       override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
-      override def init(kernel: KernelLike): Interpreter = {
-        settings = newSettings(List[String]())
 
-        val urls = _thisClassloader match {
-          case cl: java.net.URLClassLoader => cl.getURLs.toList
-          case a => // TODO: Should we really be using sys.error here?
-            sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
-        }
-        val classpath = urls.map(_.toString)
-
-        settings.classpath.value =
-          classpath.distinct.mkString(java.io.File.pathSeparator)
-        settings.embeddedDefaults(_runtimeClassloader)
-
-        this
+      override protected def interpreterArgs(kernel: KernelLike): List[String] = {
+        Nil
       }
+
+      override protected def maxInterpreterThreads(kernel: KernelLike): Int = {
+        TaskManager.DefaultMaximumWorkers
+      }
+
+      override protected def bindKernelVarialble(kernel: KernelLike): Unit = { }
     }
     interpreter.init(mock[KernelLike])
-    interpreter.start()
 
     StreamState.setStreams(outputStream = outputResult)
   }
