@@ -1,4 +1,3 @@
-import xerial.sbt.Pack._
 import Common._
 /*
  * Copyright 2015 IBM Corp.
@@ -15,8 +14,6 @@ import Common._
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pack <<= pack dependsOn compile
-
 //
 // SCALA INTERPRETER DEPENDENCIES
 //

@@ -25,7 +25,6 @@ import sbtbuildinfo.Plugin._
 import sbtunidoc.Plugin.UnidocKeys._
 import sbtunidoc.Plugin._
 import scoverage.ScoverageSbtPlugin
-import xerial.sbt.Pack._
 import com.typesafe.sbt.SbtGit.{GitKeys => git}
 import sbtassembly.AssemblyKeys._
 
@@ -97,9 +96,7 @@ trait SubProjects extends Settings with TestTasks {
   lazy val kernel = addTestTasksToProject(Project(
     id = "kernel",
     base = file("kernel"),
-    settings = fullSettings ++
-      packSettings ++ Seq(
-        packMain := Map("sparkkernel" -> "com.ibm.spark.SparkKernel"),
+    settings = fullSettings ++ Seq(
         test in assembly := {}
       )
   )) dependsOn(
@@ -168,7 +165,7 @@ trait SubProjects extends Settings with TestTasks {
   lazy val kernel_api = addTestTasksToProject(Project(
     id = "kernel-api",
     base = file("kernel-api"),
-    settings = fullSettings ++ packSettings
+    settings = fullSettings
   )) dependsOn(macros % "test->test;compile->compile")
 
   /**
@@ -182,7 +179,7 @@ trait SubProjects extends Settings with TestTasks {
     sourceGenerators in Compile <+= buildInfo,
     buildInfoKeys ++= Seq[BuildInfoKey](
       version, scalaVersion,
-      "sparkVersion" -> Common.sparkVersion.value,
+      "sparkVersion" -> Common.sparkVersion,
       "buildDate" -> {
         val simpleDateFormat = new SimpleDateFormat("yyyyMMdd-HHmmss")
         val now = Calendar.getInstance.getTime
@@ -212,7 +209,7 @@ trait SubProjects extends Settings with TestTasks {
   lazy val protocol = addTestTasksToProject(Project(
     id = "protocol",
     base = file("protocol"),
-    settings = fullSettings ++ buildInfoSettings ++ buildSettings ++ packSettings
+    settings = fullSettings ++ buildInfoSettings ++ buildSettings
   )) dependsOn(macros % "test->test;compile->compile")
 
   /**

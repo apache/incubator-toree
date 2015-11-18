@@ -22,6 +22,7 @@ import scala.util.Properties
 
 object Common {
   //  Parameters for publishing to artifact repositories
+  val versionNumber             = Properties.envOrElse("VERSION", "0.0.0-dev")
   val snapshot                  = Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
   val repoPort                  = Properties.envOrElse("REPO_PORT","")
   val repoHost                  = Properties.envOrElse("REPO_HOST","")
@@ -30,7 +31,7 @@ object Common {
   val repoEndpoint              = Properties.envOrElse("REPO_ENDPOINT", if(snapshot) "/nexus/content/repositories/snapshots/" else "/nexus/content/repositories/releases/")
   val repoUrl                   = Properties.envOrElse("REPO_URL", s"http://${repoHost}:${repoPort}${repoEndpoint}")
 
-  private val versionNumber     = "0.1.5"
+
   private val buildOrganization = "com.ibm.spark"
   private val buildVersion      =
     if (snapshot) s"$versionNumber-SNAPSHOT"
@@ -38,7 +39,7 @@ object Common {
   private val buildScalaVersion = "2.10.4"
   private val buildSbtVersion   = "0.13.7"
 
-  lazy val sparkVersion = settingKey[String]("The Apache Spark version to use")
+
 
   // Global dependencies provided to all projects
   private var buildLibraryDependencies = Seq(
@@ -52,10 +53,53 @@ object Common {
     "org.mockito" % "mockito-all" % "1.9.5" % "test"   // MIT
   )
 
-  lazy val hadoopVersion = settingKey[String]("The Apache Hadoop version to use")
-
   // The prefix used for our custom artifact names
   private val artifactPrefix = "ibm-spark"
+  lazy val sparkVersion = {
+    val sparkEnvironmentVariable = "APACHE_SPARK_VERSION"
+    val defaultSparkVersion = "1.5.1"
+
+    val _sparkVersion = Properties.envOrNone(sparkEnvironmentVariable)
+
+    if (_sparkVersion.isEmpty) {
+      scala.Console.out.println(
+        s"""
+           |[INFO] Using default Apache Spark $defaultSparkVersion!
+           """.stripMargin.trim.replace('\n', ' '))
+      defaultSparkVersion
+    } else {
+      val version = _sparkVersion.get
+      scala.Console.out.println(
+        s"""
+           |[INFO] Using Apache Spark $version provided from
+                                                |$sparkEnvironmentVariable!
+           """.stripMargin.trim.replace('\n', ' '))
+      version
+    }
+  }
+
+  lazy val hadoopVersion = {
+    val hadoopEnvironmentVariable = "APACHE_HADOOP_VERSION"
+    val defaultHadoopVersion = "2.3.0"
+
+    val _hadoopVersion = Properties.envOrNone(hadoopEnvironmentVariable)
+
+    if (_hadoopVersion.isEmpty) {
+      scala.Console.out.println(
+        s"""
+           |[INFO] Using default Apache Hadoop $defaultHadoopVersion!
+           """.stripMargin.trim.replace('\n', ' '))
+      defaultHadoopVersion
+    } else {
+      val version = _hadoopVersion.get
+      scala.Console.out.println(
+        s"""
+           |[INFO] Using Apache Hadoop $version provided from
+                                                 |$hadoopEnvironmentVariable!
+           """.stripMargin.trim.replace('\n', ' '))
+      version
+    }
+  }
 
   val settings: Seq[Def.Setting[_]] = Seq(
     organization := buildOrganization,
@@ -64,53 +108,6 @@ object Common {
     sbtVersion := buildSbtVersion,
     libraryDependencies ++= buildLibraryDependencies,
     isSnapshot := snapshot,
-    sparkVersion := {
-      val sparkEnvironmentVariable = "APACHE_SPARK_VERSION"
-      val defaultSparkVersion = "1.5.1"
-
-      val _sparkVersion = Properties.envOrNone(sparkEnvironmentVariable)
-
-      if (_sparkVersion.isEmpty) {
-        scala.Console.out.println(
-          s"""
-             |[INFO] Using default Apache Spark $defaultSparkVersion!
-           """.stripMargin.trim.replace('\n', ' '))
-        defaultSparkVersion
-      } else {
-        val version = _sparkVersion.get
-        scala.Console.out.println(
-          s"""
-             |[INFO] Using Apache Spark $version provided from
-             |$sparkEnvironmentVariable!
-           """.stripMargin.trim.replace('\n', ' '))
-        version
-      }
-    },
-    hadoopVersion := {
-      val hadoopEnvironmentVariable = "APACHE_HADOOP_VERSION"
-      val defaultHadoopVersion = "2.3.0"
-
-      val _hadoopVersion = Properties.envOrNone(hadoopEnvironmentVariable)
-
-      if (_hadoopVersion.isEmpty) {
-        scala.Console.out.println(
-          s"""
-             |[INFO] Using default Apache Hadoop $defaultHadoopVersion!
-           """.stripMargin.trim.replace('\n', ' '))
-        defaultHadoopVersion
-      } else {
-        val version = _hadoopVersion.get
-        scala.Console.out.println(
-          s"""
-             |[INFO] Using Apache Hadoop $version provided from
-             |$hadoopEnvironmentVariable!
-           """.stripMargin.trim.replace('\n', ' '))
-        version
-      }
-    },
-
-
-
 
     scalacOptions in (Compile, doc) ++= Seq(
       // Ignore packages (for Scaladoc) not from our project
@@ -176,13 +173,13 @@ object Common {
       name = "netty"
     )
     ),
-    "org.apache.spark" %% "spark-streaming" % "1.5.1" % "provided",      // Apache v2
-    "org.apache.spark" %% "spark-sql" % "1.5.1" % "provided",            // Apache v2
-    "org.apache.spark" %% "spark-mllib" % "1.5.1" % "provided",          // Apache v2
-    "org.apache.spark" %% "spark-graphx" % "1.5.1" % "provided",         // Apache v2
-    "org.apache.spark" %% "spark-repl" % "1.5.1"  % "provided" excludeAll // Apache v2
+    "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-mllib" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-graphx" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-repl" % sparkVersion  % "provided" excludeAll
       ExclusionRule(organization = "org.apache.hadoop"),
-    "org.apache.hadoop" % "hadoop-client" % "2.3.0" % "provided" excludeAll
+    "org.apache.hadoop" % "hadoop-client" % hadoopVersion % "provided" excludeAll
       ExclusionRule(organization = "javax.servlet"))
 
   // ==========================================================================

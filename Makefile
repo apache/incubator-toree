@@ -14,50 +14,26 @@
 # limitations under the License.
 #
 
-.PHONY: clean build build-image dev vagrantup
+.PHONY: clean build init dev test
 
-#   Container Properties
-KERNEL_CONTAINER?=spark-kernel
-STDIN_PORT?=48000
-SHELL_PORT?=48001
-IOPUB_PORT?=48002
-CONTROL_PORT?=48003
-HB_PORT?=48004
-IP?=0.0.0.0
-VERSION?=0.1.5-SNAPSHOT
+VERSION?=0.1.5
+IS_SNAPSHOT?=true
+APACHE_SPARK_VERSION?=1.5.1
+APACHE_HADOOP_VERSION?=2.3.0
+
+ENV_OPTS=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) APACHE_HADOOP_VERSION=$(APACHE_HADOOP_VERSION) VERSION=$(VERSION)
 
 clean:
 	vagrant ssh -c "cd /src/spark-kernel/ && sbt clean"
 	@-rm -r dist
 
-build-image: IMAGE_NAME?cloudet/spark-kernel
-build-image: CACHE?=""
-build-image:
-	vagrant ssh -c "cd /src/spark-kernel && docker build $(CACHE) -t $(FULL_IMAGE) ."
-
-run-image: KERNEL_CONTAINER?=spark-kernel
-run-image: STDIN_PORT?=48000
-run-image: SHELL_PORT?=48001
-run-image: IOPUB_PORT?=48002
-run-image: CONTROL_PORT?=48003
-run-image: HB_PORT?=48004
-run-image: IP?=0.0.0.0
-run-image: build-image
-	vagrant ssh -c "docker rm -f $(KERNEL_CONTAINER) || true"
-	vagrant ssh -c "docker run -d \
-											--name=$(KERNEL_CONTAINER) \
-											-e "STDIN_PORT=$(STDIN_PORT)" \
-											-e "SHELL_PORT=$(SHELL_PORT)" \
-											-e "IOPUB_PORT=$(IOPUB_PORT)" \
-											-e "CONTROL_PORT=$(CONTROL_PORT)" \
-											-e "HB_PORT=$(HB_PORT)" -e "IP=$(IP)" \
-											$(FULL_IMAGE)"
-
-vagrantup:
+init:
 	vagrant up
 
 kernel/target/scala-2.10/kernel-assembly-$(VERSION).jar: ${shell find ./*/src/main/**/*}
-	vagrant ssh -c "cd /src/spark-kernel/ && sbt kernel/assembly"
+kernel/target/scala-2.10/kernel-assembly-$(VERSION).jar: ${shell find ./*/build.sbt}
+kernel/target/scala-2.10/kernel-assembly-$(VERSION).jar: project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
+	vagrant ssh -c "cd /src/spark-kernel/ && $(ENV_OPTS) sbt kernel/assembly"
 
 build: kernel/target/scala-2.10/kernel-assembly-$(VERSION).jar
 
@@ -65,7 +41,7 @@ dev: dist
 	vagrant ssh -c "cd ~ && ipython notebook --ip=* --no-browser"
 
 test:
-	vagrant ssh -c "cd /src/spark-kernel/ && sbt compile test"
+	vagrant ssh -c "cd /src/spark-kernel/ && $(ENV_OPTS) sbt compile test"
 
 dist: build
 	@mkdir -p dist/spark-kernel/bin dist/spark-kernel/lib
