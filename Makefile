@@ -14,14 +14,17 @@
 # limitations under the License.
 #
 
-.PHONY: clean build init dev test
+.PHONY: clean build init dev test test-travis
 
 VERSION?=0.1.5
 IS_SNAPSHOT?=true
 APACHE_SPARK_VERSION?=1.5.1
 APACHE_HADOOP_VERSION?=2.3.0
 
-ENV_OPTS=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) APACHE_HADOOP_VERSION=$(APACHE_HADOOP_VERSION) VERSION=$(VERSION)
+ENV_OPTS=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) APACHE_HADOOP_VERSION=$(APACHE_HADOOP_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)
+
+FULL_VERSION=$(shell echo $(VERSION)`[ "$(IS_SNAPSHOT)" == "true" ] && (echo '-SNAPSHOT')` )
+ASSEMBLY_JAR=$(shell echo kernel-assembly-$(FULL_VERSION).jar )
 
 clean:
 	vagrant ssh -c "cd /src/spark-kernel/ && sbt clean"
@@ -30,12 +33,12 @@ clean:
 init:
 	vagrant up
 
-kernel/target/scala-2.10/kernel-assembly-$(VERSION).jar: ${shell find ./*/src/main/**/*}
-kernel/target/scala-2.10/kernel-assembly-$(VERSION).jar: ${shell find ./*/build.sbt}
-kernel/target/scala-2.10/kernel-assembly-$(VERSION).jar: project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
+kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
+kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
+kernel/target/scala-2.10/$(ASSEMBLY_JAR): project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
 	vagrant ssh -c "cd /src/spark-kernel/ && $(ENV_OPTS) sbt kernel/assembly"
 
-build: kernel/target/scala-2.10/kernel-assembly-$(VERSION).jar
+build: kernel/target/scala-2.10/$(ASSEMBLY_JAR)
 
 dev: dist
 	vagrant ssh -c "cd ~ && ipython notebook --ip=* --no-browser"
@@ -43,7 +46,12 @@ dev: dist
 test:
 	vagrant ssh -c "cd /src/spark-kernel/ && $(ENV_OPTS) sbt compile test"
 
-dist: build
+dist: COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
+dist: VERSION_FILE=dist/spark-kernel/VERSION
+dist: kernel/target/scala-2.10/$(ASSEMBLY_JAR)
 	@mkdir -p dist/spark-kernel/bin dist/spark-kernel/lib
 	@cp -r etc/bin/* dist/spark-kernel/bin/.
-	@cp kernel/target/scala-2.10/kernel-assembly-*.jar dist/spark-kernel/lib/.
+	@cp kernel/target/scala-2.10/$(ASSEMBLY_JAR) dist/spark-kernel/lib/.
+	@echo "VERSION: $(FULL_VERSION)" > $(VERSION_FILE)
+	@echo "COMMIT: $(COMMIT)" >> $(VERSION_FILE)
+	@cd dist; tar -cvzf spark-kernel-$(FULL_VERSION).tar.gz spark-kernel
