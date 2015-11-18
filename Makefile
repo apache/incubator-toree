@@ -55,3 +55,8 @@ dist: kernel/target/scala-2.10/$(ASSEMBLY_JAR)
 	@echo "VERSION: $(FULL_VERSION)" > $(VERSION_FILE)
 	@echo "COMMIT: $(COMMIT)" >> $(VERSION_FILE)
 	@cd dist; tar -cvzf spark-kernel-$(FULL_VERSION).tar.gz spark-kernel
+
+test-travis:
+	$(ENV_OPTS) sbt clean test -Dakka.test.timefactor=3
+	find $(HOME)/.sbt -name "*.lock" | xargs rm
+	find $(HOME)/.ivy2 -name "ivydata-*.properties" | xargs rm
