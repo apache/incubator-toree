@@ -12,3 +12,5 @@ scratch/
 test-output/
 out/
 
+.ensime
+.ensime_cache/
