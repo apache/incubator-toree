@@ -129,7 +129,7 @@ cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
     ],
     "codemirror_mode": "scala",
     "env": {
-        "SPARK_OPTS": "--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=trace"
+        "SPARK_OPTS": "--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=trace",
         "MAX_INTERPRETER_THREADS": "16",
         "SPARK_CONFIGURATION": "spark.cores.max=4",
         "CAPTURE_STANDARD_OUT": "true",
