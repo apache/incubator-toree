@@ -352,6 +352,8 @@ class ScalaInterpreterSpec extends FunSpec
         //  Results that match
         interpreter.truncateResult("res7: Int = 38") should be("38")
         interpreter.truncateResult("res7: Int = 38",true) should be("Int = 38")
+        interpreter.truncateResult("res4: String = \nVector(1\n, 2\n)") should be ("Vector(1\n, 2\n)")
+        interpreter.truncateResult("res4: String = \nVector(1\n, 2\n)",true) should be ("String = Vector(1\n, 2\n)")
         interpreter.truncateResult("res123") should be("")
         interpreter.truncateResult("res1") should be("")
         //  Results that don't match
