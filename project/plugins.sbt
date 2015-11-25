@@ -29,12 +29,8 @@ addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.1")
 // `sbt dependencyTree`; there are other commands provided as well
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
 
-// Provides ability to create a pack containing all jars and a script to run them
-// using `sbt pack` or `sbt pack-archive` to generate a *.tar.gz file
-addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.6.1")
-
-//  Provides the ability to package our project as a docker image
-addSbtPlugin("se.marcuslonnberg" % "sbt-docker" % "0.5.2")
+// Provides abilit to create an uber-jar
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.0")
 
 // Provides a generated build info object to sync between build and application
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.3.2")

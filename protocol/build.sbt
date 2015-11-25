@@ -1,4 +1,3 @@
-import xerial.sbt.Pack._
 /*
  * Copyright 2014 IBM Corp.
  *
@@ -14,15 +13,15 @@ import xerial.sbt.Pack._
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pack <<= pack dependsOn compile
-
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
 //
 // JSON DEPENDENCIES
 //
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-json" % "2.3.6", // Apache v2
+  "com.typesafe.play" %% "play-json" % "2.3.6" excludeAll( // Apache v2
+      ExclusionRule(organization = "com.fasterxml.jackson.core")
+    ),
   "org.slf4j" % "slf4j-api" % "1.7.5" // MIT
 )
 

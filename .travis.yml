@@ -1,19 +1,21 @@
 language: scala
 scala:
     - "2.10.4"
+
 jdk:
     - oraclejdk7
     - openjdk7
-script: 
-    - "sbt clean test -Dakka.test.timefactor=3"
-    - find $HOME/.sbt -name "*.lock" | xargs rm
-    - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+
+script:
+    - make test-travis
+
 sudo: false
+
 cache:
     directories:
         - $HOME/.ivy2/cache
         - $HOME/.sbt/boot/
-branches:
-  only:
-    - master
 
+branches:
+    only:
+        - master

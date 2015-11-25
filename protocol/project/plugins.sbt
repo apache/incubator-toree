@@ -13,6 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Provides ability to create a pack containing all jars and a script to run
-// them using `sbt pack` or `sbt pack-archive` to generate a *.tar.gz file
-addSbtPlugin("org.xerial.sbt" % "sbt-pack" % "0.6.1")
