@@ -78,29 +78,6 @@ object Common {
     }
   }
 
-  lazy val hadoopVersion = {
-    val hadoopEnvironmentVariable = "APACHE_HADOOP_VERSION"
-    val defaultHadoopVersion = "2.3.0"
-
-    val _hadoopVersion = Properties.envOrNone(hadoopEnvironmentVariable)
-
-    if (_hadoopVersion.isEmpty) {
-      scala.Console.out.println(
-        s"""
-           |[INFO] Using default Apache Hadoop $defaultHadoopVersion!
-           """.stripMargin.trim.replace('\n', ' '))
-      defaultHadoopVersion
-    } else {
-      val version = _hadoopVersion.get
-      scala.Console.out.println(
-        s"""
-           |[INFO] Using Apache Hadoop $version provided from
-                                                 |$hadoopEnvironmentVariable!
-           """.stripMargin.trim.replace('\n', ' '))
-      version
-    }
-  }
-
   val settings: Seq[Def.Setting[_]] = Seq(
     organization := buildOrganization,
     version := buildVersion,
@@ -165,7 +142,6 @@ object Common {
 
 
   buildLibraryDependencies ++= Seq( "org.apache.spark" %% "spark-core" % "1.5.1"  % "provided" excludeAll( // Apache v2
-    ExclusionRule(organization = "org.apache.hadoop"),
 
     // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
     ExclusionRule(
@@ -177,10 +153,8 @@ object Common {
     "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
     "org.apache.spark" %% "spark-mllib" % sparkVersion % "provided",
     "org.apache.spark" %% "spark-graphx" % sparkVersion % "provided",
-    "org.apache.spark" %% "spark-repl" % sparkVersion  % "provided" excludeAll
-      ExclusionRule(organization = "org.apache.hadoop"),
-    "org.apache.hadoop" % "hadoop-client" % hadoopVersion % "provided" excludeAll
-      ExclusionRule(organization = "javax.servlet"))
+    "org.apache.spark" %% "spark-repl" % sparkVersion  % "provided"
+  )
 
   // ==========================================================================
   // = REBUILD IVY XML SETTINGS BELOW
