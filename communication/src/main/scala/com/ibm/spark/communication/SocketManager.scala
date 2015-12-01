@@ -38,6 +38,19 @@ class SocketManager {
     new ConcurrentHashMap[SocketLike, ZMQ.Context]().asScala
 
   /**
+   * Provides and registers a new ZMQ context, used for creating a new socket.
+   * @param mkSocket a function that creates a socket using a given context
+   * @return the new socket
+   * @see newZmqContext
+   */
+  private def withNewContext[A <: SocketLike](mkSocket: ZMQ.Context => A): A = {
+    val ctx = newZmqContext()
+    val socket = mkSocket(ctx)
+    socketToContextMap.put(socket, ctx)
+    socket
+  }
+
+  /**
    * Closes the socket provided and also closes the context if no more sockets
    * are using the context.
    *
@@ -45,6 +58,7 @@ class SocketManager {
    */
   def closeSocket(socket: SocketLike) = {
     socket.close()
+
     socketToContextMap.remove(socket).foreach(context => {
       if (!socketToContextMap.values.exists(_ == context)) context.close()
     })
@@ -61,9 +75,9 @@ class SocketManager {
   def newReqSocket(
     address: String,
     inboundMessageCallback: (Seq[String]) => Unit
-  ): SocketLike = {
-    new JeroMQSocket(new ReqSocketRunnable(
-      newZmqContext(),
+  ): SocketLike = withNewContext{ ctx =>
+     new JeroMQSocket(new ReqSocketRunnable(
+      ctx,
       Some(inboundMessageCallback),
       Connect(address),
       Linger(0)
@@ -81,9 +95,9 @@ class SocketManager {
   def newRepSocket(
     address: String,
     inboundMessageCallback: (Seq[String]) => Unit
-  ): SocketLike = {
+  ): SocketLike = withNewContext{ ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
-      newZmqContext(),
+      ctx,
       RepSocket,
       Some(inboundMessageCallback),
       Bind(address),
@@ -100,9 +114,9 @@ class SocketManager {
    */
   def newPubSocket(
     address: String
-  ): SocketLike = {
+  ): SocketLike = withNewContext{ ctx =>
     new JeroMQSocket(new PubSocketRunnable(
-      newZmqContext(),
+      ctx,
       Bind(address),
       Linger(0)
     ))
@@ -119,9 +133,9 @@ class SocketManager {
   def newSubSocket(
     address: String,
     inboundMessageCallback: (Seq[String]) => Unit
-  ): SocketLike = {
+  ): SocketLike = withNewContext { ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
-      newZmqContext(),
+      ctx,
       SubSocket,
       Some(inboundMessageCallback),
       Connect(address),
@@ -141,9 +155,9 @@ class SocketManager {
   def newRouterSocket(
     address: String,
     inboundMessageCallback: (Seq[String]) => Unit
-  ): SocketLike = {
+  ): SocketLike = withNewContext { ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
-      newZmqContext(),
+      ctx,
       RouterSocket,
       Some(inboundMessageCallback),
       Bind(address),
@@ -163,9 +177,9 @@ class SocketManager {
     address: String,
     inboundMessageCallback: (Seq[String]) => Unit,
     identity: String = UUID.randomUUID().toString
-  ): SocketLike = {
+  ): SocketLike = withNewContext{ ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
-      newZmqContext(),
+      ctx,
       DealerSocket,
       Some(inboundMessageCallback),
       Connect(address),
