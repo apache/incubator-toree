@@ -14,54 +14,48 @@
 # limitations under the License.
 #
 
-.PHONY: clean build build-image dev vagrantup
+.PHONY: clean build init dev test test-travis
 
-#   Container Properties
-KERNEL_CONTAINER?=spark-kernel
-STDIN_PORT?=48000
-SHELL_PORT?=48001
-IOPUB_PORT?=48002
-CONTROL_PORT?=48003
-HB_PORT?=48004
-IP?=0.0.0.0
+VERSION?=0.1.5
+IS_SNAPSHOT?=true
+APACHE_SPARK_VERSION?=1.5.1
+
+ENV_OPTS=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)
+
+FULL_VERSION=$(shell echo $(VERSION)`[ "$(IS_SNAPSHOT)" == "true" ] && (echo '-SNAPSHOT')` )
+ASSEMBLY_JAR=$(shell echo kernel-assembly-$(FULL_VERSION).jar )
 
 clean:
 	vagrant ssh -c "cd /src/spark-kernel/ && sbt clean"
+	@-rm -r dist
 
-kernel/target/pack/bin/sparkkernel: vagrantup ${shell find ./*/src/main/**/*}
-	vagrant ssh -c "cd /src/spark-kernel/ && sbt compile && sbt pack"
-	vagrant ssh -c "cd /src/spark-kernel/kernel/target/pack && make install"
-
-build-image: IMAGE_NAME?cloudet/spark-kernel
-build-image: CACHE?=""
-build-image:
-	vagrant ssh -c "cd /src/spark-kernel && docker build $(CACHE) -t $(FULL_IMAGE) ."
-
-run-image: KERNEL_CONTAINER?=spark-kernel
-run-image: STDIN_PORT?=48000
-run-image: SHELL_PORT?=48001
-run-image: IOPUB_PORT?=48002
-run-image: CONTROL_PORT?=48003
-run-image: HB_PORT?=48004
-run-image: IP?=0.0.0.0
-run-image: build-image
-	vagrant ssh -c "docker rm -f $(KERNEL_CONTAINER) || true"
-	vagrant ssh -c "docker run -d \
-											--name=$(KERNEL_CONTAINER) \
-											-e "STDIN_PORT=$(STDIN_PORT)" \
-											-e "SHELL_PORT=$(SHELL_PORT)" \
-											-e "IOPUB_PORT=$(IOPUB_PORT)" \
-											-e "CONTROL_PORT=$(CONTROL_PORT)" \
-											-e "HB_PORT=$(HB_PORT)" -e "IP=$(IP)" \
-											$(FULL_IMAGE)"
-
-vagrantup:
+init:
 	vagrant up
 
-build: kernel/target/pack/bin/sparkkernel
+kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
+kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
+kernel/target/scala-2.10/$(ASSEMBLY_JAR): project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
+	vagrant ssh -c "cd /src/spark-kernel/ && $(ENV_OPTS) sbt kernel/assembly"
 
-dev: build
+build: kernel/target/scala-2.10/$(ASSEMBLY_JAR)
+
+dev: dist
 	vagrant ssh -c "cd ~ && ipython notebook --ip=* --no-browser"
 
-test: build
-	vagrant ssh -c "cd /src/spark-kernel/ && sbt test"
+test:
+	vagrant ssh -c "cd /src/spark-kernel/ && $(ENV_OPTS) sbt compile test"
+
+dist: COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
+dist: VERSION_FILE=dist/spark-kernel/VERSION
+dist: kernel/target/scala-2.10/$(ASSEMBLY_JAR)
+	@mkdir -p dist/spark-kernel/bin dist/spark-kernel/lib
+	@cp -r etc/bin/* dist/spark-kernel/bin/.
+	@cp kernel/target/scala-2.10/$(ASSEMBLY_JAR) dist/spark-kernel/lib/.
+	@echo "VERSION: $(FULL_VERSION)" > $(VERSION_FILE)
+	@echo "COMMIT: $(COMMIT)" >> $(VERSION_FILE)
+	@cd dist; tar -cvzf spark-kernel-$(FULL_VERSION).tar.gz spark-kernel
+
+test-travis:
+	$(ENV_OPTS) sbt clean test -Dakka.test.timefactor=3
+	find $(HOME)/.sbt -name "*.lock" | xargs rm
+	find $(HOME)/.ivy2 -name "ivydata-*.properties" | xargs rm

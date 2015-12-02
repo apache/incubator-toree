@@ -42,22 +42,24 @@ class CommMsgHandler(
 {
   override def process(kernelMessage: KernelMessage): Future[_] = future {
     logKernelMessageAction("Initiating Comm Msg for", kernelMessage)
+
+    val kmBuilder = KMBuilder().withParent(kernelMessage)
+
     Utilities.parseAndHandle(
       kernelMessage.contentString,
       CommMsg.commMsgReads,
-      handler = handleCommMsg,
+      handler = handleCommMsg(kmBuilder),
       errHandler = handleParseError
     )
   }
 
-  private def handleCommMsg(commMsg: CommMsg) = {
+  private def handleCommMsg(kmBuilder: KMBuilder)(commMsg: CommMsg) = {
     val commId = commMsg.comm_id
     val data = commMsg.data
 
     logger.debug(s"Received comm_msg with id '$commId'")
 
-    // TODO: Should we be reusing something from the KernelMessage?
-    val commWriter = new KernelCommWriter(actorLoader, KMBuilder(), commId)
+    val commWriter = new KernelCommWriter(actorLoader, kmBuilder, commId)
 
     commStorage.getCommIdCallbacks(commId) match {
       case None             =>

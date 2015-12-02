@@ -23,24 +23,25 @@ A version of the Spark Kernel is deployed as part of the [Try Jupyter!][try-jupy
 
 Develop
 =======
-[Vagrant][vagrant] is used to simplify the development experience. It is the only requirement to be able to build and test the Spark Kernel on your development machine. 
+[Vagrant][vagrant] is used to simplify the development experience. It is the only requirement to be able to build, package and test the Spark Kernel on your development machine. 
 
-To interact with the Spark Kernel using Jupyter, run
+To build and interact with the Spark Kernel using Jupyter, run
 ```
 make dev
 ```
 
 This will start a Jupyter notebook server accessible at `http://192.168.44.44:8888`. From here you can create notebooks that use the Spark Kernel configured for local mode.
 
+Tests can be run by doing `make test`.
 
 Build & Package
 ===============
 To build and package up the Spark Kernel, run
 ```
-make build
+make dist
 ```
 
-The resulting package of the kernel will be located at `./kernel/target/pack`. It contains a `Makefile` that can be used to install the Spark Kernel by running `make install` within the directory. More details about building and packaging can be found [here][4].
+The resulting package of the kernel will be located at `./dist/spark-kernel-<VERSION>.tar.gz`. The uncompressed package is what is used is ran by Jupyter when doing `make dev`.
 
 
 Version

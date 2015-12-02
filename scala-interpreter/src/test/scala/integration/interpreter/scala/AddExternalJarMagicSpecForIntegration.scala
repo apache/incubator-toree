@@ -20,7 +20,9 @@ import java.io.{ByteArrayOutputStream, OutputStream}
 
 import com.ibm.spark.global.StreamState
 import com.ibm.spark.interpreter._
+import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.kernel.interpreter.scala.{ScalaInterpreter, StandardSettingsProducer, StandardSparkIMainProducer, StandardTaskManagerProducer}
+import com.ibm.spark.utils.{TaskManager, MultiOutputStream}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 
@@ -32,11 +34,20 @@ class AddExternalJarMagicSpecForIntegration
   private var interpreter: Interpreter = _
 
   before {
-    interpreter = new ScalaInterpreter(Nil, mock[OutputStream])
-      with StandardSparkIMainProducer
-      with StandardTaskManagerProducer
-      with StandardSettingsProducer
-    interpreter.start()
+    interpreter = new ScalaInterpreter {
+      override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
+
+      override protected def interpreterArgs(kernel: KernelLike): List[String] = {
+        Nil
+      }
+
+      override protected def maxInterpreterThreads(kernel: KernelLike): Int = {
+        TaskManager.DefaultMaximumWorkers
+      }
+
+      override protected def bindKernelVarialble(kernel: KernelLike): Unit = { }
+    }
+    interpreter.init(mock[KernelLike])
 
     StreamState.setStreams(outputStream = outputResult)
   }

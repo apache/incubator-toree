@@ -26,7 +26,7 @@ import com.ibm.spark.magic.{CellMagic, CellMagicOutput}
  */
 class Scala extends CellMagic with IncludeKernel {
   override def execute(code: String): CellMagicOutput = {
-    val scala = Option(kernel.data.get("Scala"))
+    val scala = kernel.interpreter("Scala")
 
     if (scala.isEmpty || scala.get == null)
       throw new ScalaException("Scala is not available!")

@@ -26,7 +26,7 @@ import com.ibm.spark.magic.dependencies.IncludeKernel
  */
 class SparkR extends CellMagic with IncludeKernel {
   override def execute(code: String): CellMagicOutput = {
-    val sparkR = Option(kernel.data.get("SparkR"))
+    val sparkR = kernel.interpreter("SparkR")
 
     if (sparkR.isEmpty || sparkR.get == null)
       throw new SparkRException("SparkR is not available!")

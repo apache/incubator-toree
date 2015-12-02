@@ -26,7 +26,7 @@ import com.ibm.spark.magic.dependencies.IncludeKernel
  */
 class PySpark extends CellMagic with IncludeKernel {
   override def execute(code: String): CellMagicOutput = {
-    val pySpark = Option(kernel.data.get("PySpark"))
+    val pySpark = kernel.interpreter("PySpark")
 
     if (pySpark.isEmpty || pySpark.get == null)
       throw new PySparkException("PySpark is not available!")

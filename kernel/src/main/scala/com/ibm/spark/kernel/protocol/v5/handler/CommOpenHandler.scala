@@ -42,15 +42,18 @@ class CommOpenHandler(
 {
   override def process(kernelMessage: KernelMessage): Future[_] = future {
     logKernelMessageAction("Initiating Comm Open for", kernelMessage)
+
+    val kmBuilder = KMBuilder().withParent(kernelMessage)
+
     Utilities.parseAndHandle(
       kernelMessage.contentString,
       CommOpen.commOpenReads,
-      handler = handleCommOpen,
+      handler = handleCommOpen(kmBuilder),
       errHandler = handleParseError
     )
   }
 
-  private def handleCommOpen(commOpen: CommOpen) = {
+  private def handleCommOpen(kmBuilder: KMBuilder)(commOpen: CommOpen) = {
     val commId = commOpen.comm_id
     val targetName = commOpen.target_name
     val data = commOpen.data
@@ -58,8 +61,7 @@ class CommOpenHandler(
     logger.debug(
       s"Received comm_open for target '$targetName' with id '$commId'")
 
-    // TODO: Should we be reusing something from the KernelMessage?
-    val commWriter = new KernelCommWriter(actorLoader, KMBuilder(), commId)
+    val commWriter = new KernelCommWriter(actorLoader, kmBuilder, commId)
 
     commStorage.getTargetCallbacks(targetName) match {
       case None             =>

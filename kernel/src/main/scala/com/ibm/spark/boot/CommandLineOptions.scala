@@ -42,10 +42,6 @@ class CommandLineOptions(args: Seq[String]) {
     parser.accepts("profile", "path to IPython JSON connection file")
       .withRequiredArg().ofType(classOf[File])
 
-  private val _master =
-    parser.accepts("master", "location of master Spark node")
-      .withRequiredArg().ofType(classOf[String])
-
   private val _ip =
     parser.accepts("ip", "ip used to bind sockets")
       .withRequiredArg().ofType(classOf[String])
@@ -96,6 +92,9 @@ class CommandLineOptions(args: Seq[String]) {
   private val _nosparkcontext =
     parser.accepts("nosparkcontext", "kernel should not create a spark context")
 
+  private val _interpreter_plugin = parser.accepts(
+    "interpreter-plugin"
+  ).withRequiredArg().ofType(classOf[String])
 
   private val options = parser.parse(args.map(_.trim): _*)
 
@@ -136,7 +135,6 @@ class CommandLineOptions(args: Seq[String]) {
     }
 
     val commandLineConfig: Config = ConfigFactory.parseMap(Map(
-      "spark.master" -> get(_master),
       "stdin_port" -> get(_stdin_port),
       "shell_port" -> get(_shell_port),
       "iopub_port" -> get(_iopub_port),
@@ -152,7 +150,8 @@ class CommandLineOptions(args: Seq[String]) {
       "max_interpreter_threads" -> get(_max_interpreter_threads),
       "jar_dir" -> get(_jar_dir),
       "default_interpreter" -> get(_default_interpreter),
-      "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false))
+      "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false)),
+      "interpreter_plugins" -> interpreterPlugins
     ).flatMap(removeEmptyOptions).asInstanceOf[Map[String, AnyRef]].asJava)
 
     commandLineConfig.withFallback(profileConfig).withFallback(ConfigFactory.load)
@@ -171,6 +170,23 @@ class CommandLineOptions(args: Seq[String]) {
       case Nil => None
       case list: List[String] => Some(list.asJava)
     }
+  }
+
+  private def interpreterPlugins: Option[java.util.List[String]] = {
+    //val defaults = getAll(_default_interpreter_plugin).getOrElse(List())
+    //val defaults = List[String](
+    //  "PySpark:com.ibm.spark.kernel.interpreter.pyspark.PySparkInterpreter",
+    //  "SparkR:com.ibm.spark.kernel.interpreter.sparkr.SparkRInterpreter",
+    //  "SQL:com.ibm.spark.kernel.interpreter.sql.SqlInterpreter"
+    //)
+
+    val userDefined = getAll(_interpreter_plugin) match {
+      case Some(l) => l
+      case _ => List[String]()
+    }
+
+    //val p = defaults ++ userDefined
+    Some(userDefined.asJava)
   }
 
   /**

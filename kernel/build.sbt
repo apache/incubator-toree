@@ -1,5 +1,4 @@
 import Common._
-import xerial.sbt.Pack._
 /*
  * Copyright 2014 IBM Corp.
  *
@@ -15,10 +14,6 @@ import xerial.sbt.Pack._
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-pack <<= pack dependsOn (rebuildIvyXml dependsOn deliverLocal)
-
-packArchive <<= packArchive dependsOn (rebuildIvyXml dependsOn deliverLocal)
-
 //
 // TEST DEPENDENCIES
 //

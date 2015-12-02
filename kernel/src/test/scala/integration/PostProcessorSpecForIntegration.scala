@@ -18,8 +18,11 @@ package integration
 
 import java.io.OutputStream
 
+import com.ibm.spark.interpreter.Interpreter
+import com.ibm.spark.kernel.api.KernelLike
 import com.ibm.spark.kernel.interpreter.scala.{StandardSettingsProducer, StandardTaskManagerProducer, StandardSparkIMainProducer, ScalaInterpreter}
 import com.ibm.spark.kernel.protocol.v5.magic.PostProcessor
+import com.ibm.spark.utils.{TaskManager, MultiOutputStream}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
 
@@ -32,12 +35,20 @@ class PostProcessorSpecForIntegration extends FunSpec with Matchers
   before {
     // TODO: Move instantiation and start of interpreter to a beforeAll
     //       for performance improvements
-    scalaInterpreter = new ScalaInterpreter(Nil, mock[OutputStream])
-      with StandardSparkIMainProducer
-      with StandardTaskManagerProducer
-      with StandardSettingsProducer
+    scalaInterpreter = new ScalaInterpreter {
+      override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
 
-    scalaInterpreter.start()
+      override protected def interpreterArgs(kernel: KernelLike): List[String] = {
+        Nil
+      }
+
+      override protected def maxInterpreterThreads(kernel: KernelLike): Int = {
+        TaskManager.DefaultMaximumWorkers
+      }
+
+      override protected def bindKernelVarialble(kernel: KernelLike): Unit = { }
+    }
+    scalaInterpreter.init(mock[KernelLike])
 
     postProcessor = new PostProcessor(scalaInterpreter)
   }
