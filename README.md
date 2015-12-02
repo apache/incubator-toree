@@ -23,16 +23,20 @@ A version of the Spark Kernel is deployed as part of the [Try Jupyter!][try-jupy
 
 Develop
 =======
-[Vagrant][vagrant] is used to simplify the development experience. It is the only requirement to be able to build, package and test the Spark Kernel on your development machine. 
+This project uses `make` as the entry point for build, test, and packaging. It supports 2 modes, local and vagrant. The default is local and all command (i.e. sbt) will be ran locally on your machine. This means that you need to
+install `sbt`, `jupyter/ipython`, and other develoment requirements locally on your machine. The 2nd mode uses [Vagrant][vagrant] to simplify the development experience. In vagrant mode, all commands are sent to the vagrant box 
+that has all necessary dependencies pre-installed. To run in vagrant mode, run `export USE_VAGRANT=true`.  
 
 To build and interact with the Spark Kernel using Jupyter, run
 ```
 make dev
 ```
 
-This will start a Jupyter notebook server accessible at `http://192.168.44.44:8888`. From here you can create notebooks that use the Spark Kernel configured for local mode.
+This will start a Jupyter notebook server. Depending on your mode, it will be accessible at `http://localhost:8888` or `http://192.168.44.44:8888`. From here you can create notebooks that use the Spark Kernel configured for local mode.
 
 Tests can be run by doing `make test`.
+
+>> NOTE: Do not use `sbt` directly.
 
 Build & Package
 ===============
