@@ -32,5 +32,4 @@ export PYTHONHASHSEED=0
 
 exec "$SPARK_HOME"/bin/spark-submit \
   ${SPARK_OPTS} \
-  --driver-class-path $PROG_HOME/lib/${KERNEL_ASSEMBLY} \
   --class com.ibm.spark.SparkKernel $PROG_HOME/lib/${KERNEL_ASSEMBLY} "$@"

@@ -17,7 +17,7 @@
 package com.ibm.spark.kernel.interpreter.scala
 
 import java.io.{File, InputStream, OutputStream}
-import java.net.URL
+import java.net.{URLClassLoader, URL}
 
 import com.ibm.spark.interpreter.Results.Result
 import com.ibm.spark.interpreter._
@@ -34,6 +34,7 @@ import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 import scala.concurrent.Future
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.{JPrintWriter, IR}
+import scala.tools.nsc.util.ClassPath
 
 class ScalaInterpreterSpec extends FunSpec
   with Matchers with MockitoSugar with BeforeAndAfter
@@ -146,6 +147,36 @@ class ScalaInterpreterSpec extends FunSpec
       it("should add each jar URL to the interpreter classpath") {
         val url = new URL("file://expected")
         interpreter.addJars(url)
+      }
+    }
+
+    describe("#buildClasspath") {
+      it("should return classpath based on classloader hierarchy") {
+        // Needed to access runtimeClassloader method
+        import scala.language.reflectiveCalls
+
+        // Create a new interpreter exposing the internal runtime classloader
+        val itInterpreter = new StubbedStartInterpreter
+
+        val parentUrls = Array(
+          new URL("file:/some/dir/a.jar"),
+          new URL("file:/some/dir/b.jar"),
+          new URL("file:/some/dir/c.jar")
+        )
+
+        val theParentClassloader = new URLClassLoader(parentUrls, null)
+
+        val urls = Array(
+          new URL("file:/some/dir/1.jar"),
+          new URL("file:/some/dir/2.jar"),
+          new URL("file:/some/dir/3.jar")
+        )
+
+        val theClassloader = new URLClassLoader(urls, theParentClassloader)
+
+        val expected = ClassPath.join((parentUrls ++ urls).map(_.toString) :_*)
+
+        itInterpreter.buildClasspath(theClassloader) should be(expected)
       }
     }
 
