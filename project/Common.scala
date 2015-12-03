@@ -141,7 +141,7 @@ object Common {
   ) ++ rebuildIvyXmlSettings // Include our rebuild ivy xml settings
 
 
-  buildLibraryDependencies ++= Seq( "org.apache.spark" %% "spark-core" % "1.5.1"  % "provided" excludeAll( // Apache v2
+  buildLibraryDependencies ++= Seq( "org.apache.spark" %% "spark-core" % sparkVersion  % "provided" excludeAll( // Apache v2
 
     // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
     ExclusionRule(
