@@ -33,12 +33,13 @@ import org.apache.spark.SparkContext
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain, SparkJLineCompletion}
 import org.slf4j.LoggerFactory
 
+import scala.annotation.tailrec
 import scala.concurrent.{Await, Future}
 import scala.language.reflectiveCalls
 import scala.tools.nsc.backend.JavaPlatform
 import scala.tools.nsc.interpreter.{OutputStream, IR, JPrintWriter, InputStream}
 import scala.tools.nsc.io.AbstractFile
-import scala.tools.nsc.util.MergedClassPath
+import scala.tools.nsc.util.{ClassPath, MergedClassPath}
 import scala.tools.nsc.{Global, Settings, io}
 import scala.util.{Try => UtilTry}
 
@@ -193,15 +194,7 @@ class ScalaInterpreter() extends Interpreter {
     val args = interpreterArgs(kernel)
     this.settings = newSettings(args)
 
-    val urls = _thisClassloader match {
-      case cl: java.net.URLClassLoader => cl.getURLs.toList
-      case a => // TODO: Should we really be using sys.error here?
-        sys.error("[SparkInterpreter] Unexpected class loader: " + a.getClass)
-    }
-    val classpath = urls.map(_.toString)
-
-    this.settings.classpath.value =
-      classpath.distinct.mkString(java.io.File.pathSeparator)
+    this.settings.classpath.value = buildClasspath(_thisClassloader)
     this.settings.embeddedDefaults(_runtimeClassloader)
 
     maxInterpreterThreads = maxInterpreterThreads(kernel)
@@ -210,6 +203,27 @@ class ScalaInterpreter() extends Interpreter {
     bindKernelVarialble(kernel)
 
     this
+  }
+
+  protected[scala] def buildClasspath(classLoader: ClassLoader): String = {
+
+    def toClassLoaderList( classLoader: ClassLoader ): Seq[ClassLoader] = {
+      @tailrec
+      def toClassLoaderListHelper( aClassLoader: ClassLoader, theList: Seq[ClassLoader]):Seq[ClassLoader] = {
+        if( aClassLoader == null )
+          return theList
+
+        toClassLoaderListHelper( aClassLoader.getParent, aClassLoader +: theList )
+      }
+      toClassLoaderListHelper(classLoader, Seq())
+    }
+
+    val urls = toClassLoaderList(classLoader).flatMap{
+        case cl: java.net.URLClassLoader => cl.getURLs.toList
+        case a => List()
+    }
+
+    urls.foldLeft("")((l, r) => ClassPath.join(l, r.toString))
   }
 
   protected def interpreterArgs(kernel: KernelLike): List[String] = {
