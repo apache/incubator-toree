@@ -152,11 +152,13 @@ class ZeroMQSocketRunnable(
         Thread.sleep(1)
       }
     } catch {
-      case throwable: Throwable =>
-        logger.error("Unexpected exception in 0mq socket runnable!", throwable)
+      case ex: Exception =>
+        logger.error("Unexpected exception in 0mq socket runnable!", ex)
     } finally {
-      Try(socket.close()).failed.foreach {
-        case throwable: Throwable =>
+      try{
+        socket.close()
+      } catch {
+        case ex: Exception =>
           logger.error("Failed to close socket!", _: Throwable)
       }
     }
