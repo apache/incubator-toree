@@ -18,7 +18,8 @@ package com.ibm.spark.kernel.protocol.v5.handler
 
 import akka.actor.ActorRef
 import com.ibm.spark.comm.{CommRegistrar, CommStorage}
-import com.ibm.spark.kernel.protocol.v5.{SystemActorType, OrderedSupport, KernelMessage}
+import com.ibm.spark.communication.utils.OrderedSupport
+import com.ibm.spark.kernel.protocol.v5.{SystemActorType, KernelMessage}
 import com.ibm.spark.kernel.protocol.v5.content.{InputReply, CommOpen}
 import com.ibm.spark.kernel.protocol.v5.kernel.{Utilities, ActorLoader}
 import com.ibm.spark.kernel.protocol.v5

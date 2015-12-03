@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5
+package com.ibm.spark.communication.utils
 
-import akka.actor.{Stash, Actor}
+import akka.actor.{Actor, Stash}
 import com.ibm.spark.utils.LogLike
 
 /**

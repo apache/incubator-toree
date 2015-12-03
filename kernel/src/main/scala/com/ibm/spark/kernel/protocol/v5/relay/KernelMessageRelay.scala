@@ -19,6 +19,7 @@ package com.ibm.spark.kernel.protocol.v5.relay
 import akka.pattern.ask
 import akka.util.Timeout
 import com.ibm.spark.communication.security.SecurityActorType
+import com.ibm.spark.communication.utils.OrderedSupport
 import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
 import com.ibm.spark.kernel.protocol.v5.content.ShutdownRequest
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
@@ -171,7 +172,8 @@ case class KernelMessageRelay(
       }
   }
 
-  override def orderedTypes(): Seq[Class[_]] = {
-    Seq(classOf[(Seq[_], KernelMessage)])
-  }
+  override def orderedTypes(): Seq[Class[_]] = Seq(
+    classOf[(Seq[_], KernelMessage)],
+    classOf[KernelMessage]
+  )
 }

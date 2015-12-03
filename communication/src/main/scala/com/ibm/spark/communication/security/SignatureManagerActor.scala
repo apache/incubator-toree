@@ -18,6 +18,7 @@ package com.ibm.spark.communication.security
 
 import akka.actor.{Props, ActorRef, Actor}
 import akka.util.Timeout
+import com.ibm.spark.communication.utils.OrderedSupport
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
 import com.ibm.spark.utils.LogLike
 
@@ -27,7 +28,7 @@ import akka.pattern.pipe
 
 class SignatureManagerActor(
   key: String, scheme: String
-) extends Actor with LogLike {
+) extends Actor with LogLike with OrderedSupport {
   private val hmac = Hmac(key, HmacAlgorithm(scheme))
 
   def this(key: String) = this(key, HmacAlgorithm.SHA256.toString)
@@ -61,13 +62,38 @@ class SignatureManagerActor(
   override def receive: Receive = {
     // Check blob strings for matching digest
     case (signature: String, blob: Seq[_]) =>
-      (signatureChecker ? ((signature, blob))) pipeTo sender
+      startProcessing()
+      val destActor = sender()
+      val sigFuture = signatureChecker ? ((signature, blob))
+
+      sigFuture foreach { case isValid =>
+          destActor ! isValid
+          finishedProcessing()
+      }
 
     case message: KernelMessage =>
+      startProcessing()
+      val destActor = sender()
+
       // TODO: Proper error handling for possible exception from mapTo
-      (signatureProducer ? message).mapTo[String].map(
+      val sigFuture = (signatureProducer ? message).mapTo[String].map(
         result => message.copy(signature = result)
-      ) pipeTo sender
+      )
+
+      sigFuture foreach { case kernelMessage =>
+        destActor ! kernelMessage
+        finishedProcessing()
+      }
   }
+
+  /**
+   * Defines the types that will be stashed by {@link #waiting() waiting}
+   * while the Actor is in processing state.
+   * @return
+   */
+  override def orderedTypes(): Seq[Class[_]] = Seq(
+    classOf[(String, Seq[_])],
+    classOf[KernelMessage]
+  )
 }
 

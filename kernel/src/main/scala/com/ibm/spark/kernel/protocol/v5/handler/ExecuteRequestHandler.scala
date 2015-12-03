@@ -74,7 +74,12 @@ class ExecuteRequestHandler(
         (executeRequest, km, outputStream)
       ).mapTo[(ExecuteReply, ExecuteResult)]
 
-      executeFuture andThen {
+      // Flush the output stream after code execution completes to ensure
+      // stream messages are sent prior to idle status messages.
+      executeFuture andThen { case result =>
+        outputStream.flush()
+        result
+      } andThen {
         case Success(tuple) =>
           val (executeReply, executeResult) = updateCount(tuple, executionCount)
 
