@@ -14,13 +14,11 @@
 # limitations under the License.
 #
 
-.PHONY: clean clean-dist build dev test test-travis
+.PHONY: help clean clean-dist build dev test test-travis
 
 VERSION?=0.1.5
 IS_SNAPSHOT?=true
 APACHE_SPARK_VERSION?=1.5.1
-
-VM_WORKDIR=/src/spark-kernel
 
 USE_VAGRANT?=
 RUN_PREFIX=$(if $(USE_VAGRANT),vagrant ssh -c "cd $(VM_WORKDIR) && )
@@ -33,12 +31,21 @@ ENV_OPTS=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) VERSION=$(VERSION) IS_SNAP
 FULL_VERSION=$(shell echo $(VERSION)`[ "$(IS_SNAPSHOT)" == "true" ] && (echo '-SNAPSHOT')` )
 ASSEMBLY_JAR=$(shell echo kernel-assembly-$(FULL_VERSION).jar )
 
+help:
+	@echo '      clean - clean build files'
+	@echo '        dev - starts ipython'
+	@echo '       dist - build a packaged distribution'
+	@echo '      build - builds assembly'
+	@echo '       test - run all units'
+
 clean-dist:
 	-rm -r dist
 
+clean: VM_WORKDIR=/src/spark-kernel
 clean: clean-dist
 	$(call RUN,$(ENV_OPTS) sbt clean)
 
+kernel/target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/spark-kernel
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
@@ -50,6 +57,7 @@ dev: VM_WORKDIR=~
 dev: dist
 	$(call RUN,ipython notebook --ip=* --no-browser)
 
+test: VM_WORKDIR=/src/spark-kernel
 test:
 	$(call RUN,$(ENV_OPTS) sbt compile test)
 
