@@ -17,6 +17,7 @@
 package com.ibm.spark.kernel.protocol.v5.handler
 
 import akka.actor.Actor
+import com.ibm.spark.communication.utils.OrderedSupport
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.utils.{MessageLogSupport, LogLike}
@@ -39,11 +40,19 @@ import com.ibm.spark.utils.{MessageLogSupport, LogLike}
  * @param socketType The type of socket, mapping to an Actor for this class to pass messages along to
  */
 class GenericSocketMessageHandler(actorLoader: ActorLoader, socketType: Enumeration#Value)
-  extends Actor with LogLike {
+  extends Actor with LogLike with OrderedSupport {
   override def receive: Receive = {
-    case message: KernelMessage =>
+    case message: KernelMessage => withProcessing {
       logger.debug(s"Sending KernelMessage ${message.header.msg_id} of type " +
         s"${message.header.msg_type} to ${socketType} socket")
       actorLoader.load(socketType) ! message
+    }
   }
+
+  /**
+   * Defines the types that will be stashed by {@link #waiting() waiting}
+   * while the Actor is in processing state.
+   * @return
+   */
+  override def orderedTypes(): Seq[Class[_]] = Seq(classOf[KernelMessage])
 }

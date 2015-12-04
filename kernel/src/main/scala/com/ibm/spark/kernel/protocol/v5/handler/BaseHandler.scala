@@ -16,6 +16,7 @@
 
 package com.ibm.spark.kernel.protocol.v5.handler
 
+import com.ibm.spark.communication.utils.OrderedSupport
 import com.ibm.spark.kernel.protocol.v5._
 import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.utils.MessageLogSupport

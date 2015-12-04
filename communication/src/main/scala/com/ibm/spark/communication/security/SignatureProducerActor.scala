@@ -17,6 +17,7 @@
 package com.ibm.spark.communication.security
 
 import akka.actor.Actor
+import com.ibm.spark.communication.utils.OrderedSupport
 import com.ibm.spark.kernel.protocol.v5.KernelMessage
 import com.ibm.spark.utils.LogLike
 import play.api.libs.json.Json
@@ -27,9 +28,9 @@ import play.api.libs.json.Json
  */
 class SignatureProducerActor(
   private val hmac: Hmac
-) extends Actor with LogLike {
+) extends Actor with LogLike with OrderedSupport {
   override def receive: Receive = {
-    case message: KernelMessage =>
+    case message: KernelMessage => withProcessing {
       val signature = hmac(
         Json.stringify(Json.toJson(message.header)),
         Json.stringify(Json.toJson(message.parentHeader)),
@@ -37,5 +38,13 @@ class SignatureProducerActor(
         message.contentString
       )
       sender ! signature
+    }
   }
+
+  /**
+   * Defines the types that will be stashed by {@link #waiting() waiting}
+   * while the Actor is in processing state.
+   * @return
+   */
+  override def orderedTypes(): Seq[Class[_]] = Seq(classOf[KernelMessage])
 }

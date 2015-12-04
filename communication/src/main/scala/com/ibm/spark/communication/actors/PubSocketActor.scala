@@ -16,17 +16,23 @@
 package com.ibm.spark.communication.actors
 
 import akka.actor.Actor
+import com.ibm.spark.communication.utils.OrderedSupport
 import com.ibm.spark.communication.{SocketManager, ZMQMessage}
+import com.ibm.spark.kernel.protocol.v5.KernelMessage
 import com.ibm.spark.utils.LogLike
 import org.zeromq.ZMQ
 
 /**
  * Represents an actor containing a publish socket.
  *
+ * Note: OrderedSupport is used to ensure correct processing order.
+ *       A similar pattern may be useful for other socket actors if
+ *       issues arise in the future.
+ *
  * @param connection The address to bind to
  */
 class PubSocketActor(connection: String)
-  extends Actor with LogLike
+  extends Actor with LogLike with OrderedSupport
 {
   logger.debug(s"Initializing publish socket actor for $connection")
   private val manager: SocketManager = new SocketManager
@@ -37,9 +43,18 @@ class PubSocketActor(connection: String)
   }
 
   override def receive: Actor.Receive = {
-    case zmqMessage: ZMQMessage =>
+    case zmqMessage: ZMQMessage => withProcessing {
       val frames = zmqMessage.frames.map(byteString =>
         new String(byteString.toArray, ZMQ.CHARSET))
+
       socket.send(frames: _*)
+    }
   }
+
+  /**
+   * Defines the types that will be stashed by {@link #waiting() waiting}
+   * while the Actor is in processing state.
+   * @return
+   */
+  override def orderedTypes(): Seq[Class[_]] = Seq(classOf[ZMQMessage])
 }

@@ -17,6 +17,7 @@
 package com.ibm.spark.communication.security
 
 import akka.actor.Actor
+import com.ibm.spark.communication.utils.OrderedSupport
 import com.ibm.spark.utils.LogLike
 
 /**
@@ -25,14 +26,22 @@ import com.ibm.spark.utils.LogLike
  */
 class SignatureCheckerActor(
   private val hmac: Hmac
-) extends Actor with LogLike {
+) extends Actor with LogLike with OrderedSupport {
   override def receive: Receive = {
-    case (signature: String, blob: Seq[_]) =>
+    case (signature: String, blob: Seq[_]) => withProcessing {
       val stringBlob: Seq[String] = blob.map(_.toString)
       val hmacString = hmac(stringBlob: _*)
       val isValidSignature = hmacString == signature
       logger.trace(s"Signature ${signature} validity checked against " +
         s"hmac ${hmacString} with outcome ${isValidSignature}")
       sender ! isValidSignature
+    }
   }
+
+  /**
+   * Defines the types that will be stashed by {@link #waiting() waiting}
+   * while the Actor is in processing state.
+   * @return
+   */
+  override def orderedTypes(): Seq[Class[_]] = Seq(classOf[(String, Seq[_])])
 }

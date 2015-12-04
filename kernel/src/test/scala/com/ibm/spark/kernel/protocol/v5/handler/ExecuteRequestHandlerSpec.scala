@@ -44,6 +44,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
   private var mockActorLoader: ActorLoader = _
   private var mockFactoryMethods: FactoryMethods = _
   private var mockKernel: Kernel = _
+  private var mockOutputStream: OutputStream = _
   private var handlerActor: ActorRef = _
   private var kernelMessageRelayProbe: TestProbe = _
   private var executeRequestRelayProbe: TestProbe = _
@@ -53,8 +54,12 @@ class ExecuteRequestHandlerSpec extends TestKit(
     mockActorLoader = mock[ActorLoader]
     mockFactoryMethods = mock[FactoryMethods]
     mockKernel = mock[Kernel]
+    mockOutputStream = mock[OutputStream]
     doReturn(mockFactoryMethods).when(mockKernel)
       .factory(any[KernelMessage], any[KMBuilder])
+
+    doReturn(mockOutputStream).when(mockFactoryMethods)
+      .newKernelOutputStream(anyString(), anyBoolean())
 
     // Add our handler and mock interpreter to the actor system
     handlerActor = system.actorOf(Props(

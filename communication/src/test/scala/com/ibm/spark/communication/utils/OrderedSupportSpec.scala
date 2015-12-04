@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5
+package com.ibm.spark.communication.utils
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit}
