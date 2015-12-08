@@ -174,30 +174,6 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
 
         sparkConf.get("spark.master") should be (expected)
       }
-
-      it("should not add ourselves as a jar if spark.master is not local") {
-        val sparkConf = new SparkConf().setMaster("local[*]")
-        doReturn("local[*]").when(mockConfig).getString("spark.master")
-        doReturn(sparkConf).when(mockSparkContext).getConf
-
-        kernel.updateInterpreterWithSparkContext(mockSparkContext)
-        verify(mockSparkContext, never()).addJar(anyString())
-      }
-
-      it("should add ourselves as a jar if spark.master is not local") {
-        val sparkConf = new SparkConf().setMaster("foo://bar")
-        doReturn("notlocal").when(mockConfig).getString("spark.master")
-        doReturn(sparkConf).when(mockSparkContext).getConf
-
-        // TODO: This is going to be outdated when we determine a way to
-        //       re-include all jars
-        val expected =
-          com.ibm.spark.SparkKernel.getClass.getProtectionDomain
-            .getCodeSource.getLocation.getPath
-
-        kernel.updateInterpreterWithSparkContext(mockSparkContext)
-        verify(mockSparkContext).addJar(expected)
-      }
     }
   }
 }
