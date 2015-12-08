@@ -128,51 +128,6 @@ trait StandardComponentInitialization extends ComponentInitialization {
     dependencyDownloader
   }
 
-  protected[layer] def initializeSqlContext(sparkContext: SparkContext) = {
-    val sqlContext: SQLContext = try {
-      logger.info("Attempting to create Hive Context")
-      val hiveContextClassString =
-        "org.apache.spark.sql.hive.HiveContext"
-
-      logger.debug(s"Looking up $hiveContextClassString")
-      val hiveContextClass = Class.forName(hiveContextClassString)
-
-      val sparkContextClass = classOf[SparkContext]
-      val sparkContextClassName = sparkContextClass.getName
-
-      logger.debug(s"Searching for constructor taking $sparkContextClassName")
-      val hiveContextContructor =
-        hiveContextClass.getConstructor(sparkContextClass)
-
-      logger.debug("Invoking Hive Context constructor")
-      hiveContextContructor.newInstance(sparkContext).asInstanceOf[SQLContext]
-    } catch {
-      case _: Throwable =>
-        logger.warn("Unable to create Hive Context! Defaulting to SQL Context!")
-        new SQLContext(sparkContext)
-    }
-
-    sqlContext
-  }
-
-  protected[layer] def updateInterpreterWithSqlContext(
-    sqlContext: SQLContext, interpreter: Interpreter
-  ): Unit = {
-    interpreter.doQuietly {
-      // TODO: This only adds the context to the main interpreter AND
-      //       is limited to the Scala interpreter interface
-      logger.debug("Adding SQL Context to main interpreter")
-      interpreter.bind(
-        "sqlContext",
-        classOf[SQLContext].getName,
-        sqlContext,
-        List( """@transient""")
-      )
-
-      sqlContext
-    }
-  }
-
   protected def initializeResponseMap(): collection.mutable.Map[String, ActorRef] =
     new ConcurrentHashMap[String, ActorRef]().asScala
 

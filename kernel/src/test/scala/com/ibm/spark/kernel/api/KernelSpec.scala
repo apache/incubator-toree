@@ -10,7 +10,6 @@ import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
 import com.ibm.spark.magic.MagicLoader
 import com.typesafe.config.Config
 import org.apache.spark.{SparkConf, SparkContext}
-import org.mockito.ArgumentCaptor
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar

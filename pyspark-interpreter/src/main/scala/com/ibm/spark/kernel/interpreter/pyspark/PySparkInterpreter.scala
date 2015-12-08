@@ -21,6 +21,7 @@ import com.ibm.spark.interpreter.Results.Result
 import com.ibm.spark.interpreter._
 import com.ibm.spark.kernel.api.KernelLike
 import org.apache.spark.SparkContext
+import org.apache.spark.sql.SQLContext
 import org.slf4j.LoggerFactory
 import py4j.GatewayServer
 
@@ -78,10 +79,11 @@ class PySparkInterpreter(
     this
   }
 
+  // Unsupported (but can be invoked)
+  override def bindSparkContext(sparkContext: SparkContext): Unit = {}
 
-  override def bindSparkContext(sparkContext: SparkContext) = {
-
-  }
+  // Unsupported (but can be invoked)
+  override def bindSqlContext(sqlContext: SQLContext): Unit = {}
 
   /**
    * Executes the provided code with the option to silence output.

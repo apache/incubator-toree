@@ -20,6 +20,7 @@ import java.net.URL
 
 import com.ibm.spark.kernel.api.KernelLike
 import org.apache.spark.SparkContext
+import org.apache.spark.sql.SQLContext
 
 import scala.tools.nsc.interpreter._
 
@@ -79,7 +80,19 @@ trait Interpreter {
    */
   def doQuietly[T](body: => T): T
 
-  def bindSparkContext(sparkContext: SparkContext): Unit = ???
+  /**
+   * Binds the SparkContext instance to the interpreter's namespace.
+   *
+   * @param sparkContext The SparkContext to bind
+   */
+  def bindSparkContext(sparkContext: SparkContext): Unit
+
+  /**
+   * Binds the SQLContext instance to the interpreter's namespace.
+   *
+   * @param sqlContext The SQLContext to bind
+   */
+  def bindSqlContext(sqlContext: SQLContext): Unit
 
   /**
    * Binds a variable in the interpreter to a value.

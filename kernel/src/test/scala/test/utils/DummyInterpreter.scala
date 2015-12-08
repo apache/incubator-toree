@@ -5,6 +5,8 @@ import java.net.URL
 import com.ibm.spark.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter}
 import com.ibm.spark.interpreter.Results.Result
 import com.ibm.spark.kernel.api.KernelLike
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.SQLContext
 
 import scala.tools.nsc.interpreter.{OutputStream, InputStream}
 
@@ -109,4 +111,18 @@ class DummyInterpreter(kernel: KernelLike) extends Interpreter {
    * @return The newly initialized interpreter
    */
   override def init(kernel: KernelLike): Interpreter = ???
+
+  /**
+   * Binds the SparkContext instance to the interpreter's namespace.
+   *
+   * @param sparkContext The SparkContext to bind
+   */
+  override def bindSparkContext(sparkContext: SparkContext): Unit = ???
+
+  /**
+   * Binds the SQLContext instance to the interpreter's namespace.
+   *
+   * @param sqlContext The SQLContext to bind
+   */
+  override def bindSqlContext(sqlContext: SQLContext): Unit = ???
 }

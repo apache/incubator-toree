@@ -102,7 +102,11 @@ class SqlInterpreter() extends Interpreter {
   // Unsupported
   override def classServerURI: String = ""
 
+  // Unsupported (but can be invoked)
   override def bindSparkContext(sparkContext: SparkContext): Unit = {}
+
+  // Unsupported (but can be invoked)
+  override def bindSqlContext(sqlContext: SQLContext): Unit = {}
 
   // Unsupported
   override def interrupt(): Interpreter = ???
