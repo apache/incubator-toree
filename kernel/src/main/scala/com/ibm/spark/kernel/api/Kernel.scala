@@ -331,6 +331,8 @@ class Kernel (
     _javaSparkContext = new JavaSparkContext(_sparkContext)
     _sqlContext = new SQLContext(_sparkContext)
 
+    logger.info( s"Connecting to spark.master ${_sparkConf.getOption("spark.master").getOrElse("not_set")}")
+
     updateInterpreterWithSparkContext(sparkContext)
 
     magicLoader.dependencyMap =
@@ -396,84 +398,6 @@ class Kernel (
   ) = {
 
     interpreter.bindSparkContext(sparkContext)
-    /*
-    interpreter.doQuietly {
-      logger.debug("Binding context into interpreter")
-      interpreter.bind(
-        "sc", "org.apache.spark.SparkContext",
-        sparkContext, List( """@transient"""))
-
-      // NOTE: This is needed because interpreter blows up after adding
-      //       dependencies to SparkContext and Interpreter before the
-      //       cluster has been used... not exactly sure why this is the case
-      // TODO: Investigate why the cluster has to be initialized in the kernel
-      //       to avoid the kernel's interpreter blowing up (must be done
-      //       inside the interpreter)
-      logger.debug("Initializing Spark cluster in interpreter")
-
-      interpreter.doQuietly {
-        interpreter.interpret("""
-                                | val $toBeNulled = {
-                                | var $toBeNulled = sc.emptyRDD.collect()
-                                | $toBeNulled = null
-                                |  }
-                                |
-                                |""".stripMargin)
-      }
-    }
-    */
-
-    // Add ourselves as a dependency
-    // TODO: Provide ability to point to library as commandline argument
-    // TODO: Provide better method to determine if can add ourselves
-    // TODO: Avoid duplicating request for master twice (initializeSparkContext
-    //       also does this)
-    val master = sparkContext.getConf.get("spark.master")
-
-    // If in local mode, do not need to add our jars as dependencies
-    if (!master.toLowerCase.startsWith("local")) {
-      @inline def getJarPathFor(klass: Class[_]): String =
-        klass.getProtectionDomain.getCodeSource.getLocation.getPath
-
-      val interpreterC = interpreterManager.interpreters.values.map(_.getClass)
-
-      // TODO: Provide less hard-coded solution in case additional dependencies
-      //       are added or classes are refactored to different projects
-      val classDep = Seq(
-
-        // Macro project
-        classOf[com.ibm.spark.annotations.Experimental],
-
-        // Protocol project
-        classOf[com.ibm.spark.kernel.protocol.v5.KernelMessage],
-
-        // Communication project
-        classOf[com.ibm.spark.communication.SocketManager],
-
-        // Kernel-api project
-        classOf[com.ibm.spark.kernel.api.KernelLike],
-
-        // Scala-interpreter project
-        //classOf[com.ibm.spark.kernel.interpreter.scala.ScalaInterpreter],
-
-        // PySpark-interpreter project
-        //classOf[com.ibm.spark.kernel.interpreter.pyspark.PySparkInterpreter],
-
-        // SparkR-interpreter project
-        //classOf[com.ibm.spark.kernel.interpreter.sparkr.SparkRInterpreter],
-
-        // Kernel project
-        classOf[com.ibm.spark.boot.KernelBootstrap]
-      )
-
-      val jarPaths = (interpreterC ++ classDep).map(getJarPathFor)
-
-      logger.info("Adding kernel jars to cluster:\n- " +
-        jarPaths.mkString("\n- "))
-      jarPaths.foreach(sparkContext.addJar)
-    } else {
-      logger.info("Running in local mode! Not adding self as dependency!")
-    }
   }
 
   override def interpreter(name: String): Option[Interpreter] = {
