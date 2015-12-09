@@ -329,11 +329,13 @@ class Kernel (
     _sparkConf = createSparkConf(conf)
     _sparkContext = initializeSparkContext(sparkConf)
     _javaSparkContext = new JavaSparkContext(_sparkContext)
-    _sqlContext = new SQLContext(_sparkContext)
+    _sqlContext = initializeSqlContext(_sparkContext)
 
-    logger.info( s"Connecting to spark.master ${_sparkConf.getOption("spark.master").getOrElse("not_set")}")
+    val sparkMaster = _sparkConf.getOption("spark.master").getOrElse("not_set")
+    logger.info( s"Connecting to spark.master $sparkMaster")
 
-    updateInterpreterWithSparkContext(sparkContext)
+    updateInterpreterWithSparkContext(interpreter, sparkContext)
+    updateInterpreterWithSqlContext(interpreter, sqlContext)
 
     magicLoader.dependencyMap =
       magicLoader.dependencyMap.setSparkContext(_sparkContext)
@@ -394,10 +396,45 @@ class Kernel (
 
   // TODO: Think of a better way to test without exposing this
   protected[kernel] def updateInterpreterWithSparkContext(
-    sparkContext: SparkContext
+    interpreter: Interpreter, sparkContext: SparkContext
   ) = {
 
     interpreter.bindSparkContext(sparkContext)
+  }
+
+  protected[kernel] def initializeSqlContext(
+    sparkContext: SparkContext
+  ): SQLContext = {
+    val sqlContext: SQLContext = try {
+      logger.info("Attempting to create Hive Context")
+      val hiveContextClassString =
+        "org.apache.spark.sql.hive.HiveContext"
+
+      logger.debug(s"Looking up $hiveContextClassString")
+      val hiveContextClass = Class.forName(hiveContextClassString)
+
+      val sparkContextClass = classOf[SparkContext]
+      val sparkContextClassName = sparkContextClass.getName
+
+      logger.debug(s"Searching for constructor taking $sparkContextClassName")
+      val hiveContextContructor =
+        hiveContextClass.getConstructor(sparkContextClass)
+
+      logger.debug("Invoking Hive Context constructor")
+      hiveContextContructor.newInstance(sparkContext).asInstanceOf[SQLContext]
+    } catch {
+      case _: Throwable =>
+        logger.warn("Unable to create Hive Context! Defaulting to SQL Context!")
+        new SQLContext(sparkContext)
+    }
+
+    sqlContext
+  }
+
+  protected[kernel] def updateInterpreterWithSqlContext(
+    interpreter: Interpreter, sqlContext: SQLContext
+  ): Unit = {
+    interpreter.bindSqlContext(sqlContext)
   }
 
   override def interpreter(name: String): Option[Interpreter] = {

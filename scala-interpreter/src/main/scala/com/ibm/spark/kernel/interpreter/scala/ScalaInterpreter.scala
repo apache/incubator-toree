@@ -31,6 +31,7 @@ import com.ibm.spark.kernel.api.{KernelLike, KernelOptions}
 import com.ibm.spark.utils.{MultiOutputStream, TaskManager}
 import org.apache.spark.SparkContext
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain, SparkJLineCompletion}
+import org.apache.spark.sql.SQLContext
 import org.slf4j.LoggerFactory
 
 import scala.annotation.tailrec
@@ -514,12 +515,16 @@ class ScalaInterpreter() extends Interpreter {
   }
 
   override def bindSparkContext(sparkContext: SparkContext) = {
+    val bindName = "sc"
 
     doQuietly {
-      logger.debug("Binding context into interpreter")
+      logger.debug(s"Binding SparkContext into interpreter as $bindName")
       bind(
-        "sc", "org.apache.spark.SparkContext",
-        sparkContext, List( """@transient"""))
+        bindName,
+        "org.apache.spark.SparkContext",
+        sparkContext,
+        List( """@transient""")
+      )
 
       // NOTE: This is needed because interpreter blows up after adding
       //       dependencies to SparkContext and Interpreter before the
@@ -530,16 +535,32 @@ class ScalaInterpreter() extends Interpreter {
       logger.debug("Initializing Spark cluster in interpreter")
 
       doQuietly {
-        interpret("""
-                                | val $toBeNulled = {
-                                | var $toBeNulled = sc.emptyRDD.collect()
-                                | $toBeNulled = null
-                                |  }
-                                |
-                                |""".stripMargin)
+        interpret(Seq(
+          "val $toBeNulled = {",
+          "  var $toBeNulled = sc.emptyRDD.collect()",
+          "  $toBeNulled = null",
+          "}"
+        ).mkString("\n").trim())
       }
     }
+  }
 
+  override def bindSqlContext(sqlContext: SQLContext): Unit = {
+    val bindName = "sqlContext"
+
+    doQuietly {
+      // TODO: This only adds the context to the main interpreter AND
+      //       is limited to the Scala interpreter interface
+      logger.debug(s"Binding SQLContext into interpreter as $bindName")
+      bind(
+        bindName,
+        classOf[SQLContext].getName,
+        sqlContext,
+        List( """@transient""")
+      )
+
+      sqlContext
+    }
   }
 
   override def bind(
