@@ -98,9 +98,9 @@ fi
 
 # If sbt is not installed, install it
 if ! flag_is_set SBT; then
-  wget --progress=bar:force http://dl.bintray.com/sbt/debian/sbt-0.13.7.deb && \
-  dpkg -i sbt-0.13.7.deb && \
-  rm sbt-0.13.7.deb && \
+  wget --progress=bar:force http://dl.bintray.com/sbt/debian/sbt-0.13.9.deb && \
+  dpkg -i sbt-0.13.9.deb && \
+  rm sbt-0.13.9.deb && \
   set_flag SBT
 fi
 

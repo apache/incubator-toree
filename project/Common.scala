@@ -37,8 +37,6 @@ object Common {
     if (snapshot) s"$versionNumber-SNAPSHOT"
     else versionNumber
   private val buildScalaVersion = "2.10.4"
-  private val buildSbtVersion   = "0.13.7"
-
 
 
   // Global dependencies provided to all projects
@@ -82,7 +80,6 @@ object Common {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
-    sbtVersion := buildSbtVersion,
     libraryDependencies ++= buildLibraryDependencies,
     isSnapshot := snapshot,
 
