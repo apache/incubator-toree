@@ -54,7 +54,7 @@ Our goal is to keep `master` up to date with the latest version of Spark. When n
 
 Branch                       | Spark Kernel Version | Apache Spark Version
 ---------------------------- | -------------------- | --------------------
-[master][master]             | 0.1.5                | 1.5.1
+[master][master]             | 0.1.5                | 1.5.1+
 [branch-0.1.4][branch-0.1.4] | 0.1.4                | 1.4.1
 [branch-0.1.3][branch-0.1.3] | 0.1.3                | 1.3.1
 
