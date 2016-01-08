@@ -20,16 +20,20 @@ VERSION?=0.1.5
 IS_SNAPSHOT?=true
 APACHE_SPARK_VERSION?=1.5.1
 
+ifeq ($(IS_SNAPSHOT),true)
+SNAPSHOT:='-SNAPSHOT'
+endif
+
 USE_VAGRANT?=
 RUN_PREFIX=$(if $(USE_VAGRANT),vagrant ssh -c "cd $(VM_WORKDIR) && )
 RUN_SUFFIX=$(if $(USE_VAGRANT),")
 
 RUN=$(RUN_PREFIX)$(1)$(RUN_SUFFIX)
 
-ENV_OPTS=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)
+ENV_OPTS:=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)
 
-FULL_VERSION=$(shell echo $(VERSION)`[ "$(IS_SNAPSHOT)" == "true" ] && (echo '-SNAPSHOT')` )
-ASSEMBLY_JAR=$(shell echo kernel-assembly-$(FULL_VERSION).jar )
+FULL_VERSION:=$(VERSION)$(SNAPSHOT)
+ASSEMBLY_JAR:=kernel-assembly-$(FULL_VERSION).jar
 
 help:
 	@echo '      clean - clean build files'
@@ -37,6 +41,9 @@ help:
 	@echo '       dist - build a packaged distribution'
 	@echo '      build - builds assembly'
 	@echo '       test - run all units'
+
+build-info:
+	@echo '$(ENV_OPTS) $(FULL_VERSION)'
 
 clean-dist:
 	-rm -r dist
