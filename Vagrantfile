@@ -117,13 +117,13 @@ fi
 
 # Add Spark Kernel json to IPython configuration
 echo "Adding kernel.json"
-mkdir -p /home/vagrant/.ipython/kernels/spark
-cat << EOF > /home/vagrant/.ipython/kernels/spark/kernel.json
+mkdir -p /home/vagrant/.ipython/kernels/toree-kernel
+cat << EOF > /home/vagrant/.ipython/kernels/toree-kernel/kernel.json
 {
     "display_name": "Spark 1.5.1 (Scala 2.10.4)",
     "language_info": { "name": "scala" },
     "argv": [
-        "/src/spark-kernel/dist/spark-kernel/bin/spark-kernel",
+        "/src/toree-kernel/dist/toree-kernel/bin/toree-kernel",
         "--profile",
         "{connection_file}"
     ],
@@ -184,7 +184,7 @@ Vagrant.configure("2") do |config|
 
   # Mount the directory containing this file as /vagrant in the VM.
   # Since this file is copied around we need to figure out where the docker files are
-  config.vm.synced_folder "./" , "/src/spark-kernel"
+  config.vm.synced_folder "./" , "/src/toree-kernel"
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP. Make sure this IP doesn't exist on your local network.
@@ -195,7 +195,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider :virtualbox do |vb|
     vb.customize ["modifyvm", :id, "--memory", "2048"]
     vb.customize ["modifyvm", :id, "--cpus", "2"]
-    vb.name = "spark-kernel-vm"
+    vb.name = "toree-kernel-vm"
 
   end
 end

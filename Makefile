@@ -33,7 +33,7 @@ RUN=$(RUN_PREFIX)$(1)$(RUN_SUFFIX)
 ENV_OPTS:=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)
 
 FULL_VERSION:=$(VERSION)$(SNAPSHOT)
-ASSEMBLY_JAR:=kernel-assembly-$(FULL_VERSION).jar
+ASSEMBLY_JAR:=toree-kernel-assembly-$(FULL_VERSION).jar
 
 help:
 	@echo '      clean - clean build files'
@@ -48,15 +48,15 @@ build-info:
 clean-dist:
 	-rm -r dist
 
-clean: VM_WORKDIR=/src/spark-kernel
+clean: VM_WORKDIR=/src/toree-kernel
 clean: clean-dist
 	$(call RUN,$(ENV_OPTS) sbt clean)
 
-kernel/target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/spark-kernel
+kernel/target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
-	$(call RUN,$(ENV_OPTS) sbt kernel/assembly)
+	$(call RUN,$(ENV_OPTS) sbt toree-kernel/assembly)
 
 build: kernel/target/scala-2.10/$(ASSEMBLY_JAR)
 
@@ -64,19 +64,19 @@ dev: VM_WORKDIR=~
 dev: dist
 	$(call RUN,ipython notebook --ip=* --no-browser)
 
-test: VM_WORKDIR=/src/spark-kernel
+test: VM_WORKDIR=/src/toree-kernel
 test:
 	$(call RUN,$(ENV_OPTS) sbt compile test)
 
 dist: COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
-dist: VERSION_FILE=dist/spark-kernel/VERSION
+dist: VERSION_FILE=dist/toree-kernel/VERSION
 dist: kernel/target/scala-2.10/$(ASSEMBLY_JAR) ${shell find ./etc/bin/*}
-	@mkdir -p dist/spark-kernel/bin dist/spark-kernel/lib
-	@cp -r etc/bin/* dist/spark-kernel/bin/.
-	@cp kernel/target/scala-2.10/$(ASSEMBLY_JAR) dist/spark-kernel/lib/.
+	@mkdir -p dist/toree-kernel/bin dist/toree-kernel/lib
+	@cp -r etc/bin/* dist/toree-kernel/bin/.
+	@cp kernel/target/scala-2.10/$(ASSEMBLY_JAR) dist/toree-kernel/lib/.
 	@echo "VERSION: $(FULL_VERSION)" > $(VERSION_FILE)
 	@echo "COMMIT: $(COMMIT)" >> $(VERSION_FILE)
-	@cd dist; tar -cvzf spark-kernel-$(FULL_VERSION).tar.gz spark-kernel
+	@cd dist; tar -cvzf toree-kernel-$(FULL_VERSION).tar.gz toree-kernel
 
 test-travis:
 	$(ENV_OPTS) sbt clean test -Dakka.test.timefactor=3

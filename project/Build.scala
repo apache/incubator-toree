@@ -94,7 +94,7 @@ trait SubProjects extends Settings with TestTasks {
    * Project representing the kernel code for the Spark Kernel backend.
    */
   lazy val kernel = addTestTasksToProject(Project(
-    id = "kernel",
+    id = "toree-kernel",
     base = file("kernel"),
     settings = fullSettings ++ Seq(
         test in assembly := {}
@@ -114,7 +114,7 @@ trait SubProjects extends Settings with TestTasks {
    * Project represents the pyspark interpreter used by the Spark Kernel.
    */
   lazy val pyspark_interpreter = addTestTasksToProject(Project(
-    id = "pyspark-interpreter",
+    id = "toree-pyspark-interpreter",
     base = file("pyspark-interpreter"),
     settings = fullSettings
   )) dependsOn(
@@ -126,7 +126,7 @@ trait SubProjects extends Settings with TestTasks {
    * Project represents the scala interpreter used by the Spark Kernel.
    */
   lazy val scala_interpreter = addTestTasksToProject(Project(
-    id = "scala-interpreter",
+    id = "toree-scala-interpreter",
     base = file("scala-interpreter"),
     settings = fullSettings
   )) dependsOn(
@@ -138,7 +138,7 @@ trait SubProjects extends Settings with TestTasks {
    * Project represents the scala interpreter used by the Spark Kernel.
    */
   lazy val sparkr_interpreter = addTestTasksToProject(Project(
-    id = "sparkr-interpreter",
+    id = "toree-sparkr-interpreter",
     base = file("sparkr-interpreter"),
     settings = fullSettings
   )) dependsOn(
@@ -150,7 +150,7 @@ trait SubProjects extends Settings with TestTasks {
    * Project represents the sql interpreter used by the Spark Kernel.
    */
   lazy val sql_interpreter = addTestTasksToProject(Project(
-    id = "sql-interpreter",
+    id = "toree-sql-interpreter",
     base = file("sql-interpreter"),
     settings = fullSettings
   )) dependsOn(
@@ -163,7 +163,7 @@ trait SubProjects extends Settings with TestTasks {
    * import this to implement their own magics and plugins.
    */
   lazy val kernel_api = addTestTasksToProject(Project(
-    id = "kernel-api",
+    id = "toree-kernel-api",
     base = file("kernel-api"),
     settings = fullSettings
   )) dependsOn(macros % "test->test;compile->compile")
@@ -194,7 +194,7 @@ trait SubProjects extends Settings with TestTasks {
    * client/kernel.
    */
   lazy val communication = addTestTasksToProject(Project(
-    id = "communication",
+    id = "toree-communication",
     base = file("communication"),
     settings = fullSettings
   )) dependsOn(
@@ -207,7 +207,7 @@ trait SubProjects extends Settings with TestTasks {
    * by the client and kernel implementations.
    */
   lazy val protocol = addTestTasksToProject(Project(
-    id = "protocol",
+    id = "toree-protocol",
     base = file("protocol"),
     settings = fullSettings ++ buildInfoSettings ++ buildSettings
   )) dependsOn(macros % "test->test;compile->compile")
@@ -217,7 +217,7 @@ trait SubProjects extends Settings with TestTasks {
    * any other project using them.
    */
   lazy val macros = addTestTasksToProject(Project(
-    id = "macros",
+    id = "toree-macros",
     base = file("macros"),
     settings = fullSettings
   ))
