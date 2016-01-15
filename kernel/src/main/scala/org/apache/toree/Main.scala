@@ -20,7 +20,7 @@ import org.apache.toree.boot.layer._
 import org.apache.toree.boot.{CommandLineOptions, KernelBootstrap}
 import org.apache.toree.kernel.BuildInfo
 
-object SparkKernel extends App {
+object Main extends App {
   private val options = new CommandLineOptions(args)
 
   if (options.help) {
