@@ -186,7 +186,7 @@ trait SubProjects extends Settings with TestTasks {
         simpleDateFormat.format(now)
       }
     ),
-    buildInfoPackage := "com.ibm.spark.kernel"
+    buildInfoPackage := "org.apache.toree.kernel"
   )
 
   /**

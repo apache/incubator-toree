@@ -14,13 +14,13 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.handler
+package org.apache.toree.kernel.protocol.v5.handler
 
-import com.ibm.spark.comm.{KernelCommWriter, CommStorage, CommRegistrar, CommWriter}
-import com.ibm.spark.kernel.protocol.v5.content.CommOpen
-import com.ibm.spark.kernel.protocol.v5.kernel.{Utilities, ActorLoader}
-import com.ibm.spark.kernel.protocol.v5.{KMBuilder, KernelMessage}
-import com.ibm.spark.utils.MessageLogSupport
+import org.apache.toree.comm.{KernelCommWriter, CommStorage, CommRegistrar, CommWriter}
+import org.apache.toree.kernel.protocol.v5.content.CommOpen
+import org.apache.toree.kernel.protocol.v5.kernel.{Utilities, ActorLoader}
+import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
+import org.apache.toree.utils.MessageLogSupport
 import play.api.data.validation.ValidationError
 import play.api.libs.json.JsPath
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.interpreter.broker
+package org.apache.toree.interpreter.broker
 
 import org.apache.commons.exec.ExecuteException
 import org.scalatest.mock.MockitoSugar

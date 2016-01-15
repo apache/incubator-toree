@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.kernel.socket
+package org.apache.toree.kernel.protocol.v5.kernel.socket
 
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.SystemActorType
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.SystemActorType
 
 /**
  * The server endpoint for shell messages specified in the IPython Kernel Spec

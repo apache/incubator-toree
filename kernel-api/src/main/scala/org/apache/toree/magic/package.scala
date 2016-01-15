@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark
+package org.apache.toree
 
 package object magic {
   /**

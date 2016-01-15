@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.content
+package org.apache.toree.kernel.protocol.v5.content
 
-import com.ibm.spark.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5._
 import play.api.libs.json.Json
 
 case class CommClose(comm_id: UUID, data: MsgData)

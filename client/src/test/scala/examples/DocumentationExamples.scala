@@ -16,10 +16,10 @@
 
 package examples
 
-import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.kernel.protocol.v5.client.boot.ClientBootstrap
-import com.ibm.spark.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
-import com.ibm.spark.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5.MIMEType
+import org.apache.toree.kernel.protocol.v5.client.boot.ClientBootstrap
+import org.apache.toree.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
+import org.apache.toree.kernel.protocol.v5.content._
 import com.typesafe.config.{Config, ConfigFactory}
 
 object DocumentationExamples extends App {

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.socket
+package org.apache.toree.kernel.protocol.v5.client.socket
 
 import akka.actor.Actor
 import akka.util.Timeout
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.communication.security.SecurityActorType
-import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, Utilities}
-import com.ibm.spark.kernel.protocol.v5.{KernelMessage, UUID}
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.communication.security.SecurityActorType
+import org.apache.toree.kernel.protocol.v5.client.{ActorLoader, Utilities}
+import org.apache.toree.kernel.protocol.v5.{KernelMessage, UUID}
 import Utilities._
-import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, DeferredExecutionManager}
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteReply
+import org.apache.toree.kernel.protocol.v5.client.execution.{DeferredExecution, DeferredExecutionManager}
+import org.apache.toree.kernel.protocol.v5.content.ExecuteReply
 
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.utils.LogLike
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import akka.pattern.ask

@@ -1,9 +1,9 @@
-package com.ibm.spark.kernel.api
+package org.apache.toree.kernel.api
 
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5.KernelMessage
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers, FunSpec}
 import play.api.libs.json.Json

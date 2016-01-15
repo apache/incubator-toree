@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.communication
+package org.apache.toree.communication
 
 package object security {
   object SecurityActorType extends Enumeration {

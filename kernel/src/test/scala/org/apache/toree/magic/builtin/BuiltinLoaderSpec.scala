@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpec}

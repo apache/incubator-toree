@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.kernel.socket
+package org.apache.toree.kernel.protocol.v5.kernel.socket
 
 object SocketConnection {
   def apply(protocol: String, ip: String, port: Int) = new SocketConnection(protocol, ip, port)

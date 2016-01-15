@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.content
+package org.apache.toree.kernel.protocol.v5.content
 
 /**
  * Indicates that the implementation contains a method to return the type

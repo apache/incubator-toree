@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.kernel
+package org.apache.toree.kernel.protocol.v5.kernel
 
 import akka.actor.{ActorSelection, ActorSystem, Props}
 import akka.testkit.{TestKit, TestProbe}
-import com.ibm.spark.kernel.protocol.v5.MessageType
+import org.apache.toree.kernel.protocol.v5.MessageType
 import org.scalatest.{FunSpecLike, Matchers}
 import test.utils.TestProbeProxyActor
 

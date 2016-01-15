@@ -14,18 +14,18 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.kernel.socket
+package org.apache.toree.kernel.protocol.v5.kernel.socket
 
 import java.nio.charset.Charset
 
 import akka.actor.{ActorSelection, ActorSystem, ActorRef, Actor}
 import akka.util.ByteString
-import com.ibm.spark.communication.ZMQMessage
+import org.apache.toree.communication.ZMQMessage
 
-//import com.ibm.spark.kernel.protocol.v5.kernel.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import com.ibm.spark.kernel.protocol.v5.kernel.Utilities._
-import com.ibm.spark.utils.MessageLogSupport
+//import org.apache.toree.kernel.protocol.v5.kernel.ZMQMessage
+import org.apache.toree.kernel.protocol.v5.KernelMessage
+import org.apache.toree.kernel.protocol.v5.kernel.Utilities._
+import org.apache.toree.utils.MessageLogSupport
 
 /**
  * Represents a generic socket geared toward two-way communication using

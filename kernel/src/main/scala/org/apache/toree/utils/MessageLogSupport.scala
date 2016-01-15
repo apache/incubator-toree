@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.utils
+package org.apache.toree.utils
 
-import com.ibm.spark.kernel.protocol.v5.{MessageType, KernelMessage}
+import org.apache.toree.kernel.protocol.v5.{MessageType, KernelMessage}
 
 trait MessageLogSupport extends LogLike {
   /**

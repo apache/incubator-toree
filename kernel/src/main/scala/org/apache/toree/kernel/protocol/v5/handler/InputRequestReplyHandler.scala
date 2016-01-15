@@ -14,16 +14,16 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.handler
+package org.apache.toree.kernel.protocol.v5.handler
 
 import akka.actor.ActorRef
-import com.ibm.spark.comm.{CommRegistrar, CommStorage}
-import com.ibm.spark.communication.utils.OrderedSupport
-import com.ibm.spark.kernel.protocol.v5.{SystemActorType, KernelMessage}
-import com.ibm.spark.kernel.protocol.v5.content.{InputReply, CommOpen}
-import com.ibm.spark.kernel.protocol.v5.kernel.{Utilities, ActorLoader}
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.utils.MessageLogSupport
+import org.apache.toree.comm.{CommRegistrar, CommStorage}
+import org.apache.toree.communication.utils.OrderedSupport
+import org.apache.toree.kernel.protocol.v5.{SystemActorType, KernelMessage}
+import org.apache.toree.kernel.protocol.v5.content.{InputReply, CommOpen}
+import org.apache.toree.kernel.protocol.v5.kernel.{Utilities, ActorLoader}
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.utils.MessageLogSupport
 import play.api.libs.json.Json
 
 import scala.concurrent.{Promise, Future}

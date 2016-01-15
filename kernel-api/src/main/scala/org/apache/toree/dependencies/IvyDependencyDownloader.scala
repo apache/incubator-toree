@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.dependencies
+package org.apache.toree.dependencies
 
 import java.io.{File, PrintStream}
 import java.net.URL
@@ -87,7 +87,7 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
     ivyFile.deleteOnExit()
 
     val md = DefaultModuleDescriptor.newDefaultInstance(
-      ModuleRevisionId.newInstance("com.ibm.spark", "spark-kernel", "working")
+      ModuleRevisionId.newInstance("org.apache.toree", "spark-kernel", "working")
     )
 
     // Exclude all sources artifacts i.e. artifactId-version-sources.jar

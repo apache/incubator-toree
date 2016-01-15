@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5
+package org.apache.toree.kernel.protocol.v5
 
 trait KernelMessageContent {
 

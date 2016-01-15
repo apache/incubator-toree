@@ -14,13 +14,13 @@
 * limitations under the License.
 */
 
-package com.ibm.spark.magic
+package org.apache.toree.magic
 
 import java.io.OutputStream
 
-import com.ibm.spark.dependencies.DependencyDownloader
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.magic.dependencies._
+import org.apache.toree.dependencies.DependencyDownloader
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.magic.dependencies._
 import org.apache.spark.SparkContext
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpec, Matchers}

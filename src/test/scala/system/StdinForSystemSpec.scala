@@ -16,7 +16,7 @@
 
 package system
 
-import com.ibm.spark.kernel.protocol.v5.client.SparkKernelClient
+import org.apache.toree.kernel.protocol.v5.client.SparkKernelClient
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Seconds, Milliseconds, Span}
 import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}

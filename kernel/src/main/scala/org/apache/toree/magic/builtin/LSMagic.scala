@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
 import java.io.PrintStream
 
-import com.ibm.spark.magic._
-import com.ibm.spark.magic.dependencies.IncludeOutputStream
+import org.apache.toree.magic._
+import org.apache.toree.magic.dependencies.IncludeOutputStream
 
 class LSMagic extends LineMagic with IncludeOutputStream {
 

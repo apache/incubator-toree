@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.content
+package org.apache.toree.kernel.protocol.v5.content
 
-import com.ibm.spark.kernel.protocol.v5.KernelMessageContent
+import org.apache.toree.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 

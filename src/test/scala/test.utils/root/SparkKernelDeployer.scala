@@ -16,8 +16,8 @@
 
 package test.utils.root
 
-import com.ibm.spark.boot.layer._
-import com.ibm.spark.boot.{KernelBootstrap, CommandLineOptions}
+import org.apache.toree.boot.layer._
+import org.apache.toree.boot.{KernelBootstrap, CommandLineOptions}
 
 /**
   * Provides tests with a generic Spark Kernel.

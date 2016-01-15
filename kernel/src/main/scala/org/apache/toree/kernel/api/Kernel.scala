@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.api
+package org.apache.toree.kernel.api
 
 import java.io.{OutputStream, InputStream, PrintStream}
 import java.util.concurrent.ConcurrentHashMap
 
-import com.ibm.spark.annotations.Experimental
-import com.ibm.spark.boot.layer.InterpreterManager
-import com.ibm.spark.comm.CommManager
-import com.ibm.spark.global
-import com.ibm.spark.interpreter.Results.Result
-import com.ibm.spark.interpreter._
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.{KMBuilder, KernelMessage}
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.magic.MagicParser
-import com.ibm.spark.kernel.protocol.v5.stream.{KernelOutputStream, KernelInputStream}
-import com.ibm.spark.magic.{MagicLoader, MagicExecutor}
-import com.ibm.spark.utils.{KeyValuePairUtils, LogLike}
+import org.apache.toree.annotations.Experimental
+import org.apache.toree.boot.layer.InterpreterManager
+import org.apache.toree.comm.CommManager
+import org.apache.toree.global
+import org.apache.toree.interpreter.Results.Result
+import org.apache.toree.interpreter._
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.magic.MagicParser
+import org.apache.toree.kernel.protocol.v5.stream.{KernelOutputStream, KernelInputStream}
+import org.apache.toree.magic.{MagicLoader, MagicExecutor}
+import org.apache.toree.utils.{KeyValuePairUtils, LogLike}
 import com.typesafe.config.Config
 import org.apache.spark.api.java.JavaSparkContext
 import org.apache.spark.sql.SQLContext
@@ -41,7 +41,7 @@ import scala.util.{Try, DynamicVariable}
 import scala.reflect.runtime.universe._
 
 import scala.language.dynamics
-import com.ibm.spark.global.ExecuteRequestState
+import org.apache.toree.global.ExecuteRequestState
 
 /**
  * Represents the main kernel API to be used for interaction.
@@ -177,7 +177,7 @@ class Kernel (
    *
    * @return The collection of streaming methods
    */
-  private[spark] def stream(
+  private[toree] def stream(
     parentMessage: v5.KernelMessage = lastKernelMessage()
   ): StreamMethods = {
     new StreamMethods(actorLoader, parentMessage)
@@ -203,7 +203,7 @@ class Kernel (
    *
    * @return The collection of factory methods
    */
-  private[spark] def factory(
+  private[toree] def factory(
     parentMessage: v5.KernelMessage = lastKernelMessage(),
     kmBuilder: v5.KMBuilder = v5.KMBuilder()
   ): FactoryMethods = {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic
+package org.apache.toree.magic
 
 /**
  * Represents a classloader that can load classes from within.

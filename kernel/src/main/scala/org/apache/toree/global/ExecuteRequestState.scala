@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.global
+package org.apache.toree.global
 
-import com.ibm.spark.kernel.api.Kernel
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
+import org.apache.toree.kernel.api.Kernel
+import org.apache.toree.kernel.protocol.v5.KernelMessage
 
 /**
  * Represents the state of the kernel messages being received containing

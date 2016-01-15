@@ -1,8 +1,8 @@
-package com.ibm.spark.boot.layer
+package org.apache.toree.boot.layer
 
-import com.ibm.spark.kernel.api.KernelLike
+import org.apache.toree.kernel.api.KernelLike
 import com.typesafe.config.Config
-import com.ibm.spark.interpreter._
+import org.apache.toree.interpreter._
 import scala.collection.JavaConverters._
 
 import org.slf4j.LoggerFactory

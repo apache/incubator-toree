@@ -14,18 +14,18 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.boot.layer
+package org.apache.toree.boot.layer
 
 import akka.actor.{ActorRef, Props, ActorSystem}
-import com.ibm.spark.kernel.protocol.v5.dispatch.StatusDispatch
-import com.ibm.spark.kernel.protocol.v5.handler.{GenericSocketMessageHandler, ShutdownHandler}
-import com.ibm.spark.kernel.protocol.v5.kernel.{SimpleActorLoader, ActorLoader}
-import com.ibm.spark.communication.security.{SecurityActorType, SignatureManagerActor}
-import com.ibm.spark.kernel.protocol.v5.kernel.socket._
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen}
-import com.ibm.spark.kernel.protocol.v5.relay.KernelMessageRelay
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.kernel.protocol.v5.dispatch.StatusDispatch
+import org.apache.toree.kernel.protocol.v5.handler.{GenericSocketMessageHandler, ShutdownHandler}
+import org.apache.toree.kernel.protocol.v5.kernel.{SimpleActorLoader, ActorLoader}
+import org.apache.toree.communication.security.{SecurityActorType, SignatureManagerActor}
+import org.apache.toree.kernel.protocol.v5.kernel.socket._
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen}
+import org.apache.toree.kernel.protocol.v5.relay.KernelMessageRelay
+import org.apache.toree.utils.LogLike
 import com.typesafe.config.Config
 import play.api.libs.json.Json
 

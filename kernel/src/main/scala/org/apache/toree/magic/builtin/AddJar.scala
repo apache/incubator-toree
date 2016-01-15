@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
 import java.io.{File, PrintStream}
 import java.net.URL
 import java.nio.file.{Files, Paths}
 
-import com.ibm.spark.magic._
-import com.ibm.spark.magic.builtin.AddJar._
-import com.ibm.spark.magic.dependencies._
-import com.ibm.spark.utils.{ArgumentParsingSupport, DownloadSupport, LogLike}
+import org.apache.toree.magic._
+import org.apache.toree.magic.builtin.AddJar._
+import org.apache.toree.magic.dependencies._
+import org.apache.toree.utils.{ArgumentParsingSupport, DownloadSupport, LogLike}
 import com.typesafe.config.Config
 
 object AddJar {

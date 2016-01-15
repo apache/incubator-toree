@@ -17,12 +17,12 @@
 package system
 
 import akka.testkit.{TestProbe}
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import Utilities._
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.{KernelMessage, SocketType, KMBuilder}
-import com.ibm.spark.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5.{KernelMessage, SocketType, KMBuilder}
+import org.apache.toree.kernel.protocol.v5.content._
 import org.scalatest._
 import play.api.libs.json.Json
 import scala.concurrent.duration._
@@ -43,7 +43,7 @@ class KernelCommSpecForSystem
 {
   private val MaxFishTime = 5.seconds
 
-  import com.ibm.spark.boot.layer.SparkKernelDeployer._
+  import org.apache.toree.boot.layer.SparkKernelDeployer._
 
   private def waitForExecuteReply(
     shell: TestProbe, headerId: v5.UUID, maxTime: Duration = MaxFishTime
@@ -202,7 +202,7 @@ class KernelCommSpecForSystem
             s"""
               |val commWriter = kernel.comm.open("$testTargetName")
               |commWriter.writeMsg(
-              |   com.ibm.spark.kernel.protocol.v5.MsgData("key" -> "value")
+              |   org.apache.toree.kernel.protocol.v5.MsgData("key" -> "value")
               |)
             """.stripMargin.trim
 

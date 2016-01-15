@@ -1,4 +1,4 @@
-package com.ibm.spark.magic
+package org.apache.toree.magic
 
 /**
  * Cell Magics change the output of a cell in IPython

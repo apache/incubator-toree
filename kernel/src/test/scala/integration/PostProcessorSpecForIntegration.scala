@@ -18,11 +18,11 @@ package integration
 
 import java.io.OutputStream
 
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.kernel.api.KernelLike
-import com.ibm.spark.kernel.interpreter.scala.{StandardSettingsProducer, StandardTaskManagerProducer, StandardSparkIMainProducer, ScalaInterpreter}
-import com.ibm.spark.kernel.protocol.v5.magic.PostProcessor
-import com.ibm.spark.utils.{TaskManager, MultiOutputStream}
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.kernel.api.KernelLike
+import org.apache.toree.kernel.interpreter.scala.{StandardSettingsProducer, StandardTaskManagerProducer, StandardSparkIMainProducer, ScalaInterpreter}
+import org.apache.toree.kernel.protocol.v5.magic.PostProcessor
+import org.apache.toree.utils.{TaskManager, MultiOutputStream}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
 

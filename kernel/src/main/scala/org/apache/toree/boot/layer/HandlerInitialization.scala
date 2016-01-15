@@ -14,23 +14,23 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.boot.layer
+package org.apache.toree.boot.layer
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import com.ibm.spark.comm.{CommRegistrar, CommStorage}
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.kernel.api.Kernel
-import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
-import com.ibm.spark.kernel.protocol.v5.SocketType.SocketType
-import com.ibm.spark.kernel.protocol.v5.handler._
-import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
-import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.magic.{MagicParser, PostProcessor}
-import com.ibm.spark.kernel.protocol.v5.relay.ExecuteRequestRelay
-import com.ibm.spark.kernel.protocol.v5.{MessageType, SocketType, SystemActorType}
-import com.ibm.spark.magic.MagicLoader
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.comm.{CommRegistrar, CommStorage}
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.kernel.api.Kernel
+import org.apache.toree.kernel.protocol.v5.MessageType.MessageType
+import org.apache.toree.kernel.protocol.v5.SocketType.SocketType
+import org.apache.toree.kernel.protocol.v5.handler._
+import org.apache.toree.kernel.protocol.v5.interpreter.InterpreterActor
+import org.apache.toree.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.magic.{MagicParser, PostProcessor}
+import org.apache.toree.kernel.protocol.v5.relay.ExecuteRequestRelay
+import org.apache.toree.kernel.protocol.v5.{MessageType, SocketType, SystemActorType}
+import org.apache.toree.magic.MagicLoader
+import org.apache.toree.utils.LogLike
 
 /**
  * Represents the Akka handler initialization. All actors (not needed in bare

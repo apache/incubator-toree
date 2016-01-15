@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter.broker
+package org.apache.toree.interpreter.broker
 
 /**
  * Represents the interface that associates a name with a broker. Can be

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark
+package org.apache.toree
 
 // TODO: Deprecate and remove this package object as it is difficult to
 //       remember where this type comes from

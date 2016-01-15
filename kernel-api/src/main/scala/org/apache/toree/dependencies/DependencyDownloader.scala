@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.dependencies
+package org.apache.toree.dependencies
 
 import java.io.PrintStream
 import java.net.URL

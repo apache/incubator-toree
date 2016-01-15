@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter
+package org.apache.toree.interpreter
 
 /**
  * Contains all types associated with the interpreter interface.

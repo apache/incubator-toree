@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.ibm.spark.communication
+package org.apache.toree.communication
 
 import akka.util.ByteString
 

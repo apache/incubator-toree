@@ -14,14 +14,14 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.boot.layers
+package org.apache.toree.kernel.protocol.v5.client.boot.layers
 
 import akka.actor.{ActorSystem, Props}
-import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.MessageType
-import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
-import com.ibm.spark.kernel.protocol.v5.client.handler.ExecuteHandler
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.kernel.protocol.v5.client.ActorLoader
+import org.apache.toree.kernel.protocol.v5.MessageType
+import org.apache.toree.kernel.protocol.v5.MessageType.MessageType
+import org.apache.toree.kernel.protocol.v5.client.handler.ExecuteHandler
+import org.apache.toree.utils.LogLike
 
 /**
  * Represents the event handler initialization such as message handlers.

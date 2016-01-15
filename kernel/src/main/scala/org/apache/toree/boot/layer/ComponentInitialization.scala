@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.boot.layer
+package org.apache.toree.boot.layer
 
 import java.util
 import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor.ActorRef
-import com.ibm.spark.comm.{CommManager, KernelCommManager, CommRegistrar, CommStorage}
-import com.ibm.spark.dependencies.{DependencyDownloader, IvyDependencyDownloader}
-import com.ibm.spark.global
-import com.ibm.spark.interpreter._
-import com.ibm.spark.kernel.api.{KernelLike, Kernel}
-import com.ibm.spark.kernel.protocol.v5.KMBuilder
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.stream.KernelOutputStream
-import com.ibm.spark.magic.MagicLoader
-import com.ibm.spark.magic.builtin.BuiltinLoader
-import com.ibm.spark.magic.dependencies.DependencyMap
-import com.ibm.spark.utils.{MultiClassLoader, TaskManager, KeyValuePairUtils, LogLike}
+import org.apache.toree.comm.{CommManager, KernelCommManager, CommRegistrar, CommStorage}
+import org.apache.toree.dependencies.{DependencyDownloader, IvyDependencyDownloader}
+import org.apache.toree.global
+import org.apache.toree.interpreter._
+import org.apache.toree.kernel.api.{KernelLike, Kernel}
+import org.apache.toree.kernel.protocol.v5.KMBuilder
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.stream.KernelOutputStream
+import org.apache.toree.magic.MagicLoader
+import org.apache.toree.magic.builtin.BuiltinLoader
+import org.apache.toree.magic.dependencies.DependencyMap
+import org.apache.toree.utils.{MultiClassLoader, TaskManager, KeyValuePairUtils, LogLike}
 import com.typesafe.config.Config
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkContext, SparkConf}
@@ -148,7 +148,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
     /*
     interpreter.doQuietly {
       interpreter.bind(
-        "kernel", "com.ibm.spark.kernel.api.Kernel",
+        "kernel", "org.apache.toree.kernel.api.Kernel",
         kernel, List( """@transient implicit""")
       )
     }

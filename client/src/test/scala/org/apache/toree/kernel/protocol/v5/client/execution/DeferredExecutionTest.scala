@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.execution
+package org.apache.toree.kernel.protocol.v5.client.execution
 
-import com.ibm.spark.kernel.protocol.v5.content.{StreamContent, ExecuteResult}
-import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content.{StreamContent, ExecuteResult}
+import org.apache.toree.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5._
 import org.scalatest.{Matchers, FunSpec}
 import org.scalatest.concurrent.ScalaFutures
 

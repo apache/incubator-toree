@@ -17,7 +17,7 @@
 package test.utils
 
 import akka.testkit.TestKit
-import com.ibm.spark.boot.layer.SparkKernelDeployer
+import org.apache.toree.boot.layer.SparkKernelDeployer
 
 class NoArgSparkKernelTestKit
   extends TestKit(SparkKernelDeployer.getNoArgSparkKernelActorSystem)

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.boot
+package org.apache.toree.boot
 
 import java.io.{File, OutputStream}
 
-import com.ibm.spark.utils.KeyValuePairUtils
+import org.apache.toree.utils.KeyValuePairUtils
 import com.typesafe.config.{Config, ConfigFactory}
 import joptsimple.util.KeyValuePair
 import joptsimple.{OptionParser, OptionSpec}
@@ -175,9 +175,9 @@ class CommandLineOptions(args: Seq[String]) {
   private def interpreterPlugins: Option[java.util.List[String]] = {
     //val defaults = getAll(_default_interpreter_plugin).getOrElse(List())
     //val defaults = List[String](
-    //  "PySpark:com.ibm.spark.kernel.interpreter.pyspark.PySparkInterpreter",
-    //  "SparkR:com.ibm.spark.kernel.interpreter.sparkr.SparkRInterpreter",
-    //  "SQL:com.ibm.spark.kernel.interpreter.sql.SqlInterpreter"
+    //  "PySpark:org.apache.toree.kernel.interpreter.pyspark.PySparkInterpreter",
+    //  "SparkR:org.apache.toree.kernel.interpreter.sparkr.SparkRInterpreter",
+    //  "SQL:org.apache.toree.kernel.interpreter.sql.SqlInterpreter"
     //)
 
     val userDefined = getAll(_interpreter_plugin) match {

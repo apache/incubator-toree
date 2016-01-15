@@ -20,14 +20,14 @@ import java.io.{ByteArrayOutputStream, OutputStream}
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.ibm.spark.interpreter._
-import com.ibm.spark.kernel.api.KernelLike
-import com.ibm.spark.kernel.interpreter.scala.{StandardTaskManagerProducer, StandardSparkIMainProducer, StandardSettingsProducer, ScalaInterpreter}
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.kernel.protocol.v5.interpreter.InterpreterActor
-import com.ibm.spark.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
-import com.ibm.spark.utils.{TaskManager, MultiOutputStream}
+import org.apache.toree.interpreter._
+import org.apache.toree.kernel.api.KernelLike
+import org.apache.toree.kernel.interpreter.scala.{StandardTaskManagerProducer, StandardSparkIMainProducer, StandardSettingsProducer, ScalaInterpreter}
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5.interpreter.InterpreterActor
+import org.apache.toree.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
+import org.apache.toree.utils.{TaskManager, MultiOutputStream}
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.mock.MockitoSugar

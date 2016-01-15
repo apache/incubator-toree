@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.api
+package org.apache.toree.kernel.api
 
 /**
  * Represents a "wrapper" for information needed to stream stdout/stderr from

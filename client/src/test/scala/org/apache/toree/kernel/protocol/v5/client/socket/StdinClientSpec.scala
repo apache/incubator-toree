@@ -14,19 +14,19 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.socket
+package org.apache.toree.kernel.protocol.v5.client.socket
 
 import akka.actor.{ActorRef, Props, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.communication.security.SecurityActorType
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
-import com.ibm.spark.kernel.protocol.v5.content.{InputReply, InputRequest, ClearOutput, ExecuteRequest}
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.communication.security.SecurityActorType
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.client.ActorLoader
+import org.apache.toree.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
+import org.apache.toree.kernel.protocol.v5.content.{InputReply, InputRequest, ClearOutput, ExecuteRequest}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
-import com.ibm.spark.kernel.protocol.v5.client.Utilities._
+import org.apache.toree.kernel.protocol.v5.client.Utilities._
 import play.api.libs.json.Json
 import scala.concurrent.duration._
 

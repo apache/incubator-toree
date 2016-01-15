@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.handler
+package org.apache.toree.kernel.protocol.v5.handler
 
 import akka.pattern.ask
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import Utilities._
-import com.ibm.spark.utils.{MessageLogSupport, LogLike}
+import org.apache.toree.utils.{MessageLogSupport, LogLike}
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, Json}
 

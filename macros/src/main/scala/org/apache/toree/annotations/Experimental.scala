@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.ibm.spark.annotations
+package org.apache.toree.annotations
 
 import scala.language.experimental.macros
 import scala.annotation.{StaticAnnotation, Annotation}

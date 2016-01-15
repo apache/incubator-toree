@@ -17,17 +17,17 @@
 package system
 
 import akka.testkit.TestProbe
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import Utilities._
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.{KernelMessage, SocketType, KMBuilder}
-import com.ibm.spark.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5.{KernelMessage, SocketType, KMBuilder}
+import org.apache.toree.kernel.protocol.v5.content._
 import org.scalatest._
 import play.api.libs.json.Json
 import scala.concurrent.duration._
 import test.utils.NoArgSparkKernelTestKit
-import com.ibm.spark.boot.layer.SparkKernelDeployer
+import org.apache.toree.boot.layer.SparkKernelDeployer
 
 
 /**

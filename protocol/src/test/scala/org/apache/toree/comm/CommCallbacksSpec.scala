@@ -14,12 +14,12 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.comm
+package org.apache.toree.comm
 
 // TODO: Move duplicate code to separate project (kernel and client)
 
-import com.ibm.spark.comm.CommCallbacks._
-import com.ibm.spark.kernel.protocol.v5._
+import org.apache.toree.comm.CommCallbacks._
+import org.apache.toree.kernel.protocol.v5._
 import org.scalatest.{FunSpec, Matchers}
 
 class CommCallbacksSpec extends FunSpec with Matchers {

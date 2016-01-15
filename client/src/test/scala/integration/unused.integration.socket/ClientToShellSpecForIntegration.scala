@@ -22,9 +22,9 @@ import java.util.UUID
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.zeromq._
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
-import com.ibm.spark.kernel.protocol.v5.socket._
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest
+import org.apache.toree.kernel.protocol.v5.socket._
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar

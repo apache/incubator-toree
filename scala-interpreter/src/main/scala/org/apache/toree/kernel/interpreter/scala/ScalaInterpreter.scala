@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.interpreter.scala
+package org.apache.toree.kernel.interpreter.scala
 
 import java.io.{BufferedReader, ByteArrayOutputStream, InputStreamReader, PrintStream}
 import java.net.{URL, URLClassLoader}
@@ -23,12 +23,12 @@ import java.util.concurrent.ExecutionException
 
 import akka.actor.Actor
 import akka.actor.Actor.Receive
-import com.ibm.spark.global.StreamState
-import com.ibm.spark.interpreter
-import com.ibm.spark.interpreter._
-import com.ibm.spark.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
-import com.ibm.spark.kernel.api.{KernelLike, KernelOptions}
-import com.ibm.spark.utils.{MultiOutputStream, TaskManager}
+import org.apache.toree.global.StreamState
+import org.apache.toree.interpreter
+import org.apache.toree.interpreter._
+import org.apache.toree.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
+import org.apache.toree.kernel.api.{KernelLike, KernelOptions}
+import org.apache.toree.utils.{MultiOutputStream, TaskManager}
 import org.apache.spark.SparkContext
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain, SparkJLineCompletion}
 import org.apache.spark.sql.SQLContext
@@ -239,7 +239,7 @@ class ScalaInterpreter() extends Interpreter {
   protected def bindKernelVarialble(kernel: KernelLike): Unit = {
     doQuietly {
       bind(
-        "kernel", "com.ibm.spark.kernel.api.Kernel",
+        "kernel", "org.apache.toree.kernel.api.Kernel",
         kernel, List( """@transient implicit""")
       )
     }

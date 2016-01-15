@@ -1,6 +1,6 @@
-package com.ibm.spark.kernel.protocol.v5.magic
+package org.apache.toree.kernel.protocol.v5.magic
 
-import com.ibm.spark.magic.MagicLoader
+import org.apache.toree.magic.MagicLoader
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpec, Matchers}
 import org.mockito.Mockito._

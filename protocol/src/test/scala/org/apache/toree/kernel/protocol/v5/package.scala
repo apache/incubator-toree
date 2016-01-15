@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol
+package org.apache.toree.kernel.protocol
 
 //import akka.zeromq.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.{CompleteRequest, ExecuteRequest}
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content.{CompleteRequest, ExecuteRequest}
 import play.api.libs.json.Json
 
 package object v5Test {

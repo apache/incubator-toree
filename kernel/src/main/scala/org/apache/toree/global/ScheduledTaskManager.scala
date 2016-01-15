@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.global
+package org.apache.toree.global
 
-import com.ibm.spark.utils
+import org.apache.toree.utils
 
 object ScheduledTaskManager {
   lazy val instance = new utils.ScheduledTaskManager

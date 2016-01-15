@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.global
+package org.apache.toree.global
 
 import org.scalatest.{FunSpec, Matchers}
 

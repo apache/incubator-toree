@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.dependencies
+package org.apache.toree.magic.dependencies
 
 import java.io.OutputStream
 
-import com.ibm.spark.magic.Magic
+import org.apache.toree.magic.Magic
 
 trait IncludeOutputStream {
   this: Magic =>

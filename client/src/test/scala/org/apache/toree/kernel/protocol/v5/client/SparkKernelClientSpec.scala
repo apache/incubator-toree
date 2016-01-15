@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client
+package org.apache.toree.kernel.protocol.v5.client
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestProbe}
-import com.ibm.spark.comm.{CommCallbacks, CommStorage, CommRegistrar}
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.client.execution.ExecuteRequestTuple
+import org.apache.toree.comm.{CommCallbacks, CommStorage, CommRegistrar}
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.client.execution.ExecuteRequestTuple
 import scala.concurrent.duration._
 import org.mockito.Mockito._
 import org.mockito.Matchers.{eq => mockEq, _}

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.content
+package org.apache.toree.kernel.protocol.v5.content
 
 import org.scalatest.{FunSpec, Matchers}
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
-import com.ibm.spark.kernel.protocol.v5.MsgData
+import org.apache.toree.kernel.protocol.v5.MsgData
 
 class CommOpenSpec extends FunSpec with Matchers {
   val commOpenJson: JsValue = Json.parse("""

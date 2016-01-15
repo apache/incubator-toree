@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.communication.security
+package org.apache.toree.communication.security
 
 import akka.actor.Actor
-import com.ibm.spark.communication.utils.OrderedSupport
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.communication.utils.OrderedSupport
+import org.apache.toree.kernel.protocol.v5.KernelMessage
+import org.apache.toree.utils.LogLike
 import play.api.libs.json.Json
 
 /**

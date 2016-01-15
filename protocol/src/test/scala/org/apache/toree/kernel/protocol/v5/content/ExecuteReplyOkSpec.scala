@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.content
+package org.apache.toree.kernel.protocol.v5.content
 
 import org.scalatest.{FunSpec, Matchers}
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
 
-import com.ibm.spark.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5._
 
 class ExecuteReplyOkSpec extends FunSpec with Matchers {
   val executeReplyOkJson: JsValue = Json.parse("""

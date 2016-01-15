@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.communication.utils
+package org.apache.toree.communication.utils
 
 import akka.actor.{Actor, Stash}
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.utils.LogLike
 
 /**
  * A trait to enforce ordered processing for messages of particular types.

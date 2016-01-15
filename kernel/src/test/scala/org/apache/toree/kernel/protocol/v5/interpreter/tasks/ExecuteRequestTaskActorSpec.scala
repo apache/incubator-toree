@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.interpreter.tasks
+package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
 import java.io.OutputStream
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.ibm.spark.interpreter._
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content._
+import org.apache.toree.interpreter._
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content._
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
 import org.mockito.Matchers.{eq => mockEq, anyString, anyBoolean}

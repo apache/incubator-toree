@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic
+package org.apache.toree.magic
 
 import org.scalatest.{Matchers, FunSpec}
 import org.scalatest.mock.MockitoSugar
@@ -29,7 +29,7 @@ class InternalClassLoaderSpec extends FunSpec with Matchers with MockitoSugar {
     describe("#loadClass") {
       it("should invoke super loadClass with loader's package prepended") {
         val expected = classOf[Class[_]]
-        val packageName = "com.ibm.spark.magic"
+        val packageName = "org.apache.toree.magic"
         val className = "SomeClass"
 
         var parentLoadClassCorrectlyInvoked = false
@@ -49,7 +49,7 @@ class InternalClassLoaderSpec extends FunSpec with Matchers with MockitoSugar {
 
       it("should use loader's package instead of provided package first") {
         val expected = classOf[Class[_]]
-        val forcedPackageName = "com.ibm.spark.magic"
+        val forcedPackageName = "org.apache.toree.magic"
         val packageName = "some.other.package"
         val className = "SomeClass"
 

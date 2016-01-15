@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
 import java.io.PrintStream
 
-import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.magic._
-import com.ibm.spark.magic.dependencies.IncludeOutputStream
-import com.ibm.spark.utils.ArgumentParsingSupport
+import org.apache.toree.kernel.protocol.v5.MIMEType
+import org.apache.toree.magic._
+import org.apache.toree.magic.dependencies.IncludeOutputStream
+import org.apache.toree.utils.ArgumentParsingSupport
 import com.google.common.base.Strings
 
 class Html extends CellMagic with ArgumentParsingSupport

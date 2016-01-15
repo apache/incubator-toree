@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter.broker
+package org.apache.toree.interpreter.broker
 
-import com.ibm.spark.interpreter.InterpreterTypes.ExecuteOutput
-import com.ibm.spark.interpreter.Results.Result
-import com.ibm.spark.interpreter.broker.BrokerTypes.CodeResults
-import com.ibm.spark.interpreter.{ExecuteError, ExecuteFailure, Results}
+import org.apache.toree.interpreter.InterpreterTypes.ExecuteOutput
+import org.apache.toree.interpreter.Results.Result
+import org.apache.toree.interpreter.broker.BrokerTypes.CodeResults
+import org.apache.toree.interpreter.{ExecuteError, ExecuteFailure, Results}
 
 import scala.concurrent.Future
 

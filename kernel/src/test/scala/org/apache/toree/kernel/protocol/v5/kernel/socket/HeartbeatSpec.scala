@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.kernel.socket
+package org.apache.toree.kernel.protocol.v5.kernel.socket
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.util.ByteString
-import com.ibm.spark.communication.ZMQMessage
+import org.apache.toree.communication.ZMQMessage
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._

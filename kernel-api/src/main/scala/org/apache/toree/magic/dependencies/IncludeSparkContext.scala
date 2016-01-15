@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.dependencies
+package org.apache.toree.magic.dependencies
 
-import com.ibm.spark.magic.Magic
+import org.apache.toree.magic.Magic
 import org.apache.spark.SparkContext
 
 trait IncludeSparkContext {

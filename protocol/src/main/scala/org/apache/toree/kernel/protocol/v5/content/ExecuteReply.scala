@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.content
+package org.apache.toree.kernel.protocol.v5.content
 
 // External libraries
 
-import com.ibm.spark.kernel.protocol.v5.{KernelMessageContent, UserExpressions, Payloads}
+import org.apache.toree.kernel.protocol.v5.{KernelMessageContent, UserExpressions, Payloads}
 import play.api.libs.json._
 
 // Internal libraries

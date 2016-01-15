@@ -29,7 +29,7 @@ kernel to provide a form of communicate suitable for use as an interpreter:
    package scope of `org.apache.spark.api.r`
    
        - To circumvent, use a reflective wrapping under 
-         `com.ibm.spark.kernel.interpreter.r.ReflectiveRBackend`
+         `org.apache.toree.kernel.interpreter.r.ReflectiveRBackend`
          
 Building the custom R bundle
 ----------------------------

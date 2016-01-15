@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.stream
+package org.apache.toree.kernel.protocol.v5.stream
 
 import java.util.UUID
 
 import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.utils.ScheduledTaskManager
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.utils.ScheduledTaskManager
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest._
 import play.api.libs.json._
-import com.ibm.spark.kernel.protocol.v5.content.StreamContent
+import org.apache.toree.kernel.protocol.v5.content.StreamContent
 
 import scala.concurrent.duration._
 

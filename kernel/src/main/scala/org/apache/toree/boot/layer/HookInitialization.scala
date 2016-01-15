@@ -14,11 +14,11 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.boot.layer
+package org.apache.toree.boot.layer
 
-import com.ibm.spark.boot.KernelBootstrap
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.boot.KernelBootstrap
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.utils.LogLike
 
 /**
  * Represents the hook (interrupt/shutdown) initialization. All JVM-related

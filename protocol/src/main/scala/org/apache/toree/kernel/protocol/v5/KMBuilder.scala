@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5
+package org.apache.toree.kernel.protocol.v5
 
 import java.util.Calendar
 
-import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
+import org.apache.toree.kernel.protocol.v5.MessageType.MessageType
 
 /**
   * A class for building KernelMessages.

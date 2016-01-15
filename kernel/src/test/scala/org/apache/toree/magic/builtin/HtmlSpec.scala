@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
-import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.magic.CellMagicOutput
+import org.apache.toree.kernel.protocol.v5.MIMEType
+import org.apache.toree.magic.CellMagicOutput
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpec, Matchers}
 

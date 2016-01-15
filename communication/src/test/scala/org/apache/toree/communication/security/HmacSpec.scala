@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.communication.security
+package org.apache.toree.communication.security
 
 import java.security.NoSuchAlgorithmException
 

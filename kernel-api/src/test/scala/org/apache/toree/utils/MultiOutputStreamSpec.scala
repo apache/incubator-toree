@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.utils
+package org.apache.toree.utils
 
 import java.io.OutputStream
 

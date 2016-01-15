@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.execution
+package org.apache.toree.kernel.protocol.v5.client.execution
 
-import com.ibm.spark.kernel.protocol.v5.UUID
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.kernel.protocol.v5.UUID
+import org.apache.toree.utils.LogLike
 
 import scala.collection.concurrent.{Map, TrieMap}
 

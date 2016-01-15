@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client
+package org.apache.toree.kernel.protocol.v5.client
 
 import akka.actor.{ActorRefFactory, ActorSelection}
 

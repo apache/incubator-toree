@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter.broker
+package org.apache.toree.interpreter.broker
 
 /**
  * Provides broker types to the class/trait that implements this trait.

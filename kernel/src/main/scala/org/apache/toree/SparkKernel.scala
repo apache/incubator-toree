@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark
+package org.apache.toree
 
-import com.ibm.spark.boot.layer._
-import com.ibm.spark.boot.{CommandLineOptions, KernelBootstrap}
-import com.ibm.spark.kernel.BuildInfo
+import org.apache.toree.boot.layer._
+import org.apache.toree.boot.{CommandLineOptions, KernelBootstrap}
+import org.apache.toree.kernel.BuildInfo
 
 object SparkKernel extends App {
   private val options = new CommandLineOptions(args)

@@ -14,15 +14,15 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.comm
+package org.apache.toree.comm
 
 import java.util.UUID
 
-import com.ibm.spark.annotations.Experimental
-import com.ibm.spark.comm.CommCallbacks.{CloseCallback, OpenCallback}
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.CommContent
+import org.apache.toree.annotations.Experimental
+import org.apache.toree.comm.CommCallbacks.{CloseCallback, OpenCallback}
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content.CommContent
 
 /**
  * Represents a manager for Comm connections that facilitates and maintains

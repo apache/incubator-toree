@@ -14,11 +14,11 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.comm
+package org.apache.toree.comm
 
-import com.ibm.spark.annotations.Experimental
-import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.{KMBuilder, UUID}
+import org.apache.toree.annotations.Experimental
+import org.apache.toree.kernel.protocol.v5.client.ActorLoader
+import org.apache.toree.kernel.protocol.v5.{KMBuilder, UUID}
 
 /**
  * Represents a CommManager that uses a ClientCommWriter for its underlying

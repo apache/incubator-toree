@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.dispatch
+package org.apache.toree.kernel.protocol.v5.dispatch
 
 import akka.actor.Actor
-import com.ibm.spark.kernel.protocol.v5.KernelStatusType.KernelStatusType
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.KernelStatus
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.kernel.protocol.v5.KernelStatusType.KernelStatusType
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content.KernelStatus
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.utils.LogLike
 import play.api.libs.json.Json
 
 class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {

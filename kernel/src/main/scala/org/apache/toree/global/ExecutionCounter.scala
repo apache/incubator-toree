@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.global
+package org.apache.toree.global
 
-import com.ibm.spark.kernel.protocol.v5.UUID
+import org.apache.toree.kernel.protocol.v5.UUID
 
 import scala.collection.concurrent._
 

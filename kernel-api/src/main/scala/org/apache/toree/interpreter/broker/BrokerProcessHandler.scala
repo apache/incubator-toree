@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter.broker
+package org.apache.toree.interpreter.broker
 
 import org.apache.commons.exec.{ExecuteException, ExecuteResultHandler}
 import org.slf4j.LoggerFactory

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic
+package org.apache.toree.magic
 
 /**
   * Represents the base structure for a magic that is loaded and executed.

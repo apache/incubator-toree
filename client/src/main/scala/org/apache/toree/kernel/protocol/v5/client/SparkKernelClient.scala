@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client
+package org.apache.toree.kernel.protocol.v5.client
 
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
-import com.ibm.spark.comm._
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, ExecuteRequestTuple}
-import com.ibm.spark.kernel.protocol.v5.client.socket.HeartbeatMessage
-import com.ibm.spark.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.comm._
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.client.execution.{DeferredExecution, ExecuteRequestTuple}
+import org.apache.toree.kernel.protocol.v5.client.socket.HeartbeatMessage
+import org.apache.toree.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
+import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest
+import org.apache.toree.utils.LogLike
 import scala.concurrent.duration._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -59,7 +59,7 @@ class SparkKernelClient(
    * client.execute("println(1)").onStream(someFunction)
    * </code>
    * someFunction will receive a
-   * {@link com.ibm.spark.kernel.protocol.v5.content.StreamContent} message:
+   * {@link org.apache.toree.kernel.protocol.v5.content.StreamContent} message:
    * <code>
    * {
    *  "name" : "stdout",
@@ -74,7 +74,7 @@ class SparkKernelClient(
    * client.execute("1+1").onResult(someFunction)
    * </code>
    * someFunction will receive a
-   * {@link com.ibm.spark.kernel.protocol.v5.content.ExecuteResult} message:
+   * {@link org.apache.toree.kernel.protocol.v5.content.ExecuteResult} message:
    * <code>
    * {
    *  "execution_count" : 1,
@@ -91,7 +91,7 @@ class SparkKernelClient(
    * client.execute("1+1").onResult(someFunction)
    * </code>
    * someFunction will be invoked with an
-   * {@link com.ibm.spark.kernel.protocol.v5.content.ExecuteReply} message
+   * {@link org.apache.toree.kernel.protocol.v5.content.ExecuteReply} message
    * containing the error.
    *
    * @param code Scala code

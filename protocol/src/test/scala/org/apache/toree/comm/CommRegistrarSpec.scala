@@ -14,11 +14,11 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.comm
+package org.apache.toree.comm
 
 import java.util.UUID
 
-import com.ibm.spark.comm.CommCallbacks.{CloseCallback, MsgCallback, OpenCallback}
+import org.apache.toree.comm.CommCallbacks.{CloseCallback, MsgCallback, OpenCallback}
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}

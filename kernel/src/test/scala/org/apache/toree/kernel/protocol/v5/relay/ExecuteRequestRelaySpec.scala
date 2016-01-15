@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.relay
+package org.apache.toree.kernel.protocol.v5.relay
 
 import java.io.OutputStream
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError}
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.magic.{MagicParser, PostProcessor}
-import com.ibm.spark.magic.MagicLoader
-import com.ibm.spark.magic.dependencies.DependencyMap
+import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError}
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.magic.{MagicParser, PostProcessor}
+import org.apache.toree.magic.MagicLoader
+import org.apache.toree.magic.dependencies.DependencyMap
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar

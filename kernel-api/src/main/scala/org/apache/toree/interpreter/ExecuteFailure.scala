@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter
+package org.apache.toree.interpreter
 
 /**
  * Represents a generic failure in execution.

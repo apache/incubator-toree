@@ -1,4 +1,4 @@
-package com.ibm.spark.magic
+package org.apache.toree.magic
 
 /**
  * Line Magics perform some function and don't return anything. I.e. you cannot

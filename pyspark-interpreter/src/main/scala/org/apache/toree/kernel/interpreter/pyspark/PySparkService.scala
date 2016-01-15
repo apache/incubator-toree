@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.interpreter.pyspark
+package org.apache.toree.kernel.interpreter.pyspark
 
-import com.ibm.spark.interpreter.broker.BrokerService
-import com.ibm.spark.kernel.interpreter.pyspark.PySparkTypes._
+import org.apache.toree.interpreter.broker.BrokerService
+import org.apache.toree.kernel.interpreter.pyspark.PySparkTypes._
 import org.apache.spark.SparkContext
 import org.slf4j.LoggerFactory
 import py4j.GatewayServer

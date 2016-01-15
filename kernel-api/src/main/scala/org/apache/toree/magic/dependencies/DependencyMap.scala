@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.dependencies
+package org.apache.toree.magic.dependencies
 
 import java.io.OutputStream
 
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.kernel.api.KernelLike
-import com.ibm.spark.magic.{MagicLoader, Magic}
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.kernel.api.KernelLike
+import org.apache.toree.magic.{MagicLoader, Magic}
 import com.typesafe.config.Config
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 
 import scala.reflect.runtime.universe._
-import com.ibm.spark.dependencies.DependencyDownloader
+import org.apache.toree.dependencies.DependencyDownloader
 
 /**
  * Represents a mapping of dependency types to implementations.

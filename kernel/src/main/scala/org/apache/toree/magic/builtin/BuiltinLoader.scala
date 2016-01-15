@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
 import com.google.common.reflect.ClassPath
 import com.google.common.reflect.ClassPath.ClassInfo
-import com.ibm.spark.magic.InternalClassLoader
+import org.apache.toree.magic.InternalClassLoader
 import com.google.common.base.Strings._
 import scala.collection.JavaConversions._
 

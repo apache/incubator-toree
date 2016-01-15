@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter.broker
+package org.apache.toree.interpreter.broker
 
-import com.ibm.spark.interpreter.broker.BrokerTypes.{Code, CodeResults}
+import org.apache.toree.interpreter.broker.BrokerTypes.{Code, CodeResults}
 import scala.concurrent.Future
 
 /**

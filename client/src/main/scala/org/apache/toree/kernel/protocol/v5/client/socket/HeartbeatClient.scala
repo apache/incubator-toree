@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.socket
+package org.apache.toree.kernel.protocol.v5.client.socket
 
 import akka.actor.{ActorRef, Actor}
 import akka.util.{ByteString, Timeout}
-import com.ibm.spark.communication.ZMQMessage
+import org.apache.toree.communication.ZMQMessage
 import akka.pattern.ask
-import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
-import com.ibm.spark.utils.LogLike
-import com.ibm.spark.kernel.protocol.v5.UUID
+import org.apache.toree.kernel.protocol.v5.client.ActorLoader
+import org.apache.toree.utils.LogLike
+import org.apache.toree.kernel.protocol.v5.UUID
 import scala.collection.concurrent.{Map, TrieMap}
 import scala.concurrent.duration._
 

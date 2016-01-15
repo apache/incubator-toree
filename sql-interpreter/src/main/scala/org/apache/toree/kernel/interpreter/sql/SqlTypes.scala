@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.interpreter.sql
+package org.apache.toree.kernel.interpreter.sql
 
-import com.ibm.spark.interpreter.broker.BrokerTypesProvider
+import org.apache.toree.interpreter.broker.BrokerTypesProvider
 
 /**
  * Represents all types associated with the SQL interface.

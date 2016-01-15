@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter.imports.printers
+package org.apache.toree.interpreter.imports.printers
 
 import java.io._
 
-import com.ibm.spark.utils.DynamicReflectionSupport
+import org.apache.toree.utils.DynamicReflectionSupport
 
 /**
  * Represents a wrapper for java.lang.System.

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
-import com.ibm.spark.interpreter.{ExecuteFailure, Results, ExecuteAborted, ExecuteError}
-import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.magic._
-import com.ibm.spark.magic.dependencies.{IncludeKernelInterpreter, IncludeInterpreter}
-import com.ibm.spark.utils.LogLike
-import com.ibm.spark.utils.json.RddToJson
+import org.apache.toree.interpreter.{ExecuteFailure, Results, ExecuteAborted, ExecuteError}
+import org.apache.toree.kernel.protocol.v5.MIMEType
+import org.apache.toree.magic._
+import org.apache.toree.magic.dependencies.{IncludeKernelInterpreter, IncludeInterpreter}
+import org.apache.toree.utils.LogLike
+import org.apache.toree.utils.json.RddToJson
 import org.apache.spark.sql.SchemaRDD
 
 /**

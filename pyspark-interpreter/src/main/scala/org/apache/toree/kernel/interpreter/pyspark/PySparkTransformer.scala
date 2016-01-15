@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.interpreter.pyspark
+package org.apache.toree.kernel.interpreter.pyspark
 
-import com.ibm.spark.interpreter.broker.BrokerTransformer
+import org.apache.toree.interpreter.broker.BrokerTransformer
 
 /**
  * Represents a utility that can transform raw PySpark information to

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.interpreter.tasks
+package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
 import akka.actor.{ActorRefFactory, ActorRef}
-import com.ibm.spark.interpreter.Interpreter
+import org.apache.toree.interpreter.Interpreter
 
 class InterpreterTaskFactory(interpreter: Interpreter) {
   /**

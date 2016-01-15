@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.api
+package org.apache.toree.kernel.api
 
 import java.io.{PrintStream, InputStream, OutputStream}
 
@@ -92,7 +92,7 @@ trait KernelLike {
   val data: java.util.Map[String, Any]
 
 
-  def interpreter(name: String): Option[com.ibm.spark.interpreter.Interpreter]
+  def interpreter(name: String): Option[org.apache.toree.interpreter.Interpreter]
 
   def config: Config
 

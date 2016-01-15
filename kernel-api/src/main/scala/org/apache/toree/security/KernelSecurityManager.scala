@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.security
+package org.apache.toree.security
 
 import java.security.Permission
 import java.util.UUID

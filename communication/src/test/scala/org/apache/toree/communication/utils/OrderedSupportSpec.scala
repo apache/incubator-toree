@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.communication.utils
+package org.apache.toree.communication.utils
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit}

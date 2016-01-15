@@ -14,10 +14,10 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.comm
+package org.apache.toree.comm
 
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.UUID
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5.UUID
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}

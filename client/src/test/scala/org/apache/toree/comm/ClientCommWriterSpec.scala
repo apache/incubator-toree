@@ -13,15 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.ibm.spark.comm
+package org.apache.toree.comm
 
 import java.util.UUID
 
 import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.client.ActorLoader
+import org.apache.toree.kernel.protocol.v5.content._
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._

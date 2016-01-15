@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5
+package org.apache.toree.kernel.protocol.v5
 
-import com.ibm.spark.kernel.protocol.v5.content.{CommOpen, StreamContent}
+import org.apache.toree.kernel.protocol.v5.content.{CommOpen, StreamContent}
 import org.scalatest.{Matchers, FunSpec}
 import play.api.libs.json._
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter.broker.producer
+package org.apache.toree.interpreter.broker.producer
 
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext

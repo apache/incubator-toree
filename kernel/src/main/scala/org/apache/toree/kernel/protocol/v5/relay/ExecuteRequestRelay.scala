@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.relay
+package org.apache.toree.kernel.protocol.v5.relay
 
 import java.io.OutputStream
 
 import akka.actor.Actor
 import akka.pattern._
 import akka.util.Timeout
-import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError, ExecuteFailure, ExecuteOutput}
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.magic.{PostProcessor, MagicParser}
-import com.ibm.spark.magic.MagicLoader
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError, ExecuteFailure, ExecuteOutput}
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.magic.{PostProcessor, MagicParser}
+import org.apache.toree.magic.MagicLoader
+import org.apache.toree.utils.LogLike
 
 import scala.concurrent.Future
 import scala.concurrent.duration._

@@ -32,7 +32,7 @@ object Common {
   val repoUrl                   = Properties.envOrElse("REPO_URL", s"http://${repoHost}:${repoPort}${repoEndpoint}")
 
 
-  private val buildOrganization = "com.ibm.spark"
+  private val buildOrganization = "org.apache.toree"
   private val buildVersion      =
     if (snapshot) s"$versionNumber-SNAPSHOT"
     else versionNumber

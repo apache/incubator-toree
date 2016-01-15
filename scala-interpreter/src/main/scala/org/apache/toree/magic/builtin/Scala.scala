@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
-import com.ibm.spark.interpreter.{ExecuteAborted, ExecuteError}
-import com.ibm.spark.kernel.interpreter.scala.{ScalaException, ScalaInterpreter}
-import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.magic.dependencies.IncludeKernel
-import com.ibm.spark.magic.{CellMagic, CellMagicOutput}
+import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError}
+import org.apache.toree.kernel.interpreter.scala.{ScalaException, ScalaInterpreter}
+import org.apache.toree.kernel.protocol.v5.MIMEType
+import org.apache.toree.magic.dependencies.IncludeKernel
+import org.apache.toree.magic.{CellMagic, CellMagicOutput}
 
 /**
  * Represents the magic interface to use the Scala interpreter.

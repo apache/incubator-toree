@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.interpreter.sparkr
+package org.apache.toree.kernel.interpreter.sparkr
 
 /**
  * Provides reflective access into the backend R component that is not

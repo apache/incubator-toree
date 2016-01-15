@@ -1,20 +1,20 @@
-package com.ibm.spark.kernel.api
+package org.apache.toree.kernel.api
 
 import java.io.{InputStream, PrintStream}
 
-import com.ibm.spark.boot.layer.InterpreterManager
-import com.ibm.spark.comm.CommManager
-import com.ibm.spark.interpreter._
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.magic.MagicLoader
+import org.apache.toree.boot.layer.InterpreterManager
+import org.apache.toree.comm.CommManager
+import org.apache.toree.interpreter._
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.magic.MagicLoader
 import com.typesafe.config.Config
 import org.apache.spark.{SparkConf, SparkContext}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
-import com.ibm.spark.global.ExecuteRequestState
+import org.apache.toree.global.ExecuteRequestState
 
 class KernelSpec extends FunSpec with Matchers with MockitoSugar
   with BeforeAndAfter
@@ -46,7 +46,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
     when(mockInterpreterManager.defaultInterpreter)
       .thenReturn(Some(mockInterpreter))
     when(mockInterpreterManager.interpreters)
-      .thenReturn(Map[String, com.ibm.spark.interpreter.Interpreter]())
+      .thenReturn(Map[String, org.apache.toree.interpreter.Interpreter]())
     when(mockInterpreter.interpret(BadCode.get))
       .thenReturn((Results.Incomplete, null))
     when(mockInterpreter.interpret(GoodCode.get))

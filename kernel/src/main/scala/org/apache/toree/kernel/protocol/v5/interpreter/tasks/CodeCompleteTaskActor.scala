@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.interpreter.tasks
+package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
 import akka.actor.{Actor, Props}
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.kernel.protocol.v5.content.CompleteRequest
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.kernel.protocol.v5.content.CompleteRequest
+import org.apache.toree.utils.LogLike
 
 object CodeCompleteTaskActor {
   def props(interpreter: Interpreter): Props =

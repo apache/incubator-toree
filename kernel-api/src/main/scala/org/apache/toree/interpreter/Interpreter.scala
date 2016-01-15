@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter
+package org.apache.toree.interpreter
 
 import java.net.URL
 
-import com.ibm.spark.kernel.api.KernelLike
+import org.apache.toree.kernel.api.KernelLike
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 

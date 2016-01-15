@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic
+package org.apache.toree.magic
 
 import java.net.{URL, URLClassLoader}
 
 import com.google.common.reflect.ClassPath
-import com.ibm.spark.magic.dependencies.DependencyMap
+import org.apache.toree.magic.dependencies.DependencyMap
 
 import scala.reflect.runtime.{universe => runtimeUniverse}
 import scala.collection.JavaConversions._
@@ -29,7 +29,7 @@ class MagicLoader(
   urls: Array[URL] = Array(),
   parentLoader: ClassLoader = null
 ) extends URLClassLoader(urls, parentLoader) {
-  private val magicPackage = "com.ibm.spark.magic.builtin"
+  private val magicPackage = "org.apache.toree.magic.builtin"
 
   /**
    * Checks whether a magic with a given name, implementing a given interface,

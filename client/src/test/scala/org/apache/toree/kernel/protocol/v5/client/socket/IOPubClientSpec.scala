@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.socket
+package org.apache.toree.kernel.protocol.v5.client.socket
 
 import java.util.UUID
 
@@ -22,14 +22,14 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.util.Timeout
-import com.ibm.spark.comm.{CommCallbacks, CommRegistrar, CommStorage, CommWriter}
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.client.Utilities._
-import com.ibm.spark.kernel.protocol.v5.client.execution.{DeferredExecution, DeferredExecutionManager}
-import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, Utilities}
-import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen, StreamContent}
+import org.apache.toree.comm.{CommCallbacks, CommRegistrar, CommStorage, CommWriter}
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.client.Utilities._
+import org.apache.toree.kernel.protocol.v5.client.execution.{DeferredExecution, DeferredExecutionManager}
+import org.apache.toree.kernel.protocol.v5.client.{ActorLoader, Utilities}
+import org.apache.toree.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen, StreamContent}
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._

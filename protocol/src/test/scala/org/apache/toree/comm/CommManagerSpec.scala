@@ -14,12 +14,12 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.comm
+package org.apache.toree.comm
 
-import com.ibm.spark.comm.CommCallbacks.{CloseCallback, OpenCallback}
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.UUID
-import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommOpen}
+import org.apache.toree.comm.CommCallbacks.{CloseCallback, OpenCallback}
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5.UUID
+import org.apache.toree.kernel.protocol.v5.content.{CommClose, CommOpen}
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar

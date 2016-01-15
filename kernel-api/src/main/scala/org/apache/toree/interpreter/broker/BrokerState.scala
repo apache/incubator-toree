@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.interpreter.broker
+package org.apache.toree.interpreter.broker
 
 import java.util.concurrent.ConcurrentHashMap
 
-import com.ibm.spark.interpreter.broker.BrokerTypes._
+import org.apache.toree.interpreter.broker.BrokerTypes._
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.{Future, promise}

@@ -1,6 +1,6 @@
-package com.ibm.spark.magic
+package org.apache.toree.magic
 
-import com.ibm.spark.utils.DynamicReflectionSupport
+import org.apache.toree.utils.DynamicReflectionSupport
 
 import scala.language.dynamics
 

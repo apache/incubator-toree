@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.relay
+package org.apache.toree.kernel.protocol.v5.relay
 
 import akka.pattern.ask
 import akka.util.Timeout
-import com.ibm.spark.communication.security.SecurityActorType
-import com.ibm.spark.communication.utils.OrderedSupport
-import com.ibm.spark.kernel.protocol.v5.MessageType.MessageType
-import com.ibm.spark.kernel.protocol.v5.content.ShutdownRequest
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.{KernelMessage, MessageType, _}
-import com.ibm.spark.utils.MessageLogSupport
+import org.apache.toree.communication.security.SecurityActorType
+import org.apache.toree.communication.utils.OrderedSupport
+import org.apache.toree.kernel.protocol.v5.MessageType.MessageType
+import org.apache.toree.kernel.protocol.v5.content.ShutdownRequest
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.{KernelMessage, MessageType, _}
+import org.apache.toree.utils.MessageLogSupport
 import scala.collection.immutable.HashMap
 import scala.concurrent.duration._
 import scala.util.{Random, Failure, Success}

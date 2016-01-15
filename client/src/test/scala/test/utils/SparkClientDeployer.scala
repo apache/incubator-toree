@@ -18,13 +18,13 @@ package test.utils
 
 import akka.actor.{Actor, Props, ActorRef, ActorSystem}
 import akka.testkit.TestProbe
-import com.ibm.spark.comm.{CommRegistrar, CommStorage}
-import com.ibm.spark.kernel.protocol.v5.client.socket._
-import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, SparkKernelClient}
-import com.ibm.spark.kernel.protocol.v5.client.boot.ClientBootstrap
-import com.ibm.spark.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
-import com.ibm.spark.kernel.protocol.v5.SocketType
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.comm.{CommRegistrar, CommStorage}
+import org.apache.toree.kernel.protocol.v5.client.socket._
+import org.apache.toree.kernel.protocol.v5.client.{ActorLoader, SparkKernelClient}
+import org.apache.toree.kernel.protocol.v5.client.boot.ClientBootstrap
+import org.apache.toree.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
+import org.apache.toree.kernel.protocol.v5.SocketType
+import org.apache.toree.utils.LogLike
 import com.typesafe.config.{Config, ConfigFactory}
 
 /**

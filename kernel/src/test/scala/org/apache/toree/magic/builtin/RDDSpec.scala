@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
-import com.ibm.spark.interpreter.Results.Result
-import com.ibm.spark.interpreter.{Results, ExecuteAborted, ExecuteError, Interpreter}
-import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.magic.dependencies.{IncludeKernelInterpreter, IncludeInterpreter}
+import org.apache.toree.interpreter.Results.Result
+import org.apache.toree.interpreter.{Results, ExecuteAborted, ExecuteError, Interpreter}
+import org.apache.toree.kernel.protocol.v5.MIMEType
+import org.apache.toree.magic.dependencies.{IncludeKernelInterpreter, IncludeInterpreter}
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.StructType
 import org.mockito.Matchers._

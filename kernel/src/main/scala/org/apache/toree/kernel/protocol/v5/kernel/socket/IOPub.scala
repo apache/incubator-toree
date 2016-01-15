@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.kernel.socket
+package org.apache.toree.kernel.protocol.v5.kernel.socket
 
 import akka.actor.Actor
 import akka.util.ByteString
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.communication.utils.OrderedSupport
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.kernel.Utilities
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.communication.utils.OrderedSupport
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.kernel.Utilities
 import Utilities._
-import com.ibm.spark.utils.{MessageLogSupport, LogLike}
+import org.apache.toree.utils.{MessageLogSupport, LogLike}
 
 /**
  * The server endpoint for IOPub messages specified in the IPython Kernel Spec

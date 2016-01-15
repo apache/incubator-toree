@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.kernel
+package org.apache.toree.kernel.protocol.v5.kernel
 
 import akka.util.ByteString
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5._
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.kernel.protocol.v5._
 import org.scalatest.{FunSpec, Matchers}
 
 /**

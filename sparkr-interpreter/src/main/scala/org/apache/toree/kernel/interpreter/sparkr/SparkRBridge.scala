@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.interpreter.sparkr
+package org.apache.toree.kernel.interpreter.sparkr
 
-import com.ibm.spark.interpreter.broker.producer.{StandardSQLContextProducer, StandardJavaSparkContextProducer, JavaSparkContextProducerLike, SQLContextProducerLike}
-import com.ibm.spark.interpreter.broker.{BrokerState, BrokerBridge}
-import com.ibm.spark.kernel.api.KernelLike
+import org.apache.toree.interpreter.broker.producer.{StandardSQLContextProducer, StandardJavaSparkContextProducer, JavaSparkContextProducerLike, SQLContextProducerLike}
+import org.apache.toree.interpreter.broker.{BrokerState, BrokerBridge}
+import org.apache.toree.kernel.api.KernelLike
 import org.apache.spark.SparkContext
 
 /**

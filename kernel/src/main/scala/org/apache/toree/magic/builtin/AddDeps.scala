@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
 import java.io.PrintStream
 
-import com.ibm.spark.magic._
-import com.ibm.spark.magic.dependencies._
-import com.ibm.spark.utils.ArgumentParsingSupport
+import org.apache.toree.magic._
+import org.apache.toree.magic.dependencies._
+import org.apache.toree.utils.ArgumentParsingSupport
 
 class AddDeps extends LineMagic with IncludeInterpreter
   with IncludeOutputStream with IncludeSparkContext with ArgumentParsingSupport

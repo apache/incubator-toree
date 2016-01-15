@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
-import com.ibm.spark.magic.LineMagic
-import com.ibm.spark.magic.dependencies.IncludeOutputStream
+import org.apache.toree.magic.LineMagic
+import org.apache.toree.magic.dependencies.IncludeOutputStream
 import java.io.PrintStream
-import com.ibm.spark.kernel.api.KernelOptions
+import org.apache.toree.kernel.api.KernelOptions
 
 
 class ShowTypes extends LineMagic with IncludeOutputStream {

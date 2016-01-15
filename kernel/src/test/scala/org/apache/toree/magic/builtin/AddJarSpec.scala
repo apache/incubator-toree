@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
 import java.io.OutputStream
 import java.net.URL
 import java.nio.file.{FileSystems, Files}
 
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.magic.dependencies.{IncludeConfig, IncludeOutputStream, IncludeInterpreter, IncludeSparkContext}
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.magic.dependencies.{IncludeConfig, IncludeOutputStream, IncludeInterpreter, IncludeSparkContext}
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.SparkContext
 import org.scalatest.{Matchers, FunSpec}
@@ -29,7 +29,7 @@ import org.scalatest.mock.MockitoSugar
 
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import com.ibm.spark.magic.MagicLoader
+import org.apache.toree.magic.MagicLoader
 
 class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
   describe("AddJar"){

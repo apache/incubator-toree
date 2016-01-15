@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
-import com.ibm.spark.interpreter.{ExecuteError, ExecuteAborted}
-import com.ibm.spark.kernel.interpreter.pyspark.{PySparkInterpreter, PySparkException}
-import com.ibm.spark.kernel.protocol.v5.MIMEType
-import com.ibm.spark.magic.{CellMagicOutput, CellMagic}
-import com.ibm.spark.magic.dependencies.IncludeKernel
+import org.apache.toree.interpreter.{ExecuteError, ExecuteAborted}
+import org.apache.toree.kernel.interpreter.pyspark.{PySparkInterpreter, PySparkException}
+import org.apache.toree.kernel.protocol.v5.MIMEType
+import org.apache.toree.magic.{CellMagicOutput, CellMagic}
+import org.apache.toree.magic.dependencies.IncludeKernel
 
 /**
  * Represents the magic interface to use the PySpark interpreter.

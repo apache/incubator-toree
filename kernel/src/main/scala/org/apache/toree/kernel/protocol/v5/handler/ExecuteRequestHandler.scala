@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.handler
+package org.apache.toree.kernel.protocol.v5.handler
 
 import akka.actor.ActorSelection
 import akka.pattern.ask
-import com.ibm.spark.global.{ExecuteRequestState, ExecutionCounter}
-import com.ibm.spark.kernel.api.{Kernel, KernelLike}
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
-import com.ibm.spark.kernel.protocol.v5.stream.KernelOutputStream
-import com.ibm.spark.{global => kernelGlobal}
+import org.apache.toree.global.{ExecuteRequestState, ExecutionCounter}
+import org.apache.toree.kernel.api.{Kernel, KernelLike}
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
+import org.apache.toree.kernel.protocol.v5.stream.KernelOutputStream
+import org.apache.toree.{global => kernelGlobal}
 import Utilities._
-import com.ibm.spark.utils._
+import org.apache.toree.utils._
 import play.api.data.validation.ValidationError
 import play.api.libs.json.JsPath
 

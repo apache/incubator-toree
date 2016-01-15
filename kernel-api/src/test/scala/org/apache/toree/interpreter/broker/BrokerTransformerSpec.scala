@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.interpreter.broker
+package org.apache.toree.interpreter.broker
 
-import com.ibm.spark.interpreter.{ExecuteError, Results}
+import org.apache.toree.interpreter.{ExecuteError, Results}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
 

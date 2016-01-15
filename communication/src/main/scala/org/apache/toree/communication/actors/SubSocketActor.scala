@@ -13,12 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.ibm.spark.communication.actors
+package org.apache.toree.communication.actors
 
 import akka.actor.{Actor, ActorRef}
 import akka.util.ByteString
-import com.ibm.spark.communication.{ZMQMessage, SocketManager}
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.communication.{ZMQMessage, SocketManager}
+import org.apache.toree.utils.LogLike
 
 /**
  * Represents an actor containing a subscribe socket.

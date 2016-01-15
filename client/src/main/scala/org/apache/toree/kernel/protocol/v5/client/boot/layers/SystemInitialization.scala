@@ -14,15 +14,15 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.boot.layers
+package org.apache.toree.kernel.protocol.v5.client.boot.layers
 
 import akka.actor.{Props, ActorRef, ActorSystem}
-import com.ibm.spark.comm.{CommRegistrar, CommStorage}
-import com.ibm.spark.communication.security.{SecurityActorType, SignatureManagerActor}
-import com.ibm.spark.kernel.protocol.v5.SocketType
-import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.client.socket._
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.comm.{CommRegistrar, CommStorage}
+import org.apache.toree.communication.security.{SecurityActorType, SignatureManagerActor}
+import org.apache.toree.kernel.protocol.v5.SocketType
+import org.apache.toree.kernel.protocol.v5.client.ActorLoader
+import org.apache.toree.kernel.protocol.v5.client.socket._
+import org.apache.toree.utils.LogLike
 import com.typesafe.config.Config
 
 /**

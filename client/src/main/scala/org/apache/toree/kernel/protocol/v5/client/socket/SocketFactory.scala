@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.socket
+package org.apache.toree.kernel.protocol.v5.client.socket
 
 import java.util.UUID
 
 import akka.actor.{Props, ActorRef, ActorSystem}
-import com.ibm.spark.communication.actors.{DealerSocketActor, ReqSocketActor, SubSocketActor}
+import org.apache.toree.communication.actors.{DealerSocketActor, ReqSocketActor, SubSocketActor}
 
 object SocketFactory {
   def apply(socketConfig: SocketConfig) = {

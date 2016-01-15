@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.relay
+package org.apache.toree.kernel.protocol.v5.relay
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.communication.security.SecurityActorType
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.communication.security.SecurityActorType
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import Utilities._
 import org.mockito.Mockito._
 import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures}
@@ -31,7 +31,7 @@ import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import org.mockito.Matchers.{eq => mockEq}
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import scala.concurrent.duration._
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
+import org.apache.toree.kernel.protocol.v5.KernelMessage
 import scala.concurrent._
 import akka.pattern.pipe
 import scala.util.Random

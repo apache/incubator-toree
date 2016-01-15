@@ -17,11 +17,11 @@
 package system
 
 import akka.testkit.{TestKit, TestProbe}
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.client.Utilities._
-import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.kernel.protocol.v5.{KMBuilder, KernelMessage, SocketType}
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5.client.Utilities._
+import org.apache.toree.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage, SocketType}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.exceptions.TestFailedDueToTimeoutException
 import org.scalatest.time.{Milliseconds, Seconds, Span}

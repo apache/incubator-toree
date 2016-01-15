@@ -18,8 +18,8 @@ package integration.security
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.communication.security.{Hmac, SignatureCheckerActor}
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.communication.security.{Hmac, SignatureCheckerActor}
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import play.api.libs.json.Json

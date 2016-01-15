@@ -14,16 +14,16 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.socket
+package org.apache.toree.kernel.protocol.v5.client.socket
 
 import akka.actor.Actor
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.communication.security.SecurityActorType
-import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.{HeaderBuilder, KMBuilder, KernelMessage}
-import com.ibm.spark.kernel.protocol.v5.content.{InputReply, InputRequest}
-import com.ibm.spark.utils.LogLike
-import com.ibm.spark.kernel.protocol.v5.client.Utilities._
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.communication.security.SecurityActorType
+import org.apache.toree.kernel.protocol.v5.client.ActorLoader
+import org.apache.toree.kernel.protocol.v5.{HeaderBuilder, KMBuilder, KernelMessage}
+import org.apache.toree.kernel.protocol.v5.content.{InputReply, InputRequest}
+import org.apache.toree.utils.LogLike
+import org.apache.toree.kernel.protocol.v5.client.Utilities._
 import play.api.libs.json.Json
 
 import StdinClient._

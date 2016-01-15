@@ -13,13 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.ibm.spark.communication.actors
+package org.apache.toree.communication.actors
 
 import akka.actor.Actor
-import com.ibm.spark.communication.utils.OrderedSupport
-import com.ibm.spark.communication.{SocketManager, ZMQMessage}
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.communication.utils.OrderedSupport
+import org.apache.toree.communication.{SocketManager, ZMQMessage}
+import org.apache.toree.kernel.protocol.v5.KernelMessage
+import org.apache.toree.utils.LogLike
 import org.zeromq.ZMQ
 
 /**

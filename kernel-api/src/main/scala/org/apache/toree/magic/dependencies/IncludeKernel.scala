@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.dependencies
+package org.apache.toree.magic.dependencies
 
-import com.ibm.spark.kernel.api.KernelLike
-import com.ibm.spark.magic.Magic
+import org.apache.toree.kernel.api.KernelLike
+import org.apache.toree.magic.Magic
 
 trait IncludeKernel {
   this: Magic =>

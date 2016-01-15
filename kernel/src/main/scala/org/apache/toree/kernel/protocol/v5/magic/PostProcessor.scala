@@ -1,9 +1,9 @@
-package com.ibm.spark.kernel.protocol.v5.magic
+package org.apache.toree.kernel.protocol.v5.magic
 
-import com.ibm.spark.interpreter.{ExecuteOutput, Interpreter}
-import com.ibm.spark.kernel.protocol.v5.{Data, MIMEType}
-import com.ibm.spark.magic.{CellMagicOutput, LineMagicOutput}
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.interpreter.{ExecuteOutput, Interpreter}
+import org.apache.toree.kernel.protocol.v5.{Data, MIMEType}
+import org.apache.toree.magic.{CellMagicOutput, LineMagicOutput}
+import org.apache.toree.utils.LogLike
 
 class PostProcessor(interpreter: Interpreter) extends LogLike {
   val defaultErr = "Something went wrong in postprocessor!"

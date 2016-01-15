@@ -14,13 +14,13 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.comm
+package org.apache.toree.comm
 
-import com.ibm.spark.annotations.Experimental
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen, CommContent}
-import com.ibm.spark.kernel.protocol.v5._
+import org.apache.toree.annotations.Experimental
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5.client.ActorLoader
+import org.apache.toree.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen, CommContent}
+import org.apache.toree.kernel.protocol.v5._
 
 /**
  * Represents a CommWriter to send messages from the Client to the Kernel.

@@ -16,8 +16,8 @@
 
 package test.utils.root
 
-import com.ibm.spark.kernel.protocol.v5.client.boot.ClientBootstrap
-import com.ibm.spark.kernel.protocol.v5.client.boot.layers._
+import org.apache.toree.kernel.protocol.v5.client.boot.ClientBootstrap
+import org.apache.toree.kernel.protocol.v5.client.boot.layers._
 import com.typesafe.config.{ConfigFactory, Config}
 
 /**

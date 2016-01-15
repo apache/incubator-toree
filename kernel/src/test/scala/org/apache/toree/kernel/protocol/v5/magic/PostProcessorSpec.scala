@@ -1,8 +1,8 @@
-package com.ibm.spark.kernel.protocol.v5.magic
+package org.apache.toree.kernel.protocol.v5.magic
 
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.magic.{CellMagicOutput, LineMagicOutput}
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.magic.{CellMagicOutput, LineMagicOutput}
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar

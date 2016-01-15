@@ -23,10 +23,10 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.pattern.ask
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.util.Timeout
-import com.ibm.spark.kernel.protocol.v5.client.ZMQMessage
-import com.ibm.spark.kernel.protocol.v5.SocketType
-import com.ibm.spark.kernel.protocol.v5.socket._
-import com.ibm.spark.kernel.protocol.v5.socket.SocketConfig
+import org.apache.toree.kernel.protocol.v5.client.ZMQMessage
+import org.apache.toree.kernel.protocol.v5.SocketType
+import org.apache.toree.kernel.protocol.v5.socket._
+import org.apache.toree.kernel.protocol.v5.socket.SocketConfig
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._

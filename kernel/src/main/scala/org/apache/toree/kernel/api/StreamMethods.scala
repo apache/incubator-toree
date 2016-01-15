@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.api
+package org.apache.toree.kernel.api
 
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5.KernelMessage
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 
 /**
  * Represents the methods available to stream data from the kernel to the

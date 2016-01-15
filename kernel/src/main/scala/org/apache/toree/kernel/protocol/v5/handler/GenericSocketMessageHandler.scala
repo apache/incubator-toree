@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.handler
+package org.apache.toree.kernel.protocol.v5.handler
 
 import akka.actor.Actor
-import com.ibm.spark.communication.utils.OrderedSupport
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.utils.{MessageLogSupport, LogLike}
+import org.apache.toree.communication.utils.OrderedSupport
+import org.apache.toree.kernel.protocol.v5.KernelMessage
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.utils.{MessageLogSupport, LogLike}
 
 /**
  * All KernelMessage leaving the kernel for the client will exit the relay in a similar pattern. This class is meant
  * to encapsulate this behaviour into one generic method. This class should be used by mapping a
- * {@link com.ibm.spark.kernel.protocol.MessageType} to the {@link com.ibm.spark.kernel.protocol.SocketType} constructor
+ * {@link org.apache.toree.kernel.protocol.MessageType} to the {@link org.apache.toree.kernel.protocol.SocketType} constructor
  * parameter. This will map MessageTypes to their corresponding SocketTypes. An example us of this class would be
  *
  * actorSystem.actorOf(

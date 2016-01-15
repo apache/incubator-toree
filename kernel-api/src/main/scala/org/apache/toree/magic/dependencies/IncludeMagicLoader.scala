@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.dependencies
+package org.apache.toree.magic.dependencies
 
-import com.ibm.spark.magic.{MagicLoader, Magic}
+import org.apache.toree.magic.{MagicLoader, Magic}
 
 
 trait IncludeMagicLoader {

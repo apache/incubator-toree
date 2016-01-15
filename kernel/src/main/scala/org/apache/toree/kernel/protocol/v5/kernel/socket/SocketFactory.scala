@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.kernel.socket
+package org.apache.toree.kernel.protocol.v5.kernel.socket
 
 import akka.actor.{Props, ActorRef, ActorSystem}
-import com.ibm.spark.communication.actors.{RouterSocketActor, RepSocketActor, PubSocketActor}
+import org.apache.toree.communication.actors.{RouterSocketActor, RepSocketActor, PubSocketActor}
 
 object SocketFactory {
   def apply(socketConfig: SocketConfig) = {

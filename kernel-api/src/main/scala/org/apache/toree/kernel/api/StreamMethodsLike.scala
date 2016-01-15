@@ -1,4 +1,4 @@
-package com.ibm.spark.kernel.api
+package org.apache.toree.kernel.api
 
 /**
  * Represents the methods available to stream data from the kernel to the

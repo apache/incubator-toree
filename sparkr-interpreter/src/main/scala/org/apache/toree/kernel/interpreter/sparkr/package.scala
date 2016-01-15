@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.interpreter
+package org.apache.toree.kernel.interpreter
 
-import com.ibm.spark.interpreter.broker.{BrokerCode, BrokerPromise}
+import org.apache.toree.interpreter.broker.{BrokerCode, BrokerPromise}
 
 /**
  * Contains aliases to broker types.

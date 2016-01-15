@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.interpreter.scala
+package org.apache.toree.kernel.interpreter.scala
 
 import org.apache.spark.repl.SparkCommandLine
 

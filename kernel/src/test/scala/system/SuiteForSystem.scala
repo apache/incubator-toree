@@ -1,6 +1,6 @@
 package system
 
-import com.ibm.spark.boot.layer.SparkKernelDeployer
+import org.apache.toree.boot.layer.SparkKernelDeployer
 import org.scalatest.{BeforeAndAfterAll, Suites}
 
 class SuiteForSystem extends Suites(

@@ -14,12 +14,12 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.comm
+package org.apache.toree.comm
 
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.CommContent
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content.CommContent
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.Matchers._

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.interpreter
+package org.apache.toree.kernel.protocol.v5.interpreter
 
 import java.io.OutputStream
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.{ask, pipe}
 import akka.util.Timeout
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.kernel.protocol.v5.KernelMessage
-import com.ibm.spark.kernel.protocol.v5.interpreter.tasks._
-import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.interpreter._
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.kernel.protocol.v5.KernelMessage
+import org.apache.toree.kernel.protocol.v5.interpreter.tasks._
+import org.apache.toree.kernel.protocol.v5.content._
+import org.apache.toree.interpreter._
+import org.apache.toree.utils.LogLike
 
 import scala.concurrent.duration._
 

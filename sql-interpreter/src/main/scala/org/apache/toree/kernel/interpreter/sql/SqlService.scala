@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.interpreter.sql
+package org.apache.toree.kernel.interpreter.sql
 
-import com.ibm.spark.kernel.api.KernelLike
+import org.apache.toree.kernel.api.KernelLike
 import java.io.ByteArrayOutputStream
 
-import com.ibm.spark.interpreter.broker.BrokerService
-import com.ibm.spark.kernel.interpreter.sql.SqlTypes._
+import org.apache.toree.interpreter.broker.BrokerService
+import org.apache.toree.kernel.interpreter.sql.SqlTypes._
 import org.apache.spark.sql.SQLContext
 
 import scala.concurrent.{Future, future}

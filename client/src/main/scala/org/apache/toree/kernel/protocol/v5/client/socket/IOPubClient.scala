@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.socket
+package org.apache.toree.kernel.protocol.v5.client.socket
 
 import akka.actor.Actor
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.comm.{CommStorage, CommRegistrar, ClientCommWriter}
-import com.ibm.spark.kernel.protocol.v5.client.{ActorLoader, Utilities}
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.comm.{CommStorage, CommRegistrar, ClientCommWriter}
+import org.apache.toree.kernel.protocol.v5.client.{ActorLoader, Utilities}
 import Utilities._
-import com.ibm.spark.kernel.protocol.v5.client.execution.DeferredExecutionManager
-import com.ibm.spark.kernel.protocol.v5.content._
-import com.ibm.spark.kernel.protocol.v5.{KMBuilder, KernelMessage}
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.kernel.protocol.v5.client.execution.DeferredExecutionManager
+import org.apache.toree.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
+import org.apache.toree.utils.LogLike
 
 import scala.util.Failure
 

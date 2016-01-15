@@ -13,11 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.ibm.spark.communication
+package org.apache.toree.communication
 
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import com.ibm.spark.communication.socket._
+import org.apache.toree.communication.socket._
 import org.zeromq.ZMQ
 
 import scala.collection.JavaConverters._

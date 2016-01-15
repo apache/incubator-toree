@@ -14,18 +14,18 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.handler
+package org.apache.toree.kernel.protocol.v5.handler
 
 import java.util.UUID
 
-import com.ibm.spark.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5
 
 import akka.actor.{Props, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import com.ibm.spark.kernel.protocol.v5.content.{CommClose, ClearOutput, CommOpen}
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.comm._
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.content.{CommClose, ClearOutput, CommOpen}
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.comm._
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar

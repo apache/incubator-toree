@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.boot
+package org.apache.toree.boot
 
 import java.io.File
 

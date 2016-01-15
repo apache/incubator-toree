@@ -18,7 +18,7 @@ package integration
 import java.net.ServerSocket
 import java.util.concurrent.ConcurrentLinkedDeque
 
-import com.ibm.spark.communication.SocketManager
+import org.apache.toree.communication.SocketManager
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Span}
 import org.scalatest.{Matchers, OneInstancePerTest, FunSpec}

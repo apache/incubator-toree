@@ -14,13 +14,13 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.stream
+package org.apache.toree.kernel.protocol.v5.stream
 
 import akka.actor.{ActorRef, Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit, TestProbe}
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.InputRequest
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content.InputRequest
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.mockito.Mockito._
 import org.scalatest._
 import org.scalatest.mock.MockitoSugar

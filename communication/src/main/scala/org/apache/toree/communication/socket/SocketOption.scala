@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.ibm.spark.communication.socket
+package org.apache.toree.communication.socket
 
 import org.zeromq.ZMQ
 

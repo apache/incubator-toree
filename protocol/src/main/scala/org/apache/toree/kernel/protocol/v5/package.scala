@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol
+package org.apache.toree.kernel.protocol
 
-import com.ibm.spark.kernel.protocol.v5.MIMEType.MIMEType
+import org.apache.toree.kernel.protocol.v5.MIMEType.MIMEType
 import play.api.libs.json.{JsValue, Json, JsObject}
 
 package object v5 {

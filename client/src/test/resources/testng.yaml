@@ -21,4 +21,4 @@ parameters: { }
 tests:
   - name: KernelClientTests
     packages:
-      - "com.ibm.spark.kernel.client.*"
+      - "org.apache.toree.kernel.client.*"

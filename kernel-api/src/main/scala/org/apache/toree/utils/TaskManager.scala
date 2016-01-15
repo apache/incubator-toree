@@ -1,4 +1,4 @@
-package com.ibm.spark.utils
+package org.apache.toree.utils
 
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.{promise, Future}
 import java.util.concurrent._
 
-import com.ibm.spark.security.KernelSecurityManager._
+import org.apache.toree.security.KernelSecurityManager._
 import TaskManager._
 
 import scala.util.Try

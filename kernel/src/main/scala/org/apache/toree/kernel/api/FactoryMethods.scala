@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.api
+package org.apache.toree.kernel.api
 
 import java.io.{InputStream, OutputStream}
 
-import com.ibm.spark.kernel.protocol.v5
-import com.ibm.spark.kernel.protocol.v5.{KMBuilder, KernelMessage}
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.stream.{KernelOutputStream, KernelInputStream}
+import org.apache.toree.kernel.protocol.v5
+import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.stream.{KernelOutputStream, KernelInputStream}
 import com.typesafe.config.Config
 
 /**
@@ -81,7 +81,7 @@ class FactoryMethods(
     new v5.stream.KernelOutputStream(
       actorLoader,
       kmBuilder,
-      com.ibm.spark.global.ScheduledTaskManager.instance,
+      org.apache.toree.global.ScheduledTaskManager.instance,
       streamType = streamType,
       sendEmptyOutput = sendEmptyOutput
     )

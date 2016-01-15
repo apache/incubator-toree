@@ -1,11 +1,11 @@
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
 import java.io.OutputStream
 import java.net.URL
 
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.magic.dependencies.{IncludeOutputStream, IncludeInterpreter, IncludeSparkContext}
-import com.ibm.spark.magic.{CellMagic, LineMagic}
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.magic.dependencies.{IncludeOutputStream, IncludeInterpreter, IncludeSparkContext}
+import org.apache.toree.magic.{CellMagic, LineMagic}
 import org.apache.spark.SparkContext
 import org.scalatest.{Matchers, FunSpec}
 import org.scalatest.mock.MockitoSugar

@@ -1,4 +1,4 @@
-package com.ibm.spark.kernel.api
+package org.apache.toree.kernel.api
 
 import java.io.{InputStream, OutputStream}
 

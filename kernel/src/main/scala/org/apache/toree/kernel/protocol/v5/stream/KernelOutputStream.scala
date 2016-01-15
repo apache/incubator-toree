@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.stream
+package org.apache.toree.kernel.protocol.v5.stream
 
 import java.io.OutputStream
 import java.nio.charset.Charset
 
-import com.ibm.spark.kernel.protocol.v5.content.StreamContent
-import com.ibm.spark.kernel.protocol.v5.{SystemActorType, MessageType, KMBuilder}
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.utils.{LogLike, ScheduledTaskManager}
+import org.apache.toree.kernel.protocol.v5.content.StreamContent
+import org.apache.toree.kernel.protocol.v5.{SystemActorType, MessageType, KMBuilder}
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.utils.{LogLike, ScheduledTaskManager}
 import scala.collection.mutable.ListBuffer
 import KernelOutputStream._
 

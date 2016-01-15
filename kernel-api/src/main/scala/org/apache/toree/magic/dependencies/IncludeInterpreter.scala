@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.dependencies
+package org.apache.toree.magic.dependencies
 
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.magic.Magic
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.magic.Magic
 
 trait IncludeInterpreter {
   this: Magic =>

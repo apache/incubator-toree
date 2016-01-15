@@ -14,16 +14,16 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.handler
+package org.apache.toree.kernel.protocol.v5.handler
 
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor.{Props, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import com.ibm.spark.kernel.protocol.v5.content.InputReply
-import com.ibm.spark.kernel.protocol.v5.{HeaderBuilder, MessageType, KMBuilder, SystemActorType}
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.content.InputReply
+import org.apache.toree.kernel.protocol.v5.{HeaderBuilder, MessageType, KMBuilder, SystemActorType}
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.scalatest.concurrent.Eventually
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.time.{Milliseconds, Span}

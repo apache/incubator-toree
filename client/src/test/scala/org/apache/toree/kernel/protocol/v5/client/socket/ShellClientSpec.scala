@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.client.socket
+package org.apache.toree.kernel.protocol.v5.client.socket
 
 import java.util.UUID
 
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import com.ibm.spark.communication.ZMQMessage
-import com.ibm.spark.communication.security.SecurityActorType
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.client.ActorLoader
-import com.ibm.spark.kernel.protocol.v5.content.ExecuteRequest
+import org.apache.toree.communication.ZMQMessage
+import org.apache.toree.communication.security.SecurityActorType
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.client.ActorLoader
+import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
 import org.mockito.Mockito._

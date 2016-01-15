@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ibm.spark.kernel.interpreter.sparkr
+package org.apache.toree.kernel.interpreter.sparkr
 
 import java.util.concurrent.{TimeUnit, Semaphore}
 
-import com.ibm.spark.interpreter.broker.BrokerService
-import com.ibm.spark.kernel.api.KernelLike
-import com.ibm.spark.kernel.interpreter.sparkr.SparkRTypes.{Code, CodeResults}
+import org.apache.toree.interpreter.broker.BrokerService
+import org.apache.toree.kernel.api.KernelLike
+import org.apache.toree.kernel.interpreter.sparkr.SparkRTypes.{Code, CodeResults}
 import org.apache.spark.SparkContext
 import org.slf4j.LoggerFactory
 

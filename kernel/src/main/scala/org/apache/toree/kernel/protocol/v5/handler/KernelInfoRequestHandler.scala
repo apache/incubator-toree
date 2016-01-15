@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.protocol.v5.handler
+package org.apache.toree.kernel.protocol.v5.handler
 
-import com.ibm.spark.kernel.protocol.v5._
-import com.ibm.spark.kernel.protocol.v5.content.KernelInfoReply
-import com.ibm.spark.kernel.protocol.v5.kernel.ActorLoader
-import com.ibm.spark.utils.LogLike
+import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.kernel.protocol.v5.content.KernelInfoReply
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.utils.LogLike
 import play.api.libs.json.Json
 
 import scala.concurrent._

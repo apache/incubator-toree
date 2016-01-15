@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.ibm.spark.utils
+package org.apache.toree.utils
 
 import scala.language.existentials
 import java.util.concurrent._

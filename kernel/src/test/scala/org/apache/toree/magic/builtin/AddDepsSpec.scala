@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.magic.builtin
+package org.apache.toree.magic.builtin
 
 import java.io.{ByteArrayOutputStream, OutputStream}
 import java.net.URL
 
-import com.ibm.spark.dependencies.DependencyDownloader
-import com.ibm.spark.interpreter.Interpreter
-import com.ibm.spark.utils.ArgumentParsingSupport
+import org.apache.toree.dependencies.DependencyDownloader
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.utils.ArgumentParsingSupport
 import org.apache.spark.SparkContext
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{GivenWhenThen, Matchers, FunSpec}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 
-import com.ibm.spark.magic._
-import com.ibm.spark.magic.dependencies._
+import org.apache.toree.magic._
+import org.apache.toree.magic.dependencies._
 
 class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
   with GivenWhenThen
@@ -92,7 +92,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           override val outputStream: OutputStream = mock[OutputStream]
         }
 
-        val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: "--transitive" :: Nil
+        val expected = "org.apache.toree" :: "kernel" :: "1.0" :: "--transitive" :: Nil
         addDepsMagic.execute(expected.mkString(" "))
 
         verify(mockDependencyDownloader).retrieve(
@@ -118,7 +118,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           override val outputStream: OutputStream = mock[OutputStream]
         }
 
-        val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: Nil
+        val expected = "org.apache.toree" :: "kernel" :: "1.0" :: Nil
         addDepsMagic.execute(expected.mkString(" "))
 
         verify(mockDependencyDownloader).retrieve(
@@ -145,7 +145,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           override val outputStream: OutputStream = mock[OutputStream]
         }
 
-        val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: Nil
+        val expected = "org.apache.toree" :: "kernel" :: "1.0" :: Nil
         addDepsMagic.execute(expected.mkString(" "))
 
         verify(mockInterpreter).addJars(any[URL])
@@ -174,7 +174,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           override val outputStream: OutputStream = mock[OutputStream]
         }
 
-        val expected = "com.ibm.spark" :: "kernel" :: "1.0" :: Nil
+        val expected = "org.apache.toree" :: "kernel" :: "1.0" :: Nil
         addDepsMagic.execute(expected.mkString(" "))
 
         verify(mockSparkContext, times(3)).addJar(anyString())

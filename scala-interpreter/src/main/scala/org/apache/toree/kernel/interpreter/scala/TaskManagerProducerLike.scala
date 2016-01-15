@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.ibm.spark.kernel.interpreter.scala
+package org.apache.toree.kernel.interpreter.scala
 
-import com.ibm.spark.utils.TaskManager
+import org.apache.toree.utils.TaskManager
 
 trait TaskManagerProducerLike {
   /**
