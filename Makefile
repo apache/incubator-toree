@@ -17,7 +17,7 @@
 
 .PHONY: help clean clean-dist build dev test test-travis
 
-VERSION?=0.1.5
+VERSION?=0.1.0
 IS_SNAPSHOT?=true
 APACHE_SPARK_VERSION?=1.5.1
 
