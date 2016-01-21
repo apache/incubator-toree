@@ -88,7 +88,7 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
     ivyFile.deleteOnExit()
 
     val md = DefaultModuleDescriptor.newDefaultInstance(
-      ModuleRevisionId.newInstance("org.apache.toree", "spark-kernel", "working")
+      ModuleRevisionId.newInstance("org.apache.toree", "kernel", "working")
     )
 
     // Exclude all sources artifacts i.e. artifactId-version-sources.jar
