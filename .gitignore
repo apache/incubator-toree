@@ -1,4 +1,7 @@
-
+build/
+**/derby.log
+**/metastore_db
+**/*__pycache__
 **.swp
 target/
 .idea/

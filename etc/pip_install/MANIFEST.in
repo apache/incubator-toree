@@ -1,0 +1,3 @@
+recursive-include toree/bin *
+recursive-include toree/lib *
+include toree/VERSION

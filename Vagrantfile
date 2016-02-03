@@ -121,10 +121,10 @@ echo "Adding kernel.json"
 mkdir -p /home/vagrant/.ipython/kernels/toree-kernel
 cat << EOF > /home/vagrant/.ipython/kernels/toree-kernel/kernel.json
 {
-    "display_name": "Spark 1.5.1 (Scala 2.10.4)",
+    "display_name": "Toree",
     "language_info": { "name": "scala" },
     "argv": [
-        "/src/toree-kernel/dist/toree-kernel/bin/toree-kernel",
+        "/src/toree-kernel/dist/toree/bin/run.sh",
         "--profile",
         "{connection_file}"
     ],
@@ -157,7 +157,7 @@ CodeMirror.requireMode('clike',function(){
                 scalaConf[prop] = parserConf[prop];
             }
         }
-       
+
         scalaConf.name = 'text/x-scala';
 
         var mode = CodeMirror.getMode(conf, scalaConf);

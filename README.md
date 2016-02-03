@@ -24,7 +24,7 @@ A version of Toree is deployed as part of the [Try Jupyter!][try-jupyter] site. 
 Develop
 =======
 This project uses `make` as the entry point for build, test, and packaging. It supports 2 modes, local and vagrant. The default is local and all command (i.e. sbt) will be ran locally on your machine. This means that you need to
-install `sbt`, `jupyter/ipython`, and other develoment requirements locally on your machine. The 2nd mode uses [Vagrant][vagrant] to simplify the development experience. In vagrant mode, all commands are sent to the vagrant box 
+install `sbt`, `jupyter/ipython`, and other development requirements locally on your machine. The 2nd mode uses [Vagrant][vagrant] to simplify the development experience. In vagrant mode, all commands are sent to the vagrant box
 that has all necessary dependencies pre-installed. To run in vagrant mode, run `export USE_VAGRANT=true`.  
 
 To build and interact with Toree using Jupyter, run
@@ -42,10 +42,22 @@ Build & Package
 ===============
 To build and package up Toree, run
 ```
-make dist
+make release
 ```
 
-The resulting package of the kernel will be located at `./dist//toree-kernel-<VERSION>.tar.gz`. The uncompressed package is what is used is ran by Jupyter when doing `make dev`.
+This results in 2 packages.
+
+- `./dist/toree-<VERSION>-binary-release.tar.gz` is a simple package that contains JAR and executable
+- `./dist/toree-<VERSION>.tar.gz` is a `pip` installable package that adds Toree as a Jupyter kernel.
+
+NOTE: `make release` uses `docker`. Please refer to `docker` installation instructions for your system. `USE_VAGRANT` is not supported by this `make` target.
+
+Install
+=======
+```
+pip install toree
+jupyter toree install
+```
 
 Reporting Issues
 ================
@@ -57,9 +69,9 @@ You can reach us through [gitter][gitter-url] or our [mailing list][mail-list]
 
 Version
 =======
-We are working on publishing binary releases of Toree soon. As part of our move into Apache Incubator, Toree will start a new version sequence starting at `0.1`. 
+We are working on publishing binary releases of Toree soon. As part of our move into Apache Incubator, Toree will start a new version sequence starting at `0.1`.
 
-Our goal is to keep `master` up to date with the latest version of Spark. When new versions of Spark require specific code changes to Toree, we will branch out older Spark version support. 
+Our goal is to keep `master` up to date with the latest version of Spark. When new versions of Spark require specific code changes to Toree, we will branch out older Spark version support.
 
 As it stands, we maintain several branches for legacy versions of Spark. The table below shows what is available now.
 
