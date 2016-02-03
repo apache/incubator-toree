@@ -82,7 +82,7 @@ trait SubProjects extends Settings with TestTasks {
    * Project representing the client code for connecting to the kernel backend.
    */
   lazy val client = addTestTasksToProject(Project(
-    id = "client",
+    id = "toree-client",
     base = file("client"),
     settings = fullSettings
   )) dependsOn(
