@@ -17,7 +17,7 @@
 
 .PHONY: help clean clean-dist build dev test test-travis release pip-release bin-release
 
-VERSION?=0.1.0.dev2
+VERSION?=0.1.0.dev4
 COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
 ifeq (, $(findstring dev, $(VERSION)))
 IS_SNAPSHOT?=false
