@@ -30,8 +30,13 @@ class AddDeps extends LineMagic with IncludeInterpreter
 
   private lazy val printStream = new PrintStream(outputStream)
 
-  val _transitive =
-    parser.accepts("transitive", "retrieve dependencies recursively")
+  val _transitive = parser.accepts(
+    "transitive", "Retrieve dependencies recursively"
+  )
+
+  val _abortOnResolutionErrors = parser.accepts(
+    "abort-on-resolution-errors", "Abort (no downloads) when resolution fails"
+  )
 
   /**
    * Execute a magic representing a line magic.
@@ -42,11 +47,15 @@ class AddDeps extends LineMagic with IncludeInterpreter
     val nonOptionArgs = parseArgs(code)
     dependencyDownloader.setPrintStream(printStream)
 
-    // TODO: require a version or use the most recent if omitted?
     if (nonOptionArgs.size == 3) {
       // get the jars and hold onto the paths at which they reside
       val urls = dependencyDownloader.retrieve(
-        nonOptionArgs(0), nonOptionArgs(1), nonOptionArgs(2), _transitive)
+        groupId                 = nonOptionArgs.head,
+        artifactId              = nonOptionArgs(1),
+        version                 = nonOptionArgs(2),
+        transitive              = _transitive,
+        ignoreResolutionErrors  = !_abortOnResolutionErrors
+      ).map(_.toURL)
 
       // add the jars to the interpreter and spark context
       interpreter.addJars(urls:_*)

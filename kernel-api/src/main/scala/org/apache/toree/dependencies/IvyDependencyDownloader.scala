@@ -18,7 +18,7 @@
 package org.apache.toree.dependencies
 
 import java.io.{File, PrintStream}
-import java.net.URL
+import java.net.{URI, URL}
 
 import org.apache.ivy.Ivy
 import org.apache.ivy.core.module.descriptor._
@@ -32,10 +32,13 @@ import org.apache.ivy.plugins.resolver.IBiblioResolver
 import org.apache.ivy.util.{DefaultMessageLogger, Message}
 import org.springframework.core.io.support._
 
-
-class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
-  extends DependencyDownloader(repositoryUrl, baseDirectory)
-{
+/**
+ * Represents a dependency downloader for jars that uses Ivy underneath.
+ */
+class IvyDependencyDownloader(
+  val repositoryUrl: String,
+  val baseDirectory: String
+) extends DependencyDownloader {
   private val ivySettings = new IvySettings()
   private val resolver = new IBiblioResolver
 
@@ -70,7 +73,7 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
     val classpathURLs = ivyFiles.map(_.getURI.toURL)
 
     // Get all of the dependencies from the *ivy.xml files
-    val dependencies = classpathURLs.map(getDependencies).flatten
+    val dependencies = classpathURLs.map(getDependencies).flatMap(_.toSeq)
 
     // Remove duplicates based on artifact name
     val distinctDependencies =
@@ -80,9 +83,13 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
   }
 
   override def retrieve(
-    groupId: String, artifactId: String, version: String,
-    transitive: Boolean = true, excludeBaseDependencies: Boolean = true
-  ): Seq[URL] = {
+    groupId: String,
+    artifactId: String,
+    version: String,
+    transitive: Boolean = true,
+    excludeBaseDependencies: Boolean = true,
+    ignoreResolutionErrors: Boolean = true
+  ): Seq[URI] = {
     // Start building the ivy.xml file
     val ivyFile = File.createTempFile("ivy-custom", ".xml")
     ivyFile.deleteOnExit()
@@ -161,26 +168,55 @@ class IvyDependencyDownloader(repositoryUrl: String, baseDirectory: String)
       new RetrieveOptions().setConfs(Seq("default").toArray)
     )
 
-    artifactURLs
+    artifactURLs.map(_.toURI)
   }
 
   /**
    * Uses our printstream in Ivy's LoggingEngine
+   *
    * @param printStream the print stream to use
    */
   override def setPrintStream(printStream: PrintStream): Unit = {
     ivy.getLoggerEngine.setDefaultLogger(
       new DefaultMessageLogger(Message.MSG_INFO) {
-        override def doEndProgress(msg: String): Unit =
-          printStream.println(msg)
+        override def doEndProgress(msg: String): Unit = printStream.println(msg)
 
-        override def doProgress(): Unit =
-          printStream.print(".")
+        override def doProgress(): Unit = printStream.print(".")
 
         override def log(msg: String, level: Int): Unit =
-          if (level <= this.getLevel)
-            printStream.println(msg)
+          if (level <= this.getLevel) printStream.println(msg)
       }
     )
   }
+
+  /**
+   * Adds the specified resolver url as an additional search option.
+   *
+   * @param url The url of the repository
+   */
+  override def addMavenRepository(url: URL): Unit = ???
+
+  /**
+   * Returns a list of all repositories used by the downloader.
+   *
+   * @return The list of repositories as URIs
+   */
+  override def getRepositories: Seq[URI] = Seq(
+    DependencyDownloader.DefaultMavenRepository.toURI
+  )
+
+  /**
+   * Sets the directory where all downloaded jars will be stored.
+   *
+   * @param directory The directory to use
+   * @return True if successfully set directory, otherwise false
+   */
+  override def setDownloadDirectory(directory: File): Boolean = false
+
+  /**
+   * Returns the current directory where dependencies will be downloaded.
+   *
+   * @return The directory as a string
+   */
+  override def getDownloadDirectory: String = baseDirectory
 }

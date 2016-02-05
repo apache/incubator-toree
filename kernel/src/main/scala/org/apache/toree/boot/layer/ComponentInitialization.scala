@@ -17,12 +17,13 @@
 
 package org.apache.toree.boot.layer
 
+import java.io.File
 import java.util
 import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor.ActorRef
 import org.apache.toree.comm.{CommManager, KernelCommManager, CommRegistrar, CommStorage}
-import org.apache.toree.dependencies.{DependencyDownloader, IvyDependencyDownloader}
+import org.apache.toree.dependencies.{CoursierDependencyDownloader, DependencyDownloader, IvyDependencyDownloader}
 import org.apache.toree.global
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.{KernelLike, Kernel}
@@ -122,8 +123,12 @@ trait StandardComponentInitialization extends ComponentInitialization {
   }
 
   private def initializeDependencyDownloader(config: Config) = {
-    val dependencyDownloader = new IvyDependencyDownloader(
+    /*val dependencyDownloader = new IvyDependencyDownloader(
       "http://repo1.maven.org/maven2/", config.getString("ivy_local")
+    )*/
+    val dependencyDownloader = new CoursierDependencyDownloader
+    dependencyDownloader.setDownloadDirectory(
+      new File(config.getString("ivy_local"))
     )
 
     dependencyDownloader
