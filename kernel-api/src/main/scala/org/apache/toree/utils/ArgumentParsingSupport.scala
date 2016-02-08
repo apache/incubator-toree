@@ -56,4 +56,10 @@ trait ArgumentParsingSupport {
     require(options != null, "Arguments not parsed yet!")
     Some(options.valueOf(spec)).filter(_ != null)
   }
+
+  // NOTE: Cannot be implicit as conflicts with get
+  def getAll[T](spec: OptionSpec[T]): Option[List[T]] = {
+    require(options != null, "Arguments not parsed yet!")
+    Some(options.valuesOf(spec).asScala.toList).filter(_ != null)
+  }
 }

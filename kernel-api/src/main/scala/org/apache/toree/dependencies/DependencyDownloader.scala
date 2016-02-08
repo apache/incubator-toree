@@ -35,6 +35,10 @@ abstract class DependencyDownloader {
    * @param ignoreResolutionErrors If true, ignores any errors on resolving
    *                               dependencies and attempts to download all
    *                               successfully-resolved dependencies
+   * @param extraRepositories Additional repositories to use only for this
+   *                          dependency
+   * @param verbose If true, prints out additional information
+   * @param trace If true, prints trace of download process
    *
    * @return The sequence of URIs represented downloaded (even from cache)
    *         dependencies
@@ -45,7 +49,10 @@ abstract class DependencyDownloader {
     version: String,
     transitive: Boolean = true,
     excludeBaseDependencies: Boolean = true,
-    ignoreResolutionErrors: Boolean = true
+    ignoreResolutionErrors: Boolean = true,
+    extraRepositories: Seq[URL] = Nil,
+    verbose: Boolean = false,
+    trace: Boolean = false
   ): Seq[URI]
 
   /**
@@ -61,6 +68,13 @@ abstract class DependencyDownloader {
    * @param url The url of the repository
    */
   def addMavenRepository(url: URL): Unit
+
+  /**
+   * Remove the specified resolver url from the search options.
+   *
+   * @param url The url of the repository
+   */
+  def removeMavenRepository(url: URL): Unit
 
   /**
    * Returns a list of all repositories used by the downloader.

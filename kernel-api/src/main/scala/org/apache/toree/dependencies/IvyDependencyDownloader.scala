@@ -87,8 +87,11 @@ class IvyDependencyDownloader(
     artifactId: String,
     version: String,
     transitive: Boolean = true,
-    excludeBaseDependencies: Boolean = true,
-    ignoreResolutionErrors: Boolean = true
+    excludeBaseDependencies: Boolean,
+    ignoreResolutionErrors: Boolean,
+    extraRepositories: Seq[URL],
+    verbose: Boolean,
+    trace: Boolean
   ): Seq[URI] = {
     // Start building the ivy.xml file
     val ivyFile = File.createTempFile("ivy-custom", ".xml")
@@ -195,6 +198,13 @@ class IvyDependencyDownloader(
    * @param url The url of the repository
    */
   override def addMavenRepository(url: URL): Unit = ???
+
+  /**
+   * Remove the specified resolver url from the search options.
+   *
+   * @param url The url of the repository
+   */
+  override def removeMavenRepository(url: URL): Unit = ???
 
   /**
    * Returns a list of all repositories used by the downloader.

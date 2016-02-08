@@ -18,10 +18,13 @@
 package org.apache.toree.magic.builtin
 
 import java.io.PrintStream
+import java.net.URL
 
 import org.apache.toree.magic._
 import org.apache.toree.magic.dependencies._
 import org.apache.toree.utils.ArgumentParsingSupport
+
+import scala.util.Try
 
 class AddDeps extends LineMagic with IncludeInterpreter
   with IncludeOutputStream with IncludeSparkContext with ArgumentParsingSupport
@@ -30,22 +33,41 @@ class AddDeps extends LineMagic with IncludeInterpreter
 
   private lazy val printStream = new PrintStream(outputStream)
 
-  val _transitive = parser.accepts(
+  private val _transitive = parser.accepts(
     "transitive", "Retrieve dependencies recursively"
   )
 
-  val _abortOnResolutionErrors = parser.accepts(
+  private val _verbose = parser.accepts(
+    "verbose", "Prints out additional information"
+  )
+
+  private val _trace = parser.accepts(
+    "trace", "Prints out trace of download progress"
+  )
+
+  private val _abortOnResolutionErrors = parser.accepts(
     "abort-on-resolution-errors", "Abort (no downloads) when resolution fails"
   )
 
+  private val _repository = parser.accepts(
+    "repository", "Adds an additional repository to available list"
+  ).withRequiredArg().ofType(classOf[String])
+
   /**
    * Execute a magic representing a line magic.
+   *
    * @param code The single line of code
    * @return The output of the magic
    */
   override def execute(code: String): Unit = {
     val nonOptionArgs = parseArgs(code)
     dependencyDownloader.setPrintStream(printStream)
+
+    val extraRepositories = getAll(_repository).getOrElse(Nil).map(u => (u, Try(new URL(u))))
+
+    // Print error information
+    extraRepositories.filter(_._2.isFailure).map(_._1)
+      .foreach(u => printStream.println(s"Ignoring invalid URL $u"))
 
     if (nonOptionArgs.size == 3) {
       // get the jars and hold onto the paths at which they reside
@@ -54,7 +76,10 @@ class AddDeps extends LineMagic with IncludeInterpreter
         artifactId              = nonOptionArgs(1),
         version                 = nonOptionArgs(2),
         transitive              = _transitive,
-        ignoreResolutionErrors  = !_abortOnResolutionErrors
+        ignoreResolutionErrors  = !_abortOnResolutionErrors,
+        extraRepositories       = extraRepositories.flatMap(_._2.toOption),
+        verbose                 = _verbose,
+        trace                   = _trace
       ).map(_.toURL)
 
       // add the jars to the interpreter and spark context

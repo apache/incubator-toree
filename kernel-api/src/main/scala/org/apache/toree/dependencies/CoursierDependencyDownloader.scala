@@ -1,13 +1,14 @@
 package org.apache.toree.dependencies
 
-import java.io.{BufferedInputStream, File, PrintStream}
+import java.io.{File, PrintStream}
 import java.net.{URI, URL}
-import java.nio.file.Files
+import java.util.concurrent.ConcurrentHashMap
 
+import coursier.Cache.Logger
 import coursier.Dependency
 import coursier.core.Repository
 import coursier.ivy.{IvyXml, IvyRepository}
-import coursier.maven.{Pom, MavenRepository}
+import coursier.maven.MavenRepository
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 
 import scalaz.\/
@@ -38,6 +39,10 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    * @param ignoreResolutionErrors If true, ignores any errors on resolving
    *                               dependencies and attempts to download all
    *                               successfully-resolved dependencies
+   * @param extraRepositories Additional repositories to use only for this
+   *                          dependency
+   * @param verbose If true, prints out additional information
+   * @param trace If true, prints trace of download process
    *
    * @return The sequence of strings pointing to the retrieved dependency jars
    */
@@ -47,15 +52,18 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     version: String,
     transitive: Boolean,
     excludeBaseDependencies: Boolean,
-    ignoreResolutionErrors: Boolean
+    ignoreResolutionErrors: Boolean,
+    extraRepositories: Seq[URL],
+    verbose: Boolean,
+    trace: Boolean
   ): Seq[URI] = {
     assert(localDirectory != null)
     import coursier._
 
-    // Grab exclusions using base dependencies
+    // Grab exclusions using base dependencies (always exclude scala lang)
     val exclusions: Set[(String, String)] = (if (excludeBaseDependencies) {
       getBaseDependencies.map(_.module).map(m => (m.organization, m.name))
-    } else Nil).toSet
+    } else Nil).toSet ++ Set(("org.scala-lang", "*"))
 
     // Mark dependency that we want to download
     val start = Resolution(Set(
@@ -72,16 +80,20 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     lazy val defaultBase = new File(localDirectory).getAbsoluteFile
 
     lazy val downloadLocations = Seq(
-      "file:" -> new File(defaultBase, "file"),
       "http://" -> new File(defaultBase, "http"),
       "https://" -> new File(defaultBase, "https")
     )
 
-    // Build list of locations to fetch dependencies
-    val fetchLocations = Seq(ivy2Cache(localDirectory)) ++ repositories
-    val fetch = Fetch.from(fetchLocations, Cache.fetch(downloadLocations))
+    val allRepositories = extraRepositories.map(urlToMavenRepository) ++ repositories
 
-    val fetchUris = localDirectory +: repositoriesToURIs(repositories)
+    // Build list of locations to fetch dependencies
+    val fetchLocations = Seq(ivy2Cache(localDirectory)) ++ allRepositories
+    val fetch = Fetch.from(
+      fetchLocations,
+      Cache.fetch(downloadLocations, logger = Some(new DownloadLogger(verbose, trace)))
+    )
+
+    val fetchUris = localDirectory +: repositoriesToURIs(allRepositories)
     printStream.println("Preparing to fetch from:")
     printStream.println(s"-> ${fetchUris.mkString("\n-> ")}")
 
@@ -100,11 +112,11 @@ class CoursierDependencyDownloader extends DependencyDownloader {
 
     // Perform task of downloading dependencies
     val localArtifacts: Seq[FileError \/ File] = Task.gatherUnordered(
-      resolution.artifacts.map(a => {
-        printStream.println(s"-> Downloading ${a.url}")
-        Cache.file(artifact = a, cache = downloadLocations).run
-      })
-    ).run
+      resolution.artifacts.map(a => Cache.file(
+        artifact = a,
+        cache = downloadLocations,
+        logger = Some(new DownloadLogger(verbose, trace))
+      ).run)).run
 
     // Print any errors in retrieving dependencies
     localArtifacts.flatMap(_.swap.toOption).map(_.message)
@@ -123,7 +135,21 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    * @param url The string representation of the url
    */
   override def addMavenRepository(url: URL): Unit =
-    repositories :+= MavenRepository(url.toString)
+    repositories :+= urlToMavenRepository(url)
+
+  private def urlToMavenRepository(url: URL) = MavenRepository(url.toString)
+
+  /**
+   * Remove the specified resolver url from the search options.
+   *
+   * @param url The url of the repository
+   */
+  override def removeMavenRepository(url: URL): Unit = {
+    repositories = repositories.filterNot {
+      case MavenRepository(urlString, _, _) => url.toString == urlString
+      case _                                => false
+    }
+  }
 
   /**
    * Sets the printstream to log to.
@@ -132,6 +158,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    */
   override def setPrintStream(printStream: PrintStream): Unit =
     this.printStream = printStream
+
   /**
    * Returns a list of all repositories used by the downloader.
    *
@@ -151,7 +178,6 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    * Sets the directory where all downloaded jars will be stored.
    *
    * @param directory The directory to use
-   *
    * @return True if successfully set directory, otherwise false
    */
   override def setDownloadDirectory(directory: File): Boolean = {
@@ -159,11 +185,78 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     val cleanPath = if (path.endsWith("/")) path else path + "/"
     val dir = new File(cleanPath)
 
-    if (!dir.isDirectory) return false
     if (!dir.exists() && !dir.mkdirs()) return false
+    if (!dir.isDirectory) return false
 
     localDirectory = dir.toURI
     true
+  }
+
+  private class DownloadLogger(
+    private val verbose: Boolean,
+    private val trace: Boolean
+  ) extends Logger {
+    import scala.collection.JavaConverters._
+    private val downloadId = new ConcurrentHashMap[String, String]().asScala
+    private val downloadFile = new ConcurrentHashMap[String, File]().asScala
+    private val downloadAmount = new ConcurrentHashMap[String, Long]().asScala
+    private val downloadTotal = new ConcurrentHashMap[String, Long]().asScala
+
+    override def foundLocally(url: String, file: File): Unit = {
+      val id = downloadId.getOrElse(url, url)
+      val f = s"(${downloadFile.get(url).map(_.getName).getOrElse("")})"
+      if (verbose) printStream.println(s"=> $id: Found at ${file.getAbsolutePath}")
+    }
+
+    override def downloadingArtifact(url: String, file: File): Unit = {
+      downloadId.put(url, nextId())
+      val id = downloadId.getOrElse(url, url)
+      val f = s"(${downloadFile.get(url).map(_.getName).getOrElse("")})"
+
+      if (verbose) printStream.println(s"=> $id $f: Downloading $url")
+
+      downloadFile.put(url, file)
+    }
+
+    override def downloadLength(url: String, length: Long): Unit = {
+      val id = downloadId.getOrElse(url, url)
+      val f = s"(${downloadFile.get(url).map(_.getName).getOrElse("")})"
+      if (trace) printStream.println(s"===> $id $f: Is $length total bytes")
+      downloadTotal.put(url, length)
+    }
+
+    override def downloadProgress(url: String, downloaded: Long): Unit = {
+      downloadAmount.put(url, downloaded)
+
+      val ratio = downloadAmount(url).toDouble / downloadTotal(url).toDouble
+      val percent = ratio * 100.0
+
+      if (trace) printStream.printf(
+        "===> %s %s: Downloaded %d bytes (%.2f%%)\n",
+        downloadId.getOrElse(url, url),
+        s"(${downloadFile.get(url).map(_.getName).getOrElse("")})",
+        new java.lang.Long(downloaded),
+        new java.lang.Double(percent)
+      )
+    }
+
+    override def downloadedArtifact(url: String, success: Boolean): Unit = {
+      if (verbose) {
+        val id = downloadId.getOrElse(url, url)
+        val f = s"(${downloadFile.get(url).map(_.getName).getOrElse("")})"
+        if (success) printStream.println(s"=> $id $f: Finished downloading")
+        else printStream.println(s"=> $id: An error occurred while downloading")
+      }
+    }
+
+    private val nextId: () => String = (() => {
+      var counter: Long = 0
+
+      () => {
+        counter += 1
+        counter.toString
+      }
+    })()
   }
 
   /**
@@ -202,7 +295,6 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    * Converts the provide repositories to their URI representations.
    *
    * @param repositories The repositories to convert
-   *
    * @return The resulting URIs
    */
   private def repositoriesToURIs(repositories: Seq[Repository]) = repositories.map {

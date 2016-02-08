@@ -18,7 +18,7 @@
 package org.apache.toree.magic.builtin
 
 import java.io.{ByteArrayOutputStream, OutputStream}
-import java.net.URL
+import java.net.{URI, URL}
 
 import org.apache.toree.dependencies.DependencyDownloader
 import org.apache.toree.interpreter.Interpreter
@@ -70,14 +70,18 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         verify(mockIntp, times(0)).bind(any(), any(), any(), any())
         verify(mockSC, times(0)).addJar(any())
         verify(mockDownloader, times(0)).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
+          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
+          anyBoolean(), any[Seq[URL]], anyBoolean(), anyBoolean()
+        )
         actual should be (expected)
       }
 
       it("should set the retrievals transitive to true if provided") {
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
+          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
+          anyBoolean(), any[Seq[URL]], anyBoolean(), anyBoolean()
+        )
 
         val addDepsMagic = new AddDeps
           with IncludeSparkContext
@@ -103,7 +107,9 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
       it("should set the retrieval's transitive to false if not provided") {
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
+          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
+          anyBoolean(), any[Seq[URL]], anyBoolean(), anyBoolean()
+        )
 
         val addDepsMagic = new AddDeps
           with IncludeSparkContext
@@ -129,7 +135,9 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
       it("should add retrieved artifacts to the interpreter") {
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
-          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean())
+          anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
+          anyBoolean(), any[Seq[URL]], anyBoolean(), anyBoolean()
+        )
         val mockInterpreter = mock[Interpreter]
 
         val addDepsMagic = new AddDeps
@@ -154,10 +162,11 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
 
       it("should add retrieved artifacts to the spark context") {
         val mockDependencyDownloader = mock[DependencyDownloader]
-        val fakeUrl = new URL("file:/foo")
-        doReturn(fakeUrl :: fakeUrl :: fakeUrl :: Nil)
+        val fakeUri = new URI("file:/foo")
+        doReturn(fakeUri :: fakeUri :: fakeUri :: Nil)
           .when(mockDependencyDownloader).retrieve(
-            anyString(), anyString(), anyString(), anyBoolean(), anyBoolean()
+            anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
+            anyBoolean(), any[Seq[URL]], anyBoolean(), anyBoolean()
           )
         val mockSparkContext = mock[SparkContext]
 
