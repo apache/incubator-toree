@@ -28,6 +28,7 @@ endif
 
 APACHE_SPARK_VERSION?=1.5.1
 IMAGE?=jupyter/pyspark-notebook:2988869079e6
+EXAMPLE_IMAGE?=apache/toree-examples
 DOCKER_WORKDIR?=/srv/toree
 DOCKER_ARGS?=
 define DOCKER
@@ -70,6 +71,15 @@ clean-dist:
 clean: VM_WORKDIR=/src/toree-kernel
 clean: clean-dist
 	$(call RUN,$(ENV_OPTS) sbt clean)
+
+.example-image: EXTRA_CMD?=pip install jupyter_declarativewidgets==0.4.0; jupyter declarativewidgets install --user; jupyter declarativewidgets activate; pip install jupyter_dashboards; jupyter dashboards install --user; jupyter dashboards activate; apt-get update; apt-get install --yes curl; curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -; apt-get install --yes nodejs; npm install -g bower;
+.example-image:
+	@-docker rm -f examples_image
+	@docker run -it --user root --name examples_image \
+		$(IMAGE) bash -c '$(EXTRA_CMD)'
+	@docker commit examples_image $(EXAMPLE_IMAGE)
+	@-docker rm -f examples_image
+	touch $@
 
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
@@ -121,6 +131,5 @@ release: pip-release bin-release
 		twine upload -r pypi toree-$(VERSION).tar.gz'
 
 jupyter: DOCKER_WORKDIR=/srv/toree/dist
-jupyter: EXTRA_CMD?=pip install jupyter_declarativewidgets==0.4.0; jupyter declarativewidgets install --user; jupyter declarativewidgets activate; apt-get update; apt-get install --yes curl; curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -; apt-get install --yes nodejs; npm install -g bower;
-jupyter: pip-release
-	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'$(EXTRA_CMD) pip install toree-$(VERSION).tar.gz && jupyter toree install && cd /srv/toree/etc/examples/notebooks && jupyter notebook --ip=* --no-browser'
+jupyter: .example-image pip-release
+	@$(DOCKER) -p 8888:8888 --user=root  $(EXAMPLE_IMAGE) bash -c	'pip install toree-$(VERSION).tar.gz && jupyter toree install && cd /srv/toree/etc/examples/notebooks && jupyter notebook --ip=* --no-browser'
