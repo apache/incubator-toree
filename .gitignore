@@ -10,6 +10,8 @@ target/
 .vagrant
 *.iml
 *.ipynb
+.ipynb_checkpoints/
+!etc/**/*.ipynb
 scratch/
 **/*ivy.xml
 test-output/
