@@ -52,6 +52,16 @@ This results in 2 packages.
 
 NOTE: `make release` uses `docker`. Please refer to `docker` installation instructions for your system. `USE_VAGRANT` is not supported by this `make` target.
 
+Run Examples
+============
+To play with the example notebooks, run
+```
+make jupyter
+```
+
+A notebook server will be launched in a `Docker` container with Toree and some other dependencies installed.
+Refer to your `Docker` setup for the ip address. The notebook will be at `http://<ip>:8888/`.
+
 Install
 =======
 ```
