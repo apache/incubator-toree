@@ -18,6 +18,7 @@
 package org.apache.toree.kernel.protocol.v5.handler
 
 import org.apache.toree.comm.{KernelCommWriter, CommStorage, CommRegistrar, CommWriter}
+import org.apache.toree.global.ExecuteRequestState
 import org.apache.toree.kernel.protocol.v5.content.CommOpen
 import org.apache.toree.kernel.protocol.v5.kernel.{Utilities, ActorLoader}
 import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
@@ -43,6 +44,8 @@ class CommOpenHandler(
 {
   override def process(kernelMessage: KernelMessage): Future[_] = future {
     logKernelMessageAction("Initiating Comm Open for", kernelMessage)
+
+    ExecuteRequestState.processIncomingKernelMessage(kernelMessage)
 
     val kmBuilder = KMBuilder().withParent(kernelMessage)
 

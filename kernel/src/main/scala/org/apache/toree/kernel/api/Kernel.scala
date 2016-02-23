@@ -185,6 +185,30 @@ class Kernel (
   }
 
   /**
+   * Returns a collection of methods that can be used to display data from the
+   * kernel to the client.
+   *
+   * @return The collection of display methods
+   */
+  override def display: DisplayMethodsLike = display()
+
+  /**
+   * Constructs a new instance of the stream methods using the specified
+   * kernel message instance.
+   *
+   * @param parentMessage The message to serve as the parent of outgoing
+   *                      messages sent as a result of using streaming methods
+   *
+   * @return The collection of streaming methods
+   */
+  private[toree] def display(
+    parentMessage: v5.KernelMessage = lastKernelMessage(),
+    kmBuilder: v5.KMBuilder = v5.KMBuilder()
+  ): DisplayMethods = {
+    new DisplayMethods(actorLoader, parentMessage, kmBuilder)
+  }
+
+  /**
    * Constructs a new instance of the factory methods using the latest
    * kernel message instance.
    *

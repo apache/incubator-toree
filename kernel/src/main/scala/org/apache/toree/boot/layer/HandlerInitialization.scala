@@ -176,6 +176,8 @@ trait StandardHandlerInitialization extends HandlerInitialization {
 
     initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.ExecuteResult)
     initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.Stream)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.DisplayData)
+    initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.ClearOutput)
     initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.ExecuteInput)
     initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.Status)
     initializeSocketHandler(SocketType.IOPub, MessageType.Outgoing.Error)

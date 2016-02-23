@@ -60,6 +60,14 @@ trait KernelLike {
   def stream: StreamMethodsLike
 
   /**
+   * Returns a collection of methods that can be used to display data from the
+   * kernel to the client.
+   *
+   * @return The collection of display methods
+   */
+  def display: DisplayMethodsLike
+
+  /**
    * Returns a print stream to be used for communication back to clients
    * via standard out.
    *
