@@ -176,6 +176,23 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
       }
     }
 
+    describe("#display") {
+      it("should throw an exception if the ExecuteRequestState has not been set") {
+        intercept[IllegalArgumentException] {
+          kernel.display
+        }
+      }
+
+      it("should create a DisplayMethods instance if the ExecuteRequestState has been set") {
+        ExecuteRequestState.processIncomingKernelMessage(
+          new KernelMessage(Nil, "", mock[Header], mock[ParentHeader],
+            mock[Metadata], "")
+        )
+
+        kernel.display shouldBe a [DisplayMethods]
+      }
+    }
+
     describe("when spark.master is set in config") {
 
       it("should create SparkConf") {
