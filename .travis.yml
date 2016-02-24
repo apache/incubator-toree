@@ -1,7 +1,10 @@
 language: scala
 scala:
     - "2.10.4"
-
+env:
+    global:
+        - COURSIER_NO_TERM=1
+        - TOREE_RESOLUTION_VERBOSITY=0
 jdk:
     - oraclejdk7
     - openjdk7
@@ -15,7 +18,9 @@ cache:
     directories:
         - $HOME/.ivy2/cache
         - $HOME/.sbt/boot/
+        - $HOME/.coursier/cache/v1
 
 branches:
     only:
         - master
+

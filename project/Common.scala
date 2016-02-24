@@ -18,8 +18,9 @@
 import org.apache.commons.io.FileUtils
 import sbt._
 import Keys._
+import coursier.Keys._
 
-import scala.util.Properties
+import scala.util.{Try, Properties}
 
 object Common {
   //  Parameters for publishing to artifact repositories
@@ -50,6 +51,10 @@ object Common {
     "org.scalatest" %% "scalatest" % "2.2.0" % "test", // Apache v2
     "org.scalactic" %% "scalactic" % "2.2.0" % "test", // Apache v2
     "org.mockito" % "mockito-all" % "1.9.5" % "test"   // MIT
+  )
+
+  private val buildResolvers = Seq(
+    "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
   )
 
   // The prefix used for our custom artifact names
@@ -83,6 +88,18 @@ object Common {
     scalaVersion := buildScalaVersion,
     libraryDependencies ++= buildLibraryDependencies,
     isSnapshot := snapshot,
+    resolvers ++= buildResolvers,
+    coursierVerbosity := {
+      val level = Try(Integer.valueOf(Properties.envOrElse(
+        "TOREE_RESOLUTION_VERBOSITY", "1")
+      ).toInt).getOrElse(1)
+
+      scala.Console.out.println(
+        s"[INFO] Toree Resolution Verbosity Level = $level"
+      )
+
+      level
+    },
 
     scalacOptions in (Compile, doc) ++= Seq(
       // Ignore packages (for Scaladoc) not from our project
