@@ -24,7 +24,7 @@ import org.apache.toree.comm._
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.client.execution.{DeferredExecution, ExecuteRequestTuple}
 import org.apache.toree.kernel.protocol.v5.client.socket.HeartbeatMessage
-import org.apache.toree.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
+import org.apache.toree.kernel.protocol.v5.client.socket.StdinClient.{ResponseFunctionMessage, ResponseFunction}
 import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest
 import org.apache.toree.utils.LogLike
 import scala.concurrent.duration._
@@ -109,8 +109,10 @@ class SparkKernelClient(
    * Sets the response function used when input is requested by the kernel.
    * @param responseFunc The response function to use
    */
-  def setResponseFunction(responseFunc: ResponseFunction): Unit =
-    actorLoader.load(SocketType.StdInClient) ! responseFunc
+  def setResponseFunction(responseFunc: ResponseFunction): Unit = {
+    actorLoader.load(SocketType.StdInClient) !
+      ResponseFunctionMessage(responseFunc)
+  }
 
   /**
    * Represents the exposed interface for Comm communication with the kernel.

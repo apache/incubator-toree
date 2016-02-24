@@ -23,7 +23,7 @@ import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.communication.security.SecurityActorType
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
-import org.apache.toree.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
+import org.apache.toree.kernel.protocol.v5.client.socket.StdinClient.{ResponseFunctionMessage, ResponseFunction}
 import org.apache.toree.kernel.protocol.v5.content.{InputReply, InputRequest, ClearOutput, ExecuteRequest}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
@@ -63,7 +63,7 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
     ))
 
     // Set the response function for our client socket
-    stdinClient ! TestResponseFunc
+    stdinClient ! ResponseFunctionMessage(TestResponseFunc)
   }
 
   describe("StdinClient") {
@@ -73,7 +73,7 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
         val replacementFunc: ResponseFunction = (_, _) => expected
 
         // Update the function
-        stdinClient ! replacementFunc
+        stdinClient ! ResponseFunctionMessage(replacementFunc)
 
         val inputRequestMessage: ZMQMessage = KMBuilder()
           .withHeader(InputRequest.toTypeString)

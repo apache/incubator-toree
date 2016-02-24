@@ -24,7 +24,7 @@ import org.apache.toree.kernel.interpreter.sparkr.SparkRTypes.{Code, CodeResults
 import org.apache.spark.SparkContext
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{future, Future}
+import scala.concurrent.Future
 
 /**
  * Represents the service that provides the high-level interface between the
@@ -70,7 +70,7 @@ class SparkRService(
 
     val initialized = new Semaphore(0)
     import scala.concurrent.ExecutionContext.Implicits.global
-    val rBackendRun = future {
+    val rBackendRun = Future {
       logger.debug("Initializing RBackend")
       rBackendPort = rBackend.init()
       logger.debug(s"RBackend running on port $rBackendPort")

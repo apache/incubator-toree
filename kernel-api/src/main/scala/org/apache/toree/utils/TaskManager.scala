@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{promise, Future}
+import scala.concurrent.{Promise, Future}
 import java.util.concurrent._
 
 import org.apache.toree.security.KernelSecurityManager._
@@ -127,7 +127,7 @@ class TaskManager(
   def add[T <: Any](taskFunction: => T): Future[T] = {
     assert(executor.nonEmpty, "Task manager not started!")
 
-    val taskPromise = promise[T]()
+    val taskPromise = Promise[T]()
 
     // Construct runnable that completes the promise
     logger.trace(s"Queueing new task to be processed!")

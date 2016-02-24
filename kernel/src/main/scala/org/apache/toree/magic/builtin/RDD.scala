@@ -23,7 +23,7 @@ import org.apache.toree.magic._
 import org.apache.toree.magic.dependencies.{IncludeKernelInterpreter, IncludeInterpreter}
 import org.apache.toree.utils.LogLike
 import org.apache.toree.utils.json.RddToJson
-import org.apache.spark.sql.SchemaRDD
+import org.apache.spark.sql.{DataFrame, SchemaRDD}
 
 /**
  * Temporary magic to show an RDD as JSON
@@ -37,7 +37,7 @@ class RDD extends CellMagic with IncludeKernelInterpreter with LogLike {
         val rddVarName = kernelInterpreter.lastExecutionVariableName.getOrElse("")
         kernelInterpreter.read(rddVarName).map(rddVal => {
           try{
-            CellMagicOutput(MIMEType.ApplicationJson -> RddToJson.convert(rddVal.asInstanceOf[SchemaRDD]))
+            CellMagicOutput(MIMEType.ApplicationJson -> RddToJson.convert(rddVal.asInstanceOf[DataFrame]))
           } catch {
             case _: Throwable =>
               CellMagicOutput(MIMEType.PlainText -> s"Could note convert RDD to JSON: ${rddVarName}->${rddVal}")

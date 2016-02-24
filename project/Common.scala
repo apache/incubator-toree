@@ -100,11 +100,17 @@ object Common {
     // Scala-based options for compilation
     scalacOptions ++= Seq(
       "-deprecation", "-unchecked", "-feature",
-      //"-Xlint", // Scala 2.11.x only
       "-Xfatal-warnings",
-      "-Ywarn-all",
       "-language:reflectiveCalls"
-    ),
+    ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, scalaMajor)) if scalaMajor == 10 => Seq(
+        "-Ywarn-all"
+      )
+      case Some((2, scalaMajor)) if scalaMajor == 11 => Seq(
+        "-Xlint"
+      )
+      case _ => Nil
+    }),
 
     // Java-based options for compilation (all tasks)
     javacOptions in Compile ++= Seq(""),

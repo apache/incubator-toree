@@ -26,7 +26,6 @@ import play.api.data.validation.ValidationError
 import play.api.libs.json.JsPath
 
 import scala.concurrent.Future
-import scala.concurrent.future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
@@ -41,7 +40,7 @@ class CommOpenHandler(
   commStorage: CommStorage
 ) extends BaseHandler(actorLoader) with MessageLogSupport
 {
-  override def process(kernelMessage: KernelMessage): Future[_] = future {
+  override def process(kernelMessage: KernelMessage): Future[_] = Future {
     logKernelMessageAction("Initiating Comm Open for", kernelMessage)
 
     val kmBuilder = KMBuilder().withParent(kernelMessage)
