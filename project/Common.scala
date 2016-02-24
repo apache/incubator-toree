@@ -37,8 +37,12 @@ object Common {
   private val buildVersion      =
     if (snapshot) s"$versionNumber-SNAPSHOT"
     else versionNumber
-  private val buildScalaVersion = "2.10.4"
 
+  // Default version when NOT cross-compiling
+  private val buildScalaVersion = "2.10.4"
+  private val buildCrossScalaVersions = Seq(
+    buildScalaVersion, "2.11.7"
+  )
 
   // Global dependencies provided to all projects
   private var buildLibraryDependencies = Seq(
@@ -81,6 +85,7 @@ object Common {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
+    crossScalaVersions := buildCrossScalaVersions,
     libraryDependencies ++= buildLibraryDependencies,
     isSnapshot := snapshot,
 
