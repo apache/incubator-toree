@@ -56,7 +56,7 @@ object Build extends Build with Settings with SubProjects with TestTasks {
   ).aggregate(
     client, kernel, kernel_api, communication, protocol, macros,
     pyspark_interpreter, scala_interpreter, sparkr_interpreter,
-    sql_interpreter
+    sql_interpreter, plugins
   ).dependsOn(
     client % "test->test",
     kernel % "test->test"
@@ -119,6 +119,7 @@ trait SubProjects extends Settings with TestTasks {
     base = file("pyspark-interpreter"),
     settings = fullSettings
   )) dependsOn(
+    plugins % "test->test;compile->compile",
     protocol % "test->test;compile->compile",
     kernel_api % "test->test;compile->compile"
   )
@@ -131,6 +132,7 @@ trait SubProjects extends Settings with TestTasks {
     base = file("scala-interpreter"),
     settings = fullSettings
   )) dependsOn(
+    plugins % "test->test;compile->compile",
     protocol % "test->test;compile->compile",
     kernel_api % "test->test;compile->compile"
   )
@@ -143,6 +145,7 @@ trait SubProjects extends Settings with TestTasks {
     base = file("sparkr-interpreter"),
     settings = fullSettings
   )) dependsOn(
+    plugins % "test->test;compile->compile",
     protocol % "test->test;compile->compile",
     kernel_api % "test->test;compile->compile"
   )
@@ -155,6 +158,7 @@ trait SubProjects extends Settings with TestTasks {
     base = file("sql-interpreter"),
     settings = fullSettings
   )) dependsOn(
+    plugins % "test->test;compile->compile",
     protocol % "test->test;compile->compile",
     kernel_api % "test->test;compile->compile"
   )
@@ -167,7 +171,10 @@ trait SubProjects extends Settings with TestTasks {
     id = "toree-kernel-api",
     base = file("kernel-api"),
     settings = fullSettings
-  )) dependsOn(macros % "test->test;compile->compile")
+  )) dependsOn(
+    plugins % "test->test;compile->compile",
+    macros % "test->test;compile->compile"
+  )
 
   /**
    * Required by the sbt-buildinfo plugin. Defines the following:
@@ -212,6 +219,17 @@ trait SubProjects extends Settings with TestTasks {
     base = file("protocol"),
     settings = fullSettings ++ buildInfoSettings ++ buildSettings
   )) dependsOn(macros % "test->test;compile->compile")
+
+  /**
+   * Project representing base plugin system for the Toree infrastructure.
+   */
+  lazy val plugins = addTestTasksToProject(Project(
+    id = "toree-plugins",
+    base = file("plugins"),
+    settings = fullSettings
+  )) dependsOn(
+    macros % "test->test;compile->compile"
+  )
 
   /**
    * Project representing macros in Scala that must be compiled separately from

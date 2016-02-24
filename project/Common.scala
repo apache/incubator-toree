@@ -102,7 +102,8 @@ object Common {
     ),
 
     // Java-based options for compilation (all tasks)
-    javacOptions in Compile ++= Seq(""),
+    // NOTE: Providing a blank flag causes failures, only uncomment with options
+    //javacOptions in Compile ++= Seq(""),
 
     // Java-based options for just the compile task
     javacOptions in (Compile, compile) ++= Seq(
