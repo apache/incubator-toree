@@ -15,7 +15,7 @@
 # limitations under the License
 #
 
-.PHONY: help clean clean-dist build dev test test-travis release pip-release bin-release
+.PHONY: help clean clean-dist build dev test test-travis release pip-release bin-release dev-binder .binder-image
 
 VERSION?=0.1.0.dev5
 COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
@@ -29,6 +29,7 @@ endif
 APACHE_SPARK_VERSION?=1.5.1
 IMAGE?=jupyter/pyspark-notebook:2988869079e6
 EXAMPLE_IMAGE?=apache/toree-examples
+BINDER_IMAGE?=apache/toree-binder
 DOCKER_WORKDIR?=/srv/toree
 DOCKER_ARGS?=
 define DOCKER
@@ -80,6 +81,12 @@ clean: clean-dist
 	@docker commit examples_image $(EXAMPLE_IMAGE)
 	@-docker rm -f examples_image
 	touch $@
+
+.binder-image:
+	@docker build --rm -t $(BINDER_IMAGE) .
+
+dev-binder: .binder-image
+	docker run --rm -it -p 8888:8888  -v `pwd`:/home/main/notebooks --workdir /home/main/notebooks $(BINDER_IMAGE) /home/main/start-notebook.sh --ip=0.0.0.0
 
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
