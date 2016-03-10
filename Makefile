@@ -116,6 +116,9 @@ test: VM_WORKDIR=/src/toree-kernel
 test:
 	$(call RUN,$(ENV_OPTS) sbt compile test)
 
+sbt-%:
+	$(call RUN,$(ENV_OPTS) sbt $(subst sbt-,,$@) )
+
 dist: VERSION_FILE=dist/toree/VERSION
 dist: kernel/target/scala-2.10/$(ASSEMBLY_JAR) ${shell find ./etc/bin/*}
 	@mkdir -p dist/toree/bin dist/toree/lib
