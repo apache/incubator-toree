@@ -23,12 +23,3 @@ libraryDependencies +=
 
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 
-//
-// CUSTOM TASKS
-//
-
-lazy val kill = taskKey[Unit]("Executing the shell script.")
-
-kill := {
-  "sh scripts/terminate_spark_kernels.sh".!
-}
