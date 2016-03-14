@@ -35,7 +35,7 @@ object Build extends Build with Settings with SubProjects with TestTasks {
    */
   lazy val root = addTestTasksToProject(
     Project(
-      id = "root",
+      id = "toree-all",
       base = file("."),
       settings = fullSettings
     ).settings(unidocSettings: _*)
@@ -49,9 +49,19 @@ object Build extends Build with Settings with SubProjects with TestTasks {
      .settings(
         scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand",
 
-        // Do not publish the root project (it just serves as an aggregate)
-        publishArtifact := false,
-        publishLocal := {}
+        pomExtra :=
+         <parent>
+           <groupId>org.apache</groupId>
+           <artifactId>apache</artifactId>
+           <version>10</version>
+         </parent>
+           <licenses>
+             <license>
+               <name>Apache 2</name>
+               <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+               <distribution>repo</distribution>
+             </license>
+           </licenses>
       )
   ).aggregate(
     client, kernel, kernel_api, communication, protocol, macros,

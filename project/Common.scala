@@ -26,13 +26,6 @@ object Common {
   //  Parameters for publishing to artifact repositories
   val versionNumber             = Properties.envOrElse("VERSION", "0.0.0-dev")
   val snapshot                  = Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
-  val repoPort                  = Properties.envOrElse("REPO_PORT","")
-  val repoHost                  = Properties.envOrElse("REPO_HOST","")
-  val repoUsername              = Properties.envOrElse("REPO_USERNAME","")
-  val repoPassword              = Properties.envOrElse("REPO_PASSWORD","")
-  val repoEndpoint              = Properties.envOrElse("REPO_ENDPOINT", if(snapshot) "/nexus/content/repositories/snapshots/" else "/nexus/content/repositories/releases/")
-  val repoUrl                   = Properties.envOrElse("REPO_URL", s"http://${repoHost}:${repoPort}${repoEndpoint}")
-
 
   private val buildOrganization = "org.apache.toree"
   private val buildVersion      =
@@ -89,6 +82,19 @@ object Common {
     libraryDependencies ++= buildLibraryDependencies,
     isSnapshot := snapshot,
     resolvers ++= buildResolvers,
+
+    pomExtra :=
+      <url>http://toree.incubator.apache.org/</url>
+      <scm>
+        <connection>scm:git:git@github.com:apache/incubator-toree.git</connection>
+        <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/incubator-toree.git</developerConnection>
+        <url>scm:git:git@github.com:apache/incubator-toree.git</url>
+        <tag>HEAD</tag>
+      </scm>,
+
+    mappings in packageBin in Compile += file("LICENSE") -> "LICENSE",
+    mappings in packageBin in Compile += file("NOTICE") -> "NOTICE",
+
     coursierVerbosity := {
       val level = Try(Integer.valueOf(Properties.envOrElse(
         "TOREE_RESOLUTION_VERBOSITY", "1")
@@ -152,9 +158,9 @@ object Common {
     unmanagedResourceDirectories in Test +=
       (baseDirectory in Build.root).value / "resources/test",
 
-    publishTo := Some("Spark Kernel Nexus Repo" at repoUrl),
-
-    credentials += Credentials("Sonatype Nexus Repository Manager", repoHost, repoUsername, repoPassword),
+    // Publish Settings
+    publishTo := Some("Apache Maven Repo" at "https://repository.apache.org/service/local/staging/deploy/maven2"),
+    credentials += Credentials(Path.userHome / ".m2" / ".credentials"),
 
     // Add rebuild ivy xml to the following tasks
     compile <<= (compile in Compile) dependsOn (rebuildIvyXml dependsOn deliverLocal)
