@@ -1,0 +1,20 @@
+{
+  "language_info": {
+    "name": "scala"
+  },
+  "display_name": "Toree",
+  "env": {
+    "PYTHONPATH": "/usr/local/spark/python:/usr/local/spark/python/lib/py4j-0.8.2.1-src.zip",
+    "SPARK_HOME": "/usr/local/spark",
+    "CAPTURE_STANDARD_ERR": "true",
+    "MAX_INTERPRETER_THREADS": "16",
+    "CAPTURE_STANDARD_OUT": "true",
+    "SEND_EMPTY_OUTPUT": "false"
+  },
+  "argv": [
+    "/usr/local/share/jupyter/kernels/toree/bin/run.sh",
+    "--profile",
+    "{connection_file}"
+  ],
+  "codemirror_mode": "scala"
+}

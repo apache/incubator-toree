@@ -96,9 +96,16 @@ kernel/target/scala-2.10/$(ASSEMBLY_JAR): project/build.properties project/Build
 
 build: kernel/target/scala-2.10/$(ASSEMBLY_JAR)
 
-dev: VM_WORKDIR=~
-dev: dist
-	$(call RUN,ipython notebook --ip=* --no-browser)
+dev: DOCKER_WORKDIR=/srv/toree/etc/examples/notebooks
+dev: SUSPEND=n
+dev: DEBUG_PORT=5005
+dev: .example-image dist
+	@$(DOCKER) \
+		-e SPARK_OPTS="--driver-java-options=-agentlib:jdwp=transport=dt_socket,server=y,suspend=$(SUSPEND),address=5005" \
+		-v `pwd`/etc/kernel.json:/usr/local/share/jupyter/kernels/toree/kernel.json \
+		-p $(DEBUG_PORT):5005 -p 8888:8888 \
+		--user=root  $(EXAMPLE_IMAGE) \
+		bash -c "cp -r /srv/toree/dist/toree/* /usr/local/share/jupyter/kernels/toree/. && jupyter notebook --ip=* --no-browser"
 
 test: VM_WORKDIR=/src/toree-kernel
 test:
