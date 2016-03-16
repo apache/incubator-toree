@@ -25,12 +25,11 @@ import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.magic.dependencies.{IncludeConfig, IncludeOutputStream, IncludeInterpreter, IncludeSparkContext}
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.SparkContext
+import org.apache.toree.plugins.PluginManager
 import org.scalatest.{Matchers, FunSpec}
 import org.scalatest.mock.MockitoSugar
-
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-import org.apache.toree.magic.MagicLoader
 
 class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
   describe("AddJar"){
@@ -40,7 +39,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val mockSparkContext = mock[SparkContext]
         val mockInterpreter = mock[Interpreter]
         val mockOutputStream = mock[OutputStream]
-        val mockMagicLoader = mock[MagicLoader]
+        val mockPluginManager = mock[PluginManager]
         val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
@@ -52,7 +51,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
-          override lazy val magicLoader: MagicLoader = mockMagicLoader
+          override lazy val pluginManager: PluginManager = mockPluginManager
           override val config = testConfig
           override def downloadFile(fileUrl: URL, destinationUrl: URL): URL =
             new URL("file://someFile") // Cannot mock URL
@@ -62,7 +61,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
 
         verify(mockSparkContext).addJar(anyString())
         verify(mockInterpreter).addJars(any[URL])
-        verify(mockMagicLoader, times(0)).addJar(any())
+        verify(mockPluginManager, times(0)).loadPlugins(any())
       }
 
       it("should raise exception if jar file does not end in .jar or .zip") {
@@ -191,7 +190,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val mockSparkContext = mock[SparkContext]
         val mockInterpreter = mock[Interpreter]
         val mockOutputStream = mock[OutputStream]
-        val mockMagicLoader = mock[MagicLoader]
+        val mockPluginManager = mock[PluginManager]
         val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
@@ -203,7 +202,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
-          override lazy val magicLoader: MagicLoader = mockMagicLoader
+          override lazy val pluginManager: PluginManager = mockPluginManager
           override val config = testConfig
           override def downloadFile(fileUrl: URL, destinationUrl: URL): URL =
             new URL("file://someFile") // Cannot mock URL
@@ -212,7 +211,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         addJarMagic.execute(
           """--magic http://www.example.com/someJar.jar""")
 
-        verify(mockMagicLoader).addJar(any())
+        verify(mockPluginManager).loadPlugins(any())
         verify(mockSparkContext, times(0)).addJar(anyString())
         verify(mockInterpreter, times(0)).addJars(any[URL])
       }

@@ -28,7 +28,6 @@ import org.scalatest._
 import play.api.libs.json.Json
 import scala.concurrent.duration._
 import test.utils.NoArgSparkKernelTestKit
-import org.apache.toree.boot.layer.SparkKernelDeployer
 
 
 /**
@@ -44,8 +43,7 @@ class TruncationTests
   with FunSpecLike with Matchers
 {
   private val MaxFishTime =   30.seconds
-
-  import SparkKernelDeployer._
+  import test.utils.SparkKernelDeployer._
 
   private def waitForExecuteReply(
     shell: TestProbe, headerId: v5.UUID, maxTime: Duration = MaxFishTime
@@ -194,10 +192,7 @@ class TruncationTests
     str
   }
 
-
-
-
-  describe("Test Truncation") {
+  describe( "Test Truncation") {
     it("should show or not show types based on %showtypes") {
       withNoArgSparkKernel { (actorLoader, heartbeat, shell, ioPub) =>
 
@@ -216,7 +211,6 @@ class TruncationTests
     }
     it("should truncate or not truncate based on %truncate") {
       withNoArgSparkKernel { (actorLoader, heartbeat, shell, ioPub) =>
-
         executeCode("for ( a <-  1 to 300 ) yield a",actorLoader,ioPub) should endWith("...")
 
         executeCode(
@@ -224,18 +218,11 @@ class TruncationTests
             |for ( a <-  1 to 300 ) yield a
           """.stripMargin,actorLoader,ioPub) should endWith("300)")
 
-
-
         executeCode(
           """%Truncation on
             |for ( a <-  1 to 300 ) yield a
           """.stripMargin,actorLoader,ioPub) should endWith("...")
-
-
-
       }
     }
-    }
-
-
   }
+}

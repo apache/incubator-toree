@@ -17,14 +17,18 @@
 
 package org.apache.toree.magic
 
+import org.apache.toree.plugins.Plugin
+import org.apache.toree.plugins.annotations.{Event, DepName}
+
 /**
-  * Represents the base structure for a magic that is loaded and executed.
-  */
-trait Magic {
-   /**
-    * Execute a magic.
-    * @param code The code
-    * @return The output of the magic
-    */
-   def execute(code: String): Any
- }
+ * Represents the base structure for a magic that is loaded and executed.
+ */
+trait Magic extends Plugin {
+  /**
+   * Execute a magic.
+   *
+   * @param code The code
+   * @return The output of the magic
+   */
+  def execute(code: String): Any
+}

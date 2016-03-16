@@ -36,10 +36,16 @@ object Plugin {
  */
 trait Plugin {
   /** Plugin manager containing the plugin */
-  @Internal private var _pluginManager: PluginManager = null
+  @Internal private var _internalPluginManager: PluginManager = null
 
-  /** Represents the name of the plugin. */
+  /** Represents the fully qualified name of the plugin. */
   final val name: String = getClass.getName
+
+  /**
+   * Represents the simple name of the plugin. In the case of a anonymous class
+   * it will just be the name of the anonymous class.
+   */
+  final val simpleName: String = getClass.getSimpleName
 
   /** Represents the priority of the plugin. */
   final val priority: Long = {
@@ -49,13 +55,19 @@ trait Plugin {
   }
 
   /** Sets the plugin manager pointer for this plugin. */
-  @Internal private[plugins] final def pluginManager_=(_pluginManager: PluginManager) = {
-    require(this._pluginManager == null, "Plugin manager cannot be reassigned!")
-    this._pluginManager = _pluginManager
+  @Internal private[plugins] final def internalPluginManager_=(
+    _pluginManager: PluginManager
+  ) = {
+    require(
+      this._internalPluginManager == null,
+      "Plugin manager cannot be reassigned!"
+    )
+    this._internalPluginManager = _pluginManager
   }
 
   /** Returns the plugin manager pointer for this plugin. */
-  @Internal private[plugins] final def pluginManager = _pluginManager
+  @Internal private[plugins] final def internalPluginManager =
+    _internalPluginManager
 
   /** Represents all @init methods in the plugin. */
   @Internal private[plugins] final lazy val initMethods: Seq[PluginMethod] = {
@@ -109,7 +121,7 @@ trait Plugin {
    * @tparam T The dependency's type
    */
   protected def register[T <: AnyRef](name: String, value: T)(implicit typeTag: TypeTag[T]): Unit = {
-    assert(_pluginManager != null, "Internal plugin manager reference invalid!")
-    _pluginManager.dependencyManager.add(name, value)
+    assert(_internalPluginManager != null, "Internal plugin manager reference invalid!")
+    _internalPluginManager.dependencyManager.add(name, value)
   }
 }

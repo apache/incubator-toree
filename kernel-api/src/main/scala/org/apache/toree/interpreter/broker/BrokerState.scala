@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
 import org.apache.toree.interpreter.broker.BrokerTypes._
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{Future, promise}
+import scala.concurrent.{Promise, Future, promise}
 
 /**
  * Represents the state structure of broker.
@@ -57,7 +57,7 @@ class BrokerState(private val maxQueuedCode: Int) {
 
     // Generate our promise that will be fulfilled when the code is executed
     // and the results are sent back
-    val codeExecutionPromise = promise[CodeResults]()
+    val codeExecutionPromise = Promise[CodeResults]()
 
     // Build the code representation to send to Broker
     val uniqueId = java.util.UUID.randomUUID().toString

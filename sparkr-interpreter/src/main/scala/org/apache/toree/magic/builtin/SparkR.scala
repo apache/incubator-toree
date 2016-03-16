@@ -21,11 +21,14 @@ import org.apache.toree.kernel.interpreter.sparkr.{SparkRInterpreter, SparkRExce
 import org.apache.toree.kernel.protocol.v5.MIMEType
 import org.apache.toree.magic.{CellMagicOutput, CellMagic}
 import org.apache.toree.magic.dependencies.IncludeKernel
+import org.apache.toree.plugins.annotations.Event
 
 /**
  * Represents the magic interface to use the SparkR interpreter.
  */
 class SparkR extends CellMagic with IncludeKernel {
+
+  @Event(name = "sparkr")
   override def execute(code: String): CellMagicOutput = {
     val sparkR = kernel.interpreter("SparkR")
 

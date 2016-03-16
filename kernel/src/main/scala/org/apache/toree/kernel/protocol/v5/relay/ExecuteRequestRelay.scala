@@ -27,7 +27,7 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.magic.{PostProcessor, MagicParser}
-import org.apache.toree.magic.MagicLoader
+import org.apache.toree.plugins.PluginManager
 import org.apache.toree.utils.LogLike
 
 import scala.concurrent.Future
@@ -35,7 +35,7 @@ import scala.concurrent.duration._
 
 case class ExecuteRequestRelay(
   actorLoader: ActorLoader,
-  magicLoader: MagicLoader,
+  pluginManager: PluginManager,
   magicParser: MagicParser,
   postProcessor: PostProcessor
 )
@@ -47,6 +47,7 @@ case class ExecuteRequestRelay(
   /**
    * Takes an ExecuteFailure and (ExecuteReply, ExecuteResult) with contents
    * dictated by the type of failure (either an error or an abort).
+ *
    * @param failure the failure
    * @return (ExecuteReply, ExecuteResult)
    */
@@ -68,6 +69,7 @@ case class ExecuteRequestRelay(
 
   /**
    * Packages the response into an ExecuteReply,ExecuteResult tuple.
+ *
    * @param future The future containing either the output or failure
    * @return The tuple representing the proper response
    */
@@ -96,7 +98,11 @@ case class ExecuteRequestRelay(
       val oldSender = sender()
 
       // Sets the outputStream for this particular ExecuteRequest
-      magicLoader.dependencyMap.setOutputStream(outputStream)
+      import org.apache.toree.plugins.Implicits._
+      pluginManager.fireEventFirstResult(
+        "newOutputStream",
+        "outputStream" -> outputStream
+      )
 
       // Parse the code for magics before sending it to the interpreter and
       // pipe the response to sender

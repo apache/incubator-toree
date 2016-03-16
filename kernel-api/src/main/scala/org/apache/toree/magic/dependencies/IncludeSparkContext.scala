@@ -17,15 +17,18 @@
 
 package org.apache.toree.magic.dependencies
 
-import org.apache.toree.magic.Magic
 import org.apache.spark.SparkContext
+import org.apache.toree.magic.Magic
+import org.apache.toree.plugins.Plugin
+import org.apache.toree.plugins.annotations.{Event, Init}
 
-trait IncludeSparkContext {
+trait IncludeSparkContext extends Plugin {
   this: Magic =>
 
-  //val sparkContext: SparkContext
+  @Event(name = "sparkReady") protected def sparkReady(
+    newSparkContext: SparkContext
+  ) = _sparkContext = newSparkContext
+
   private var _sparkContext: SparkContext = _
   def sparkContext: SparkContext = _sparkContext
-  def sparkContext_=(newSparkContext: SparkContext) =
-    _sparkContext = newSparkContext
 }

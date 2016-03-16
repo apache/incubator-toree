@@ -72,6 +72,7 @@ clean-dist:
 clean: VM_WORKDIR=/src/toree-kernel
 clean: clean-dist
 	$(call RUN,$(ENV_OPTS) sbt clean)
+	rm -r `find . -name target -type d`
 
 .example-image: EXTRA_CMD?=pip install jupyter_declarativewidgets==0.4.0; jupyter declarativewidgets install --user; jupyter declarativewidgets activate; pip install jupyter_dashboards; jupyter dashboards install --user; jupyter dashboards activate; apt-get update; apt-get install --yes curl; curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -; apt-get install --yes nodejs; npm install -g bower;
 .example-image:
@@ -92,7 +93,7 @@ kernel/target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
-	$(call RUN,$(ENV_OPTS) sbt toree-kernel/assembly)
+	$(call RUN,$(ENV_OPTS) sbt -v toree-kernel/assembly)
 
 build: kernel/target/scala-2.10/$(ASSEMBLY_JAR)
 

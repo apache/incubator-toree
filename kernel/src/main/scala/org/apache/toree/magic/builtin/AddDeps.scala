@@ -23,15 +23,15 @@ import java.net.URL
 import org.apache.toree.magic._
 import org.apache.toree.magic.dependencies._
 import org.apache.toree.utils.ArgumentParsingSupport
-
 import scala.util.Try
+import org.apache.toree.plugins.annotations.Event
 
 class AddDeps extends LineMagic with IncludeInterpreter
   with IncludeOutputStream with IncludeSparkContext with ArgumentParsingSupport
   with IncludeDependencyDownloader with IncludeKernel
 {
 
-  private lazy val printStream = new PrintStream(outputStream)
+  private def printStream = new PrintStream(outputStream)
 
   private val _transitive = parser.accepts(
     "transitive", "Retrieve dependencies recursively"
@@ -59,6 +59,7 @@ class AddDeps extends LineMagic with IncludeInterpreter
    * @param code The single line of code
    * @return The output of the magic
    */
+  @Event(name = "adddeps")
   override def execute(code: String): Unit = {
     val nonOptionArgs = parseArgs(code)
     dependencyDownloader.setPrintStream(printStream)

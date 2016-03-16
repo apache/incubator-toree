@@ -24,13 +24,15 @@ import org.apache.toree.magic._
 import org.apache.toree.magic.dependencies.IncludeOutputStream
 import org.apache.toree.utils.ArgumentParsingSupport
 import com.google.common.base.Strings
+import org.apache.toree.plugins.annotations.Event
 
 class Html extends CellMagic with ArgumentParsingSupport
   with IncludeOutputStream {
 
   // Lazy because the outputStream is not provided at construction
-  private lazy val printStream = new PrintStream(outputStream)
-
+  private def printStream = new PrintStream(outputStream)
+  
+  @Event(name = "html")
   override def execute(code: String): CellMagicOutput = {
     def printHelpAndReturn: CellMagicOutput = {
       printHelp(printStream, """%%Html <string_code>""")

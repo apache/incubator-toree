@@ -26,6 +26,7 @@ import org.apache.toree.magic.builtin.AddJar._
 import org.apache.toree.magic.dependencies._
 import org.apache.toree.utils.{ArgumentParsingSupport, DownloadSupport, LogLike}
 import com.typesafe.config.Config
+import org.apache.toree.plugins.annotations.Event
 
 object AddJar {
 
@@ -47,7 +48,7 @@ object AddJar {
 class AddJar
   extends LineMagic with IncludeInterpreter with IncludeSparkContext
   with IncludeOutputStream with DownloadSupport with ArgumentParsingSupport
-  with IncludeKernel with IncludeMagicLoader with IncludeConfig with LogLike
+  with IncludeKernel with IncludePluginManager with IncludeConfig with LogLike
 {
   // Option to mark re-downloading of jars
   private val _force =
@@ -58,7 +59,7 @@ class AddJar
     parser.accepts("magic", "loads jar as a magic extension")
 
   // Lazy because the outputStream is not provided at construction
-  private lazy val printStream = new PrintStream(outputStream)
+  private def printStream = new PrintStream(outputStream)
 
   /**
    * Retrieves file name from URL.
@@ -82,6 +83,7 @@ class AddJar
    *
    * @param code The line containing the location of the jar
    */
+  @Event(name = "addjar")
   override def execute(code: String): Unit = {
     val nonOptionArgs = parseArgs(code.trim)
 
@@ -103,12 +105,14 @@ class AddJar
 
     // Ensure the URL actually contains a jar or zip file
     if (!jarName.endsWith(".jar") && !jarName.endsWith(".zip")) {
-        throw new IllegalArgumentException(s"The jar file $jarName must end in .jar or .zip.")
+        throw new IllegalArgumentException(
+          s"The jar file $jarName must end in .jar or .zip."
+        )
     }
 
     val downloadLocation = getJarDir(config) + "/" + jarName
 
-    logger.debug( "Downloading jar to %s".format(downloadLocation) )
+    logger.debug("Downloading jar to %s".format(downloadLocation))
 
     val fileDownloadLocation = new File(downloadLocation)
 
@@ -128,18 +132,12 @@ class AddJar
       printStream.println(s"Using cached version of $jarName")
     }
 
-
-    if (_magic)
-    {
-
-      magicLoader.addJar(fileDownloadLocation.toURI.toURL)
-
-    }
-    else
-    {
+    if (_magic) {
+      val plugins = pluginManager.loadPlugins(fileDownloadLocation)
+      pluginManager.initializePlugins(plugins)
+    } else {
       interpreter.addJars(fileDownloadLocation.toURI.toURL)
       sparkContext.addJar(fileDownloadLocation.getCanonicalPath)
-
     }
   }
 }

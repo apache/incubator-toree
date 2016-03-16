@@ -26,9 +26,9 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.magic.{MagicParser, PostProcessor}
-import org.apache.toree.magic.MagicLoader
-import org.apache.toree.magic.dependencies.DependencyMap
 import com.typesafe.config.ConfigFactory
+import org.apache.toree.plugins.PluginManager
+import org.apache.toree.plugins.dependencies.DependencyManager
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
@@ -66,10 +66,10 @@ class ExecuteRequestRelaySpec extends TestKit(
         val executeRequest =
           ExecuteRequest("%myMagic", false, true, UserExpressions(), true)
 
-        val mockMagicLoader = mock[MagicLoader]
         val mockPostProcessor = mock[PostProcessor]
-        val mockDependencyMap = mock[DependencyMap]
-        doReturn(mockDependencyMap).when(mockMagicLoader).dependencyMap
+        val mockPluginManager = mock[PluginManager]
+        val mockDependencyManager = mock[DependencyManager]
+        doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
 
         val mockMagicParser = mock[MagicParser]
         doReturn(Left(executeRequest.code))
@@ -77,7 +77,7 @@ class ExecuteRequestRelaySpec extends TestKit(
 
         val executeRequestRelay = system.actorOf(Props(
           classOf[ExecuteRequestRelay], mockActorLoader,
-          mockMagicLoader, mockMagicParser, mockPostProcessor
+          mockPluginManager, mockMagicParser, mockPostProcessor
         ))
 
         // Send the message to the ExecuteRequestRelay
@@ -103,10 +103,10 @@ class ExecuteRequestRelaySpec extends TestKit(
         val executeRequest =
           ExecuteRequest("%myMagic", false, true, UserExpressions(), true)
 
-        val mockMagicLoader = mock[MagicLoader]
         val mockPostProcessor = mock[PostProcessor]
-        val mockDependencyMap = mock[DependencyMap]
-        doReturn(mockDependencyMap).when(mockMagicLoader).dependencyMap
+        val mockPluginManager = mock[PluginManager]
+        val mockDependencyManager = mock[DependencyManager]
+        doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
 
         val mockMagicParser = mock[MagicParser]
         doReturn(Left(executeRequest.code))
@@ -114,7 +114,7 @@ class ExecuteRequestRelaySpec extends TestKit(
 
         val executeRequestRelay = system.actorOf(Props(
           classOf[ExecuteRequestRelay], mockActorLoader,
-          mockMagicLoader, mockMagicParser, mockPostProcessor
+          mockPluginManager, mockMagicParser, mockPostProcessor
         ))
 
         // Send the message to the ExecuteRequestRelay
@@ -144,13 +144,12 @@ class ExecuteRequestRelaySpec extends TestKit(
         val executeRequest =
           ExecuteRequest("notAMagic", false, true, UserExpressions(), true)
 
-        val mockMagicLoader = mock[MagicLoader]
         val mockPostProcessor = mock[PostProcessor]
         doReturn(Data(MIMEType.PlainText -> expected))
           .when(mockPostProcessor).process(expected)
-
-        val mockDependencyMap = mock[DependencyMap]
-        doReturn(mockDependencyMap).when(mockMagicLoader).dependencyMap
+        val mockPluginManager = mock[PluginManager]
+        val mockDependencyManager = mock[DependencyManager]
+        doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
 
         val mockMagicParser = mock[MagicParser]
         doReturn(Left(executeRequest.code))
@@ -158,7 +157,7 @@ class ExecuteRequestRelaySpec extends TestKit(
 
         val executeRequestRelay = system.actorOf(Props(
           classOf[ExecuteRequestRelay], mockActorLoader,
-          mockMagicLoader, mockMagicParser, mockPostProcessor
+          mockPluginManager, mockMagicParser, mockPostProcessor
         ))
 
         // Send the message to the ExecuteRequestRelay

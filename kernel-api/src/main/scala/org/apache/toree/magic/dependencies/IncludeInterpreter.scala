@@ -19,13 +19,15 @@ package org.apache.toree.magic.dependencies
 
 import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.magic.Magic
+import org.apache.toree.plugins.Plugin
+import org.apache.toree.plugins.annotations.Init
 
-trait IncludeInterpreter {
+trait IncludeInterpreter extends Plugin {
   this: Magic =>
 
-  //val interpreter: Interpreter
+  @Init protected def init(newInterpreter: Interpreter) =
+    _interpreter = newInterpreter
+
   private var _interpreter: Interpreter = _
   def interpreter: Interpreter = _interpreter
-  def interpreter_=(newInterpreter: Interpreter) =
-    _interpreter = newInterpreter
 }
