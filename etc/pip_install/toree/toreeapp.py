@@ -18,38 +18,25 @@
 import os.path
 import sys
 import json
-from traitlets import Unicode, Dict
+import shutil
+from traitlets import Unicode, Dict, Set
 from jupyter_client.kernelspecapp  import InstallKernelSpec
 from jupyter_core.application import base_aliases
 from traitlets.config.application import Application
 from toree._version import __version__, __commit__
+from jupyter_client.kernelspec import KernelSpec
 
-KERNEL_SPEC= {
-    'display_name': '',
-    'language_info': { 'name': 'scala' },
-    'argv': [
-        '',
-        '--profile',
-        '{connection_file}'
-    ],
-    'codemirror_mode': 'scala',
-    'env': {
-        'SPARK_OPTS': '',
-        'MAX_INTERPRETER_THREADS': '16',
-        'CAPTURE_STANDARD_OUT': 'true',
-        'CAPTURE_STANDARD_ERR': 'true',
-        'SEND_EMPTY_OUTPUT': 'false',
-        'SPARK_HOME': '',
-        'PYTHONPATH': '{0}/python:{0}/python/lib/py4j-0.8.2.1-src.zip'
-    }
+INTERPRETER_LANGUAGES = {
+    'PySpark' : 'python',
+    'SparkR' : 'r',
+    'SQL' : 'sql',
+    'Scala' : 'scala'
 }
 
 PYTHON_PATH = 'PYTHONPATH'
 SPARK_HOME ='SPARK_HOME'
-SPARK_OPTS = 'SPARK_OPTS'
-DISPLAY_NAME='display_name'
-ARGV='argv'
-ENV = 'env'
+TOREE_SPARK_OPTS = '__TOREE_SPARK_OPTS__'
+DEFAULT_INTERPRETER = 'DEFAULT_INTERPRETER'
 
 class ToreeInstall(InstallKernelSpec):
     '''CLI for extension management.'''
@@ -60,50 +47,66 @@ class ToreeInstall(InstallKernelSpec):
     jupyter toree install --spark_home=/spark/home/dir
     jupyter toree install --spark_opts='--master=local[4]'
     jupyter toree install --kernel_name=toree_special
+    jupyter toree install --interpreters=PySpark,SQL
     '''
 
     spark_home = Unicode('/usr/local/spark', config=True,
         help='''Specify where the spark files can be found.'''
     )
     kernel_name = Unicode('Toree', config=True,
-        help='Install the kernel spec with this name and is used as the display name in jupyter'
+        help='Install the kernel spec with this name. This is also used as the base of the display name in jupyter.'
+    )
+    interpreters = Unicode('Scala', config=True,
+        help='A comma seperated list of the interpreters to install. The names of the interpreters are case sensitive.'
+    )
+    spark_opts = Unicode('', config=True,
+        help='''Specify command line arguments to proxy for spark config.'''
     )
     aliases = {
         'kernel_name': 'ToreeInstall.kernel_name',
         'spark_home': 'ToreeInstall.spark_home',
-        'spark_opts': 'ToreeInstall.spark_opts'
+        'spark_opts': 'ToreeInstall.spark_opts',
+        'interpreters' : 'ToreeInstall.interpreters'
     }
-    spark_opts = Unicode('--master=local[2] --driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info', config=True,
-        help='''Specify command line arguments to proxy for spark config.'''
-    )
-
     aliases.update(base_aliases)
+
     def parse_command_line(self, argv):
         super(InstallKernelSpec, self).parse_command_line(argv)
 
-    def create_kernel_json(self, location):
-        KERNEL_SPEC[DISPLAY_NAME] = self.kernel_name
-        KERNEL_SPEC[ENV][SPARK_OPTS] = self.spark_opts
-        KERNEL_SPEC[ENV][SPARK_HOME] = self.spark_home
-        KERNEL_SPEC[ARGV][0] = os.path.join(location, 'bin', 'run.sh')
-        KERNEL_SPEC[ENV][PYTHON_PATH] = KERNEL_SPEC[ENV][PYTHON_PATH].format(self.spark_home)
+    def create_kernel_json(self, location, interpreter):
+        kernel_spec = KernelSpec()
+        interpreter_lang = INTERPRETER_LANGUAGES[interpreter]
+        kernel_spec.display_name = '{} - {}'.format(self.kernel_name, interpreter)
+        kernel_spec.language = interpreter_lang
+        kernel_spec.argv = [os.path.join(location, 'bin', 'run.sh'), '--profile', '{connection_file}']
+        kernel_spec.env = {
+            DEFAULT_INTERPRETER : interpreter,
+            # The SPARK_OPTS values are stored in TOREE_SPARK_OPTS to allow the two values to be merged when kernels
+            # are run. This allows values to be specified during install, but also during runtime.
+            TOREE_SPARK_OPTS : self.spark_opts,
+            SPARK_HOME : self.spark_home,
+            PYTHON_PATH : '{0}/python:{0}/python/lib/py4j-0.8.2.1-src.zip'.format(self.spark_home)
+        }
+
         kernel_json_file = os.path.join(location, 'kernel.json')
+        self.log.debug('Creating kernel json file for {}'.format(interpreter))
         with open(kernel_json_file, 'w+') as f:
-            json.dump(KERNEL_SPEC, f, indent=2)
+            json.dump(kernel_spec.to_dict(), f, indent=2)
 
     def start(self):
-        self.log.info('Installing toree kernel')
-        here = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-        parent_dir = os.path.abspath(os.path.join(here, os.pardir))
-        self.sourcedir = here
-        install_dir = self.kernel_spec_manager.install_kernel_spec(self.sourcedir,
-             kernel_name=self.kernel_name,
-             user=self.user,
-             prefix=self.prefix,
-             replace=self.replace,
-        )
-        self.create_kernel_json(install_dir)
-
+        self.sourcedir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+        for interpreter in self.interpreters.split(','):
+            if interpreter in INTERPRETER_LANGUAGES:
+                self.log.info('Installing toree kernel with interpreter {}'.format(interpreter))
+                install_dir = self.kernel_spec_manager.install_kernel_spec(self.sourcedir,
+                     kernel_name='{}_{}'.format(self.kernel_name, interpreter.lower()).replace(' ', '_'),
+                     user=self.user,
+                     prefix=self.prefix,
+                     replace=self.replace
+                )
+                self.create_kernel_json(install_dir, interpreter)
+            else:
+                self.log.error('Unknown interpreter {0}. Skipping installation of {0} interpreter'.format(interpreter))
 
 class ToreeApp(Application):
     version = __version__

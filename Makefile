@@ -74,7 +74,7 @@ clean: clean-dist
 	$(call RUN,$(ENV_OPTS) sbt clean)
 	rm -r `find . -name target -type d`
 
-.example-image: EXTRA_CMD?=pip install jupyter_declarativewidgets==0.4.0; jupyter declarativewidgets install --user; jupyter declarativewidgets activate; pip install jupyter_dashboards; jupyter dashboards install --user; jupyter dashboards activate; apt-get update; apt-get install --yes curl; curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -; apt-get install --yes nodejs; npm install -g bower;
+.example-image: EXTRA_CMD?=printf "deb http://cran.rstudio.com/bin/linux/debian jessie-cran3/" >> /etc/apt/sources.list; apt-key adv --keyserver keys.gnupg.net --recv-key 381BA480; apt-get update; pip install jupyter_declarativewidgets==0.4.0; jupyter declarativewidgets install --user; jupyter declarativewidgets activate; pip install jupyter_dashboards; jupyter dashboards install --user; jupyter dashboards activate; apt-get update; apt-get install --yes curl; curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -; apt-get install --yes nodejs r-base r-base-dev; npm install -g bower;
 .example-image:
 	@-docker rm -f examples_image
 	@docker run -it --user root --name examples_image \
@@ -145,6 +145,14 @@ release: pip-release bin-release
 		python setup.py register -r $(PYPI_REPO) && \
 		twine upload -r pypi toree-$(VERSION).tar.gz'
 
+define JUPYTER_COMMAND
+pip install toree-$(VERSION).tar.gz
+jupyter toree install --interpreters=PySpark,SQL,Scala,SparkR
+cd /srv/toree/etc/examples/notebooks
+jupyter notebook --ip=* --no-browser
+endef
+
+export JUPYTER_COMMAND
 jupyter: DOCKER_WORKDIR=/srv/toree/dist
 jupyter: .example-image pip-release
-	@$(DOCKER) -p 8888:8888 --user=root  $(EXAMPLE_IMAGE) bash -c	'pip install toree-$(VERSION).tar.gz && jupyter toree install && cd /srv/toree/etc/examples/notebooks && jupyter notebook --ip=* --no-browser'
+	@$(DOCKER) -p 8888:8888  --user=root  $(EXAMPLE_IMAGE) bash -c "$$JUPYTER_COMMAND"

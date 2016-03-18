@@ -16,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License
 #
-                                           ``
 PROG_HOME="$(cd "`dirname "$0"`"/..; pwd)"
 
 if [ -z "$SPARK_HOME" ]; then
@@ -31,7 +30,12 @@ KERNEL_ASSEMBLY=`(cd ${PROG_HOME}/lib; ls -1 toree-kernel-assembly-*.jar;)`
 # disable randomized hash for string in Python 3.3+
 export PYTHONHASHSEED=0
 TOREE_ASSEMBLY=${PROG_HOME}/lib/${KERNEL_ASSEMBLY}
-exec "$SPARK_HOME"/bin/spark-submit \
-  ${SPARK_OPTS} \
-  --driver-class-path ${TOREE_ASSEMBLY} \
-  --class org.apache.toree.Main ${TOREE_ASSEMBLY} "$@"
+# The SPARK_OPTS values during installation are stored in __TOREE_SPARK_OPTS__. This allows values to be specified during
+# install, but also during runtime. The runtime options take precedence over the install options.
+if [ "${SPARK_OPTS}" = "" ]
+then
+   SPARK_OPTS=${__TOREE_SPARK_OPTS__}
+fi
+
+SPARK_OPTS="--driver-class-path=\"${TOREE_ASSEMBLY}\" ${SPARK_OPTS}"
+eval exec "${SPARK_HOME}/bin/spark-submit" "${SPARK_OPTS}" --class org.apache.toree.Main "${TOREE_ASSEMBLY}" "$@"
