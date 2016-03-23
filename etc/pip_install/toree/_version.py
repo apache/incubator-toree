@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-# This file is populated when doing a make release. It should be empty by defaut.
+# This file is populated when doing a make release. It should be empty by default.

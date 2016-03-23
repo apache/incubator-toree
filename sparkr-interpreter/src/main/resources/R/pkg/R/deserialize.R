@@ -136,7 +136,7 @@ readDeserializeRows <- function(inputCon) {
   # readDeserializeRows will deserialize a DataOutputStream composed of
   # a list of lists. Since the DOS is one continuous stream and
   # the number of rows varies, we put the readRow function in a while loop
-  # that termintates when the next row is empty.
+  # that terminates when the next row is empty.
   data <- list()
   while(TRUE) {
     row <- readRow(inputCon)

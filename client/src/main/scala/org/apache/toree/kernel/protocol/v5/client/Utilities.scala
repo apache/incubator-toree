@@ -57,7 +57,7 @@ object Utilities extends LogLike {
   implicit def ZMQMessageToKernelMessage(message: ZMQMessage): KernelMessage = {
     val delimiterIndex: Int =
       message.frames.indexOf(ByteString("<IDS|MSG>".getBytes))
-    //  TODO Handle the case where there is no delimeter
+    //  TODO Handle the case where there is no delimiter
     val ids: Seq[String] =
       message.frames.take(delimiterIndex).map(
         (byteString : ByteString) =>  { new String(byteString.toArray) }

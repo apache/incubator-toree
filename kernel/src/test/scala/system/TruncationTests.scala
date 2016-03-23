@@ -214,7 +214,7 @@ class TruncationTests
           """.stripMargin,actorLoader,ioPub) should be ("1")
       }
     }
-    it("should truncate or not turncate based on %truncate") {
+    it("should truncate or not truncate based on %truncate") {
       withNoArgSparkKernel { (actorLoader, heartbeat, shell, ioPub) =>
 
         executeCode("for ( a <-  1 to 300 ) yield a",actorLoader,ioPub) should endWith("...")

@@ -74,7 +74,7 @@ abstract class CommManager(private val commRegistrar: CommRegistrar) {
       commWriter.close()
     }
 
-    // Overriden to link before sending open message
+    // Overridden to link before sending open message
     override def writeOpen(targetName: String, data: MsgData): Unit = {
       linkFunc(this, this.commId, targetName, data)
       commWriter.writeOpen(targetName, data)

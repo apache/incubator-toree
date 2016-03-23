@@ -22,7 +22,7 @@ import scala.reflect.runtime.universe.{Type, TypeTag}
 import scala.util.Try
 
 /**
- * Contains helpers and contants associated with the dependency manager.
+ * Contains helpers and constants associated with the dependency manager.
  */
 object DependencyManager {
   /** Represents an empty dependency manager. */

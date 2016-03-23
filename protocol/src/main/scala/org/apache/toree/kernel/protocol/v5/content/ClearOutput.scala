@@ -29,7 +29,7 @@ case class ClearOutput (
     Json.toJson(this)(ClearOutput.clearOutputWrites).toString
 }
 
-//  Single property fields are not well supported by play, this is a little funky workaround founde here:
+//  Single property fields are not well supported by play, this is a little funky workaround found here:
 //  https://groups.google.com/forum/?fromgroups=#!starred/play-framework/hGrveOkbJ6U
 object ClearOutput extends TypeString {
   implicit val clearOutputReads: Reads[ClearOutput] = (

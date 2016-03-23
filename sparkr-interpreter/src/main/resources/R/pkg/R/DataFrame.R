@@ -612,7 +612,7 @@ setMethod("ncol",
             length(columns(x))
           })
 
-#' Returns the dimentions (number of rows and columns) of a DataFrame
+#' Returns the dimensions (number of rows and columns) of a DataFrame
 #' @param x a SparkSQL DataFrame
 #'
 #' @rdname dim
