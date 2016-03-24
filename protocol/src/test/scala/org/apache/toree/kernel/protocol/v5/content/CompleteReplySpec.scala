@@ -21,9 +21,6 @@ import org.scalatest.{Matchers, FunSpec}
 import play.api.data.validation.ValidationError
 import play.api.libs.json.{JsPath, JsValue, Json}
 
-/**
- * Created by Senkwich on 7/24/14.
- */
 class CompleteReplySpec extends FunSpec with Matchers {
 
 

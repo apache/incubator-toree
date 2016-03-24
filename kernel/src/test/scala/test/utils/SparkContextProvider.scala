@@ -18,9 +18,6 @@ package test.utils
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-/**
- * Created by spark on 2/24/15.
- */
 object SparkContextProvider {
 
 
