@@ -35,7 +35,11 @@ class PostProcessor(interpreter: Interpreter) extends LogLike {
 
   protected[magic] def matchCellMagic(code: String, l: Left[_,_]) =
     l.left.getOrElse(None) match {
-      case cmo: CellMagicOutput => cmo
+      // NOTE: Hack to get around erasure match issue in Scala 2.11
+      case cmo: Map[_, _]
+        if cmo.keys.forall(_.isInstanceOf[String]) &&
+           cmo.values.forall(_.isInstanceOf[String]) =>
+        cmo.asInstanceOf[CellMagicOutput]
       case _ => Data(MIMEType.PlainText -> code)
     }
 

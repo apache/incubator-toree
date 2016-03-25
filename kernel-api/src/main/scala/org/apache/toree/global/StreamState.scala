@@ -35,24 +35,14 @@ object StreamState {
   private def init(in: InputStream, out: OutputStream, err: OutputStream) =
     synchronized {
       System.setIn(in)
-      Console.setIn(in)
-
       System.setOut(new PrintStream(out))
-      Console.setOut(out)
-
       System.setErr(new PrintStream(err))
-      Console.setErr(err)
     }
 
   private def reset(): Unit = synchronized {
     System.setIn(_baseInputStream)
-    Console.setIn(_baseInputStream)
-
     System.setOut(_baseOutputStream)
-    Console.setOut(_baseOutputStream)
-
     System.setErr(_baseErrorStream)
-    Console.setErr(_baseErrorStream)
   }
 
   /**
@@ -78,7 +68,13 @@ object StreamState {
   def withStreams[T](thunk: => T): T = {
     init(_inputStream, _outputStream, _errorStream)
 
-    val returnValue = thunk
+    val returnValue = Console.withIn(_inputStream) {
+      Console.withOut(_outputStream) {
+        Console.withErr(_errorStream) {
+          thunk
+        }
+      }
+    }
 
     reset()
 

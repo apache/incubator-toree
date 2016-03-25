@@ -34,6 +34,7 @@ import scala.concurrent.duration._
 import scala.concurrent.Await
 
 object StdinClient {
+  case class ResponseFunctionMessage(responseFunction: ResponseFunction)
   type ResponseFunction = (String, Boolean) => String
   val EmptyResponseFunction: ResponseFunction = (_, _) => ""
 }
@@ -60,9 +61,9 @@ class StdinClient(
   private var responseFunc: ResponseFunction = EmptyResponseFunction
 
   override def receive: Receive = {
-    case responseFunc: ResponseFunction =>
+    case responseFunctionMessage: ResponseFunctionMessage =>
       logger.debug("Updating response function")
-      this.responseFunc = responseFunc
+      this.responseFunc = responseFunctionMessage.responseFunction
 
     case message: ZMQMessage =>
       logger.debug("Received stdin kernel message")

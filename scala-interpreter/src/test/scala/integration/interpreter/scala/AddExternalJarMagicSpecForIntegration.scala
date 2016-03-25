@@ -22,8 +22,8 @@ import java.io.{ByteArrayOutputStream, OutputStream}
 import org.apache.toree.global.StreamState
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.toree.kernel.interpreter.scala.{ScalaInterpreter, StandardSettingsProducer, StandardSparkIMainProducer, StandardTaskManagerProducer}
-import org.apache.toree.utils.{TaskManager, MultiOutputStream}
+import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
+import org.apache.toree.utils.{MultiOutputStream, TaskManager}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 

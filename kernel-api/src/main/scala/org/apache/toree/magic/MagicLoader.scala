@@ -22,14 +22,13 @@ import java.net.{URL, URLClassLoader}
 import com.google.common.reflect.ClassPath
 import org.apache.toree.magic.dependencies.DependencyMap
 
-import scala.reflect.runtime.{universe => runtimeUniverse}
 import scala.collection.JavaConversions._
 
 class MagicLoader(
   var dependencyMap: DependencyMap = new DependencyMap(),
   urls: Array[URL] = Array(),
   parentLoader: ClassLoader = null
-) extends URLClassLoader(urls, parentLoader) {
+) extends URLClassLoader(urls, parentLoader) with MagicCreator {
   private val magicPackage = "org.apache.toree.magic.builtin"
 
   /**
@@ -107,32 +106,4 @@ class MagicLoader(
   }
 
   def addJar(jar: URL) = addURL(jar)
-  /**
-   * Creates a instance of the specified magic with dependencies added.
-   * @param name name of magic class
-   * @return instance of the Magic corresponding to the given name
-   */
-  protected[magic] def createMagicInstance(name: String): Any = {
-    val magicClass = loadClass(name) // Checks parent loadClass first
-
-    val runtimeMirror = runtimeUniverse.runtimeMirror(this)
-    val classSymbol = runtimeMirror.staticClass(magicClass.getCanonicalName)
-    val classMirror = runtimeMirror.reflectClass(classSymbol)
-    val selfType = classSymbol.selfType
-
-    val classConstructorSymbol =
-      selfType.declaration(runtimeUniverse.nme.CONSTRUCTOR).asMethod
-    val classConstructorMethod =
-      classMirror.reflectConstructor(classConstructorSymbol)
-
-    val magicInstance = classConstructorMethod()
-
-
-    // Add all of our dependencies to the new instance
-    dependencyMap.internalMap.filter(selfType <:< _._1).values.foreach(
-      _(magicInstance.asInstanceOf[Magic])
-    )
-
-    magicInstance
-  }
 }

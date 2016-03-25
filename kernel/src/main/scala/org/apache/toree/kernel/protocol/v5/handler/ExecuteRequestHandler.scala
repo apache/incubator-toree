@@ -119,7 +119,7 @@ class ExecuteRequestHandler(
         Option("Error parsing fields"),
         Option(errs)
       )
-      future { relayErrorMessages(relayActor, replyError, skeletonBuilder) }
+      Future { relayErrorMessages(relayActor, replyError, skeletonBuilder) }
     }
 
     Utilities.parseAndHandle(

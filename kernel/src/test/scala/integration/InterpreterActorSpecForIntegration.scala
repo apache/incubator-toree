@@ -21,23 +21,21 @@ import java.io.{ByteArrayOutputStream, OutputStream}
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
+import com.typesafe.config.ConfigFactory
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.toree.kernel.interpreter.scala.{StandardTaskManagerProducer, StandardSparkIMainProducer, StandardSettingsProducer, ScalaInterpreter}
+import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.interpreter.InterpreterActor
 import org.apache.toree.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
-import org.apache.toree.utils.{TaskManager, MultiOutputStream}
-import com.typesafe.config.ConfigFactory
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.toree.utils.{MultiOutputStream, TaskManager}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
-import org.slf4j.Logger
 import test.utils.UncaughtExceptionSuppression
 
 import scala.concurrent.duration._
-import test.utils.SparkContextProvider
 
 object InterpreterActorSpecForIntegration {
   val config = """

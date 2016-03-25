@@ -38,8 +38,12 @@ object Common {
   private val buildVersion      =
     if (snapshot) s"$versionNumber-SNAPSHOT"
     else versionNumber
-  private val buildScalaVersion = "2.10.4"
 
+  // Default version when NOT cross-compiling
+  private val buildScalaVersion = "2.10.4"
+  private val buildCrossScalaVersions = Seq(
+    buildScalaVersion, "2.11.7"
+  )
 
   // Global dependencies provided to all projects
   private var buildLibraryDependencies = Seq(
@@ -86,6 +90,7 @@ object Common {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
+    crossScalaVersions := buildCrossScalaVersions,
     libraryDependencies ++= buildLibraryDependencies,
     isSnapshot := snapshot,
     resolvers ++= buildResolvers,
@@ -112,11 +117,17 @@ object Common {
     // Scala-based options for compilation
     scalacOptions ++= Seq(
       "-deprecation", "-unchecked", "-feature",
-      //"-Xlint", // Scala 2.11.x only
       "-Xfatal-warnings",
-      "-Ywarn-all",
       "-language:reflectiveCalls"
-    ),
+    ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, scalaMajor)) if scalaMajor == 10 => Seq(
+        "-Ywarn-all"
+      )
+      case Some((2, scalaMajor)) if scalaMajor == 11 => Seq(
+        "-Xlint"
+      )
+      case _ => Nil
+    }),
 
     // Java-based options for compilation (all tasks)
     // NOTE: Providing a blank flag causes failures, only uncomment with options
