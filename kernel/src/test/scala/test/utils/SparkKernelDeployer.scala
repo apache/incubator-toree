@@ -15,27 +15,19 @@
  *  limitations under the License
  */
 
-package org.apache.toree.boot.layer
+package test.utils
 
-import java.io.OutputStream
-
-import akka.actor.{Actor, Props, ActorRef, ActorSystem}
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.testkit.TestProbe
+import com.typesafe.config.Config
+import org.apache.toree.boot.layer.{StandardBareInitialization, StandardComponentInitialization, StandardHandlerInitialization, StandardHookInitialization}
 import org.apache.toree.boot.{CommandLineOptions, KernelBootstrap}
-import org.apache.toree.kernel.api.KernelLike
-import org.apache.toree.kernel.interpreter.scala.{StandardTaskManagerProducer, StandardSparkIMainProducer, StandardSettingsProducer, ScalaInterpreter}
-import org.apache.toree.kernel.protocol.v5.{KMBuilder, SocketType}
+import org.apache.toree.kernel.protocol.v5.SocketType
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.kernel.socket._
 import org.apache.toree.utils.LogLike
-import com.typesafe.config.Config
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.Json
-import scala.collection.JavaConverters._
-import test.utils.SparkContextProvider
-import org.apache.spark.{SparkContext, SparkConf}
-import org.apache.toree.kernel.protocol.v5.stream.KernelOutputStream
-import org.apache.toree.global
 
 /**
  * Represents an object that can deploy a singleton Spark Kernel for tests,
@@ -172,7 +164,6 @@ object SparkKernelDeployer extends LogLike with MockitoSugar {
    * KernelBootstrap through an actor loader and socket test probes.
    *
    * @param testCode The test code to execute
-   *
    * @return The results from the test code
    */
   def withNoArgSparkKernel(

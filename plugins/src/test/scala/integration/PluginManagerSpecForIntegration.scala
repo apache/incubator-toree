@@ -26,6 +26,15 @@ class PluginManagerSpecForIntegration extends FunSpec with Matchers
   private val pluginManager = new PluginManager
 
   describe("PluginManager") {
+    it("should be able to load and initialize internal plugins") {
+      val plugins = pluginManager.initialize()
+      plugins.map(_.name) should contain allOf (
+        classOf[NonCircularPlugin].getName,
+        classOf[RegisterPluginA].getName,
+        classOf[ConsumePluginA].getName
+      )
+    }
+
     it("should be able to initialize plugins with dependencies provided by other plugins") {
       val cpa = pluginManager.loadPlugin("", classOf[ConsumePluginA]).get
       val rpa = pluginManager.loadPlugin("", classOf[RegisterPluginA]).get

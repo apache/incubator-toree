@@ -100,7 +100,8 @@ trait SubProjects extends Settings with TestTasks {
     settings = fullSettings ++ Seq(
         test in assembly := {}
       )
-  )) dependsOn(
+  // Enable forking to load correct classes with plugin loader during tests
+  ), doFork = true) dependsOn(
     macros % "test->test;compile->compile",
     protocol % "test->test;compile->compile",
     communication % "test->test;compile->compile",
@@ -227,7 +228,8 @@ trait SubProjects extends Settings with TestTasks {
     id = "toree-plugins",
     base = file("plugins"),
     settings = fullSettings
-  )) dependsOn(
+  // Enable forking to load correct classes with plugin loader during tests
+  ), doFork = true) dependsOn(
     macros % "test->test;compile->compile"
   )
 
@@ -251,7 +253,7 @@ trait SubProjects extends Settings with TestTasks {
  * scratch:test - runs temporary tests
  */
 trait TestTasks {
-  def addTestTasksToProject(project: Project): Project =
+  def addTestTasksToProject(project: Project, doFork: Boolean = false): Project =
     project
       .configs( UnitTest )
       .configs( IntegrationTest )
@@ -266,6 +268,12 @@ trait TestTasks {
         testOptions in IntegrationTest := Seq(Tests.Filter(intFilter)),
         testOptions in SystemTest := Seq(Tests.Filter(sysFilter)),
         testOptions in ScratchTest := Seq(Tests.Filter(scratchFilter))
+      ).settings(
+        fork in Test := doFork,
+        fork in UnitTest := doFork,
+        fork in IntegrationTest := doFork,
+        fork in SystemTest := doFork,
+        fork in ScratchTest := doFork
       )
 
   def scratchFilter(name: String): Boolean =

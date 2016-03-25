@@ -21,16 +21,18 @@ import java.io.PrintStream
 
 import org.apache.toree.magic._
 import org.apache.toree.magic.dependencies.IncludeOutputStream
+import org.apache.toree.plugins.annotations.Event
 
 class LSMagic extends LineMagic with IncludeOutputStream {
 
-  private lazy val printStream = new PrintStream(outputStream)
+  private def printStream = new PrintStream(outputStream)
 
   /**
    * Lists all available magics.
    * @param code The single line of code
    * @return The output of the magic
    */
+  @Event(name = "lsmagic")
   override def execute(code: String): Unit = {
     val classes = new BuiltinLoader().loadClasses().toList
     val lineMagics = magicNames("%", classOf[LineMagic], classes)

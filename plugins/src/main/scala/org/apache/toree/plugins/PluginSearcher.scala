@@ -48,7 +48,7 @@ class PluginSearcher {
    *
    * @return The new class finder
    */
-  protected def newClassFinder(): ClassFinder = ClassFinder()
+  protected def newClassFinder(): ClassFinder = ClassFinder(classpath)
 
   /**
    * Creates a new class finder for the given paths.
@@ -83,24 +83,28 @@ class PluginSearcher {
     classes: Map[String, ClassInfo]
   ): Iterator[ClassInfo] = {
     @tailrec def classMatches(
-      ancestorClassInfo: ClassInfo,
       classesToCheck: Seq[ClassInfo]
     ): Boolean = {
       if (classesToCheck.isEmpty) false
-      else if (classesToCheck.exists(_.name == ancestorClassInfo.name)) true
-      else if (classesToCheck.exists(_.superClassName == ancestorClassInfo.name)) true
-      else if (classesToCheck.exists(_ implements ancestorClassInfo.name)) true
+      else if (classesToCheck.exists(_.name == ancestor)) true
+      else if (classesToCheck.exists(_.superClassName == ancestor)) true
+      else if (classesToCheck.exists(_ implements ancestor)) true
       else {
         val superClasses = classesToCheck.map(_.superClassName).flatMap(classes.get)
         val interfaces = classesToCheck.flatMap(_.interfaces).flatMap(classes.get)
-        classMatches(ancestorClassInfo, superClasses ++ interfaces)
+        classMatches(superClasses ++ interfaces)
       }
     }
 
-    classes.get(ancestor).map(ci => {
-      classes.values.toIterator
-        .filter(_.isConcrete)
-        .filter(c => classMatches(ci, Seq(c)))
-    }).getOrElse(Iterator.empty)
+    classes.values.toIterator
+      .filter(_.isConcrete)
+      .filter(c => classMatches(Seq(c)))
   }
+
+  private def classpath = System.getProperty("java.class.path")
+    .split(File.pathSeparator)
+    .map(s => if (s.trim.length == 0) "." else s)
+    .map(new File(_))
+    .filter(_.getAbsolutePath.toLowerCase.contains("toree"))
+    .toList
 }

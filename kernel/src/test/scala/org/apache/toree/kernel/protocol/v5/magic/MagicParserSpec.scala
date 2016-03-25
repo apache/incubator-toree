@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.magic
 
-import org.apache.toree.magic.MagicLoader
+import org.apache.toree.magic.{CellMagic, Magic, MagicManager}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpec, Matchers}
 import org.mockito.Mockito._
@@ -32,14 +32,14 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
           |foo
           |bean
         """.stripMargin
-      val parser = spy(new MagicParser(mock[MagicLoader]))
+      val parser = spy(new MagicParser(mock[MagicManager]))
       parser.parse(codeBlob)
       verify(parser).parseCell(codeBlob.trim)
     }
 
     it("should call parseLines if the code is not a cell magic") {
       val codeBlob = """%magic foo bean"""
-      val parser = spy(new MagicParser(mock[MagicLoader]))
+      val parser = spy(new MagicParser(mock[MagicManager]))
       parser.parse(codeBlob)
       verify(parser).parseLines(codeBlob.trim)
     }
@@ -47,8 +47,10 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
 
   describe("#parseCell") {
     it("should substitute the magic code for kernel code when magic is valid") {
-      val magicLoader = mock[MagicLoader]
-      doReturn(true).when(magicLoader).hasCellMagic(anyString())
+      val magicManager = mock[MagicManager]
+      val mockMagic = mock[Magic]
+      doReturn(mockMagic).when(magicManager).findMagic(anyString())
+      doReturn(true).when(magicManager).isCellMagic(mockMagic)
 
       val magicName = "magic"
       val args = "foo\nbean\nbar"
@@ -56,7 +58,7 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
         s"""%%$magicName
            |$args
          """.stripMargin
-      val parser = spy(new MagicParser(magicLoader))
+      val parser = spy(new MagicParser(magicManager))
       val result = parser.parseCell(codeBlob)
 
       verify(parser).substitute(magicName, args)
@@ -64,8 +66,10 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
     }
 
     it("should return an error if the magic invocation is invalid") {
-      val magicLoader = mock[MagicLoader]
-      doReturn(false).when(magicLoader).hasCellMagic(anyString())
+      val magicManager = mock[MagicManager]
+      val mockMagic = mock[Magic]
+      doReturn(mockMagic).when(magicManager).findMagic(anyString())
+      doReturn(false).when(magicManager).isCellMagic(mockMagic)
 
       val magicName = "magic"
       val args = "foo\nbean\nbar"
@@ -73,7 +77,7 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
         s"""%%$magicName
            |$args
          """.stripMargin
-      val parser = spy(new MagicParser(magicLoader))
+      val parser = spy(new MagicParser(magicManager))
       val result = parser.parseCell(codeBlob)
 
       verify(parser, times(0)).substitute(anyString(), anyString())
@@ -81,14 +85,16 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
     }
 
     it("should return original code if code contains no magic invocations") {
-      val magicLoader = mock[MagicLoader]
-      doReturn(false).when(magicLoader).hasCellMagic(anyString())
+      val magicManager = mock[MagicManager]
+      val mockMagic = mock[Magic]
+      doReturn(mockMagic).when(magicManager).findMagic(anyString())
+      doReturn(false).when(magicManager).isCellMagic(mockMagic)
 
       val codeBlob =
         s"""val x = 3
            |println(x + 2)
          """.stripMargin
-      val parser = spy(new MagicParser(magicLoader))
+      val parser = spy(new MagicParser(magicManager))
       val result = parser.parseCell(codeBlob)
 
       verify(parser, times(0)).substitute(anyString(), anyString())
@@ -100,14 +106,16 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
   describe("#parseLines") {
     it("should call substituteLine for each line of code " +
       "when there are no invalid magic invocations") {
-      val magicLoader = mock[MagicLoader]
-      doReturn(true).when(magicLoader).hasLineMagic(anyString())
+      val magicManager = mock[MagicManager]
+      val mockMagic = mock[Magic]
+      doReturn(mockMagic).when(magicManager).findMagic(anyString())
+      doReturn(true).when(magicManager).isLineMagic(mockMagic)
 
       val codeBlob =
         s"""val x = 3
            |%lineMagic
          """.stripMargin
-      val parser = spy(new MagicParser(magicLoader))
+      val parser = spy(new MagicParser(magicManager))
       val result = parser.parseLines(codeBlob)
 
       verify(parser, times(2)).substituteLine(anyString())
@@ -115,14 +123,16 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
     }
 
     it("should return an error when there are invalid magic invocations") {
-      val magicLoader = mock[MagicLoader]
-      doReturn(false).when(magicLoader).hasLineMagic(anyString())
+      val magicManager = mock[MagicManager]
+      val mockMagic = mock[Magic]
+      doReturn(mockMagic).when(magicManager).findMagic(anyString())
+      doReturn(false).when(magicManager).isLineMagic(mockMagic)
 
       val codeBlob =
         s"""val x = 3
            |%lineMagic
          """.stripMargin
-      val parser = spy(new MagicParser(magicLoader))
+      val parser = spy(new MagicParser(magicManager))
       val result = parser.parseLines(codeBlob)
 
       verify(parser, times(0)).substituteLine(anyString())
@@ -130,14 +140,16 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
     }
 
     it("should return original code when there are no magic invocations") {
-      val magicLoader = mock[MagicLoader]
-      doReturn(false).when(magicLoader).hasLineMagic(anyString())
+      val magicManager = mock[MagicManager]
+      val mockMagic = mock[Magic]
+      doReturn(mockMagic).when(magicManager).findMagic(anyString())
+      doReturn(false).when(magicManager).isLineMagic(mockMagic)
 
       val codeBlob =
         s"""val x = 3
            |val y = x + 2
          """.stripMargin
-      val parser = spy(new MagicParser(magicLoader))
+      val parser = spy(new MagicParser(magicManager))
       val result = parser.parseLines(codeBlob.trim)
 
       result.isLeft should be(true)
@@ -150,7 +162,7 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
       val magicName = "foobar"
       val magicArgs = "baz\nbean"
       val codeBlob = s"""%%$magicName\n$magicArgs"""
-      val parser = new MagicParser(mock[MagicLoader])
+      val parser = new MagicParser(mock[MagicManager])
       parser.parseMagic(codeBlob) should be(Some((magicName, magicArgs)))
     }
 
@@ -158,7 +170,7 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
       val magicName = "foobar"
       val magicArgs = "baz\nbean"
       val codeBlob = s"""%$magicName $magicArgs"""
-      val parser = new MagicParser(mock[MagicLoader])
+      val parser = new MagicParser(mock[MagicManager])
       parser.parseMagic(codeBlob) should be(Some((magicName, magicArgs)))
     }
 
@@ -166,7 +178,7 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
       val magicName = "foobar"
       val magicArgs = "baz\nbean"
       val codeBlob = s"""$magicName\n$magicArgs"""
-      val parser = new MagicParser(mock[MagicLoader])
+      val parser = new MagicParser(mock[MagicManager])
       parser.parseMagic(codeBlob) should be(None)
     }
   }
@@ -176,7 +188,7 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
       val magicName = "magic"
       val args = "-v foo bar"
       val codeLine = s"""%$magicName $args"""
-      val parser = spy(new MagicParser(mock[MagicLoader]))
+      val parser = spy(new MagicParser(mock[MagicManager]))
       doReturn(true).when(parser).isValidLineMagic(anyString())
       parser.substituteLine(codeLine)
       verify(parser).substitute(magicName, args)
@@ -185,7 +197,7 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
     it("should return original line of code when it's not a valid +" +
       "magic invocation") {
       val codeLine = """val x = 3"""
-      val parser = spy(new MagicParser(mock[MagicLoader]))
+      val parser = spy(new MagicParser(mock[MagicManager]))
       doReturn(false).when(parser).isValidLineMagic(anyString())
       parser.substituteLine(codeLine) should be(codeLine)
     }
@@ -196,7 +208,7 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
     it("should replace a magic invocation with an equivalent kernel call") {
       val magicName = "magic"
       val args = "foo bean"
-      val parser = new MagicParser(mock[MagicLoader])
+      val parser = new MagicParser(mock[MagicManager])
 
       val equivalent =
         s"""${parser.kernelObjectName}.$magicName(\"\"\"$args\"\"\")"""
@@ -213,7 +225,7 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
           |%$magicOne bar baz
           |%$magicTwo quo bean
         """.stripMargin
-      val parser = spy(new MagicParser(mock[MagicLoader]))
+      val parser = spy(new MagicParser(mock[MagicManager]))
       doReturn(false).when(parser).isValidLineMagic(anyString())
 
       parser.parseOutInvalidMagics(codeBlob) should be(List(magicOne, magicTwo))
@@ -227,7 +239,7 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
           |%$magicOne bar baz
           |%$magicTwo quo bean
         """.stripMargin
-      val parser = spy(new MagicParser(mock[MagicLoader]))
+      val parser = spy(new MagicParser(mock[MagicManager]))
       doReturn(true).when(parser).isValidLineMagic(anyString())
 
       parser.parseOutInvalidMagics(codeBlob) should be(Nil)
@@ -236,18 +248,22 @@ class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
 
   describe("#isValidLineMagic") {
     it("should return true if the line magic invocation is valid") {
-      val magicLoader = mock[MagicLoader]
-      doReturn(true).when(magicLoader).hasLineMagic(anyString())
+      val magicManager = mock[MagicManager]
+      val mockMagic = mock[Magic]
+      doReturn(mockMagic).when(magicManager).findMagic(anyString())
+      doReturn(true).when(magicManager).isLineMagic(mockMagic)
 
-      val parser = new MagicParser(magicLoader)
+      val parser = new MagicParser(magicManager)
       parser.isValidLineMagic("%foobar baz") should be(true)
     }
 
     it("should return false if the line magic invocation is not valid") {
-      val magicLoader = mock[MagicLoader]
-      doReturn(false).when(magicLoader).hasLineMagic(anyString())
+      val magicManager = mock[MagicManager]
+      val mockMagic = mock[Magic]
+      doReturn(mockMagic).when(magicManager).findMagic(anyString())
+      doReturn(false).when(magicManager).isLineMagic(mockMagic)
 
-      val parser = new MagicParser(magicLoader)
+      val parser = new MagicParser(magicManager)
       parser.isValidLineMagic("%foobar baz") should be(false)
     }
   }

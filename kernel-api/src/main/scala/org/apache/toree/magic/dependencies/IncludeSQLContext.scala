@@ -17,14 +17,18 @@
 
 package org.apache.toree.magic.dependencies
 
-import org.apache.toree.magic.Magic
 import org.apache.spark.sql.SQLContext
+import org.apache.toree.magic.Magic
+import org.apache.toree.plugins.Plugin
+import org.apache.toree.plugins.annotations.{Event, Init}
 
-trait IncludeSQLContext {
+trait IncludeSQLContext extends Plugin {
   this: Magic =>
+
+  @Event(name = "sparkReady") protected def sparkReady(
+    newSqlContext: SQLContext
+  ) = _sqlContext = newSqlContext
 
   private var _sqlContext: SQLContext = _
   def sqlContext: SQLContext = _sqlContext
-  def sqlContext_=(newSqlContext: SQLContext) =
-    _sqlContext = newSqlContext
 }

@@ -17,32 +17,32 @@
 
 package org.apache.toree.kernel.api
 
-import java.io.{OutputStream, InputStream, PrintStream}
+import java.io.{InputStream, PrintStream}
 import java.util.concurrent.ConcurrentHashMap
 
+import com.typesafe.config.Config
+import org.apache.spark.api.java.JavaSparkContext
+import org.apache.spark.sql.SQLContext
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.toree.annotations.Experimental
 import org.apache.toree.boot.layer.InterpreterManager
 import org.apache.toree.comm.CommManager
 import org.apache.toree.global
+import org.apache.toree.global.ExecuteRequestState
 import org.apache.toree.interpreter.Results.Result
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.protocol.v5
-import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.magic.MagicParser
-import org.apache.toree.kernel.protocol.v5.stream.{KernelOutputStream, KernelInputStream}
-import org.apache.toree.magic.{MagicLoader, MagicExecutor}
+import org.apache.toree.kernel.protocol.v5.stream.KernelOutputStream
+import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
+import org.apache.toree.magic.MagicManager
+import org.apache.toree.plugins.PluginManager
 import org.apache.toree.utils.{KeyValuePairUtils, LogLike}
-import com.typesafe.config.Config
-import org.apache.spark.api.java.JavaSparkContext
-import org.apache.spark.sql.SQLContext
-import org.apache.spark.{SparkContext, SparkConf}
-import scala.util.{Try, DynamicVariable}
-
-import scala.reflect.runtime.universe._
 
 import scala.language.dynamics
-import org.apache.toree.global.ExecuteRequestState
+import scala.reflect.runtime.universe._
+import scala.util.{DynamicVariable, Try}
 
 /**
  * Represents the main kernel API to be used for interaction.
@@ -58,7 +58,7 @@ class Kernel (
   private val actorLoader: ActorLoader,
   val interpreterManager: InterpreterManager,
   val comm: CommManager,
-  val magicLoader: MagicLoader
+  val pluginManager: PluginManager
 ) extends KernelLike with LogLike {
 
   /**
@@ -96,12 +96,12 @@ class Kernel (
   /**
    * Represents magics available through the kernel.
    */
-  val magics = new MagicExecutor(magicLoader)
+  val magics = new MagicManager(pluginManager)
 
   /**
    * Represents magic parsing functionality.
    */
-  val magicParser = new MagicParser(magicLoader)
+  val magicParser = new MagicParser(magics)
 
   /**
    * Represents the data that can be shared using the kernel as the middleman.
@@ -117,6 +117,7 @@ class Kernel (
 
   /**
    * Handles the output of interpreting code.
+   *
    * @param output the output of the interpreter
    * @return (success, message) or (failure, message)
    */
@@ -175,7 +176,6 @@ class Kernel (
    *
    * @param parentMessage The message to serve as the parent of outgoing
    *                      messages sent as a result of using streaming methods
-   *
    * @return The collection of streaming methods
    */
   private[toree] def stream(
@@ -198,7 +198,6 @@ class Kernel (
    *
    * @param parentMessage The message to serve as the parent of outgoing
    *                      messages sent as a result of using streaming methods
-   *
    * @return The collection of streaming methods
    */
   private[toree] def display(
@@ -225,7 +224,6 @@ class Kernel (
    *                      by the factory methods
    * @param kmBuilder The builder to be used by objects created by factory
    *                  methods
-   *
    * @return The collection of factory methods
    */
   private[toree] def factory(
@@ -341,7 +339,6 @@ class Kernel (
    * Retrieves the last kernel message received by the kernel.
    *
    * @throws IllegalArgumentException If no kernel message has been received
-   *
    * @return The kernel message instance
    */
   private def lastKernelMessage() = {
@@ -362,8 +359,13 @@ class Kernel (
     updateInterpreterWithSparkContext(interpreter, sparkContext)
     updateInterpreterWithSqlContext(interpreter, sqlContext)
 
-    magicLoader.dependencyMap =
-      magicLoader.dependencyMap.setSparkContext(_sparkContext)
+    // TODO: Convert to events
+    pluginManager.dependencyManager.add(_sparkConf)
+    pluginManager.dependencyManager.add(_sparkContext)
+    pluginManager.dependencyManager.add(_javaSparkContext)
+    pluginManager.dependencyManager.add(_sqlContext)
+
+    pluginManager.fireEvent("sparkReady")
 
     _sparkContext
   }

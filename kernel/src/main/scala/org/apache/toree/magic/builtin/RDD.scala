@@ -24,6 +24,7 @@ import org.apache.toree.magic.dependencies.{IncludeKernelInterpreter, IncludeInt
 import org.apache.toree.utils.LogLike
 import org.apache.toree.utils.json.RddToJson
 import org.apache.spark.sql.SchemaRDD
+import org.apache.toree.plugins.annotations.Event
 
 /**
  * Temporary magic to show an RDD as JSON
@@ -57,6 +58,7 @@ class RDD extends CellMagic with IncludeKernelInterpreter with LogLike {
     }
   }
 
+  @Event(name = "rdd")
   override def execute(code: String): CellMagicOutput =
     convertToJson(code)
 }

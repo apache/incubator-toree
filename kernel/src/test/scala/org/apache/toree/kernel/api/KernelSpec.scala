@@ -19,19 +19,18 @@ package org.apache.toree.kernel.api
 
 import java.io.{InputStream, PrintStream}
 
+import com.typesafe.config.Config
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.toree.boot.layer.InterpreterManager
 import org.apache.toree.comm.CommManager
+import org.apache.toree.global.ExecuteRequestState
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
-import org.apache.toree.magic.MagicLoader
-import com.typesafe.config.Config
-import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.toree.plugins.PluginManager
 import org.mockito.Mockito._
-import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
-import org.apache.toree.global.ExecuteRequestState
 
 class KernelSpec extends FunSpec with Matchers with MockitoSugar
   with BeforeAndAfter
@@ -50,7 +49,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
   private var mockInterpreter: Interpreter = _
   private var mockInterpreterManager: InterpreterManager = _
   private var mockCommManager: CommManager = _
-  private var mockMagicLoader: MagicLoader = _
+  private var mockPluginManager: PluginManager = _
   private var kernel: Kernel = _
   private var spyKernel: Kernel = _
 
@@ -60,6 +59,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
     mockInterpreterManager = mock[InterpreterManager]
     mockSparkContext = mock[SparkContext]
     mockSparkConf = mock[SparkConf]
+    mockPluginManager = mock[PluginManager]
     when(mockInterpreterManager.defaultInterpreter)
       .thenReturn(Some(mockInterpreter))
     when(mockInterpreterManager.interpreters)
@@ -74,11 +74,10 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
 
     mockCommManager = mock[CommManager]
     mockActorLoader = mock[ActorLoader]
-    mockMagicLoader = mock[MagicLoader]
 
     kernel = new Kernel(
       mockConfig, mockActorLoader, mockInterpreterManager, mockCommManager,
-      mockMagicLoader
+      mockPluginManager
     )
 
     spyKernel = spy(kernel)

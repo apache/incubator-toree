@@ -15,19 +15,8 @@
  *  limitations under the License
  */
 
-package org.apache.toree.magic.dependencies
+package org.apache.toree.magic
 
-import org.apache.toree.dependencies.DependencyDownloader
-import org.apache.toree.magic.Magic
-import org.apache.toree.plugins.Plugin
-import org.apache.toree.plugins.annotations.Init
-
-trait IncludeDependencyDownloader extends Plugin {
-  this: Magic =>
-
-  @Init protected def init(newDependencyDownloader: DependencyDownloader) =
-    _dependencyDownloader = newDependencyDownloader
-
-  private var _dependencyDownloader: DependencyDownloader = _
-  def dependencyDownloader: DependencyDownloader = _dependencyDownloader
-}
+class MagicNotFoundException(name: String) extends Exception(
+  s"Magic not found with name $name!"
+)

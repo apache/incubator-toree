@@ -81,9 +81,6 @@ case class PluginMethod(
    *                          (as needed)
    * @return The result from invoking the plugin
    */
-  @throws[DepNameNotFoundException]
-  @throws[DepClassNotFoundException]
-  @throws[DepUnexpectedClassException]
   def invoke(dependencyManager: DependencyManager): PluginMethodResult = Try({
     // Get dependency info (if has specific name or just use class)
     val depInfo = method.getParameterAnnotations

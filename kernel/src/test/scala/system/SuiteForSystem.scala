@@ -17,8 +17,8 @@
 
 package system
 
-import org.apache.toree.boot.layer.SparkKernelDeployer
 import org.scalatest.{BeforeAndAfterAll, Suites}
+import test.utils.SparkKernelDeployer
 
 class SuiteForSystem extends Suites(
   new KernelCommSpecForSystem,
@@ -28,5 +28,11 @@ class SuiteForSystem extends Suites(
     // Initialize the kernel for system tests
     println("Initializing kernel for system tests")
     SparkKernelDeployer.noArgKernelBootstrap
+  }
+
+  override protected def afterAll(): Unit = {
+    println("Shutting down kernel for system tests")
+    SparkKernelDeployer.noArgKernelBootstrap.shutdown()
+    println("Finished shutting down kernel!")
   }
 }

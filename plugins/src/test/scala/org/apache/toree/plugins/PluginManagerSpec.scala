@@ -116,7 +116,7 @@ class PluginManagerSpec extends FunSpec with Matchers
       it("should set the internal plugin manager of the new plugin") {
         val p = pluginManager.loadPlugin("name", classOf[TestPlugin])
 
-        p.get.pluginManager should be (pluginManager)
+        p.get.internalPluginManager should be (pluginManager)
       }
 
       it("should add the new plugin to the list of active plugins") {
@@ -146,6 +146,12 @@ class PluginManagerSpec extends FunSpec with Matchers
     }
 
     describe("#loadPlugins") {
+      it("should throw an IllegalArgumentException if provided no paths") {
+        intercept[IllegalArgumentException] {
+          pluginManager.loadPlugins()
+        }
+      }
+
       it("should load nothing if the plugin searcher returns empty handed") {
         val expected = Nil
 

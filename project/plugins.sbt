@@ -50,4 +50,4 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.8.1")
 addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.3")
 
 // Provides alternative resolving/downloading over sbt
-addSbtPlugin("com.github.alexarchambault" % "coursier-sbt-plugin" % "1.0.0-M9")
+addSbtPlugin("com.github.alexarchambault" % "coursier-sbt-plugin" % "1.0.0-M10")
