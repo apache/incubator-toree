@@ -94,14 +94,10 @@ trait StandardHookInitialization extends HookInitialization {
   private def registerShutdownHook(): Unit = {
     logger.debug("Registering shutdown hook")
     val self = this
-    val mainThread = Thread.currentThread()
     Runtime.getRuntime.addShutdownHook(new Thread() {
       override def run() = {
         logger.info("Shutting down kernel")
         self.shutdown()
-        // TODO: Check if you can magically access the spark context to stop it
-        // TODO: inside a different thread
-        if (mainThread.isAlive) mainThread.join()
       }
     })
   }

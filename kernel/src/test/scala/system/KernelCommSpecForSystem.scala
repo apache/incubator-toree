@@ -17,17 +17,18 @@
 
 package system
 
-import akka.testkit.{TestProbe}
+import akka.testkit.TestProbe
 import org.apache.toree.communication.ZMQMessage
-import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
-import Utilities._
 import org.apache.toree.kernel.protocol.v5
-import org.apache.toree.kernel.protocol.v5.{KernelMessage, SocketType, KMBuilder}
 import org.apache.toree.kernel.protocol.v5.content._
+import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
+import org.apache.toree.kernel.protocol.v5.kernel.Utilities._
+import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage, SocketType}
 import org.scalatest._
 import play.api.libs.json.Json
+import test.utils.NoArgSparkKernelTestKit
+
 import scala.concurrent.duration._
-import test.utils.{NoArgSparkKernelTestKit}
 
 
 /**
@@ -44,7 +45,7 @@ class KernelCommSpecForSystem
 {
   private val MaxFishTime = 5.seconds
 
-  import org.apache.toree.boot.layer.SparkKernelDeployer._
+  import test.utils.SparkKernelDeployer._
 
   private def waitForExecuteReply(
     shell: TestProbe, headerId: v5.UUID, maxTime: Duration = MaxFishTime

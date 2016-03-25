@@ -17,14 +17,17 @@
 
 package org.apache.toree.kernel.protocol.v5.magic
 
-import org.apache.toree.magic.MagicLoader
+import org.apache.toree.magic.MagicManager
 
-class MagicParser(magicLoader: MagicLoader) {
+import scala.util.Try
+
+class MagicParser(private val magicManager: MagicManager) {
   private val magicRegex = """^[%]{1,2}(\w+)""".r
   protected[magic] val kernelObjectName = "kernel.magics"
 
   /**
    * Determines whether a given line of code represents a line magic.
+   *
    * @param codeLine a single line of code
    * @return
    */
@@ -33,6 +36,7 @@ class MagicParser(magicLoader: MagicLoader) {
 
   /**
    * Determines whether a given string of code represents a cell magic.
+   *
    * @param codeBlob a string of code separated by newlines
    * @return
    */
@@ -45,6 +49,7 @@ class MagicParser(magicLoader: MagicLoader) {
    *
    * E.g.
    * "%magic foo bar" -> ("magic", "foo bar")
+   *
    * @param codeBlob a string of code separated by newlines
    * @return (magicName, args)
    */
@@ -61,13 +66,16 @@ class MagicParser(magicLoader: MagicLoader) {
   /**
    * Given a line of code representing a magic invocation determines whether
    * the magic has an implementation.
+   *
    * @param codeLine a single line of code
    * @return true if the magic exists and is a line magic
    */
   protected[magic] def isValidLineMagic(codeLine: String): Boolean = {
     parseMagic(codeLine) match {
       case Some((magicName, _)) =>
-        isLineMagic(codeLine) && magicLoader.hasLineMagic(magicName)
+        isLineMagic(codeLine) && Try(magicManager.isLineMagic(
+          magicManager.findMagic(magicName))
+        ).getOrElse(false)
       case None => false
     }
   }
@@ -75,6 +83,7 @@ class MagicParser(magicLoader: MagicLoader) {
   /**
    * Given a blob of code, finds any magic invocations of magics that don't
    * exist.
+   *
    * @param codeBlob a string of code separated by newlines
    * @return invalid magic names from the given code blob
    */
@@ -88,6 +97,7 @@ class MagicParser(magicLoader: MagicLoader) {
 
   /**
    * Formats a given magic name and args to code for a kernel method call.
+   *
    * @param magicName the name of the magic
    * @param args the arguments to the magic
    * @return equivalent kernel method call
@@ -98,6 +108,7 @@ class MagicParser(magicLoader: MagicLoader) {
   /**
    * Formats a given line of code representing a line magic invocation into an
    * equivalent kernel object call if the magic invocation is valid.
+   *
    * @param codeLine the line of code to convert.
    * @return a substituted line of code if valid else the original line
    */
@@ -114,13 +125,15 @@ class MagicParser(magicLoader: MagicLoader) {
    * Formats a given code blob representing a cell magic invocation into an
    * equivalent kernel object call if the cell magic invocation is valid. An
    * error message is returned if not.
+   *
    * @param codeBlob the blob of code representing a cell magic invocation
    * @return Left(the substituted code) or Right(error message)
    */
   protected[magic] def parseCell(codeBlob: String): Either[String, String] = {
     parseMagic(codeBlob.trim) match {
       case Some((cellMagicName, args)) =>
-        magicLoader.hasCellMagic(cellMagicName) match {
+        val m = Try(magicManager.findMagic(cellMagicName))
+        m.map(magicManager.isCellMagic).getOrElse(false) match {
           case true => Left(substitute(cellMagicName, args))
           case false => Right(s"Magic $cellMagicName does not exist!")
         }
@@ -132,6 +145,7 @@ class MagicParser(magicLoader: MagicLoader) {
    * Parses all lines in a given code blob and either substitutes equivalent
    * kernel object calls for each line magic in the code blob OR returns
    * an error message if any of the line magic invocations were invalid.
+   *
    * @param codeBlob a string of code separated by newlines
    * @return Left(code blob with substitutions) or Right(error message)
    */
@@ -149,6 +163,7 @@ class MagicParser(magicLoader: MagicLoader) {
   /**
    * Parses a given code blob and returns an equivalent blob with substitutions
    * for magic invocations, if any, or an error string.
+   *
    * @param codeBlob the blob of code to parse
    * @return Left(parsed code) or Right(error message)
    */

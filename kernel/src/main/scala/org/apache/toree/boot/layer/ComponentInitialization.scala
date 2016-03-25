@@ -18,29 +18,21 @@
 package org.apache.toree.boot.layer
 
 import java.io.File
-import java.util
 import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor.ActorRef
-import org.apache.toree.comm.{CommManager, KernelCommManager, CommRegistrar, CommStorage}
-import org.apache.toree.dependencies.{CoursierDependencyDownloader, DependencyDownloader, IvyDependencyDownloader}
-import org.apache.toree.global
+import com.typesafe.config.Config
+import org.apache.toree.comm.{CommManager, CommRegistrar, CommStorage, KernelCommManager}
+import org.apache.toree.dependencies.{CoursierDependencyDownloader, DependencyDownloader}
 import org.apache.toree.interpreter._
-import org.apache.toree.kernel.api.{KernelLike, Kernel}
+import org.apache.toree.kernel.api.Kernel
 import org.apache.toree.kernel.protocol.v5.KMBuilder
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
-import org.apache.toree.kernel.protocol.v5.stream.KernelOutputStream
-import org.apache.toree.magic.MagicLoader
-import org.apache.toree.magic.builtin.BuiltinLoader
-import org.apache.toree.magic.dependencies.DependencyMap
-import org.apache.toree.utils.{MultiClassLoader, TaskManager, KeyValuePairUtils, LogLike}
-import com.typesafe.config.Config
-import org.apache.spark.sql.SQLContext
-import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.toree.magic.MagicManager
+import org.apache.toree.plugins.PluginManager
+import org.apache.toree.utils.LogLike
 
 import scala.collection.JavaConverters._
-
-import scala.util.Try
 
 /**
  * Represents the component initialization. All component-related pieces of the
@@ -57,7 +49,7 @@ trait ComponentInitialization {
   def initializeComponents(
     config: Config, appName: String, actorLoader: ActorLoader
   ): (CommStorage, CommRegistrar, CommManager, Interpreter,
-    Kernel, DependencyDownloader, MagicLoader,
+    Kernel, DependencyDownloader, MagicManager, PluginManager,
     collection.mutable.Map[String, ActorRef])
 }
 
@@ -84,12 +76,14 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val scalaInterpreter = manager.interpreters.get("Scala").orNull
 
     val dependencyDownloader = initializeDependencyDownloader(config)
-    val magicLoader = initializeMagicLoader(
+    val pluginManager = createPluginManager(
       config, scalaInterpreter, dependencyDownloader)
 
     val kernel = initializeKernel(
-      config, actorLoader, manager, commManager, magicLoader
+      config, actorLoader, manager, commManager, pluginManager
     )
+
+    initializePlugins(config, pluginManager)
 
     val responseMap = initializeResponseMap()
 
@@ -97,7 +91,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
     (commStorage, commRegistrar, commManager,
       manager.defaultInterpreter.orNull, kernel,
-      dependencyDownloader, magicLoader, responseMap)
+      dependencyDownloader, kernel.magics, pluginManager, responseMap)
 
   }
 
@@ -142,14 +136,14 @@ trait StandardComponentInitialization extends ComponentInitialization {
     actorLoader: ActorLoader,
     interpreterManager: InterpreterManager,
     commManager: CommManager,
-    magicLoader: MagicLoader
+    pluginManager: PluginManager
   ) = {
     val kernel = new Kernel(
       config,
       actorLoader,
       interpreterManager,
       commManager,
-      magicLoader
+      pluginManager
     )
     /*
     interpreter.doQuietly {
@@ -159,48 +153,55 @@ trait StandardComponentInitialization extends ComponentInitialization {
       )
     }
     */
-    magicLoader.dependencyMap.setKernel(kernel)
+    pluginManager.dependencyManager.add(kernel)
 
     kernel
   }
 
-  private def initializeMagicLoader(
+  private def createPluginManager(
     config: Config, interpreter: Interpreter,
     dependencyDownloader: DependencyDownloader
   ) = {
-    logger.debug("Constructing magic loader")
+    logger.debug("Constructing plugin manager")
+    val pluginManager = new PluginManager()
 
     logger.debug("Building dependency map")
-    val dependencyMap = new DependencyMap()
-      .setInterpreter(interpreter)
-      .setKernelInterpreter(interpreter) // This is deprecated
-      .setDependencyDownloader(dependencyDownloader)
-      .setConfig(config)
+    pluginManager.dependencyManager.add(interpreter)
+    pluginManager.dependencyManager.add(dependencyDownloader)
+    pluginManager.dependencyManager.add(config)
 
-    logger.debug("Creating BuiltinLoader")
-    val builtinLoader = new BuiltinLoader()
+    pluginManager.dependencyManager.add(pluginManager)
 
+    pluginManager
+  }
+
+  private def initializePlugins(
+    config: Config,
+    pluginManager: PluginManager
+  ) = {
     val magicUrlArray = config.getStringList("magic_urls").asScala
       .map(s => new java.net.URL(s)).toArray
 
     if (magicUrlArray.isEmpty)
-      logger.warn("No external magics provided to MagicLoader!")
+      logger.warn("No external magics provided to PluginManager!")
     else
       logger.info("Using magics from the following locations: " +
         magicUrlArray.map(_.getPath).mkString(","))
 
-    val multiClassLoader = new MultiClassLoader(
-      builtinLoader,
-      interpreter.classLoader
-    )
+    // Load internal plugins under kernel module
+    logger.debug("Loading internal plugins")
+    val internalPlugins = pluginManager.initialize()
+    logger.info(internalPlugins.size + " internal plugins loaded")
 
-    logger.debug("Creating MagicLoader")
-    val magicLoader = new MagicLoader(
-      dependencyMap = dependencyMap,
-      urls = magicUrlArray,
-      parentLoader = multiClassLoader
-    )
-    magicLoader.dependencyMap.setMagicLoader(magicLoader)
-    magicLoader
+    // Load external plugins if provided
+    logger.debug("Loading external plugins")
+    val externalPlugins = if (magicUrlArray.nonEmpty) {
+      val externalPlugins = pluginManager.loadPlugins(
+        magicUrlArray.map(_.getFile).map(new File(_)): _*
+      )
+      pluginManager.initializePlugins(externalPlugins)
+      externalPlugins
+    } else Nil
+    logger.info(externalPlugins.size + " external plugins loaded")
   }
 }

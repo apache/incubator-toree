@@ -30,7 +30,8 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.magic.{MagicParser, PostProcessor}
 import org.apache.toree.kernel.protocol.v5.relay.ExecuteRequestRelay
 import org.apache.toree.kernel.protocol.v5.{MessageType, SocketType, SystemActorType}
-import org.apache.toree.magic.MagicLoader
+import org.apache.toree.magic.MagicManager
+import org.apache.toree.plugins.PluginManager
 import org.apache.toree.utils.LogLike
 
 /**
@@ -45,15 +46,16 @@ trait HandlerInitialization {
    * @param actorLoader The actor loader needed for registration
    * @param kernel The kernel api needed for registration
    * @param interpreter The main interpreter needed for registration
-   * @param magicLoader The magic loader needed for registration
+   * @param magicManager The magic manager needed for registration
    * @param commRegistrar The comm registrar needed for registration
    * @param commStorage The comm storage needed for registration
    */
   def initializeHandlers(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
     kernel: Kernel,
-    interpreter: Interpreter, magicLoader: MagicLoader,
-    commRegistrar: CommRegistrar, commStorage: CommStorage,
+    interpreter: Interpreter, pluginManager: PluginManager,
+    magicManager: MagicManager,   commRegistrar: CommRegistrar,
+    commStorage: CommStorage,
     responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit
 }
@@ -71,26 +73,30 @@ trait StandardHandlerInitialization extends HandlerInitialization {
    * @param actorLoader The actor loader needed for registration
    * @param kernel The kernel api needed for registration
    * @param interpreter The main interpreter needed for registration
-   * @param magicLoader The magic loader needed for registration
+   * @param pluginManager The plugin manager needed for registration
    * @param commRegistrar The comm registrar needed for registration
    * @param commStorage The comm storage needed for registration
    */
   def initializeHandlers(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
     kernel: Kernel,
-    interpreter: Interpreter, magicLoader: MagicLoader,
-    commRegistrar: CommRegistrar, commStorage: CommStorage,
+    interpreter: Interpreter, pluginManager: PluginManager,
+    magicManager: MagicManager, commRegistrar: CommRegistrar,
+    commStorage: CommStorage,
     responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit = {
     initializeKernelHandlers(
       actorSystem, actorLoader, kernel, commRegistrar, commStorage, responseMap
     )
-    initializeSystemActors(actorSystem, actorLoader, interpreter, magicLoader)
+    initializeSystemActors(
+      actorSystem, actorLoader, interpreter, pluginManager, magicManager
+    )
   }
 
   private def initializeSystemActors(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
-    interpreter: Interpreter, magicLoader: MagicLoader
+    interpreter: Interpreter, pluginManager: PluginManager,
+    magicManager: MagicManager
   ): Unit = {
     logger.debug("Creating interpreter actor")
     val interpreterActor = actorSystem.actorOf(
@@ -100,10 +106,10 @@ trait StandardHandlerInitialization extends HandlerInitialization {
 
     logger.debug("Creating execute request relay actor")
     val postProcessor = new PostProcessor(interpreter)
-    val magicParser = new MagicParser(magicLoader)
+    val magicParser = new MagicParser(magicManager)
     val executeRequestRelayActor = actorSystem.actorOf(
       Props(classOf[ExecuteRequestRelay],
-        actorLoader, magicLoader, magicParser, postProcessor
+        actorLoader, pluginManager, magicParser, postProcessor
       ),
       name = SystemActorType.ExecuteRequestRelay.toString
     )

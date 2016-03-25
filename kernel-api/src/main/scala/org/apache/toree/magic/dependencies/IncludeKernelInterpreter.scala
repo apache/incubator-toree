@@ -19,14 +19,15 @@ package org.apache.toree.magic.dependencies
 
 import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.magic.Magic
+import org.apache.toree.plugins.Plugin
+import org.apache.toree.plugins.annotations.Init
 
-//@deprecated("Use IncludeInterpreter instead!", "2015.05.06")
-trait IncludeKernelInterpreter {
+trait IncludeKernelInterpreter extends Plugin {
   this: Magic =>
 
-  //val interpreter: Interpreter
+  @Init protected def init(newInterpreter: Interpreter) =
+    _interpreter = newInterpreter
+
   private var _interpreter: Interpreter = _
   def kernelInterpreter: Interpreter = _interpreter
-  def kernelInterpreter_=(newInterpreter: Interpreter) =
-    _interpreter = newInterpreter
 }

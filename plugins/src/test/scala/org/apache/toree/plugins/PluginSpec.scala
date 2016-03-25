@@ -30,12 +30,12 @@ class PluginSpec extends FunSpec with Matchers with OneInstancePerTest with Mock
   private val mockPluginManager = mock[PluginManager]
   private val testPlugin = {
     val plugin = new TestPlugin
-    plugin.pluginManager_=(mockPluginManager)
+    plugin.internalPluginManager_=(mockPluginManager)
     plugin
   }
   private val extendedTestPlugin = {
     val extendedPlugin = new ExtendedTestPlugin
-    extendedPlugin.pluginManager_=(mockPluginManager)
+    extendedPlugin.internalPluginManager_=(mockPluginManager)
     extendedPlugin
   }
   private val registerPlugin = new RegisterPlugin
@@ -50,6 +50,26 @@ class PluginSpec extends FunSpec with Matchers with OneInstancePerTest with Mock
         val actual = testPlugin.name
 
         actual should be (expected)
+      }
+    }
+
+    describe("#simpleName") {
+      it("should be the simple name of the class implementing the plugin") {
+        val expected = classOf[TestPlugin].getSimpleName
+
+        val actual = testPlugin.simpleName
+
+        actual should be (expected)
+      }
+
+      it("should be the simple name of an anonymous class implementing the plugin") {
+        val anonymousPlugin = new TestPlugin {}
+        val anonymousClass = anonymousPlugin.getClass
+        val expected = anonymousClass.getSimpleName
+
+        val actual = anonymousPlugin.simpleName
+
+        actual should be(expected)
       }
     }
 
@@ -236,7 +256,7 @@ class PluginSpec extends FunSpec with Matchers with OneInstancePerTest with Mock
       }
 
       it("should create a new name for the dependency if not specified") {
-        registerPlugin.pluginManager_=(mockPluginManager)
+        registerPlugin.internalPluginManager_=(mockPluginManager)
 
         val value = new AnyRef
         val mockDependencyManager = mock[DependencyManager]
@@ -247,7 +267,7 @@ class PluginSpec extends FunSpec with Matchers with OneInstancePerTest with Mock
       }
 
       it("should add the dependency using the provided name") {
-        registerPlugin.pluginManager_=(mockPluginManager)
+        registerPlugin.internalPluginManager_=(mockPluginManager)
 
         val name = "some name"
         val value = new AnyRef

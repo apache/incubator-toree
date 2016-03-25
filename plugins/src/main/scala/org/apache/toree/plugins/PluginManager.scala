@@ -91,6 +91,8 @@ class PluginManager(
    * @return The collection of loaded plugins
    */
   def loadPlugins(paths: File*): Seq[Plugin] = {
+    require(paths.nonEmpty, "Plugin paths cannot be empty!")
+
     // Search for plugins in our new paths, then add loaded plugins to list
     // NOTE: Iterator returned from plugin searcher, so avoid building a
     //       large collection by performing all tasks together
@@ -136,7 +138,7 @@ class PluginManager(
       // Attempt to cast as plugin type to add to active plugins
       tryInstance.transform({
         case p: Plugin  =>
-          p.pluginManager_=(this)
+          p.internalPluginManager_=(this)
           activePlugins.put(p.name, p)
           Success(p)
         case x          =>

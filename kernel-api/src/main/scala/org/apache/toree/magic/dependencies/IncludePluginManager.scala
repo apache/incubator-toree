@@ -14,18 +14,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-
 package org.apache.toree.magic.dependencies
 
-import org.apache.toree.magic.{MagicLoader, Magic}
+import org.apache.toree.magic.Magic
+import org.apache.toree.plugins.{PluginManager, Plugin}
+import org.apache.toree.plugins.annotations.Init
 
+trait IncludePluginManager extends Plugin { this: Magic =>
+  @Init protected def init(pluginManager: PluginManager) =
+    _pluginManager = pluginManager
 
-trait IncludeMagicLoader {
-  this: Magic =>
-
-  //val sparkContext: SparkContext
-  private var _magicLoader: MagicLoader = _
-  def magicLoader: MagicLoader = _magicLoader
-  def magicLoader_=(newMagicLoader: MagicLoader) =
-    _magicLoader = newMagicLoader
+  private var _pluginManager: PluginManager = _
+  def pluginManager: PluginManager = _pluginManager
 }
+

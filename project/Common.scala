@@ -115,7 +115,8 @@ object Common {
       //"-Xlint", // Scala 2.11.x only
       "-Xfatal-warnings",
       "-Ywarn-all",
-      "-language:reflectiveCalls"
+      "-language:reflectiveCalls",
+      "-target:jvm-1.6"
     ),
 
     // Java-based options for compilation (all tasks)
@@ -126,7 +127,19 @@ object Common {
     javacOptions in (Compile, compile) ++= Seq(
       "-Xlint:all",   // Enable all Java-based warnings
       "-Xlint:-path", // Suppress path warnings since we get tons of them
-      "-Werror"       // Treat warnings as errors
+      "-Xlint:-options",
+      "-Xlint:-processing",
+      "-Werror",       // Treat warnings as errors
+      "-source", "1.6",
+      "-target", "1.6"
+    ),
+
+    // Options provided to forked JVMs through sbt, based on our .jvmopts file
+    javaOptions ++= Seq(
+      "-Xms1024M", "-Xmx4096M", "-Xss2m", "-XX:MaxPermSize=1024M",
+      "-XX:ReservedCodeCacheSize=256M", "-XX:+TieredCompilation",
+      "-XX:+CMSPermGenSweepingEnabled", "-XX:+CMSClassUnloadingEnabled",
+      "-XX:+UseConcMarkSweepGC", "-XX:+HeapDumpOnOutOfMemoryError"
     ),
 
     // Add additional test option to show time taken per test
@@ -143,19 +156,9 @@ object Common {
 
     credentials += Credentials("Sonatype Nexus Repository Manager", repoHost, repoUsername, repoPassword),
 
-    // Change destination of local delivery (building ivy.xml) to have *-ivy.xml
-    deliverLocalConfiguration := {
-      val newDestinationPath = crossTarget.value / s"${name.value}-ivy.xml"
-      val dlc = deliverLocalConfiguration.value
-      new DeliverConfiguration(
-        newDestinationPath.absolutePath, dlc.status,
-        dlc.configurations, dlc.logging)
-    },
-
     // Add rebuild ivy xml to the following tasks
     compile <<= (compile in Compile) dependsOn (rebuildIvyXml dependsOn deliverLocal)
   ) ++ rebuildIvyXmlSettings // Include our rebuild ivy xml settings
-
 
   buildLibraryDependencies ++= Seq( "org.apache.spark" %% "spark-core" % sparkVersion  % "provided" excludeAll( // Apache v2
 
@@ -187,7 +190,7 @@ object Common {
   lazy val rebuildIvyXmlSettings = Seq(
     rebuildIvyXml := {
       val s: TaskStreams = streams.value
-      val inputFile = (crossTarget.value / s"${name.value}-ivy.xml").getAbsoluteFile
+      val inputFile = (crossTarget.value / s"ivy-${version.value}.xml").getAbsoluteFile
       val outputFile =
         ((resourceDirectory in Compile).value / s"${name.value}-ivy.xml").getAbsoluteFile
       s.log.info(s"Copying ${inputFile.getPath} to ${outputFile.getPath}")
