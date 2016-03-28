@@ -80,14 +80,15 @@ trait StandardComponentInitialization extends ComponentInitialization {
       config, scalaInterpreter, dependencyDownloader)
 
     val kernel = initializeKernel(
-      config, actorLoader, manager, commManager, pluginManager
+        config, actorLoader, manager, commManager, pluginManager
     )
 
-    initializePlugins(config, pluginManager)
+    initializeSparkContext(config, kernel, appName)
+
+    manager.initializeInterpreters(kernel)
 
     val responseMap = initializeResponseMap()
 
-    initializeSparkContext(config, kernel, appName)
 
     (commStorage, commRegistrar, commManager,
       manager.defaultInterpreter.orNull, kernel,
@@ -145,14 +146,6 @@ trait StandardComponentInitialization extends ComponentInitialization {
       commManager,
       pluginManager
     )
-    /*
-    interpreter.doQuietly {
-      interpreter.bind(
-        "kernel", "org.apache.toree.kernel.api.Kernel",
-        kernel, List( """@transient implicit""")
-      )
-    }
-    */
     pluginManager.dependencyManager.add(kernel)
 
     kernel

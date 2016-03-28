@@ -47,7 +47,7 @@ class PostProcessorSpecForIntegration extends FunSpec with Matchers
         TaskManager.DefaultMaximumWorkers
       }
 
-      override protected def bindKernelVarialble(kernel: KernelLike): Unit = { }
+      override protected def bindKernelVariable(kernel: KernelLike): Unit = { }
     }
     scalaInterpreter.init(mock[KernelLike])
 

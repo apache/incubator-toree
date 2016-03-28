@@ -17,11 +17,7 @@
 
 package org.apache.toree.interpreter.broker
 
-import org.apache.toree.interpreter.broker.producer.{SQLContextProducerLike, JavaSparkContextProducerLike}
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.spark.api.java.JavaSparkContext
-import org.apache.spark.sql.SQLContext
-import org.apache.spark.{SparkConf, SparkContext}
 
 /**
  * Represents the API available to the broker to act as the bridge for data

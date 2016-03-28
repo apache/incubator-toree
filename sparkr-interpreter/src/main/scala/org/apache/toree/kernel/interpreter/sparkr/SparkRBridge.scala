@@ -16,10 +16,8 @@
  */
 package org.apache.toree.kernel.interpreter.sparkr
 
-import org.apache.toree.interpreter.broker.producer.{StandardSQLContextProducer, StandardJavaSparkContextProducer, JavaSparkContextProducerLike, SQLContextProducerLike}
-import org.apache.toree.interpreter.broker.{BrokerState, BrokerBridge}
+import org.apache.toree.interpreter.broker.{BrokerBridge, BrokerState}
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.spark.SparkContext
 
 /**
  * Represents constants for the SparkR bridge.
@@ -60,7 +58,7 @@ object SparkRBridge {
     new SparkRBridge(
       _brokerState = brokerState,
       _kernel = kernel
-    ) with StandardJavaSparkContextProducer with StandardSQLContextProducer
+    )
   }
 }
 

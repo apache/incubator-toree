@@ -66,7 +66,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
       TaskManager.DefaultMaximumWorkers
     }
 
-    override protected def bindKernelVarialble(kernel: KernelLike): Unit = { }
+    override protected def bindKernelVariable(kernel: KernelLike): Unit = { }
   }
 
   private val conf = new SparkConf()

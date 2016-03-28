@@ -16,10 +16,8 @@
  */
 package org.apache.toree.kernel.interpreter.pyspark
 
-import org.apache.toree.interpreter.broker.producer.{StandardSQLContextProducer, StandardJavaSparkContextProducer, SQLContextProducerLike, JavaSparkContextProducerLike}
-import org.apache.toree.interpreter.broker.{BrokerState, BrokerBridge}
+import org.apache.toree.interpreter.broker.{BrokerBridge, BrokerState}
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.spark.SparkContext
 
 /**
  * Represents constants for the PySpark bridge.
@@ -43,7 +41,7 @@ object PySparkBridge {
     new PySparkBridge(
       _brokerState = brokerState,
       _kernel = kernel
-    ) with StandardJavaSparkContextProducer with StandardSQLContextProducer
+    )
   }
 }
 

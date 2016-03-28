@@ -46,7 +46,7 @@ class AddExternalJarMagicSpecForIntegration
         TaskManager.DefaultMaximumWorkers
       }
 
-      override protected def bindKernelVarialble(kernel: KernelLike): Unit = { }
+      override protected def bindKernelVariable(kernel: KernelLike): Unit = { }
     }
     interpreter.init(mock[KernelLike])
 

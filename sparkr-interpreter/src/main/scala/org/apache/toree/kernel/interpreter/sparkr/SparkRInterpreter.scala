@@ -21,8 +21,6 @@ import java.net.URL
 import org.apache.toree.interpreter.Results.Result
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.spark.SparkContext
-import org.apache.spark.sql.SQLContext
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.Await
@@ -134,12 +132,6 @@ class SparkRInterpreter(
 
   // Unsupported
   override def classServerURI: String = ""
-
-  // Unsupported (but can be invoked)
-  override def bindSparkContext(sparkContext: SparkContext): Unit = {}
-
-  // Unsupported (but can be invoked)
-  override def bindSqlContext(sqlContext: SQLContext): Unit = {}
 
   // Unsupported
   override def interrupt(): Interpreter = ???

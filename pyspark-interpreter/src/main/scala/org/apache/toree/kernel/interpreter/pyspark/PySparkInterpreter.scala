@@ -18,11 +18,10 @@ package org.apache.toree.kernel.interpreter.pyspark
 
 import java.net.URL
 
+import com.typesafe.config.Config
 import org.apache.toree.interpreter.Results.Result
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.spark.SparkContext
-import org.apache.spark.sql.SQLContext
 import org.slf4j.LoggerFactory
 import py4j.GatewayServer
 
@@ -79,12 +78,6 @@ class PySparkInterpreter(
     _kernel = kernel
     this
   }
-
-  // Unsupported (but can be invoked)
-  override def bindSparkContext(sparkContext: SparkContext): Unit = {}
-
-  // Unsupported (but can be invoked)
-  override def bindSqlContext(sqlContext: SQLContext): Unit = {}
 
   /**
    * Executes the provided code with the option to silence output.

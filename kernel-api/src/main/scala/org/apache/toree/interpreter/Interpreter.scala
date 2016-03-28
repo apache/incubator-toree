@@ -82,20 +82,6 @@ trait Interpreter {
   def doQuietly[T](body: => T): T
 
   /**
-   * Binds the SparkContext instance to the interpreter's namespace.
-   *
-   * @param sparkContext The SparkContext to bind
-   */
-  def bindSparkContext(sparkContext: SparkContext): Unit
-
-  /**
-   * Binds the SQLContext instance to the interpreter's namespace.
-   *
-   * @param sqlContext The SQLContext to bind
-   */
-  def bindSqlContext(sqlContext: SQLContext): Unit
-
-  /**
    * Binds a variable in the interpreter to a value.
    * @param variableName The name to expose the value in the interpreter
    * @param typeName The type of the variable, must be the fully qualified class name

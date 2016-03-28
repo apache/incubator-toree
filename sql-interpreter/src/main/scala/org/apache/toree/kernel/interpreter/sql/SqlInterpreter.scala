@@ -18,15 +18,13 @@ package org.apache.toree.kernel.interpreter.sql
 
 import java.net.URL
 
-import org.apache.toree.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter}
 import org.apache.toree.interpreter.Results.Result
+import org.apache.toree.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter}
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.spark.SparkContext
-import org.apache.spark.sql.SQLContext
 
-import scala.concurrent.duration._
 import scala.concurrent.Await
-import scala.tools.nsc.interpreter.{OutputStream, InputStream}
+import scala.concurrent.duration._
+import scala.tools.nsc.interpreter.{InputStream, OutputStream}
 
 /**
  * Represents an interpreter interface to Spark SQL.
@@ -102,12 +100,6 @@ class SqlInterpreter() extends Interpreter {
 
   // Unsupported
   override def classServerURI: String = ""
-
-  // Unsupported (but can be invoked)
-  override def bindSparkContext(sparkContext: SparkContext): Unit = {}
-
-  // Unsupported (but can be invoked)
-  override def bindSqlContext(sqlContext: SQLContext): Unit = {}
 
   // Unsupported
   override def interrupt(): Interpreter = ???

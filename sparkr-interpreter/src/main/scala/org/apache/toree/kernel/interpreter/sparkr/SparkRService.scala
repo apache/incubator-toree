@@ -16,15 +16,13 @@
  */
 package org.apache.toree.kernel.interpreter.sparkr
 
-import java.util.concurrent.{TimeUnit, Semaphore}
+import java.util.concurrent.{Semaphore, TimeUnit}
 
 import org.apache.toree.interpreter.broker.BrokerService
-import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.kernel.interpreter.sparkr.SparkRTypes.{Code, CodeResults}
-import org.apache.spark.SparkContext
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{future, Future}
+import scala.concurrent.{Future, future}
 
 /**
  * Represents the service that provides the high-level interface between the

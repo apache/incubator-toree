@@ -57,13 +57,11 @@ object InterpreterManager {
       config.getStringList("default_interpreter_plugin").asScala
 
     val m = ip.foldLeft(Map[String, Interpreter]())( (acc, v) => {
+
       v.split(":") match {
         case Array(name, className) =>
           try {
-            val i = Class
-                .forName(className)
-                .newInstance()
-                .asInstanceOf[Interpreter]
+            val i = instantiate(className, config)
             acc + (name -> i)
           }
           catch {
@@ -80,4 +78,29 @@ object InterpreterManager {
 
     InterpreterManager(interpreters = m, default = default)
   }
+
+  /**
+   * instantiate will look for a constructor that take a Config. If available, will
+   * call that, else it will assume that there is a default empty constructor.
+   * @param className
+   * @param config
+   * @return
+   */
+  private def instantiate(className:String, config:Config):Interpreter = {
+    try {
+      Class
+        .forName(className)
+        .getConstructor(Class.forName("com.typesafe.config.Config"))
+        .newInstance(config).asInstanceOf[Interpreter]
+    }
+    catch {
+      case e: NoSuchMethodException =>
+        logger.debug("Using default constructor for class " + className)
+        Class
+          .forName(className)
+          .newInstance().asInstanceOf[Interpreter]
+    }
+
+  }
+
 }

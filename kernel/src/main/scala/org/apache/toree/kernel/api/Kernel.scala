@@ -110,9 +110,6 @@ class Kernel (
    */
   val data: java.util.Map[String, Any] = new ConcurrentHashMap[String, Any]()
 
-
-  interpreterManager.initializeInterpreters(this)
-
   val interpreter = interpreterManager.defaultInterpreter.get
 
   /**
@@ -356,9 +353,6 @@ class Kernel (
     val sparkMaster = _sparkConf.getOption("spark.master").getOrElse("not_set")
     logger.info( s"Connecting to spark.master $sparkMaster")
 
-    updateInterpreterWithSparkContext(interpreter, sparkContext)
-    updateInterpreterWithSqlContext(interpreter, sqlContext)
-
     // TODO: Convert to events
     pluginManager.dependencyManager.add(_sparkConf)
     pluginManager.dependencyManager.add(_sparkContext)
@@ -414,14 +408,6 @@ class Kernel (
     sparkContext
   }
 
-  // TODO: Think of a better way to test without exposing this
-  protected[kernel] def updateInterpreterWithSparkContext(
-    interpreter: Interpreter, sparkContext: SparkContext
-  ) = {
-
-    interpreter.bindSparkContext(sparkContext)
-  }
-
   protected[kernel] def initializeSqlContext(
     sparkContext: SparkContext
   ): SQLContext = {
@@ -449,12 +435,6 @@ class Kernel (
     }
 
     sqlContext
-  }
-
-  protected[kernel] def updateInterpreterWithSqlContext(
-    interpreter: Interpreter, sqlContext: SQLContext
-  ): Unit = {
-    interpreter.bindSqlContext(sqlContext)
   }
 
   override def interpreter(name: String): Option[Interpreter] = {
