@@ -26,8 +26,8 @@ IS_SNAPSHOT?=true
 SNAPSHOT:=-SNAPSHOT
 endif
 
-APACHE_SPARK_VERSION?=1.5.1
-IMAGE?=jupyter/pyspark-notebook:2988869079e6
+APACHE_SPARK_VERSION?=1.6.1
+IMAGE?=jupyter/pyspark-notebook:8dfd60b729bf
 EXAMPLE_IMAGE?=apache/toree-examples
 BINDER_IMAGE?=apache/toree-binder
 DOCKER_WORKDIR?=/srv/toree
@@ -87,7 +87,10 @@ clean: clean-dist
 	@docker build --rm -t $(BINDER_IMAGE) .
 
 dev-binder: .binder-image
-	docker run --rm -it -p 8888:8888  -v `pwd`:/home/main/notebooks --workdir /home/main/notebooks $(BINDER_IMAGE) /home/main/start-notebook.sh --ip=0.0.0.0
+	@docker run --rm -it -p 8888:8888  \
+		-v `pwd`:/home/main/notebooks \
+		--workdir /home/main/notebooks $(BINDER_IMAGE) \
+		/home/main/start-notebook.sh --ip=0.0.0.0
 
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
@@ -102,11 +105,12 @@ dev: SUSPEND=n
 dev: DEBUG_PORT=5005
 dev: .example-image dist
 	@$(DOCKER) \
-		-e SPARK_OPTS="--driver-java-options=-agentlib:jdwp=transport=dt_socket,server=y,suspend=$(SUSPEND),address=5005" \
+		-e SPARK_OPTS="--master=local[4] --driver-java-options=-agentlib:jdwp=transport=dt_socket,server=y,suspend=$(SUSPEND),address=5005" \
 		-v `pwd`/etc/kernel.json:/usr/local/share/jupyter/kernels/toree/kernel.json \
 		-p $(DEBUG_PORT):5005 -p 8888:8888 \
 		--user=root  $(EXAMPLE_IMAGE) \
-		bash -c "cp -r /srv/toree/dist/toree/* /usr/local/share/jupyter/kernels/toree/. && jupyter notebook --ip=* --no-browser"
+		bash -c "cp -r /srv/toree/dist/toree/* /usr/local/share/jupyter/kernels/toree/. \
+			&& jupyter notebook --ip=* --no-browser"
 
 test: VM_WORKDIR=/src/toree-kernel
 test:
@@ -155,4 +159,4 @@ endef
 export JUPYTER_COMMAND
 jupyter: DOCKER_WORKDIR=/srv/toree/dist
 jupyter: .example-image pip-release
-	@$(DOCKER) -p 8888:8888  --user=root  $(EXAMPLE_IMAGE) bash -c "$$JUPYTER_COMMAND"
+	@$(DOCKER) -p 8888:8888  -e SPARK_OPTS="--master=local[4]" --user=root  $(EXAMPLE_IMAGE) bash -c "$$JUPYTER_COMMAND"

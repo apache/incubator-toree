@@ -10,7 +10,7 @@ RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
     npm install -g bower
 
 # for pyspark demos
-ENV APACHE_SPARK_VERSION 1.5.1
+ENV APACHE_SPARK_VERSION 1.6.1
 RUN apt-get -y update && \
     apt-get install -y --no-install-recommends openjdk-7-jre-headless && \
     apt-get clean
@@ -20,9 +20,18 @@ RUN cd /tmp && \
         rm spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz
 RUN cd /usr/local && ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6 spark
 
+# R support
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    fonts-dejavu \
+    gfortran \
+    gcc && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 ENV SPARK_HOME /usr/local/spark
 ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.9-src.zip
 ENV PYSPARK_PYTHON /home/main/anaconda2/envs/python3/bin/python
+ENV R_LIBS_USER $SPARK_HOME/R/lib
 
 USER main
 
@@ -36,7 +45,14 @@ RUN conda install -y jupyter seaborn futures && \
     bash -c "source activate python3 && \
         conda install seaborn"
 
-ENV DECL_WIDGETS_VERSION 0.4.2
+# R packages
+RUN conda config --add channels r && \
+    conda install --quiet --yes \
+    'r-base=3.2*' \
+    'r-ggplot2=1.0*' \
+    'r-rcurl=1.95*' && conda clean -tipsy
+
+ENV DECL_WIDGETS_VERSION 0.4.3
 
 # install incubator extensions
 RUN pip install jupyter_dashboards==0.4.1 \
