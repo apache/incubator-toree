@@ -38,16 +38,9 @@ class AddExternalJarMagicSpecForIntegration
     interpreter = new ScalaInterpreter {
       override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
 
-      override protected def interpreterArgs(kernel: KernelLike): List[String] = {
-        Nil
-      }
-
-      override protected def maxInterpreterThreads(kernel: KernelLike): Int = {
-        TaskManager.DefaultMaximumWorkers
-      }
-
       override protected def bindKernelVariable(kernel: KernelLike): Unit = { }
     }
+    interpreter.start()
     interpreter.init(mock[KernelLike])
 
     StreamState.setStreams(outputStream = outputResult)

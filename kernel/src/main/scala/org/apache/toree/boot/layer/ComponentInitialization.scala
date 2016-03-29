@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor.ActorRef
 import com.typesafe.config.Config
+import org.apache.spark.SparkConf
 import org.apache.toree.comm.{CommManager, CommRegistrar, CommStorage, KernelCommManager}
 import org.apache.toree.dependencies.{CoursierDependencyDownloader, DependencyDownloader}
 import org.apache.toree.interpreter._
@@ -72,26 +73,21 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val (commStorage, commRegistrar, commManager) =
       initializeCommObjects(actorLoader)
 
-    val manager =  InterpreterManager(config)
-    val scalaInterpreter = manager.interpreters.get("Scala").orNull
+    val interpreterManager =  InterpreterManager(config)
 
     val dependencyDownloader = initializeDependencyDownloader(config)
-    val pluginManager = createPluginManager(
-      config, scalaInterpreter, dependencyDownloader)
+    val pluginManager = createPluginManager(config, interpreterManager, dependencyDownloader)
 
-    val kernel = initializeKernel(
-        config, actorLoader, manager, commManager, pluginManager
-    )
+    val kernel = initializeKernel(config, actorLoader, interpreterManager, commManager, pluginManager)
 
     initializeSparkContext(config, kernel, appName)
 
-    manager.initializeInterpreters(kernel)
+    interpreterManager.initializeInterpreters(kernel)
 
     val responseMap = initializeResponseMap()
 
-
     (commStorage, commRegistrar, commManager,
-      manager.defaultInterpreter.orNull, kernel,
+      interpreterManager.defaultInterpreter.orNull, kernel,
       dependencyDownloader, kernel.magics, pluginManager, responseMap)
 
   }
@@ -139,27 +135,47 @@ trait StandardComponentInitialization extends ComponentInitialization {
     commManager: CommManager,
     pluginManager: PluginManager
   ) = {
+
+    //kernel has a dependency on ScalaInterpreter to get the ClassServerURI for the SparkConf
+    //we need to pre-start the ScalaInterpreter
+    val scalaInterpreter = interpreterManager.interpreters("Scala")
+    scalaInterpreter.start()
+
     val kernel = new Kernel(
       config,
       actorLoader,
       interpreterManager,
       commManager,
       pluginManager
-    )
+    ){
+      override protected[toree] def createSparkConf(conf: SparkConf) = {
+        val theConf = super.createSparkConf(conf)
+
+        // TODO: Move SparkIMain to private and insert in a different way
+        logger.warn("Locked to Scala interpreter with SparkIMain until decoupled!")
+
+        // TODO: Construct class server outside of SparkIMain
+        logger.warn("Unable to control initialization of REPL class server!")
+        logger.info("REPL Class Server Uri: " + scalaInterpreter.classServerURI)
+        conf.set("spark.repl.class.uri", scalaInterpreter.classServerURI)
+
+        theConf
+      }
+    }
     pluginManager.dependencyManager.add(kernel)
 
     kernel
   }
 
   private def createPluginManager(
-    config: Config, interpreter: Interpreter,
+    config: Config, interpreterManager: InterpreterManager,
     dependencyDownloader: DependencyDownloader
   ) = {
     logger.debug("Constructing plugin manager")
     val pluginManager = new PluginManager()
 
     logger.debug("Building dependency map")
-    pluginManager.dependencyManager.add(interpreter)
+    pluginManager.dependencyManager.add(interpreterManager.interpreters.get("Scala").orNull)
     pluginManager.dependencyManager.add(dependencyDownloader)
     pluginManager.dependencyManager.add(config)
 

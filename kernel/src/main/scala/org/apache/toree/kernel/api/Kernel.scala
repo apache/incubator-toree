@@ -371,24 +371,15 @@ class Kernel (
   }
 
   // TODO: Think of a better way to test without exposing this
-  protected[kernel] def createSparkConf(conf: SparkConf) = {
+  protected[toree] def createSparkConf(conf: SparkConf) = {
 
     logger.info("Setting deployMode to client")
     conf.set("spark.submit.deployMode", "client")
-
-    // TODO: Move SparkIMain to private and insert in a different way
-    logger.warn("Locked to Scala interpreter with SparkIMain until decoupled!")
-
-    // TODO: Construct class server outside of SparkIMain
-    logger.warn("Unable to control initialization of REPL class server!")
-    logger.info("REPL Class Server Uri: " + interpreter.classServerURI)
-    conf.set("spark.repl.class.uri", interpreter.classServerURI)
-
     conf
   }
 
   // TODO: Think of a better way to test without exposing this
-  protected[kernel] def initializeSparkContext(sparkConf: SparkConf): SparkContext = {
+  protected[toree] def initializeSparkContext(sparkConf: SparkConf): SparkContext = {
 
     logger.debug("Constructing new Spark Context")
     // TODO: Inject stream redirect headers in Spark dynamically
@@ -408,7 +399,7 @@ class Kernel (
     sparkContext
   }
 
-  protected[kernel] def initializeSqlContext(
+  protected[toree] def initializeSqlContext(
     sparkContext: SparkContext
   ): SQLContext = {
     val sqlContext: SQLContext = try {

@@ -22,7 +22,7 @@ import java.net.{URL, URLClassLoader}
 import java.nio.charset.Charset
 import java.util.concurrent.ExecutionException
 
-import com.typesafe.config.Config
+import com.typesafe.config.{ConfigFactory, Config}
 import org.apache.spark.SparkContext
 import org.apache.spark.repl.{SparkCommandLine, SparkIMain, SparkJLineCompletion}
 import org.apache.spark.sql.SQLContext
@@ -43,7 +43,7 @@ import scala.tools.nsc.util.{ClassPath, MergedClassPath}
 import scala.tools.nsc.{Global, Settings, io}
 import scala.util.{Try => UtilTry}
 
-class ScalaInterpreter(config:Config) extends Interpreter {
+class ScalaInterpreter(config:Config = ConfigFactory.empty) extends Interpreter {
 
   protected val logger = LoggerFactory.getLogger(this.getClass.getName)
 
@@ -73,8 +73,6 @@ class ScalaInterpreter(config:Config) extends Interpreter {
     else
       TaskManager.DefaultMaximumWorkers
   }
-
-  start()
 
   protected def newSparkIMain(
     settings: Settings, out: JPrintWriter
@@ -232,7 +230,10 @@ class ScalaInterpreter(config:Config) extends Interpreter {
 
   protected def interpreterArgs(): List[String] = {
     import scala.collection.JavaConverters._
-    config.getStringList("interpreter_args").asScala.toList
+    if(config.hasPath("interpreter_args"))
+      config.getStringList("interpreter_args").asScala.toList
+    else
+      Nil
   }
 
   protected def bindKernelVariable(kernel: KernelLike): Unit = {

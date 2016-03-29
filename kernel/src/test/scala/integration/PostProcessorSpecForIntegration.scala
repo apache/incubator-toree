@@ -39,16 +39,10 @@ class PostProcessorSpecForIntegration extends FunSpec with Matchers
     scalaInterpreter = new ScalaInterpreter {
       override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
 
-      override protected def interpreterArgs(kernel: KernelLike): List[String] = {
-        Nil
-      }
-
-      override protected def maxInterpreterThreads(kernel: KernelLike): Int = {
-        TaskManager.DefaultMaximumWorkers
-      }
-
       override protected def bindKernelVariable(kernel: KernelLike): Unit = { }
     }
+
+    scalaInterpreter.start()
     scalaInterpreter.init(mock[KernelLike])
 
     postProcessor = new PostProcessor(scalaInterpreter)

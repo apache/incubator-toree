@@ -128,18 +128,4 @@ class DummyInterpreter(kernel: KernelLike) extends Interpreter {
    * @return The newly initialized interpreter
    */
   override def init(kernel: KernelLike): Interpreter = ???
-
-  /**
-   * Binds the SparkContext instance to the interpreter's namespace.
-   *
-   * @param sparkContext The SparkContext to bind
-   */
-  override def bindSparkContext(sparkContext: SparkContext): Unit = ???
-
-  /**
-   * Binds the SQLContext instance to the interpreter's namespace.
-   *
-   * @param sqlContext The SQLContext to bind
-   */
-  override def bindSqlContext(sqlContext: SQLContext): Unit = ???
 }
