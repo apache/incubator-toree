@@ -80,6 +80,8 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
     val kernel = initializeKernel(config, actorLoader, interpreterManager, commManager, pluginManager)
 
+    initializePlugins(config, pluginManager)
+
     initializeSparkContext(config, kernel, appName)
 
     interpreterManager.initializeInterpreters(kernel)
