@@ -382,13 +382,6 @@ class Kernel (
     logger.info("Setting deployMode to client")
     conf.set("spark.submit.deployMode", "client")
 
-    KeyValuePairUtils.stringToKeyValuePairSeq(
-      _config.getString("spark_configuration")
-    ).foreach { keyValuePair =>
-      logger.info(s"Setting ${keyValuePair.key} to ${keyValuePair.value}")
-      Try(conf.set(keyValuePair.key, keyValuePair.value))
-    }
-
     // TODO: Move SparkIMain to private and insert in a different way
     logger.warn("Locked to Scala interpreter with SparkIMain until decoupled!")
 

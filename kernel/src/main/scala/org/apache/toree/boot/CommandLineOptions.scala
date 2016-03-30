@@ -67,11 +67,6 @@ class CommandLineOptions(args: Seq[String]) {
     "heartbeat-port", "port of the heartbeat socket"
   ).withRequiredArg().ofType(classOf[Int])
 
-  private val _spark_configuration = parser.acceptsAll(
-    Seq("spark-configuration", "S").asJava,
-    "configuration setting for Apache Spark"
-  ).withRequiredArg().ofType(classOf[KeyValuePair])
-
   private val _magic_url =
     parser.accepts("magic-url", "path to a magic jar")
       .withRequiredArg().ofType(classOf[String])
@@ -145,9 +140,6 @@ class CommandLineOptions(args: Seq[String]) {
       "interpreter_args" -> interpreterArgs,
       "magic_urls" -> getAll(_magic_url).map(_.asJava)
         .flatMap(list => if (list.isEmpty) None else Some(list)),
-      "spark_configuration" -> getAll(_spark_configuration)
-        .map(list => KeyValuePairUtils.keyValuePairSeqToString(list))
-        .flatMap(str => if (str.nonEmpty) Some(str) else None),
       "max_interpreter_threads" -> get(_max_interpreter_threads),
       "jar_dir" -> get(_jar_dir),
       "default_interpreter" -> get(_default_interpreter),

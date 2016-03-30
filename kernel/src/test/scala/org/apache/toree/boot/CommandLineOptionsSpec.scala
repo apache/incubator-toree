@@ -89,50 +89,6 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       }
     }
 
-    describe("when received --spark-conf=<key>=<value>") {
-      it("should add the key-value pair to the string representation") {
-        val expected = "key=value"
-        val options = new CommandLineOptions(s"--spark-conf=$expected" :: Nil)
-        val actual = options.toConfig.getString("spark_configuration")
-
-        actual should be (expected)
-      }
-
-      it("should append to existing command line key-value pairs") {
-        val expected = "key1=value1" :: "key2=value2" :: Nil
-        val options = new CommandLineOptions(
-          s"--spark-conf=${expected(0)}" ::
-          s"--spark-conf=${expected(1)}" ::
-          Nil
-        )
-        val actual = options.toConfig.getString("spark_configuration")
-
-        actual should be (expected.mkString(","))
-      }
-    }
-
-    describe("when received -S<key>=<value>") {
-      it("should add the key-value pair to the string representation") {
-        val expected = "key=value"
-        val options = new CommandLineOptions(s"-S$expected" :: Nil)
-        val actual = options.toConfig.getString("spark_configuration")
-
-        actual should be(expected)
-      }
-
-      it("should append to existing command line key-value pairs") {
-        val expected = "key1=value1" :: "key2=value2" :: Nil
-        val options = new CommandLineOptions(
-          s"-S${expected(0)}" ::
-          s"-S${expected(1)}" ::
-          Nil
-        )
-        val actual = options.toConfig.getString("spark_configuration")
-
-        actual should be (expected.mkString(","))
-      }
-    }
-
     describe("when received --profile=<path>") {
       it("should error if path is not set") {
         intercept[OptionException] {
