@@ -136,21 +136,24 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
   }
 
   protected def refreshDefinitions(): Unit = {
-    sparkIMain.definedTerms.foreach(termName => {
-      val termNameString = termName.toString
-      val termTypeString = sparkIMain.typeOfTerm(termNameString).toLongString
-      sparkIMain.valueOfTerm(termNameString) match {
+
+    /*
+     * Refreshing values, avoids refreshing any defs
+     */
+    sparkIMain.definedTerms.map(_.toString).filterNot(sparkIMain.symbolOfTerm(_).isSourceMethod).foreach(termName => {
+      val termTypeString = sparkIMain.typeOfTerm(termName).toLongString
+      sparkIMain.valueOfTerm(termName) match {
         case Some(termValue)  =>
-          val modifiers = buildModifierList(termNameString)
-          logger.debug(s"Rebinding of $termNameString as " +
+          val modifiers = buildModifierList(termName)
+          logger.debug(s"Rebinding of $termName as " +
             s"${modifiers.mkString(" ")} $termTypeString")
           UtilTry(sparkIMain.beSilentDuring {
             sparkIMain.bind(
-              termNameString, termTypeString, termValue, modifiers
+              termName, termTypeString, termValue, modifiers
             )
           })
         case None             =>
-          logger.debug(s"Ignoring rebinding of $termNameString")
+          logger.debug(s"Ignoring rebinding of $termName")
       }
     })
   }
