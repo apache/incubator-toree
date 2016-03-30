@@ -154,15 +154,13 @@ class CommandLineOptions(args: Seq[String]) {
     pair => if (pair._2.isDefined) Some((pair._1, pair._2.get)) else None
   }
 
-  /**
-   *
-   * @return
-   */
   private def interpreterArgs: Option[java.util.List[String]] = {
-    args.dropWhile(_ != "--").drop(1).toList match {
-      case Nil => None
-      case list: List[String] => Some(list.asJava)
+    val interpreterArgsList = args.dropWhile(_ != "--").drop(1).toList match {
+      case Nil => List.empty[String]
+      case list: List[String] => list
     }
+
+    Some(interpreterArgsList.asJava)
   }
 
   private def interpreterPlugins: Option[java.util.List[String]] = {

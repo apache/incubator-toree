@@ -43,7 +43,7 @@ import scala.tools.nsc.util.{ClassPath, MergedClassPath}
 import scala.tools.nsc.{Global, Settings, io}
 import scala.util.{Try => UtilTry}
 
-class ScalaInterpreter(config:Config = ConfigFactory.empty) extends Interpreter {
+class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends Interpreter {
 
   protected val logger = LoggerFactory.getLogger(this.getClass.getName)
 
@@ -230,10 +230,7 @@ class ScalaInterpreter(config:Config = ConfigFactory.empty) extends Interpreter 
 
   protected def interpreterArgs(): List[String] = {
     import scala.collection.JavaConverters._
-    if(config.hasPath("interpreter_args"))
-      config.getStringList("interpreter_args").asScala.toList
-    else
-      Nil
+    config.getStringList("interpreter_args").asScala.toList
   }
 
   protected def bindKernelVariable(kernel: KernelLike): Unit = {
@@ -519,7 +516,7 @@ class ScalaInterpreter(config:Config = ConfigFactory.empty) extends Interpreter 
 
     doQuietly {
       logger.debug(s"Binding SparkContext into interpreter as $bindName")
-      interpret(s"""def ${bindName}: org.apache.spark.SparkContext = kernel.sparkContext""")
+      interpret(s"""def ${bindName}: ${classOf[SparkContext].getName} = kernel.sparkContext""")
 
       // NOTE: This is needed because interpreter blows up after adding
       //       dependencies to SparkContext and Interpreter before the

@@ -89,7 +89,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val responseMap = initializeResponseMap()
 
     (commStorage, commRegistrar, commManager,
-      interpreterManager.defaultInterpreter.orNull, kernel,
+      interpreterManager.defaultInterpreter.get, kernel,
       dependencyDownloader, kernel.magics, pluginManager, responseMap)
 
   }
@@ -177,7 +177,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
     val pluginManager = new PluginManager()
 
     logger.debug("Building dependency map")
-    pluginManager.dependencyManager.add(interpreterManager.interpreters.get("Scala").orNull)
+    pluginManager.dependencyManager.add(interpreterManager.interpreters.get("Scala").get)
     pluginManager.dependencyManager.add(dependencyDownloader)
     pluginManager.dependencyManager.add(config)
 
