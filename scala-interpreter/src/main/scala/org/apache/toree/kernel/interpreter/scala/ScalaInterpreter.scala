@@ -156,6 +156,12 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
           logger.debug(s"Ignoring rebinding of $termName")
       }
     })
+
+    /*
+     * Need to rebind the defs for sc and sqlContext
+     */
+    bindSparkContext()
+    bindSqlContext()
   }
 
   protected def reinitializeSymbols(): Unit = {
@@ -204,8 +210,8 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
   override def init(kernel: KernelLike): Interpreter = {
     bindKernelVariable(kernel)
-    bindSparkContext(kernel.sparkContext)
-    bindSqlContext(kernel.sqlContext)
+    bindSparkContext()
+    bindSqlContext()
 
     this
   }
@@ -514,7 +520,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     sparkIMain.beQuietDuring[T](body)
   }
 
-  def bindSparkContext(sparkContext: SparkContext) = {
+  def bindSparkContext() = {
     val bindName = "sc"
 
     doQuietly {
@@ -540,7 +546,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     }
   }
 
-  def bindSqlContext(sqlContext: SQLContext): Unit = {
+  def bindSqlContext(): Unit = {
     val bindName = "sqlContext"
 
     doQuietly {
@@ -549,7 +555,6 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
       logger.debug(s"Binding SQLContext into interpreter as $bindName")
 
       interpret(s"""def ${bindName}: ${classOf[SQLContext].getName} = kernel.sqlContext""")
-      sqlContext
     }
   }
 
