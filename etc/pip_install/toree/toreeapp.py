@@ -19,6 +19,7 @@ import os.path
 import sys
 import json
 import shutil
+from os import listdir
 from traitlets import Unicode, Dict, Set
 from jupyter_client.kernelspecapp  import InstallKernelSpec
 from jupyter_core.application import base_aliases
@@ -74,6 +75,13 @@ class ToreeInstall(InstallKernelSpec):
         super(InstallKernelSpec, self).parse_command_line(argv)
 
     def create_kernel_json(self, location, interpreter):
+
+        python_lib_contents = listdir("{0}/python/lib".format(self.spark_home))
+        try:
+            py4j_zip = list(filter( lambda filename: "py4j" in filename, python_lib_contents))[0]
+        except:
+            self.log.warn('Unable to find py4j, installing without PySpark support.')
+
         kernel_spec = KernelSpec()
         interpreter_lang = INTERPRETER_LANGUAGES[interpreter]
         kernel_spec.display_name = '{} - {}'.format(self.kernel_name, interpreter)
@@ -85,7 +93,7 @@ class ToreeInstall(InstallKernelSpec):
             # are run. This allows values to be specified during install, but also during runtime.
             TOREE_SPARK_OPTS : self.spark_opts,
             SPARK_HOME : self.spark_home,
-            PYTHON_PATH : '{0}/python:{0}/python/lib/py4j-0.8.2.1-src.zip'.format(self.spark_home)
+            PYTHON_PATH : '{0}/python:{0}/python/lib/{1}'.format(self.spark_home, py4j_zip)
         }
 
         kernel_json_file = os.path.join(location, 'kernel.json')
