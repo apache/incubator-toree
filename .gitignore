@@ -11,6 +11,7 @@ target/
 *.iml
 *.ipynb
 .ipynb_checkpoints/
+apache-rat-*.jar
 !etc/**/*.ipynb
 scratch/
 **/*ivy.xml

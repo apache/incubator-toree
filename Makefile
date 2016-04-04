@@ -15,7 +15,7 @@
 # limitations under the License
 #
 
-.PHONY: help clean clean-dist build dev test test-travis release pip-release bin-release dev-binder .binder-image
+.PHONY: help clean clean-dist build dev test test-travis release pip-release bin-release dev-binder .binder-image audit
 
 VERSION?=0.1.0.dev6
 COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
@@ -55,6 +55,7 @@ ENV_OPTS:=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) VERSION=$(VERSION) IS_SNA
 ASSEMBLY_JAR:=toree-assembly-$(VERSION)$(SNAPSHOT).jar
 
 help:
+	@echo '      audit - run audit tools against the source code'
 	@echo '      clean - clean build files'
 	@echo '        dev - starts ipython'
 	@echo '       dist - build a directory with contents to package'
@@ -141,7 +142,10 @@ pip-release: dist
 	@$(DOCKER) $(IMAGE) python setup.py sdist --dist-dir=.
 	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install toree-$(VERSION).tar.gz && jupyter toree install'
 
-bin-release: dist
+audit:
+	@etc/tools/./check-licenses 
+
+bin-release: dist 
 	@(cd dist; tar -cvzf toree-$(VERSION)-binary-release.tar.gz toree)
 
 release: DOCKER_WORKDIR=/srv/toree/dist
@@ -149,7 +153,7 @@ release: PYPI_REPO?=https://pypi.python.org/pypi
 release: PYPI_USER?=
 release: PYPI_PASSWORD?=
 release: PYPIRC=printf "[distutils]\nindex-servers =\n\tpypi\n\n[pypi]\nrepository: $(PYPI_REPO) \nusername: $(PYPI_USER)\npassword: $(PYPI_PASSWORD)" > ~/.pypirc;
-release: pip-release bin-release
+release: pip-release bin-release audit
 	@$(DOCKER) $(IMAGE) bash -c '$(PYPIRC) pip install twine && \
 		python setup.py register -r $(PYPI_REPO) && \
 		twine upload -r pypi toree-$(VERSION).tar.gz'
