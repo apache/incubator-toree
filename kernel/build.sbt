@@ -21,5 +21,3 @@
 libraryDependencies +=
   "org.spark-project.akka" %% "akka-testkit" % "2.3.4-spark" % "test" // MIT
 
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
-

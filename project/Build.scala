@@ -18,7 +18,6 @@
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-import com.typesafe.sbt.SbtGhPages.ghpages
 import com.typesafe.sbt.SbtSite.site
 import sbt.Keys._
 import sbt._
@@ -35,41 +34,40 @@ object Build extends Build with Settings with SubProjects with TestTasks {
    */
   lazy val root = addTestTasksToProject(
     Project(
-      id = "toree-all",
+      id = "toree",
       base = file("."),
-      settings = fullSettings
-    ).settings(unidocSettings: _*)
-     .settings(site.settings ++ ghpages.settings: _*)
-     .settings(
-        site.addMappingsToSiteDir(
-          mappings in (ScalaUnidoc, packageDoc), "latest/api"
-        ),
-        git.gitRemoteRepo := "git@github.com:ibm-et/spark-kernel.git"
-     )
-     .settings(
+      settings = fullSettings ++ unidocSettings ++ site.settings ++ Seq(
+        test in assembly := {},
+        assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false),
         scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand",
-
+        git.gitRemoteRepo := "git://git.apache.org/incubator-toree.git",
         pomExtra :=
-         <parent>
-           <groupId>org.apache</groupId>
-           <artifactId>apache</artifactId>
-           <version>10</version>
-         </parent>
-           <licenses>
-             <license>
-               <name>Apache 2</name>
-               <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-               <distribution>repo</distribution>
-             </license>
-           </licenses>
+          <parent>
+            <groupId>org.apache</groupId>
+            <artifactId>apache</artifactId>
+            <version>10</version>
+          </parent>
+            <licenses>
+              <license>
+                <name>Apache 2</name>
+                <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+                <distribution>repo</distribution>
+              </license>
+            </licenses>
       )
-  ).aggregate(
-    client, kernel, kernel_api, communication, protocol, macros,
-    pyspark_interpreter, scala_interpreter, sparkr_interpreter,
-    sql_interpreter, plugins
+    )
   ).dependsOn(
-    client % "test->test",
-    kernel % "test->test"
+    client % "compile", 
+    kernel % "compile",
+    kernel_api % "compile",
+    communication % "compile",
+    protocol % "compile",
+    macros % "compile",
+    pyspark_interpreter % "compile",
+    scala_interpreter % "compile",
+    sparkr_interpreter % "compile",
+    sql_interpreter % "compile",
+    plugins % "compile"
   )
 }
 
@@ -107,9 +105,7 @@ trait SubProjects extends Settings with TestTasks {
   lazy val kernel = addTestTasksToProject(Project(
     id = "toree-kernel",
     base = file("kernel"),
-    settings = fullSettings ++ Seq(
-        test in assembly := {}
-      )
+    settings = fullSettings
   // Enable forking to load correct classes with plugin loader during tests
   ), doFork = true) dependsOn(
     macros % "test->test;compile->compile",

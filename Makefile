@@ -52,7 +52,7 @@ RUN=$(RUN_PREFIX)$(1)$(RUN_SUFFIX)
 
 ENV_OPTS:=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)
 
-ASSEMBLY_JAR:=toree-kernel-assembly-$(VERSION)$(SNAPSHOT).jar
+ASSEMBLY_JAR:=toree-assembly-$(VERSION)$(SNAPSHOT).jar
 
 help:
 	@echo '      clean - clean build files'
@@ -92,13 +92,13 @@ dev-binder: .binder-image
 		--workdir /home/main/notebooks $(BINDER_IMAGE) \
 		/home/main/start-notebook.sh --ip=0.0.0.0
 
-kernel/target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
-kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
-kernel/target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
-kernel/target/scala-2.10/$(ASSEMBLY_JAR): project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
-	$(call RUN,$(ENV_OPTS) sbt toree-kernel/assembly)
+target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
+target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
+target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
+target/scala-2.10/$(ASSEMBLY_JAR): project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
+	$(call RUN,$(ENV_OPTS) sbt toree/assembly)
 
-build: kernel/target/scala-2.10/$(ASSEMBLY_JAR)
+build: target/scala-2.10/$(ASSEMBLY_JAR)
 
 dev: DOCKER_WORKDIR=/srv/toree/etc/examples/notebooks
 dev: SUSPEND=n
@@ -120,10 +120,12 @@ sbt-%:
 	$(call RUN,$(ENV_OPTS) sbt $(subst sbt-,,$@) )
 
 dist: VERSION_FILE=dist/toree/VERSION
-dist: kernel/target/scala-2.10/$(ASSEMBLY_JAR) ${shell find ./etc/bin/*}
+dist: target/scala-2.10/$(ASSEMBLY_JAR) ${shell find ./etc/bin/*}
 	@mkdir -p dist/toree/bin dist/toree/lib
 	@cp -r etc/bin/* dist/toree/bin/.
-	@cp kernel/target/scala-2.10/$(ASSEMBLY_JAR) dist/toree/lib/.
+	@cp target/scala-2.10/$(ASSEMBLY_JAR) dist/toree/lib/.
+	@cp NOTICE dist/toree
+	@cp LICENSE dist/toree
 	@echo "VERSION: $(VERSION)" > $(VERSION_FILE)
 	@echo "COMMIT: $(COMMIT)" >> $(VERSION_FILE)
 
