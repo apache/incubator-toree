@@ -41,6 +41,7 @@ object Build extends Build with Settings with SubProjects with TestTasks {
         assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false),
         scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand",
         git.gitRemoteRepo := "git://git.apache.org/incubator-toree.git",
+        aggregate in assembly := false,
         pomExtra :=
           <parent>
             <groupId>org.apache</groupId>
@@ -56,17 +57,15 @@ object Build extends Build with Settings with SubProjects with TestTasks {
             </licenses>
       )
     )
+  ).aggregate(
+    client, kernel, kernel_api, communication, protocol, macros, 
+    pyspark_interpreter, scala_interpreter, sparkr_interpreter, sql_interpreter, 
+    plugins
   ).dependsOn(
-    client % "compile", 
-    kernel % "compile",
-    kernel_api % "compile",
-    communication % "compile",
-    protocol % "compile",
-    macros % "compile",
-    pyspark_interpreter % "compile",
-    scala_interpreter % "compile",
-    sparkr_interpreter % "compile",
-    sql_interpreter % "compile",
+    client % "compile", kernel % "compile", kernel_api % "compile",
+    communication % "compile", protocol % "compile", macros % "compile",
+    pyspark_interpreter % "compile", scala_interpreter % "compile", 
+    sparkr_interpreter % "compile", sql_interpreter % "compile",
     plugins % "compile"
   )
 }
