@@ -25,7 +25,7 @@ fi
 
 echo "Starting Spark Kernel with SPARK_HOME=$SPARK_HOME"
 
-KERNEL_ASSEMBLY=`(cd ${PROG_HOME}/lib; ls -1 toree-kernel-assembly-*.jar;)`
+KERNEL_ASSEMBLY=`(cd ${PROG_HOME}/lib; ls -1 toree-assembly-*.jar;)`
 
 # disable randomized hash for string in Python 3.3+
 export PYTHONHASHSEED=0
