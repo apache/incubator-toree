@@ -40,9 +40,8 @@ docker run -it --rm \
 endef
 
 define GEN_PIP_PACKAGE_INFO
-printf "__version__ = '$(gitVERSION)'\n" >> dist/toree/_version.py
-printf "__commit__ = '$(COMMIT)'\n" >> dist/toree/_version.py
-endef
+printf "__version__ = '$(VERSION)'\n" >> dist/toree-pip/toree/_version.py
+printf "__commit__ = '$(COMMIT)'\n" >> dist/toree-pip/toree/_version.py
 
 USE_VAGRANT?=
 RUN_PREFIX=$(if $(USE_VAGRANT),vagrant ssh -c "cd $(VM_WORKDIR) && )
@@ -121,23 +120,41 @@ sbt-%:
 	$(call RUN,$(ENV_OPTS) sbt $(subst sbt-,,$@) )
 
 dist: VERSION_FILE=dist/toree/VERSION
-dist: target/scala-2.10/$(ASSEMBLY_JAR) ${shell find ./etc/bin/*}
+dist: dist/toree dist/legal target/scala-2.10/$(ASSEMBLY_JAR) ${shell find ./etc/bin/*}
 	@mkdir -p dist/toree/bin dist/toree/lib
 	@cp -r etc/bin/* dist/toree/bin/.
 	@cp target/scala-2.10/$(ASSEMBLY_JAR) dist/toree/lib/.
-	@cp NOTICE dist/toree
-	@cp LICENSE dist/toree
 	@echo "VERSION: $(VERSION)" > $(VERSION_FILE)
 	@echo "COMMIT: $(COMMIT)" >> $(VERSION_FILE)
+
+dist/toree:
+	@mkdir -p dist/toree
+
+dist/legal: dist/toree/NOTICE dist/toree/LICENSE dist/toree/DISCLAIMER
+
+dist/toree/LICENSE: dist/toree
+	@cp LICENSE dist/toree/LICENSE
+
+dist/toree/NOTICE: dist/toree
+	@cp NOTICE dist/toree/NOTICE
+
+dist/toree/DISCLAIMER: dist/toree
+	@cp DISCLAIMER dist/toree/DISCLAIMER
+
 
 test-travis:
 	$(ENV_OPTS) sbt clean test -Dakka.test.timefactor=3
 	find $(HOME)/.sbt -name "*.lock" | xargs rm
 	find $(HOME)/.ivy2 -name "ivydata-*.properties" | xargs rm
 
-pip-release: DOCKER_WORKDIR=/srv/toree/dist
+pip-release: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 pip-release: dist
-	@cp -rf etc/pip_install/* dist/.
+	@mkdir -p dist/toree-pip
+	@cp -r dist/toree dist/toree-pip
+	@cp dist/toree/LICENSE dist/toree-pip/LICENSE
+	@cp dist/toree/NOTICE dist/toree-pip/NOTICE
+	@cp dist/toree/DISCLAIMER dist/toree-pip/DISCLAIMER
+	@cp -rf etc/pip_install/* dist/toree-pip/.
 	@$(GEN_PIP_PACKAGE_INFO)
 	@$(DOCKER) $(IMAGE) python setup.py sdist --dist-dir=.
 	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install toree-$(VERSION).tar.gz && jupyter toree install'
@@ -145,10 +162,11 @@ pip-release: dist
 audit:
 	@etc/tools/./check-licenses 
 
-bin-release: dist 
-	@(cd dist; tar -cvzf toree-$(VERSION)-binary-release.tar.gz toree)
+bin-release: dist
+	@mkdir dist/toree-bin
+	@(cd dist; tar -cvzf toree-bin/toree-$(VERSION)-binary-release.tar.gz toree)
 
-release: DOCKER_WORKDIR=/srv/toree/dist
+release: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 release: PYPI_REPO?=https://pypi.python.org/pypi
 release: PYPI_USER?=
 release: PYPI_PASSWORD?=
@@ -166,6 +184,6 @@ jupyter notebook --ip=* --no-browser
 endef
 
 export JUPYTER_COMMAND
-jupyter: DOCKER_WORKDIR=/srv/toree/dist
+jupyter: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 jupyter: .example-image pip-release
 	@$(DOCKER) -p 8888:8888  -e SPARK_OPTS="--master=local[4]" --user=root  $(EXAMPLE_IMAGE) bash -c "$$JUPYTER_COMMAND"
