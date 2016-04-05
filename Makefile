@@ -17,7 +17,7 @@
 
 .PHONY: help clean clean-dist build dev test test-travis release pip-release bin-release dev-binder .binder-image audit
 
-VERSION?=0.1.0.dev6
+VERSION?=0.1.0.dev6-incubating
 COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
 ifeq (, $(findstring dev, $(VERSION)))
 IS_SNAPSHOT?=false
@@ -40,7 +40,7 @@ docker run -it --rm \
 endef
 
 define GEN_PIP_PACKAGE_INFO
-printf "__version__ = '$(VERSION)'\n" >> dist/toree/_version.py
+printf "__version__ = '$(gitVERSION)'\n" >> dist/toree/_version.py
 printf "__commit__ = '$(COMMIT)'\n" >> dist/toree/_version.py
 endef
 
