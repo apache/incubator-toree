@@ -42,6 +42,7 @@ endef
 define GEN_PIP_PACKAGE_INFO
 printf "__version__ = '$(VERSION)'\n" >> dist/toree-pip/toree/_version.py
 printf "__commit__ = '$(COMMIT)'\n" >> dist/toree-pip/toree/_version.py
+endef
 
 USE_VAGRANT?=
 RUN_PREFIX=$(if $(USE_VAGRANT),vagrant ssh -c "cd $(VM_WORKDIR) && )
