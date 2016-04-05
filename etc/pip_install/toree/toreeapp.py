@@ -54,11 +54,11 @@ class ToreeInstall(InstallKernelSpec):
     spark_home = Unicode('/usr/local/spark', config=True,
         help='''Specify where the spark files can be found.'''
     )
-    kernel_name = Unicode('Toree', config=True,
+    kernel_name = Unicode('Apache Toree', config=True,
         help='Install the kernel spec with this name. This is also used as the base of the display name in jupyter.'
     )
     interpreters = Unicode('Scala', config=True,
-        help='A comma seperated list of the interpreters to install. The names of the interpreters are case sensitive.'
+        help='A comma separated list of the interpreters to install. The names of the interpreters are case sensitive.'
     )
     spark_opts = Unicode('', config=True,
         help='''Specify command line arguments to proxy for spark config.'''
@@ -102,10 +102,15 @@ class ToreeInstall(InstallKernelSpec):
             json.dump(kernel_spec.to_dict(), f, indent=2)
 
     def start(self):
+        self.log.info('Installing Apache Toree version {}'.format(__version__))
+
         self.sourcedir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+
+        disclaimer_file = open(os.path.join(self.sourcedir, 'DISCLAIMER'))
+        self.log.info('\n{}'.format(disclaimer_file.read()))
         for interpreter in self.interpreters.split(','):
             if interpreter in INTERPRETER_LANGUAGES:
-                self.log.info('Installing toree kernel with interpreter {}'.format(interpreter))
+                self.log.info('Creating kernel {}'.format(interpreter))
                 install_dir = self.kernel_spec_manager.install_kernel_spec(self.sourcedir,
                      kernel_name='{}_{}'.format(self.kernel_name, interpreter.lower()).replace(' ', '_'),
                      user=self.user,
@@ -119,11 +124,11 @@ class ToreeInstall(InstallKernelSpec):
 class ToreeApp(Application):
     version = __version__
     name = 'jupyter toree'
-    description = '''Functions for managing the Toree kernel.
-    This package was built with the following versions of Toree and Spark:
+    description = '''Functions for managing the Apache Toree kernel.
+    This package was built with the following versions of Apache Toree and Spark:
 
-    \tToree Version: {}
-    \tToree Build Commit: {}
+    \tApache Toree Version: {}
+    \tApache Toree Build Commit: {}
     '''.format(__version__, __commit__)
     examples = '''
     jupyter toree install - Installs the kernel as a Jupyter Kernel.
