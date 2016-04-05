@@ -167,12 +167,16 @@ bin-release: dist
 	@mkdir dist/toree-bin
 	@(cd dist; tar -cvzf toree-bin/toree-$(VERSION)-binary-release.tar.gz toree)
 
+src-release:
+	@mkdir -p dist/toree-src
+	@tar -X 'etc/.src-release-ignore' -cvzf dist/toree-src/toree-$(VERSION)-source-release.tar.gz .
+
 release: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 release: PYPI_REPO?=https://pypi.python.org/pypi
 release: PYPI_USER?=
 release: PYPI_PASSWORD?=
 release: PYPIRC=printf "[distutils]\nindex-servers =\n\tpypi\n\n[pypi]\nrepository: $(PYPI_REPO) \nusername: $(PYPI_USER)\npassword: $(PYPI_PASSWORD)" > ~/.pypirc;
-release: pip-release bin-release audit
+release: pip-release bin-release src-release audit
 	@$(DOCKER) $(IMAGE) bash -c '$(PYPIRC) pip install twine && \
 		python setup.py register -r $(PYPI_REPO) && \
 		twine upload -r pypi toree-$(VERSION).tar.gz'
