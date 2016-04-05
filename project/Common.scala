@@ -84,6 +84,18 @@ object Common {
     resolvers ++= buildResolvers,
 
     pomExtra :=
+      <parent>
+        <groupId>org.apache</groupId>
+        <artifactId>apache</artifactId>
+        <version>10</version>
+      </parent>
+      <licenses>
+        <license>
+          <name>Apache 2</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+          <distribution>repo</distribution>
+        </license>
+      </licenses>
       <url>http://toree.incubator.apache.org/</url>
       <scm>
         <connection>scm:git:git@github.com:apache/incubator-toree.git</connection>

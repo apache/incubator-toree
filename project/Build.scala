@@ -29,6 +29,7 @@ import com.typesafe.sbt.SbtGit.{GitKeys => git}
 import sbtassembly.AssemblyKeys._
 
 object Build extends Build with Settings with SubProjects with TestTasks {
+
   /**
    * Project encapsulating all other child projects.
    */
@@ -41,23 +42,10 @@ object Build extends Build with Settings with SubProjects with TestTasks {
         assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false),
         scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand",
         git.gitRemoteRepo := "git://git.apache.org/incubator-toree.git",
-        aggregate in assembly := false,
-        pomExtra :=
-          <parent>
-            <groupId>org.apache</groupId>
-            <artifactId>apache</artifactId>
-            <version>10</version>
-          </parent>
-            <licenses>
-              <license>
-                <name>Apache 2</name>
-                <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-                <distribution>repo</distribution>
-              </license>
-            </licenses>
+        aggregate in assembly := false
       )
     )
-  ).aggregate(
+).aggregate(
     client, kernel, kernel_api, communication, protocol, macros, 
     pyspark_interpreter, scala_interpreter, sparkr_interpreter, sql_interpreter, 
     plugins
