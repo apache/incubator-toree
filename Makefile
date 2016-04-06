@@ -161,15 +161,18 @@ pip-release: dist
 	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install toree-$(VERSION).tar.gz && jupyter toree install'
 
 audit:
-	@etc/tools/./check-licenses 
+	@etc/tools/./check-licenses
+	@etc/tools/./verify-release dist/toree-bin dist/toree-src
 
 bin-release: dist
 	@mkdir dist/toree-bin
 	@(cd dist; tar -cvzf toree-bin/toree-$(VERSION)-binary-release.tar.gz toree)
+	@etc/tools/./sign-file dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
 
 src-release:
 	@mkdir -p dist/toree-src
 	@tar -X 'etc/.src-release-ignore' -cvzf dist/toree-src/toree-$(VERSION)-source-release.tar.gz .
+	@etc/tools/./sign-file dist/toree-src/toree-$(VERSION)-source-release.tar.gz
 
 release: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 release: PYPI_REPO?=https://pypi.python.org/pypi

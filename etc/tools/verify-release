@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+which gpg > /dev/null
+if [[ "$?" -ne "0" ]]; then
+	echo "ERROR:	gpg not installed!
+Please install via your system's package manager or from the gnu site,
+https://www.gnupg.org/download/. Once installed, follow the Apache guidelines
+for making your key, http://www.apache.org/dev/openpgp.html."
+	exit 1
+fi
+
+FWDIR="$(cd `dirname $0`/../..; pwd)"
+if [ ! -d "${FWDIR}"  ]; then
+    echo "ERROR: ${FWDIR} does not exist, cannot sign files"
+    exit 1
+fi
+results="Signature And Checksum Audit:"
+for directory in "$@"
+do
+	
+	# For all the files in the directory which are not signatures or checksums
+	for file_to_verify in `find ${FWDIR}/${directory} -type f -not -name *.asc -not -name *.md5 -not -name *.sha -maxdepth 1`; do
+		results="${results}\n${file_to_verify}"
+		 
+		# Verify the signature exists
+		if [[ -f "${file_to_verify}.asc"  ]]; then
+			gpg --verify "${file_to_verify}.asc" &> /dev/null
+			sig_result=$?
+			# Verify the signature is valid
+			if [[ "${sig_result}" -ne "0" ]]; then
+				echo "ERROR: Signature ${file_to_verify} was not valid!"
+				results="${results}\n\tx `basename ${file_to_verify}.asc`"
+				failure=true
+			else
+				results="${results}\n\t✓ `basename ${file_to_verify}.asc`"
+			fi
+		else
+			echo "ERROR: Signature not found for ${file_to_verify}"
+			results="${results}\n\tx `basename ${file_to_verify}.asc`"
+			failure=true
+		fi
+		
+		# Verify the SHA512 checksum is present
+		if [[ -f "${file_to_verify}.sha"  ]]; then
+			hash_result=`gpg --print-md SHA512 "${file_to_verify}"`
+			hash_to_verify=`cat "${file_to_verify}.sha"`
+
+			# Verify the SHA512 checksum is correct
+			if [[ "${hash_result}" != "${hash_to_verify}" ]]; then
+				echo "ERROR: SHA checksum of ${file_to_verify} does not match!"
+				results="${results}\n\tx `basename ${file_to_verify}.sha`"
+				failure=true
+			else
+				results="${results}\n\t✓ `basename ${file_to_verify}.sha`"
+			fi
+		else
+			echo "ERROR: SHA checksum for ${file_to_verify} does not exist!"
+			results="${results}\n\tx `basename ${file_to_verify}.sha`"
+			failure=true
+		fi
+	
+		# Verify the MD5 checksum is present
+		if [[ -f "${file_to_verify}.md5"  ]]; then
+			hash_result=`gpg --print-md MD5 "${file_to_verify}"`
+			hash_to_verify=`cat "${file_to_verify}.md5"`
+			
+			# Verify the MD5 checksum is correct
+			if [[ "${hash_result}" != "${hash_to_verify}" ]]; then
+				echo "ERROR: MD5 checksum of ${file_to_verify} does not match!"
+				results="${results}\n\tx `basename ${file_to_verify}.md5`"
+				failure=true
+			else
+				results="${results}\n\t✓ `basename ${file_to_verify}.md5`"
+			fi
+		else
+			echo "ERROR: MD5 checksum for ${file_to_verify} does not exist!"
+			results="${results}\n\tx `basename ${file_to_verify}.md5`"
+			failure=true
+		fi
+		
+	done
+done
+
+
+printf "${results}\n"
+
+if [ "${failure}" = true ]; then
+	exit 1
+else
+	exit 0
+fi
+
+
+

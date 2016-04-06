@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# Check if gpg is installed
+which gpg > /dev/null
+if [[ "$?" -ne "0" ]]; then
+	echo "ERROR:	gpg not installed!
+Please install via your system's package manager or from the gnu site, 
+https://www.gnupg.org/download/. Once installed, follow the Apache guidelines 
+for making your key, http://www.apache.org/dev/openpgp.html."
+	exit 1
+fi
+
+FWDIR="$(cd `dirname $0`/../../; pwd)"
+
+file_to_sign="${FWDIR}/$1"
+if [[ -f "${file_to_sign}"  ]]; then
+		echo "Generating signature and sums for ${file_to_sign}"
+		gpg --armor --output "${file_to_sign}.asc" --detach-sig "${file_to_sign}"
+		gpg --print-md MD5 "${file_to_sign}" >  "${file_to_sign}.md5"
+		gpg --print-md SHA512 "${file_to_sign}" >  "${file_to_sign}.sha"
+		exit 0
+else
+	echo "ERROR: File ${file_to_sign} does not exist"
+	exit 1
+fi
