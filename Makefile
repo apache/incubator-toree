@@ -120,36 +120,42 @@ test:
 sbt-%:
 	$(call RUN,$(ENV_OPTS) sbt $(subst sbt-,,$@) )
 
-dist: VERSION_FILE=dist/toree/VERSION
-dist: dist/toree dist/legal target/scala-2.10/$(ASSEMBLY_JAR) ${shell find ./etc/bin/*}
-	@mkdir -p dist/toree/bin dist/toree/lib
-	@cp -r etc/bin/* dist/toree/bin/.
+dist/toree/lib: target/scala-2.10/$(ASSEMBLY_JAR)
+	@mkdir -p dist/toree/lib
 	@cp target/scala-2.10/$(ASSEMBLY_JAR) dist/toree/lib/.
-	@echo "VERSION: $(VERSION)" > $(VERSION_FILE)
-	@echo "COMMIT: $(COMMIT)" >> $(VERSION_FILE)
 
-dist/toree:
+dist/toree/bin: ${shell find ./etc/bin/*}
+	@mkdir -p dist/toree/bin
+	@cp -r etc/bin/* dist/toree/bin/.
+
+dist/toree/VERSION:
 	@mkdir -p dist/toree
+	@echo "VERSION: $(VERSION)" > dist/toree/VERSION
+	@echo "COMMIT: $(COMMIT)" >> dist/toree/VERSION
 
-dist/legal: dist/toree/NOTICE dist/toree/LICENSE dist/toree/DISCLAIMER
-
-dist/toree/LICENSE: dist/toree
+dist/toree/LICENSE:
+	@mkdir -p dist/toree
 	@cp LICENSE dist/toree/LICENSE
 
-dist/toree/NOTICE: dist/toree
+dist/toree/NOTICE:
+	@mkdir -p dist/toree
 	@cp NOTICE dist/toree/NOTICE
 
-dist/toree/DISCLAIMER: dist/toree
+dist/toree/DISCLAIMER:
+	@mkdir -p dist/toree
 	@cp DISCLAIMER dist/toree/DISCLAIMER
 
+dist/toree: dist/toree/VERSION dist/toree/NOTICE dist/toree/LICENSE dist/toree/DISCLAIMER dist/toree/lib dist/toree/bin
+
+dist: dist/toree
 
 test-travis:
 	$(ENV_OPTS) sbt clean test -Dakka.test.timefactor=3
 	find $(HOME)/.sbt -name "*.lock" | xargs rm
 	find $(HOME)/.ivy2 -name "ivydata-*.properties" | xargs rm
 
-pip-release: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
-pip-release: dist
+dist/toree-pip/toree-$(VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
+dist/toree-pip/toree-$(VERSION).tar.gz: dist/toree
 	@mkdir -p dist/toree-pip
 	@cp -r dist/toree dist/toree-pip
 	@cp dist/toree/LICENSE dist/toree-pip/LICENSE
@@ -160,26 +166,42 @@ pip-release: dist
 	@$(DOCKER) $(IMAGE) python setup.py sdist --dist-dir=.
 	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install toree-$(VERSION).tar.gz && jupyter toree install'
 
-audit:
-	@etc/tools/./check-licenses
-	@etc/tools/./verify-release dist/toree-bin dist/toree-src
+pip-release: dist/toree-pip/toree-$(VERSION).tar.gz
 
-bin-release: dist
-	@mkdir dist/toree-bin
+dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz: dist/toree
+	@mkdir -p dist/toree-bin
 	@(cd dist; tar -cvzf toree-bin/toree-$(VERSION)-binary-release.tar.gz toree)
-	@etc/tools/./sign-file dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
 
-src-release:
+bin-release: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+
+dist/toree-src/toree-$(VERSION)-source-release.tar.gz:
 	@mkdir -p dist/toree-src
 	@tar -X 'etc/.src-release-ignore' -cvzf dist/toree-src/toree-$(VERSION)-source-release.tar.gz .
+
+src-release: dist/toree-src/toree-$(VERSION)-source-release.tar.gz
+
+dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha:
 	@etc/tools/./sign-file dist/toree-src/toree-$(VERSION)-source-release.tar.gz
+
+sign-src: src-release dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha
+
+dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha:
+	@etc/tools/./sign-file dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+
+sign-bin: bin-release dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha
+
+sign: sign-bin sign-src
+
+audit: sign
+	@etc/tools/./check-licenses
+	@etc/tools/./verify-release dist/toree-bin dist/toree-src
 
 release: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 release: PYPI_REPO?=https://pypi.python.org/pypi
 release: PYPI_USER?=
 release: PYPI_PASSWORD?=
 release: PYPIRC=printf "[distutils]\nindex-servers =\n\tpypi\n\n[pypi]\nrepository: $(PYPI_REPO) \nusername: $(PYPI_USER)\npassword: $(PYPI_PASSWORD)" > ~/.pypirc;
-release: pip-release bin-release src-release audit
+release: pip-release bin-release src-release sign audit
 	@$(DOCKER) $(IMAGE) bash -c '$(PYPIRC) pip install twine && \
 		python setup.py register -r $(PYPI_REPO) && \
 		twine upload -r pypi toree-$(VERSION).tar.gz'
