@@ -8,3 +8,8 @@ have stabilized in a manner consistent with other successful ASF projects.
 While incubation status is not necessarily a reflection of the completeness
 or stability of the code, it does indicate that the project has yet to be
 fully endorsed by the ASF.
+
+Additionally, this release is not fully compliant with Apache release policy
+and includes a runtime dependency that is licensed as LGPL v3 (plus a static
+linking exception). This package is currently under an effort to re-license
+(https://github.com/zeromq/jeromq/issues/327).
