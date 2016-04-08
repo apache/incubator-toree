@@ -13,7 +13,7 @@ GNU General Lesser Public License (LGPL) version 3.0
 
 Direct dependencies
 
-   org.zeromq:jeromq:0.3.4 -> https://github.com/zeromq/jeromq/blob/master/COPYING, https://github.com/zeromq/jeromq/blob/master/COPYING.LESSER
+   org.zeromq:jeromq:0.3.4 -> https://github.com/zeromq/jeromq/blob/master/COPYING and licenses/COPYING, https://github.com/zeromq/jeromq/blob/master/COPYING.LESSER and licenses/COPYING.LESSER
 
 ========================================================================
 BSD-like
@@ -21,22 +21,22 @@ BSD-like
 
 Direct dependencies
 
-   org.clapper:classutil_2.10:1.0.3 -> http://software.clapper.org/javautil/#copyright-and-license
-   org.scala-lang:scala-reflect:2.10.4 -> http://www.scala-lang.org/license.html
-   org.scalamacros:quasiquotes_2.10:2.0.1 -> http://www.scala-lang.org/license.html
+   org.clapper:classutil_2.10:1.0.3 -> http://software.clapper.org/javautil/#copyright-and-license and licenses/LICENSE-clapper.txt
+   org.scala-lang:scala-reflect:2.10.4 -> http://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
+   org.scalamacros:quasiquotes_2.10:2.0.1 -> http://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
 
 Transitive Dependencies
 
-   jline:jline:2.6 -> https://github.com/jline/jline2/blob/master/LICENSE.txt
-   org.clapper:grizzled-scala_2.10:1.1.2 -> http://software.clapper.org/grizzled-scala/#copyright-and-license
-   org.clapper:grizzled-slf4j_2.10:1.0.1 -> http://software.clapper.org/grizzled-slf4j/#copyright-and-license
-   org.scala-stm:scala-stm_2.10:0.7 -> https://nbronson.github.io/scala-stm/license.html
-   org.scalaz:scalaz-concurrent_2.10:7.1.2 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE
-   org.scalaz:scalaz-core_2.10:7.1.2 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE
-   org.scalaz:scalaz-effect_2.10:7.1.2 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE
-   asm:asm-commons:3.3 -> http://asm.ow2.org/license.html
-   asm:asm-tree:3.3 -> http://asm.ow2.org/license.html
-   asm:asm:3.3 -> http://asm.ow2.org/license.html
+   jline:jline:2.6 -> https://github.com/jline/jline2/blob/master/LICENSE.txt and licenses/LICENSE-jline.txt
+   org.clapper:grizzled-scala_2.10:1.1.2 -> http://software.clapper.org/grizzled-scala/#copyright-and-license and licenses/LICENSE-clapper.txt
+   org.clapper:grizzled-slf4j_2.10:1.0.1 -> http://software.clapper.org/grizzled-slf4j/#copyright-and-license and licenses/LICENSE-clapper.txt
+   org.scala-stm:scala-stm_2.10:0.7 -> https://nbronson.github.io/scala-stm/license.html and licenses/LICENSE-scala-stm.txt
+   org.scalaz:scalaz-concurrent_2.10:7.1.2 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE and licenses/LICENSE-scalaz.txt
+   org.scalaz:scalaz-core_2.10:7.1.2 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE and licenses/LICENSE-scalaz.txt
+   org.scalaz:scalaz-effect_2.10:7.1.2 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE and licenses/LICENSE-scalaz.txt
+   asm:asm-commons:3.3 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
+   asm:asm-tree:3.3 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
+   asm:asm:3.3 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
 
 ========================================================================
 MIT license
@@ -44,10 +44,10 @@ MIT license
 
 Direct dependencies
 
-   net.sf.jopt-simple:jopt-simple:4.6 -> https://pholser.github.io/jopt-simple/license.html
-   org.slf4j:slf4j-api:1.7.5 -> http://www.slf4j.org/license.html
-   org.slf4j:slf4j-api:1.7.1 -> http://www.slf4j.org/license.html
+   net.sf.jopt-simple:jopt-simple:4.6 -> https://pholser.github.io/jopt-simple/license.html and licenses/LICENSE-jopt-simple.txt
+   org.slf4j:slf4j-api:1.7.5 -> http://www.slf4j.org/license.html and licenses/LICENSE-slf4j.txt
+   org.slf4j:slf4j-api:1.7.1 -> http://www.slf4j.org/license.html and licenses/LICENSE-slf4j.txt
 
 Transitive Dependencies
 
-   com.lihaoyi:ammonite-terminal_2.10:0.5.0 -> https://github.com/lihaoyi/Ammonite/blob/master/LICENSE
+   com.lihaoyi:ammonite-terminal_2.10:0.5.0 -> https://github.com/lihaoyi/Ammonite/blob/master/LICENSE and licenses/LICENSE-ammonite.txt

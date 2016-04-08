@@ -138,8 +138,6 @@ dist/toree-legal/LICENSE: LICENSE etc/legal/LICENSE_extras
 	@cat LICENSE > dist/toree-legal/LICENSE
 	@echo '\n' >> dist/toree-legal/LICENSE
 	@cat etc/legal/LICENSE_extras >> dist/toree-legal/LICENSE
-	@cp etc/legal/COPYING dist/toree-legal/COPYING
-	@cp etc/legal/COPYING.LESSER dist/toree-legal/COPYING.LESSER
 
 dist/toree-legal/NOTICE: NOTICE etc/legal/NOTICE_extras
 	@mkdir -p dist/toree-legal
@@ -152,9 +150,10 @@ dist/toree-legal/DISCLAIMER:
 	@cp DISCLAIMER dist/toree-legal/DISCLAIMER
 
 dist/toree-legal: dist/toree-legal/LICENSE dist/toree-legal/NOTICE dist/toree-legal/DISCLAIMER
+	@cp -R etc/legal/licenses dist/toree-legal/.
 
 dist/toree: dist/toree-legal dist/toree/lib dist/toree/bin
-	@cp dist/toree-legal/* dist/toree
+	@cp -R dist/toree-legal/* dist/toree
 
 dist: dist/toree
 
@@ -170,8 +169,7 @@ dist/toree-pip/toree-$(VERSION).tar.gz: dist/toree
 	@cp dist/toree/LICENSE dist/toree-pip/LICENSE
 	@cp dist/toree/NOTICE dist/toree-pip/NOTICE
 	@cp dist/toree/DISCLAIMER dist/toree-pip/DISCLAIMER
-	@cp dist/toree/COPYING dist/toree-pip/COPYING
-	@cp dist/toree/COPYING.LESSER dist/toree-pip/COPYING.LESSER
+	@cp -R dist/toree/licenses dist/toree-pip/licenses
 	@cp -rf etc/pip_install/* dist/toree-pip/.
 	@$(GEN_PIP_PACKAGE_INFO)
 	@$(DOCKER) $(IMAGE) python setup.py sdist --dist-dir=.

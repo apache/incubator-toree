@@ -10,4 +10,5 @@ metastore_db
 .ensime_cache/*
 LICENSE_extras
 NOTICE_extras
+licenses
 
