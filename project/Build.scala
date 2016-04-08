@@ -42,7 +42,9 @@ object Build extends Build with Settings with SubProjects with TestTasks {
         assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false),
         scalacOptions in (ScalaUnidoc, unidoc) += "-Ymacro-no-expand",
         git.gitRemoteRepo := "git://git.apache.org/incubator-toree.git",
-        aggregate in assembly := false
+        aggregate in assembly := false,
+        unmanagedResourceDirectories in Compile += { baseDirectory.value / "dist/toree-legal" }
+
       )
     )
 ).aggregate(

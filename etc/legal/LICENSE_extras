@@ -1,0 +1,53 @@
+=======================================================================
+Apache Toree External Dependencies:
+
+The Apache Toree project contains several external dependencies with
+separate copyright notices and license terms. Your use of this bundled
+package is subject to the terms and conditions of the following
+licenses.
+
+========================================================================
+GNU General Lesser Public License (LGPL) version 3.0
+(plus a static linking exception)
+========================================================================
+
+Direct dependencies
+
+   org.zeromq:jeromq:0.3.4 -> https://github.com/zeromq/jeromq/blob/master/COPYING, https://github.com/zeromq/jeromq/blob/master/COPYING.LESSER
+
+========================================================================
+BSD-like
+========================================================================
+
+Direct dependencies
+
+   org.clapper:classutil_2.10:1.0.3 -> http://software.clapper.org/javautil/#copyright-and-license
+   org.scala-lang:scala-reflect:2.10.4 -> http://www.scala-lang.org/license.html
+   org.scalamacros:quasiquotes_2.10:2.0.1 -> http://www.scala-lang.org/license.html
+
+Transitive Dependencies
+
+   jline:jline:2.6 -> https://github.com/jline/jline2/blob/master/LICENSE.txt
+   org.clapper:grizzled-scala_2.10:1.1.2 -> http://software.clapper.org/grizzled-scala/#copyright-and-license
+   org.clapper:grizzled-slf4j_2.10:1.0.1 -> http://software.clapper.org/grizzled-slf4j/#copyright-and-license
+   org.scala-stm:scala-stm_2.10:0.7 -> https://nbronson.github.io/scala-stm/license.html
+   org.scalaz:scalaz-concurrent_2.10:7.1.2 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE
+   org.scalaz:scalaz-core_2.10:7.1.2 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE
+   org.scalaz:scalaz-effect_2.10:7.1.2 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE
+   asm:asm-commons:3.3 -> http://asm.ow2.org/license.html
+   asm:asm-tree:3.3 -> http://asm.ow2.org/license.html
+   asm:asm:3.3 -> http://asm.ow2.org/license.html
+
+========================================================================
+MIT license
+========================================================================
+
+Direct dependencies
+
+   net.sf.jopt-simple:jopt-simple:4.6 -> https://pholser.github.io/jopt-simple/license.html
+   org.slf4j:slf4j-api:1.7.5 -> http://www.slf4j.org/license.html
+   org.slf4j:slf4j-api:1.7.1 -> http://www.slf4j.org/license.html
+
+Transitive Dependencies
+
+   com.lihaoyi:ammonite-terminal_2.10:0.5.0 -> https://github.com/lihaoyi/Ammonite/blob/master/LICENSE

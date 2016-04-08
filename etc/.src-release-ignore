@@ -8,4 +8,6 @@ examples
 metastore_db
 .ensime/*
 .ensime_cache/*
+LICENSE_extras
+NOTICE_extras
 

@@ -1,4 +1,4 @@
 recursive-include toree/bin *
 recursive-include toree/lib *
 include toree/VERSION toree/DISCLAIMER
-include LICENSE DISCLAIMER NOTICE
+include LICENSE DISCLAIMER NOTICE COPYING COPYING.LESSER

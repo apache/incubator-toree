@@ -96,7 +96,7 @@ dev-binder: .binder-image
 target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
 target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
-target/scala-2.10/$(ASSEMBLY_JAR): project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
+target/scala-2.10/$(ASSEMBLY_JAR): dist/toree-legal project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
 	$(call RUN,$(ENV_OPTS) sbt toree/assembly)
 
 build: target/scala-2.10/$(ASSEMBLY_JAR)
@@ -133,19 +133,28 @@ dist/toree/VERSION:
 	@echo "VERSION: $(VERSION)" > dist/toree/VERSION
 	@echo "COMMIT: $(COMMIT)" >> dist/toree/VERSION
 
-dist/toree/LICENSE:
-	@mkdir -p dist/toree
-	@cp LICENSE dist/toree/LICENSE
+dist/toree-legal/LICENSE: LICENSE etc/legal/LICENSE_extras
+	@mkdir -p dist/toree-legal
+	@cat LICENSE > dist/toree-legal/LICENSE
+	@echo '\n' >> dist/toree-legal/LICENSE
+	@cat etc/legal/LICENSE_extras >> dist/toree-legal/LICENSE
+	@cp etc/legal/COPYING dist/toree-legal/COPYING
+	@cp etc/legal/COPYING.LESSER dist/toree-legal/COPYING.LESSER
 
-dist/toree/NOTICE:
-	@mkdir -p dist/toree
-	@cp NOTICE dist/toree/NOTICE
+dist/toree-legal/NOTICE: NOTICE etc/legal/NOTICE_extras
+	@mkdir -p dist/toree-legal
+	@cat NOTICE > dist/toree-legal/NOTICE
+	@echo '\n' >> dist/toree-legal/NOTICE
+	@cat etc/legal/NOTICE_extras >> dist/toree-legal/NOTICE
 
-dist/toree/DISCLAIMER:
-	@mkdir -p dist/toree
-	@cp DISCLAIMER dist/toree/DISCLAIMER
+dist/toree-legal/DISCLAIMER:
+	@mkdir -p dist/toree-legal
+	@cp DISCLAIMER dist/toree-legal/DISCLAIMER
 
-dist/toree: dist/toree/VERSION dist/toree/NOTICE dist/toree/LICENSE dist/toree/DISCLAIMER dist/toree/lib dist/toree/bin
+dist/toree-legal: dist/toree-legal/LICENSE dist/toree-legal/NOTICE dist/toree-legal/DISCLAIMER
+
+dist/toree: dist/toree-legal dist/toree/lib dist/toree/bin
+	@cp dist/toree-legal/* dist/toree
 
 dist: dist/toree
 
@@ -161,6 +170,8 @@ dist/toree-pip/toree-$(VERSION).tar.gz: dist/toree
 	@cp dist/toree/LICENSE dist/toree-pip/LICENSE
 	@cp dist/toree/NOTICE dist/toree-pip/NOTICE
 	@cp dist/toree/DISCLAIMER dist/toree-pip/DISCLAIMER
+	@cp dist/toree/COPYING dist/toree-pip/COPYING
+	@cp dist/toree/COPYING.LESSER dist/toree-pip/COPYING.LESSER
 	@cp -rf etc/pip_install/* dist/toree-pip/.
 	@$(GEN_PIP_PACKAGE_INFO)
 	@$(DOCKER) $(IMAGE) python setup.py sdist --dist-dir=.
