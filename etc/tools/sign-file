@@ -18,9 +18,10 @@
 #
 
 # Check if gpg is installed
-which gpg > /dev/null
+echo "GPG is ${GPG} and file is ${1}"
+which ${GPG} > /dev/null
 if [[ "$?" -ne "0" ]]; then
-	echo "ERROR:	gpg not installed!
+	echo "ERROR:	gpg not installed at ${GPG}!
 Please install via your system's package manager or from the gnu site, 
 https://www.gnupg.org/download/. Once installed, follow the Apache guidelines 
 for making your key, http://www.apache.org/dev/openpgp.html."
@@ -32,9 +33,9 @@ FWDIR="$(cd `dirname $0`/../../; pwd)"
 file_to_sign="${FWDIR}/$1"
 if [[ -f "${file_to_sign}"  ]]; then
 		echo "Generating signature and sums for ${file_to_sign}"
-		gpg --armor --output "${file_to_sign}.asc" --detach-sig "${file_to_sign}"
-		gpg --print-md MD5 "${file_to_sign}" >  "${file_to_sign}.md5"
-		gpg --print-md SHA512 "${file_to_sign}" >  "${file_to_sign}.sha"
+		echo ${GPG_PASSWORD} | ${GPG} --passphrase-fd 0 --armor --output "${file_to_sign}.asc" --detach-sig "${file_to_sign}"
+		echo ${GPG_PASSWORD} | ${GPG} --passphrase-fd 0 --print-md MD5 "${file_to_sign}" >  "${file_to_sign}.md5"
+		echo ${GPG_PASSWORD} | ${GPG} --passphrase-fd 0 --print-md SHA512 "${file_to_sign}" >  "${file_to_sign}.sha"
 		exit 0
 else
 	echo "ERROR: File ${file_to_sign} does not exist"

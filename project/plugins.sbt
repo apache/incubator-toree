@@ -29,7 +29,7 @@ addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.1")
 
 // Provides the ability to list dependencies in a readable format using
 // `sbt dependencyTree`; there are other commands provided as well
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.4")
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
 
 // Provides abilit to create an uber-jar
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.0")
@@ -51,3 +51,6 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.3")
 
 // Provides alternative resolving/downloading over sbt
 addSbtPlugin("com.github.alexarchambault" % "coursier-sbt-plugin" % "1.0.0-M10")
+
+//  Used for signing jars published via `sbt publish-signed`
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")

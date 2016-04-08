@@ -29,6 +29,8 @@ endif
 APACHE_SPARK_VERSION?=1.6.1
 IMAGE?=jupyter/pyspark-notebook:8dfd60b729bf
 EXAMPLE_IMAGE?=apache/toree-examples
+GPG?=/usr/local/bin/gpg
+GPG_PASSWORD?=
 BINDER_IMAGE?=apache/toree-binder
 DOCKER_WORKDIR?=/srv/toree
 DOCKER_ARGS?=
@@ -189,17 +191,20 @@ dist/toree-src/toree-$(VERSION)-source-release.tar.gz:
 
 src-release: dist/toree-src/toree-$(VERSION)-source-release.tar.gz
 
-dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha:
-	@etc/tools/./sign-file dist/toree-src/toree-$(VERSION)-source-release.tar.gz
+dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha: dist/toree-src/toree-$(VERSION)-source-release.tar.gz
+	@GPG_PASSWORD=$(GPG_PASSWORD) GPG=$(GPG) etc/tools/./sign-file dist/toree-src/toree-$(VERSION)-source-release.tar.gz
 
-sign-src: src-release dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha
+sign-src: dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha
 
-dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha:
-	@etc/tools/./sign-file dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+	@GPG_PASSWORD=$(GPG_PASSWORD) GPG=$(GPG) etc/tools/./sign-file dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
 
-sign-bin: bin-release dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha
+sign-bin: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha
 
-sign: sign-bin sign-src
+sign:  sign-bin sign-src
+
+publish-release:
+	@GPG_PASSWORD=$(GPG_PASSWORD) GPG=$(GPG) sbt publish-local-signed
 
 audit: sign
 	@etc/tools/./check-licenses

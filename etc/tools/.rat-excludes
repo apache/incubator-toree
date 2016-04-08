@@ -33,6 +33,8 @@ DESCRIPTION
 .*\.md5
 .*\.asc
 .*\.sha
+NOTICE_extras
+LICENSE_extras
 
 # Auto-generated files and directories
 .*iml

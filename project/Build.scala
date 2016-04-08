@@ -67,8 +67,7 @@ trait Settings {
   lazy val fullSettings =
     Common.settings ++ Seq(
       ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := false
-    ) ++
-    net.virtualvoid.sbt.graph.Plugin.graphSettings
+    )
 }
 
 /**

@@ -19,13 +19,15 @@ import org.apache.commons.io.FileUtils
 import sbt._
 import Keys._
 import coursier.Keys._
-
+import com.typesafe.sbt.pgp.PgpKeys._
 import scala.util.{Try, Properties}
 
 object Common {
   //  Parameters for publishing to artifact repositories
   val versionNumber             = Properties.envOrElse("VERSION", "0.0.0-dev")
   val snapshot                  = Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
+  val gpgLocation               = Properties.envOrElse("GPG","/usr/local/bin/gpg")
+  val gpgPassword               = Properties.envOrElse("GPG_PASSWORD","")
 
   private val buildOrganization = "org.apache.toree"
   private val buildVersion      =
@@ -77,6 +79,9 @@ object Common {
 
   val settings: Seq[Def.Setting[_]] = Seq(
     organization := buildOrganization,
+    useGpg := true,
+    gpgCommand := gpgLocation,
+    pgpPassphrase in Global := Some(gpgPassword.toArray),
     version := buildVersion,
     scalaVersion := buildScalaVersion,
     libraryDependencies ++= buildLibraryDependencies,
