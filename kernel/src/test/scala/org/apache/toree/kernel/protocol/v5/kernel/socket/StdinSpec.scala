@@ -32,6 +32,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
+import test.utils.MaxAkkaTestTimeout
 
 object StdinSpec {
   val config ="""
@@ -77,7 +78,7 @@ class StdinSpec extends TestKit(ActorSystem(
 
         val kernelMessage: KernelMessage = MockZMQMessage
 
-        relayProbe.expectMsg((zmqStrings, kernelMessage))
+        relayProbe.expectMsg(MaxAkkaTestTimeout, (zmqStrings, kernelMessage))
       }
     }
   }

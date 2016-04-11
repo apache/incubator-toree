@@ -26,8 +26,7 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import play.api.libs.json.Json
-
-import scala.concurrent.duration._
+import test.utils.MaxAkkaTestTimeout
 
 class StatusDispatchSpec extends TestKit(ActorSystem("StatusDispatchSystem"))
 with FunSpecLike with Matchers with MockitoSugar with BeforeAndAfter{
@@ -50,7 +49,7 @@ with FunSpecLike with Matchers with MockitoSugar with BeforeAndAfter{
       it("should send a status message to the relay") {
         statusDispatchRef ! KernelStatusType.Busy
         //  Check the kernel message is the correct type
-        val statusMessage: KernelMessage = relayProbe.receiveOne(500.milliseconds).asInstanceOf[KernelMessage]
+        val statusMessage: KernelMessage = relayProbe.receiveOne(MaxAkkaTestTimeout).asInstanceOf[KernelMessage]
         statusMessage.header.msg_type should be (MessageType.Outgoing.Status.toString)
         //  Check the status is what we sent
         val status: KernelStatus = Json.parse(statusMessage.contentString).as[KernelStatus]
@@ -63,7 +62,7 @@ with FunSpecLike with Matchers with MockitoSugar with BeforeAndAfter{
         val tuple = Tuple2(KernelStatusType.Busy, mock[Header])
         statusDispatchRef ! tuple
         //  Check the kernel message is the correct type
-        val statusMessage: KernelMessage = relayProbe.receiveOne(500.milliseconds).asInstanceOf[KernelMessage]
+        val statusMessage: KernelMessage = relayProbe.receiveOne(MaxAkkaTestTimeout).asInstanceOf[KernelMessage]
         statusMessage.header.msg_type should be (MessageType.Outgoing.Status.toString)
         //  Check the status is what we sent
         val status: KernelStatus = Json.parse(statusMessage.contentString).as[KernelStatus]

@@ -26,6 +26,7 @@ import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
+import test.utils.MaxAkkaTestTimeout
 
 object HeartbeatSpec {
   val config = """
@@ -49,7 +50,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
     describe("send heartbeat") {
       it("should receive and send same ZMQMessage") {
         heartbeat ! SomeZMQMessage
-        probe.expectMsg(SomeZMQMessage)
+        probe.expectMsg(MaxAkkaTestTimeout, SomeZMQMessage)
       }
     }
   }

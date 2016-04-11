@@ -26,8 +26,7 @@ import org.mockito.Mockito._
 import org.scalatest._
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.Json
-
-import scala.concurrent.duration._
+import test.utils._
 
 class KernelInputStreamSpec
   extends TestKit(ActorSystem("KernelInputStreamActorSystem"))
@@ -86,7 +85,7 @@ class KernelInputStreamSpec
         kernelInputStream.read()
 
         // Verify that a message was sent out requesting data
-        kernelInputOutputHandlerProbe.expectMsgPF() {
+        kernelInputOutputHandlerProbe.expectMsgPF(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, header, _, _, _)
             if header.msg_type == MessageType.Outgoing.InputRequest.toString =>
               true
@@ -101,7 +100,7 @@ class KernelInputStreamSpec
 
         // Verify that a message was sent out requesting data with the
         // specific prompt
-        kernelInputOutputHandlerProbe.expectMsgPF() {
+        kernelInputOutputHandlerProbe.expectMsgPF(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, header, _, _, contentString)
             if header.msg_type == MessageType.Outgoing.InputRequest.toString =>
             Json.parse(contentString).as[InputRequest].prompt should be (expected)
@@ -116,7 +115,7 @@ class KernelInputStreamSpec
 
         // Verify that a message was sent out requesting data with the
         // specific prompt
-        kernelInputOutputHandlerProbe.expectMsgPF() {
+        kernelInputOutputHandlerProbe.expectMsgPF(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, header, _, _, contentString)
             if header.msg_type == MessageType.Outgoing.InputRequest.toString =>
             Json.parse(contentString).as[InputRequest].password should be (expected)
@@ -135,8 +134,8 @@ class KernelInputStreamSpec
         for (i <- 1 to readLength)
           kernelInputStream.read() should be (TestReplyString.charAt(i - 1))
 
-        kernelInputOutputHandlerProbe.expectMsgClass(classOf[KernelMessage])
-        kernelInputOutputHandlerProbe.expectNoMsg(300.milliseconds)
+        kernelInputOutputHandlerProbe.expectMsgClass(MaxAkkaTestTimeout, classOf[KernelMessage])
+        kernelInputOutputHandlerProbe.expectNoMsg(MaxAkkaTestTimeout)
       }
     }
   }

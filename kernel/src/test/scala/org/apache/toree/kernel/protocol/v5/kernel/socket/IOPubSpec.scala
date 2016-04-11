@@ -28,6 +28,7 @@ import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
+import test.utils.MaxAkkaTestTimeout
 
 object IOPubSpec {
   val config ="""
@@ -53,7 +54,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val MockZMQMessage : ZMQMessage = MockKernelMessage
 
         socket ! MockKernelMessage
-        probe.expectMsg(MockZMQMessage)
+        probe.expectMsg(MaxAkkaTestTimeout, MockZMQMessage)
       }
     }
   }

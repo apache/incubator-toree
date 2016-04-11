@@ -23,8 +23,7 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import play.api.libs.json.Json
-import scala.concurrent.duration._
-
+import test.utils.MaxAkkaTestTimeout
 import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestProbe, TestKit}
 import com.typesafe.config.ConfigFactory
@@ -59,7 +58,7 @@ class KernelCommWriterSpec extends TestKit(
    * @return The KernelMessage instance (or an error if timed out)
    */
   private def getNextMessage =
-    kernelMessageRelayProbe.receiveOne(200.milliseconds)
+    kernelMessageRelayProbe.receiveOne(MaxAkkaTestTimeout)
       .asInstanceOf[KernelMessage]
 
   /**

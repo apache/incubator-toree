@@ -23,8 +23,7 @@ import org.apache.toree.kernel.protocol.v5.{MessageType, SocketType}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 import test.utils.TestProbeProxyActor
-
-import scala.concurrent.duration._
+import test.utils.MaxAkkaTestTimeout
 
 class ActorLoaderSpec extends TestKit(ActorSystem("ActorLoaderSpecSystem"))
 with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
@@ -43,11 +42,11 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
         actorLoader.load(MessageType.Outgoing.CompleteReply) ! "<Test Message>"
-        testProbe.expectNoMsg(25.millis)
+        testProbe.expectNoMsg(MaxAkkaTestTimeout)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe),
           MessageType.Outgoing.CompleteReply.toString)
-        testProbe.expectNoMsg(25.millis)
+        testProbe.expectNoMsg(MaxAkkaTestTimeout)
       }
     }
     describe("#load( SocketType )"){
@@ -63,10 +62,10 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
         actorLoader.load(SocketType.IOPub) ! "<Test Message>"
-        testProbe.expectNoMsg(25.millis)
+        testProbe.expectNoMsg(MaxAkkaTestTimeout)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), SocketType.IOPub.toString)
-        testProbe.expectNoMsg(25.millis)
+        testProbe.expectNoMsg(MaxAkkaTestTimeout)
       }
 
     }

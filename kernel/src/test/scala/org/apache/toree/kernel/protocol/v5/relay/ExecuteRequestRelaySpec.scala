@@ -18,7 +18,6 @@
 package org.apache.toree.kernel.protocol.v5.relay
 
 import java.io.OutputStream
-
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError}
@@ -32,6 +31,7 @@ import org.apache.toree.plugins.dependencies.DependencyManager
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import test.utils.MaxAkkaTestTimeout
 
 object ExecuteRequestRelaySpec {
   val config = """
@@ -95,6 +95,7 @@ class ExecuteRequestRelaySpec extends TestKit(
         interpreterActorProbe.reply(Right(expected))
 
         expectMsg(
+          MaxAkkaTestTimeout,
           (ExecuteReplyAbort(1), ExecuteResult(1, Data(), Metadata()))
         )
       }
@@ -131,11 +132,14 @@ class ExecuteRequestRelaySpec extends TestKit(
         // Reply with an error
         interpreterActorProbe.reply(Right(expected))
 
-        expectMsg((
-          ExecuteReplyError(1, Some(expected.name), Some(expected.value),
+        expectMsg(
+          MaxAkkaTestTimeout,
+          (
+            ExecuteReplyError(1, Some(expected.name), Some(expected.value),
             Some(expected.stackTrace.map(_.toString).toList)),
-          ExecuteResult(1, Data("text/plain" -> expected.toString), Metadata())
-        ))
+            ExecuteResult(1, Data("text/plain" -> expected.toString), Metadata())
+          )
+        )
       }
 
       it("should return an (ExecuteReply, ExecuteResult) on interpreter " +
@@ -167,16 +171,20 @@ class ExecuteRequestRelaySpec extends TestKit(
         // Expected does not actually match real return of interpreter, which
         // is a tuple of ExecuteReply and ExecuteResult
         interpreterActorProbe.expectMsgClass(
+          MaxAkkaTestTimeout,
           classOf[(ExecuteRequest, KernelMessage, OutputStream)]
         )
 
         // Reply with a successful interpret
         interpreterActorProbe.reply(Left(expected))
 
-        expectMsg((
-          ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
-          ExecuteResult(1, Data(MIMEType.PlainText -> expected), Metadata())
-        ))
+        expectMsg(
+          MaxAkkaTestTimeout,
+          (
+            ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
+            ExecuteResult(1, Data(MIMEType.PlainText -> expected), Metadata())
+          )
+        )
       }
     }
   }

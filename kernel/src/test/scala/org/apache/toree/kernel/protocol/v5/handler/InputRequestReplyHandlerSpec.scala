@@ -19,7 +19,6 @@ package org.apache.toree.kernel.protocol.v5.handler
 
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-
 import akka.actor.{Props, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import org.apache.toree.kernel.protocol.v5.content.InputReply
@@ -29,8 +28,7 @@ import org.scalatest.concurrent.Eventually
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.time.{Milliseconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
-import scala.concurrent.duration._
-
+import test.utils.MaxAkkaTestTimeout
 import org.mockito.Mockito._
 
 import collection.JavaConverters._
@@ -90,7 +88,7 @@ class InputRequestReplyHandlerSpec
 
         fakeSender.send(inputRequestReplyHandler, inputRequestMessage)
 
-        kernelMessageRelayProbe.expectMsg(inputRequestMessage)
+        kernelMessageRelayProbe.expectMsg(MaxAkkaTestTimeout, inputRequestMessage)
       }
 
       it("should send the received message value to the stored sender with " +
@@ -113,7 +111,7 @@ class InputRequestReplyHandlerSpec
         fakeSender.send(inputRequestReplyHandler, inputReplyMessage)
 
         // Sender should receive a response
-        fakeSender.expectMsg(expected)
+        fakeSender.expectMsg(MaxAkkaTestTimeout, expected)
       }
 
       it("should do nothing if the session is not found for input_reply") {
@@ -132,7 +130,7 @@ class InputRequestReplyHandlerSpec
         fakeSender.send(inputRequestReplyHandler, inputReplyMessage)
 
         // Sender should not receive a response
-        fakeSender.expectNoMsg(300.milliseconds)
+        fakeSender.expectNoMsg(MaxAkkaTestTimeout)
       }
     }
   }

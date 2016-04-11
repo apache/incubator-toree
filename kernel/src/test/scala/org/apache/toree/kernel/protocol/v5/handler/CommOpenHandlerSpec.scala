@@ -31,8 +31,7 @@ import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
-
-import scala.concurrent.duration._
+import test.utils.MaxAkkaTestTimeout
 
 class CommOpenHandlerSpec extends TestKit(
   ActorSystem("CommOpenHandlerSpec")
@@ -89,7 +88,7 @@ class CommOpenHandlerSpec extends TestKit(
           .build
 
         // Should receive a busy and an idle message
-        statusDispatchProbe.receiveN(2, 200.milliseconds)
+        statusDispatchProbe.receiveN(2, MaxAkkaTestTimeout)
 
         // Verify that the open callbacks were triggered along the way
         verify(mockCommCallbacks).executeOpenCallbacks(
@@ -107,7 +106,7 @@ class CommOpenHandlerSpec extends TestKit(
           .build
 
         // Should receive a close message as a result of the target missing
-        kernelMessageRelayProbe.expectMsgPF(200.milliseconds) {
+        kernelMessageRelayProbe.expectMsgPF(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, header, _, _, _) =>
             header.msg_type should be (CommClose.toTypeString)
         }
@@ -122,7 +121,7 @@ class CommOpenHandlerSpec extends TestKit(
 
         // TODO: Is there a better way to test for this without an upper time
         //       limit? Is there a different logical approach?
-        kernelMessageRelayProbe.expectNoMsg(200.milliseconds)
+        kernelMessageRelayProbe.expectNoMsg(MaxAkkaTestTimeout)
       }
 
       it("should include the parent's header in the parent header of " +
@@ -148,7 +147,7 @@ class CommOpenHandlerSpec extends TestKit(
         commOpenHandler ! msg
 
         // Verify that the message sent by the handler has the desired property
-        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+        kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, _, parentHeader, _, _) =>
             parentHeader == msg.header
         }

@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import org.apache.toree.kernel.api.{FactoryMethods, FactoryMethodsLike, Kernel}
+import org.apache.toree.kernel.api.{FactoryMethods, Kernel}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
@@ -36,7 +36,7 @@ import org.mockito.Matchers._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
-
+import test.utils.MaxAkkaTestTimeout
 class ExecuteRequestHandlerSpec extends TestKit(
   ActorSystem("ExecuteRequestHandlerSpec")
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
@@ -126,7 +126,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should send an execute result message if the result is not empty") {
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandlerWithOkAndResult()
-        kernelMessageRelayProbe.fishForMessage(100.milliseconds) {
+        kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, header, _, _, _) =>
             header.msg_type == ExecuteResult.toTypeString
         }
@@ -135,7 +135,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should not send an execute result message if there is no result") {
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandlerWithOk()
-        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+        kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, header, _, _, _) =>
             header.msg_type != ExecuteResult.toTypeString
         }
@@ -145,7 +145,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should send an execute reply message") {
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandlerWithOkAndResult()
-        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+        kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, header, _, _, _) =>
             header.msg_type == ExecuteResult.toTypeString
         }
@@ -160,7 +160,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         var statusReceived = false
 
         val f1 = future {
-          kernelMessageRelayProbe.fishForMessage(4.seconds) {
+          kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
             case KernelMessage(_, _, header, _, _, _) =>
               if (header.msg_type == ExecuteResult.toTypeString &&
                     !statusReceived)
@@ -173,7 +173,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
         }
 
         val f2 = future {
-          statusDispatchProbe.fishForMessage(4.seconds) {
+          statusDispatchProbe.fishForMessage(MaxAkkaTestTimeout) {
             case (status, header) =>
               if (status == KernelStatusIdle.toString)
                 statusReceived = true
@@ -189,7 +189,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
 
       it("should send an execute input message") {
         handlerActor ! MockExecuteRequestKernelMessage
-        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+        kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, header, _, _, _) =>
             header.msg_type == ExecuteInput.toTypeString
         }
@@ -198,7 +198,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should send a message with ids equal to the incoming " +
         "KernelMessage's ids") {
         handlerActor ! MockExecuteRequestKernelMessage
-        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+        kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
           case KernelMessage(ids, _, _, _, _, _) =>
             ids == MockExecuteRequestKernelMessage.ids
         }
@@ -207,7 +207,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should send a message with parent header equal to the incoming " +
         "KernelMessage's header") {
         handlerActor ! MockExecuteRequestKernelMessage
-        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+        kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, _, parentHeader, _, _) =>
             parentHeader == MockExecuteRequestKernelMessage.header
         }
@@ -240,7 +240,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should respond with an execute_reply with status error")    {
         handlerActor ! MockKernelMessageWithBadExecuteRequest
 
-        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+        kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
           // Only mark as successful if this specific message was received
           case KernelMessage(_, _, header, _, _, contentString)
             if header.msg_type == ExecuteReply.toTypeString =>
@@ -253,7 +253,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
       it("should send error message to relay") {
         handlerActor ! MockKernelMessageWithBadExecuteRequest
 
-        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+        kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
           // Only mark as successful if this specific message was received
           case KernelMessage(_, _, header, _, _, _)
             if header.msg_type == ErrorContent.toTypeString => true

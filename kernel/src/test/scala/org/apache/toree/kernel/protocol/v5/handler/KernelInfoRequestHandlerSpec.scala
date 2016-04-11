@@ -16,8 +16,7 @@
  */
 
 package org.apache.toree.kernel.protocol.v5.handler
-
-import akka.actor.{ActorRef, ActorSelection, ActorSystem, Props}
+import akka.actor.{ActorSelection, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import org.apache.toree.kernel.protocol.v5.content.KernelInfoReply
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
@@ -29,8 +28,7 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 import play.api.libs.json.Json
-
-import scala.concurrent.duration._
+import test.utils.MaxAkkaTestTimeout
 
 object KernelInfoRequestHandlerSpec {
   val config = """
@@ -62,7 +60,7 @@ class KernelInfoRequestHandlerSpec extends TestKit(
   describe("Kernel Info Request Handler") {
     it("should return a KernelMessage containing kernel info response") {
       actor ! kernelMessage
-      val reply = relayProbe.receiveOne(1.seconds).asInstanceOf[KernelMessage]
+      val reply = relayProbe.receiveOne(MaxAkkaTestTimeout).asInstanceOf[KernelMessage]
       val kernelInfo = Json.parse(reply.contentString).as[KernelInfoReply]
       kernelInfo.implementation should be ("spark")
     }

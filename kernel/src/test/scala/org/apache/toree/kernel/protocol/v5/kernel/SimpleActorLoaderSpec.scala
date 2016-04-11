@@ -22,6 +22,7 @@ import akka.testkit.{TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5.MessageType
 import org.scalatest.{FunSpecLike, Matchers}
 import test.utils.TestProbeProxyActor
+import test.utils.MaxAkkaTestTimeout
 
 class SimpleActorLoaderSpec extends TestKit(ActorSystem("SimpleActorLoaderSpecSystem"))
   with FunSpecLike with Matchers
@@ -51,7 +52,7 @@ class SimpleActorLoaderSpec extends TestKit(ActorSystem("SimpleActorLoaderSpecSy
         loadedMessageActor ! testMessage
 
         //  Assert the probe received the message
-        messageTypeProbe.expectMsg(testMessage)
+        messageTypeProbe.expectMsg(MaxAkkaTestTimeout, testMessage)
       }
     }
 

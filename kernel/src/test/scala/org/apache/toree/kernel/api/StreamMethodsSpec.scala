@@ -22,11 +22,9 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers, FunSpec}
+import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers}
 import play.api.libs.json.Json
-
-import scala.concurrent.duration._
-
+import test.utils.MaxAkkaTestTimeout
 import org.mockito.Mockito._
 
 class StreamMethodsSpec extends TestKit(
@@ -34,7 +32,6 @@ class StreamMethodsSpec extends TestKit(
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter
 {
-  private val MaxDuration = 300.milliseconds
 
   private var kernelMessageRelayProbe: TestProbe = _
   private var mockParentHeader: v5.ParentHeader = _
@@ -73,7 +70,7 @@ class StreamMethodsSpec extends TestKit(
 
         streamMethods.sendAll(expected)
 
-        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxDuration)
+        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxAkkaTestTimeout)
         val kernelMessage = outgoingMessage.asInstanceOf[KernelMessage]
 
         val actual = Json.parse(kernelMessage.contentString)

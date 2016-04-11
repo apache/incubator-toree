@@ -24,7 +24,8 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5Test._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{Matchers, FunSpecLike, FunSpec}
+import org.scalatest.{Matchers, FunSpecLike}
+import test.utils.MaxAkkaTestTimeout
 
 class GenericSocketMessageHandlerSpec extends TestKit(ActorSystem("GenericSocketMessageHandlerSystem"))
 with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
@@ -46,7 +47,7 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
       genericHandler ! MockKernelMessage
 
       it("should send the message to the selected actor"){
-        selectionProbe.expectMsg(MockKernelMessage)
+        selectionProbe.expectMsg(MaxAkkaTestTimeout, MockKernelMessage)
       }
     }
   }

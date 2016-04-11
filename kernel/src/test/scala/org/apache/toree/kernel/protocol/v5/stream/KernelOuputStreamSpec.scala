@@ -29,8 +29,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest._
 import play.api.libs.json._
 import org.apache.toree.kernel.protocol.v5.content.StreamContent
-
-import scala.concurrent.duration._
+import test.utils.MaxAkkaTestTimeout
 
 class KernelOuputStreamSpec
   extends TestKit(ActorSystem("KernelOutputStreamActorSystem"))
@@ -45,11 +44,6 @@ class KernelOuputStreamSpec
   //
   // SHARED ELEMENTS BETWEEN TESTS
   //
-
-  private val ExecutionCount = 3
-
-  private val MaxMessageTimeout = 1.second
-  private val MaxNoMessageTimeout = 200.milliseconds
 
   private val GeneratedTaskId = UUID.randomUUID().toString
 
@@ -124,7 +118,7 @@ class KernelOuputStreamSpec
         Then("it should be appended to the internal list")
         kernelOutputStream.flush()
         val message = kernelOutputRelayProbe
-          .receiveOne(MaxMessageTimeout).asInstanceOf[KernelMessage]
+          .receiveOne(MaxAkkaTestTimeout).asInstanceOf[KernelMessage]
         val executeResult = Json.parse(message.contentString).as[StreamContent]
         executeResult.text should be (expected.toString)
       }
@@ -205,7 +199,7 @@ class KernelOuputStreamSpec
         kernelOutputStream.flush()
 
         Then("no message should be sent")
-        kernelOutputRelayProbe.expectNoMsg(MaxNoMessageTimeout)
+        kernelOutputRelayProbe.expectNoMsg(MaxAkkaTestTimeout)
       }
 
       it("should send empty (whitespace) messages if flag is true") {
@@ -222,7 +216,7 @@ class KernelOuputStreamSpec
 
         Then("the whitespace message should have been sent")
         val message = kernelOutputRelayProbe
-          .receiveOne(MaxMessageTimeout).asInstanceOf[KernelMessage]
+          .receiveOne(MaxAkkaTestTimeout).asInstanceOf[KernelMessage]
         val actual = Json.parse(message.contentString).as[StreamContent].text
 
         actual should be (expected)
@@ -241,7 +235,7 @@ class KernelOuputStreamSpec
 
         Then("the ids should be set to execute_result")
         val message = kernelOutputRelayProbe
-          .receiveOne(MaxMessageTimeout).asInstanceOf[KernelMessage]
+          .receiveOne(MaxAkkaTestTimeout).asInstanceOf[KernelMessage]
         message.ids should be (Seq(MessageType.Outgoing.Stream.toString))
       }
 
@@ -258,7 +252,7 @@ class KernelOuputStreamSpec
 
         Then("the msg_type in the header should be execute_result")
         val message = kernelOutputRelayProbe
-          .receiveOne(MaxMessageTimeout).asInstanceOf[KernelMessage]
+          .receiveOne(MaxAkkaTestTimeout).asInstanceOf[KernelMessage]
         message.header.msg_type should be (MessageType.Outgoing.Stream.toString)
       }
 
@@ -275,7 +269,7 @@ class KernelOuputStreamSpec
 
         Then("the content string should have text/plain set to the string")
         val message = kernelOutputRelayProbe
-          .receiveOne(MaxMessageTimeout).asInstanceOf[KernelMessage]
+          .receiveOne(MaxAkkaTestTimeout).asInstanceOf[KernelMessage]
         val executeResult = Json.parse(message.contentString).as[StreamContent]
         executeResult.text should be (expected)
       }

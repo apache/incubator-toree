@@ -28,16 +28,13 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.interpreter.InterpreterActor
 import org.apache.toree.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
-import org.apache.toree.utils.{TaskManager, MultiOutputStream}
+import org.apache.toree.utils.MultiOutputStream
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
-import org.slf4j.Logger
 import test.utils.UncaughtExceptionSuppression
-
-import scala.concurrent.duration._
-import test.utils.SparkContextProvider
+import test.utils.MaxAkkaTestTimeout
 
 object InterpreterActorSpecForIntegration {
   val config = """
@@ -65,7 +62,6 @@ class InterpreterActorSpecForIntegration extends TestKit(
     .setMaster("local[*]")
     .setAppName("Test Kernel")
 
-  private var context: SparkContext = _
 
   before {
     output.reset()
@@ -106,7 +102,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
           ((executeRequest, mock[KernelMessage], mock[OutputStream]))
 
         val result =
-          receiveOne(5.seconds)
+          receiveOne(MaxAkkaTestTimeout)
             .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
 
         result.isLeft should be (true)
@@ -129,7 +125,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
           ((executeRequest, mock[KernelMessage], mock[OutputStream]))
 
         val result =
-          receiveOne(5.seconds)
+          receiveOne(MaxAkkaTestTimeout)
             .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
 
         result.isRight should be (true)

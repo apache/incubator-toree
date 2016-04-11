@@ -32,6 +32,7 @@ import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
+import test.utils.MaxAkkaTestTimeout
 
 object ShellSpec {
   val config ="""
@@ -77,7 +78,7 @@ class ShellSpec extends TestKit(ActorSystem("ShellActorSpec", ConfigFactory.pars
 
         val kernelMessage: KernelMessage = MockZMQMessage
 
-        relayProbe.expectMsg((zmqStrings, kernelMessage))
+        relayProbe.expectMsg(MaxAkkaTestTimeout, (zmqStrings, kernelMessage))
       }
     }
   }

@@ -31,12 +31,12 @@ import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import org.mockito.Matchers.{eq => mockEq}
 import org.mockito.AdditionalMatchers.{not => mockNot}
-import scala.concurrent.duration._
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import scala.concurrent._
 import akka.pattern.pipe
 import scala.util.Random
 import ExecutionContext.Implicits.global
+import test.utils._
 
 class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
@@ -61,8 +61,6 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
   private var signatureSelection: ActorSelection = _
   private var captureProbe: TestProbe = _
   private var captureSelection: ActorSelection = _
-  private var handlerProbe: TestProbe = _
-  private var handlerSelection: ActorSelection = _
   private var relayWithoutSignatureManager: ActorRef = _
   private var relayWithSignatureManager: ActorRef = _
 
@@ -100,24 +98,24 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
         it("should not send anything to SignatureManager for incoming") {
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager ! incomingKernelMessage
-          signatureProbe.expectNoMsg(25.millis)
+          signatureProbe.expectNoMsg(MaxAkkaTestTimeout)
         }
 
         it("should not send anything to SignatureManager for outgoing") {
           relayWithoutSignatureManager ! outgoingKernelMessage
-          signatureProbe.expectNoMsg(25.millis)
+          signatureProbe.expectNoMsg(MaxAkkaTestTimeout)
         }
 
         it("should relay KernelMessage for incoming") {
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager !
             ((incomingZmqStrings, incomingKernelMessage))
-          captureProbe.expectMsg(incomingKernelMessage)
+          captureProbe.expectMsg(MaxAkkaTestTimeout, incomingKernelMessage)
         }
 
         it("should relay KernelMessage for outgoing") {
           relayWithoutSignatureManager ! outgoingKernelMessage
-          captureProbe.expectMsg(outgoingKernelMessage)
+          captureProbe.expectMsg(MaxAkkaTestTimeout, outgoingKernelMessage)
         }
       }
 
@@ -125,12 +123,12 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
         it("should verify the signature if the message is incoming") {
           relayWithSignatureManager ! true // Mark as ready for incoming
           relayWithSignatureManager ! incomingKernelMessage
-          signatureProbe.expectMsg(incomingKernelMessage)
+          signatureProbe.expectMsg(MaxAkkaTestTimeout, incomingKernelMessage)
         }
 
         it("should construct the signature if the message is outgoing") {
           relayWithSignatureManager ! outgoingKernelMessage
-          signatureProbe.expectMsg(outgoingKernelMessage)
+          signatureProbe.expectMsg(MaxAkkaTestTimeout, outgoingKernelMessage)
         }
       }
 
@@ -139,12 +137,12 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
           val incomingMessage: ZMQMessage = incomingKernelMessage
 
           relayWithoutSignatureManager ! incomingMessage
-          captureProbe.expectNoMsg(25.millis)
+          captureProbe.expectNoMsg(MaxAkkaTestTimeout)
         }
 
         it("should relay the message if it is outgoing") {
           relayWithoutSignatureManager ! outgoingKernelMessage
-          captureProbe.expectMsg(outgoingKernelMessage)
+          captureProbe.expectMsg(MaxAkkaTestTimeout, outgoingKernelMessage)
         }
       }
 
@@ -153,13 +151,13 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager !
             ((incomingZmqStrings, incomingKernelMessage))
-          captureProbe.expectMsg(incomingKernelMessage)
+          captureProbe.expectMsg(MaxAkkaTestTimeout, incomingKernelMessage)
         }
 
         it("should relay the message if it is outgoing") {
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager ! outgoingKernelMessage
-          captureProbe.expectMsg(outgoingKernelMessage)
+          captureProbe.expectMsg(MaxAkkaTestTimeout, outgoingKernelMessage)
         }
       }
 
@@ -204,8 +202,8 @@ class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
           sendKernelMessages(n, kernelMessageRelay)
           // Message values should be accumulated in the proper order
           whenReady(chaoticPromise.future,
-            PatienceConfiguration.Timeout(Span(3, Seconds)),
-            PatienceConfiguration.Interval(Span(100, Millis))) {
+            PatienceConfiguration.Timeout(MaxAkkaTestTimeout),
+            PatienceConfiguration.Interval(MaxAkkaTestInterval)) {
             case _: String =>
               actual should be(expected)
           }

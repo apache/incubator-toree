@@ -25,15 +25,14 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import play.api.libs.json.Json
-
-import scala.concurrent.duration._
+import test.utils.MaxAkkaTestTimeout
 
 class DisplayMethodsSpec extends TestKit(
   ActorSystem("DisplayMethodsSpec")
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter
 {
-  private val MaxDuration = 300.milliseconds
+  
 
   private var kernelMessageRelayProbe: TestProbe = _
   private var mockParentHeader: v5.ParentHeader = _
@@ -73,7 +72,7 @@ class DisplayMethodsSpec extends TestKit(
 
         displayMethods.content(expectedMimeType, expectedContent)
 
-        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxDuration)
+        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxAkkaTestTimeout)
         val kernelMessage = outgoingMessage.asInstanceOf[KernelMessage]
 
         val actualDisplayData = Json.parse(kernelMessage.contentString)
@@ -89,7 +88,7 @@ class DisplayMethodsSpec extends TestKit(
 
         displayMethods.html(expectedContent)
 
-        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxDuration)
+        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxAkkaTestTimeout)
         val kernelMessage = outgoingMessage.asInstanceOf[KernelMessage]
 
         val actualDisplayData = Json.parse(kernelMessage.contentString)
@@ -105,7 +104,7 @@ class DisplayMethodsSpec extends TestKit(
 
         displayMethods.javascript(expectedContent)
 
-        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxDuration)
+        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxAkkaTestTimeout)
         val kernelMessage = outgoingMessage.asInstanceOf[KernelMessage]
 
         val actualDisplayData = Json.parse(kernelMessage.contentString)
@@ -120,7 +119,7 @@ class DisplayMethodsSpec extends TestKit(
 
         displayMethods.clear()
 
-        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxDuration)
+        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxAkkaTestTimeout)
         val kernelMessage = outgoingMessage.asInstanceOf[KernelMessage]
 
         val actualClearOutput = Json.parse(kernelMessage.contentString)
@@ -133,7 +132,7 @@ class DisplayMethodsSpec extends TestKit(
 
         displayMethods.clear(false)
 
-        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxDuration)
+        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxAkkaTestTimeout)
         val kernelMessage = outgoingMessage.asInstanceOf[KernelMessage]
 
         val actualClearOutput = Json.parse(kernelMessage.contentString)
@@ -146,7 +145,7 @@ class DisplayMethodsSpec extends TestKit(
 
         displayMethods.clear(true)
 
-        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxDuration)
+        val outgoingMessage = kernelMessageRelayProbe.receiveOne(MaxAkkaTestTimeout)
         val kernelMessage = outgoingMessage.asInstanceOf[KernelMessage]
 
         val actualClearOutput = Json.parse(kernelMessage.contentString)

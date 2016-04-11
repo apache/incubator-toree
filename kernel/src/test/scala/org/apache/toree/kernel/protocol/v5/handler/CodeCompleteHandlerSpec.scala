@@ -26,7 +26,7 @@ import org.apache.toree.kernel.protocol.v5Test._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers}
 import org.mockito.Mockito._
-import scala.concurrent.duration._
+import test.utils.MaxAkkaTestTimeout
 
 class CodeCompleteHandlerSpec extends TestKit(
   ActorSystem("CodeCompleteHandlerSpec")
@@ -73,7 +73,7 @@ class CodeCompleteHandlerSpec extends TestKit(
     it("should send a CompleteRequest") {
       handlerActor ! MockCompleteRequestKernelMessage
       replyToHandlerWithOkAndResult()
-      kernelMessageRelayProbe.fishForMessage(500.milliseconds) {
+      kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
         case KernelMessage(_, _, header, _, _, _) =>
           header.msg_type == MessageType.Outgoing.CompleteReply.toString
       }
@@ -104,7 +104,7 @@ class CodeCompleteHandlerSpec extends TestKit(
     it("should send an idle message") {
       handlerActor ! MockCompleteRequestKernelMessage
       replyToHandlerWithOkAndResult()
-      statusDispatchProbe.fishForMessage(500.milliseconds) {
+      statusDispatchProbe.fishForMessage(MaxAkkaTestTimeout) {
         case Tuple2(status, _) =>
           status == KernelStatusType.Idle
       }

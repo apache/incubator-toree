@@ -18,7 +18,6 @@
 package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
 import java.io.OutputStream
-
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import org.apache.toree.interpreter._
@@ -26,11 +25,10 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
-import org.mockito.Matchers.{eq => mockEq, anyString, anyBoolean}
+import org.mockito.Matchers.{anyString, anyBoolean}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
-
-import scala.concurrent.duration._
+import test.utils.MaxAkkaTestTimeout
 
 object ExecuteRequestTaskActorSpec {
   val config = """
@@ -67,7 +65,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         executeRequestTask ! executeRequest
 
         val result =
-          receiveOne(5.seconds)
+          receiveOne(MaxAkkaTestTimeout)
             .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
 
         result.isLeft should be (true)
@@ -93,7 +91,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         executeRequestTask ! executeRequest
 
         val result =
-          receiveOne(5.seconds)
+          receiveOne(MaxAkkaTestTimeout)
             .asInstanceOf[Either[ExecuteOutput, ExecuteFailure]]
 
         result.isRight should be (true)
@@ -119,7 +117,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         executeRequestTask ! executeRequest
 
         val result =
-          receiveOne(5.seconds)
+          receiveOne(MaxAkkaTestTimeout)
             .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
 
         result.isRight should be (true)
@@ -145,7 +143,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         executeRequestTask ! executeRequest
 
         val result =
-          receiveOne(5.seconds)
+          receiveOne(MaxAkkaTestTimeout)
             .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
 
         result.isLeft should be (false)
@@ -171,7 +169,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         executeRequestTask ! executeRequest
 
         val result =
-          receiveOne(5.seconds)
+          receiveOne(MaxAkkaTestTimeout)
             .asInstanceOf[Either[ExecuteOutput, ExecuteError]]
 
         result.isLeft should be (true)

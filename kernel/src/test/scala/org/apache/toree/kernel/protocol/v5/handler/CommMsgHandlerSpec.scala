@@ -18,20 +18,18 @@
 package org.apache.toree.kernel.protocol.v5.handler
 
 import java.util.UUID
-
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.comm._
-import org.apache.toree.kernel.protocol.v5.content.{CommMsg, ClearOutput, CommOpen}
+import org.apache.toree.kernel.protocol.v5.content.{CommMsg, ClearOutput}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
-
-import scala.concurrent.duration._
+import test.utils.MaxAkkaTestTimeout
 
 class CommMsgHandlerSpec extends TestKit(
   ActorSystem("CommMsgHandlerSpec")
@@ -39,7 +37,6 @@ class CommMsgHandlerSpec extends TestKit(
   with BeforeAndAfter
 {
   private val TestCommId = UUID.randomUUID().toString
-  private val TestTargetName = "some test target"
 
   private var kmBuilder: KMBuilder = _
   private var spyCommStorage: CommStorage = _
@@ -86,7 +83,7 @@ class CommMsgHandlerSpec extends TestKit(
           .build
 
         // Should receive a busy and an idle message
-        statusDispatchProbe.receiveN(2, 200.milliseconds)
+        statusDispatchProbe.receiveN(2, MaxAkkaTestTimeout)
 
         // Verify that the msg callbacks were triggered along the way
         verify(mockCommCallbacks).executeMsgCallbacks(
@@ -104,7 +101,7 @@ class CommMsgHandlerSpec extends TestKit(
           .build
 
         // Should receive a busy and an idle message
-        statusDispatchProbe.receiveN(2, 200.milliseconds)
+        statusDispatchProbe.receiveN(2, MaxAkkaTestTimeout)
 
         // Verify that the msg callbacks were NOT triggered along the way
         verify(mockCommCallbacks, never()).executeMsgCallbacks(
@@ -120,7 +117,7 @@ class CommMsgHandlerSpec extends TestKit(
 
         // TODO: Is there a better way to test for this without an upper time
         //       limit? Is there a different logical approach?
-        kernelMessageRelayProbe.expectNoMsg(200.milliseconds)
+        kernelMessageRelayProbe.expectNoMsg(MaxAkkaTestTimeout)
       }
 
       it("should include the parent's header in the parent header of " +
@@ -144,7 +141,7 @@ class CommMsgHandlerSpec extends TestKit(
         commMsgHandler ! msg
 
         // Verify that the message sent by the handler has the desired property
-        kernelMessageRelayProbe.fishForMessage(200.milliseconds) {
+        kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
           case KernelMessage(_, _, _, parentHeader, _, _) =>
             parentHeader == msg.header
         }
