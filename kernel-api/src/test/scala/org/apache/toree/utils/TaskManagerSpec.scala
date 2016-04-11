@@ -34,7 +34,7 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
   with Eventually with Timeouts
 {
   implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(Span(200, Milliseconds)),
+    timeout = scaled(Span(30, Seconds)),
     interval = scaled(Span(5, Milliseconds))
   )
   private val MaxTestTasks = 50000
