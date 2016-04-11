@@ -176,8 +176,13 @@ object Common {
       (baseDirectory in Build.root).value / "resources/test",
 
     // Publish Settings
-    publishTo := Some("Apache Maven Repo" at "https://repository.apache.org/service/local/staging/deploy/maven2"),
-    credentials += Credentials(Path.userHome / ".m2" / ".credentials"),
+    publishTo := {
+      if (isSnapshot.value)
+        Some("Apache Staging Repo" at "https://repository.apache.org/content/repositories/snapshots/")
+      else
+        Some("Apache Staging Repo" at "https://repository.apache.org/content/repositories/staging/")
+    },
+    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
 
     // Add rebuild ivy xml to the following tasks
     compile <<= (compile in Compile) dependsOn (rebuildIvyXml dependsOn deliverLocal)
