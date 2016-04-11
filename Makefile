@@ -163,7 +163,28 @@ test-travis:
 	$(ENV_OPTS) sbt clean test -Dakka.test.timefactor=3
 	find $(HOME)/.sbt -name "*.lock" | xargs rm
 	find $(HOME)/.ivy2 -name "ivydata-*.properties" | xargs rm
+	
+define JUPYTER_COMMAND
+pip install toree-$(VERSION).tar.gz
+jupyter toree install --interpreters=PySpark,SQL,Scala,SparkR
+cd /srv/toree/etc/examples/notebooks
+jupyter notebook --ip=* --no-browser
+endef
 
+export JUPYTER_COMMAND
+jupyter: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
+jupyter: .example-image pip-release
+	@$(DOCKER) -p 8888:8888  -e SPARK_OPTS="--master=local[4]" --user=root  $(EXAMPLE_IMAGE) bash -c "$$JUPYTER_COMMAND"
+
+################################################################################
+# Jars
+################################################################################
+publish-jars:
+	@$(ENV_OPTS) GPG_PASSWORD=$(GPG_PASSWORD) GPG=$(GPG) sbt publish-signed
+	
+################################################################################
+# PIP PACKAGE 
+################################################################################
 dist/toree-pip/toree-$(VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 dist/toree-pip/toree-$(VERSION).tar.gz: dist/toree
 	@mkdir -p dist/toree-pip
@@ -176,15 +197,44 @@ dist/toree-pip/toree-$(VERSION).tar.gz: dist/toree
 	@$(GEN_PIP_PACKAGE_INFO)
 	@$(DOCKER) $(IMAGE) python setup.py sdist --dist-dir=.
 	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install toree-$(VERSION).tar.gz && jupyter toree install'
+	@find dist/toree-pip -type f -not -name 'toree-0.1.0.dev5-incubating.tar.gz' -maxdepth 1 | xargs rm
 
 pip-release: dist/toree-pip/toree-$(VERSION).tar.gz
 
+dist/toree-pip/toree-$(VERSION).tar.gz.md5 dist/toree-pip/toree-$(VERSION).tar.gz.asc dist/toree-pip/toree-$(VERSION).tar.gz.sha: dist/toree-pip/toree-$(VERSION).tar.gz
+	@GPG_PASSWORD=$(GPG_PASSWORD) GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/toree-$(VERSION).tar.gz
+
+sign-pip: dist/toree-pip/toree-$(VERSION).tar.gz.md5 dist/toree-pip/toree-$(VERSION).tar.gz.asc dist/toree-pip/toree-$(VERSION).tar.gz.sha
+
+publish-pip: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
+publish-pip: PYPI_REPO?=https://pypi.python.org/pypi
+publish-pip: PYPI_USER?=
+publish-pip: PYPI_PASSWORD?=
+publish-pip: PYPIRC=printf "[distutils]\nindex-servers =\n\tpypi\n\n[pypi]\nrepository: $(PYPI_REPO) \nusername: $(PYPI_USER)\npassword: $(PYPI_PASSWORD)" > ~/.pypirc;
+publish-pip: sign-pip
+	@$(DOCKER) $(IMAGE) bash -c '$(PYPIRC) pip install twine && \
+		python setup.py register -r $(PYPI_REPO) && \
+		twine upload -r pypi toree-$(VERSION).tar.gz toree-$(VERSION).tar.gz.asc'
+
+################################################################################
+# BIN PACKAGE
+################################################################################
 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz: dist/toree
 	@mkdir -p dist/toree-bin
 	@(cd dist; tar -cvzf toree-bin/toree-$(VERSION)-binary-release.tar.gz toree)
 
 bin-release: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
 
+dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+	@GPG_PASSWORD=$(GPG_PASSWORD) GPG=$(GPG) etc/tools/./sign-file dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+
+sign-bin: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha
+
+publish-bin:
+
+################################################################################
+# SRC PACKAGE
+################################################################################
 dist/toree-src/toree-$(VERSION)-source-release.tar.gz:
 	@mkdir -p dist/toree-src
 	@tar -X 'etc/.src-release-ignore' -cvzf dist/toree-src/toree-$(VERSION)-source-release.tar.gz .
@@ -196,38 +246,20 @@ dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$
 
 sign-src: dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha
 
-dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
-	@GPG_PASSWORD=$(GPG_PASSWORD) GPG=$(GPG) etc/tools/./sign-file dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+publish-src:
 
-sign-bin: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha
+################################################################################
+# ALL PACKAGES
+################################################################################
+release: pip-release src-release bin-release sign
 
-sign:  sign-bin sign-src
-
-publish-release:
-	@GPG_PASSWORD=$(GPG_PASSWORD) GPG=$(GPG) sbt publish-local-signed
+sign: sign-bin sign-src sign-pip
 
 audit: sign
 	@etc/tools/./check-licenses
-	@etc/tools/./verify-release dist/toree-bin dist/toree-src
+	@etc/tools/./verify-release dist/toree-bin dist/toree-src dist/toree-pip
 
-release: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
-release: PYPI_REPO?=https://pypi.python.org/pypi
-release: PYPI_USER?=
-release: PYPI_PASSWORD?=
-release: PYPIRC=printf "[distutils]\nindex-servers =\n\tpypi\n\n[pypi]\nrepository: $(PYPI_REPO) \nusername: $(PYPI_USER)\npassword: $(PYPI_PASSWORD)" > ~/.pypirc;
-release: pip-release bin-release src-release sign audit
-	@$(DOCKER) $(IMAGE) bash -c '$(PYPIRC) pip install twine && \
-		python setup.py register -r $(PYPI_REPO) && \
-		twine upload -r pypi toree-$(VERSION).tar.gz'
+publish: audit publish-bin publish-pip publish-src publish-jars
 
-define JUPYTER_COMMAND
-pip install toree-$(VERSION).tar.gz
-jupyter toree install --interpreters=PySpark,SQL,Scala,SparkR
-cd /srv/toree/etc/examples/notebooks
-jupyter notebook --ip=* --no-browser
-endef
+all: clean test audit
 
-export JUPYTER_COMMAND
-jupyter: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
-jupyter: .example-image pip-release
-	@$(DOCKER) -p 8888:8888  -e SPARK_OPTS="--master=local[4]" --user=root  $(EXAMPLE_IMAGE) bash -c "$$JUPYTER_COMMAND"
