@@ -24,7 +24,6 @@ env:
         - TOREE_RESOLUTION_VERBOSITY=0
         - TEST_DILATION=3
 jdk:
-    - oraclejdk7
     - openjdk7
 
 script:
