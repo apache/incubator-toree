@@ -37,6 +37,7 @@ INTERPRETER_LANGUAGES = {
 PYTHON_PATH = 'PYTHONPATH'
 SPARK_HOME ='SPARK_HOME'
 TOREE_SPARK_OPTS = '__TOREE_SPARK_OPTS__'
+TOREE_OPTS = '__TOREE_OPTS__'
 DEFAULT_INTERPRETER = 'DEFAULT_INTERPRETER'
 
 class ToreeInstall(InstallKernelSpec):
@@ -48,6 +49,7 @@ class ToreeInstall(InstallKernelSpec):
     jupyter toree install --spark_home=/spark/home/dir
     jupyter toree install --spark_opts='--master=local[4]'
     jupyter toree install --kernel_name=toree_special
+    jupyter toree install --toree_opts='--nosparkcontext'
     jupyter toree install --interpreters=PySpark,SQL
     '''
 
@@ -60,12 +62,16 @@ class ToreeInstall(InstallKernelSpec):
     interpreters = Unicode('Scala', config=True,
         help='A comma separated list of the interpreters to install. The names of the interpreters are case sensitive.'
     )
+    toree_opts = Unicode('', config=True,
+        help='''Specify command line arguments for Apache Toree.'''
+    )
     spark_opts = Unicode('', config=True,
         help='''Specify command line arguments to proxy for spark config.'''
     )
     aliases = {
         'kernel_name': 'ToreeInstall.kernel_name',
         'spark_home': 'ToreeInstall.spark_home',
+        'toree_opts': 'ToreeInstall.toree_opts',
         'spark_opts': 'ToreeInstall.spark_opts',
         'interpreters' : 'ToreeInstall.interpreters'
     }
@@ -92,6 +98,7 @@ class ToreeInstall(InstallKernelSpec):
             # The SPARK_OPTS values are stored in TOREE_SPARK_OPTS to allow the two values to be merged when kernels
             # are run. This allows values to be specified during install, but also during runtime.
             TOREE_SPARK_OPTS : self.spark_opts,
+            TOREE_OPTS : self.toree_opts,
             SPARK_HOME : self.spark_home,
             PYTHON_PATH : '{0}/python:{0}/python/lib/{1}'.format(self.spark_home, py4j_zip)
         }
