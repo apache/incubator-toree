@@ -26,9 +26,10 @@ import org.apache.toree.kernel.protocol.v5.content.ShutdownRequest
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.{KernelMessage, MessageType, _}
 import org.apache.toree.utils.MessageLogSupport
+
 import scala.collection.immutable.HashMap
 import scala.concurrent.duration._
-import scala.util.{Random, Failure, Success}
+import scala.util.{Failure, Random, Success, Try}
 
 /**
  * This class is meant to be a relay for send KernelMessages through kernel
@@ -79,7 +80,11 @@ case class KernelMessageRelay(
       messageTypeString = incomingSpecialCases(messageTypeString)
     }
 
-    relay(MessageType.withName(messageTypeString), kernelMessage)
+    Try(MessageType.withName(messageTypeString)) match {
+      case Success(messageName) => relay(messageName, kernelMessage)
+      case Failure(_)           =>
+        logger.warn(s"Ignoring unknown message type: $messageTypeString")
+    }
   }
 
   private def outgoingRelay(kernelMessage: KernelMessage) = {
@@ -91,7 +96,11 @@ case class KernelMessageRelay(
       messageTypeString = outgoingSpecialCases(messageTypeString)
     }
 
-    relay(MessageType.withName(messageTypeString), kernelMessage)
+    Try(MessageType.withName(messageTypeString)) match {
+      case Success(messageName) => relay(messageName, kernelMessage)
+      case Failure(_)           =>
+        logger.warn(s"Ignoring unknown message type: $messageTypeString")
+    }
   }
 
 
