@@ -18,7 +18,7 @@
 package org.apache.toree.kernel.protocol
 
 import org.apache.toree.kernel.protocol.v5.MIMEType.MIMEType
-import play.api.libs.json.{JsValue, Json, JsObject}
+import play.api.libs.json.{JsValue, Json}
 
 package object v5 {
   // Provide a UUID type representing a string (there is no object)
@@ -86,6 +86,7 @@ package object v5 {
       val InspectRequest  = Value("inspect_request")
       val KernelInfoRequest  = Value("kernel_info_request")
       val ShutdownRequest = Value("shutdown_request")
+      val CommInfoRequest = Value("comm_info_request")
 
       //  Stdin Router/Dealer Messages
       val InputReply      = Value("input_reply")
@@ -108,6 +109,7 @@ package object v5 {
       val InspectReply    = Value("inspect_reply")
       val KernelInfoReply    = Value("kernel_info_reply")
       val ShutdownReply   = Value("shutdown_reply")
+      val CommInfoReply   = Value("comm_info_reply")
 
       //  Stdin Router/Dealer Messages
       val InputRequest    = Value("input_request")

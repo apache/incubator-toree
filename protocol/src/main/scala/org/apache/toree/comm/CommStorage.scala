@@ -123,6 +123,13 @@ class CommStorage(
   def getCommIdsFromTarget(targetName: String) = linkStorage.get(targetName)
 
   /**
+   * Retrieves all registered target names
+   *
+   * @return Some set of target names
+   */
+  def getTargets() = linkStorage.keySet
+
+  /**
    * Retrieves the current target for the specified Comm id.
    *
    * @param commId The Comm id whose target to get
