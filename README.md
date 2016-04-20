@@ -66,7 +66,7 @@ Refer to your `Docker` setup for the ip address. The notebook will be at `http:/
 Install
 =======
 ```
-pip install toree
+pip install --pre toree
 jupyter toree install
 ```
 
