@@ -182,7 +182,7 @@ class ExecuteRequestHandlerSpec extends TestKit(
           }
         }
         val fs = (f1 zip f2)
-        Await.ready(fs, 5.seconds)
+        Await.ready(fs, 3 * MaxAkkaTestTimeout)
 
         statusMsgNum should equal(2)
       }
