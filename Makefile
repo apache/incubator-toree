@@ -154,8 +154,9 @@ dist/toree-legal/DISCLAIMER:
 dist/toree-legal: dist/toree-legal/LICENSE dist/toree-legal/NOTICE dist/toree-legal/DISCLAIMER
 	@cp -R etc/legal/licenses dist/toree-legal/.
 
-dist/toree: dist/toree-legal dist/toree/lib dist/toree/bin
+dist/toree: dist/toree/VERSION dist/toree-legal dist/toree/lib dist/toree/bin RELEASE_NOTES.md
 	@cp -R dist/toree-legal/* dist/toree
+	@cp RELEASE_NOTES.md dist/toree/RELEASE_NOTES.md
 
 dist: dist/toree
 
@@ -192,6 +193,8 @@ dist/toree-pip/toree-$(VERSION).tar.gz: dist/toree
 	@cp dist/toree/LICENSE dist/toree-pip/LICENSE
 	@cp dist/toree/NOTICE dist/toree-pip/NOTICE
 	@cp dist/toree/DISCLAIMER dist/toree-pip/DISCLAIMER
+	@cp dist/toree/VERSION dist/toree-pip/VERSION
+	@cp dist/toree/RELEASE_NOTES.md dist/toree-pip/RELEASE_NOTES.md
 	@cp -R dist/toree/licenses dist/toree-pip/licenses
 	@cp -rf etc/pip_install/* dist/toree-pip/.
 	@$(GEN_PIP_PACKAGE_INFO)

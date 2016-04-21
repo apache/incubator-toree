@@ -1,5 +1,5 @@
 recursive-include toree/bin *
 recursive-include toree/lib *
 recursive-include licenses *
-include toree/VERSION toree/DISCLAIMER
-include LICENSE DISCLAIMER NOTICE \
+include toree/VERSION toree/DISCLAIMER toree/RELEASE_NOTES.md
+include LICENSE DISCLAIMER NOTICE RELEASE_NOTES.md
