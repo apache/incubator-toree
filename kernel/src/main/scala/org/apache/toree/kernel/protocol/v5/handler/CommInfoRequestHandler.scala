@@ -56,16 +56,11 @@ class CommInfoRequestHandler(
 
     val commMap = (Json.parse(kernelMessage.contentString) \ "target_name").asOpt[String] match {
       case Some(targetName) => {
-        if(targetName.equals("")) {
-          //return all comms over every target in one map
-          commStorage.getTargets().map(buildCommMap(_)).reduce(_ ++ _)
-        } else {
-            buildCommMap(targetName)
-          }
-        }
-      case _ => {
-        logger.debug("Code not parse kernel message content string")
-        Map()
+        buildCommMap(targetName)
+      }
+      case None => {
+        //target_name is missing from the kernel message so return all comms over every target
+        commStorage.getTargets().map(buildCommMap(_)).reduce(_ ++ _)
       }
     }
     val commInfoReply = CommInfoReply(commMap.asInstanceOf[Map[String, Map[String, String]]])
