@@ -18,6 +18,7 @@
 package org.apache.toree.boot.layer
 
 import java.io.File
+import java.nio.file.{Paths, Files}
 import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor.ActorRef
@@ -116,12 +117,17 @@ trait StandardComponentInitialization extends ComponentInitialization {
   }
 
   private def initializeDependencyDownloader(config: Config) = {
-    /*val dependencyDownloader = new IvyDependencyDownloader(
-      "http://repo1.maven.org/maven2/", config.getString("ivy_local")
-    )*/
+    val depsDir = {
+      if(config.hasPath("deps_dir") && Files.exists(Paths.get(config.getString("deps_dir")))) {
+        config.getString("deps_dir")
+      } else {
+        Files.createTempDirectory("toree_add_deps").toFile.getAbsolutePath
+      }
+    }
+
     val dependencyDownloader = new CoursierDependencyDownloader
     dependencyDownloader.setDownloadDirectory(
-      new File(config.getString("ivy_local"))
+      new File(depsDir)
     )
 
     dependencyDownloader
