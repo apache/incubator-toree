@@ -200,7 +200,7 @@ dist/toree-pip/toree-$(VERSION).tar.gz: dist/toree
 	@$(GEN_PIP_PACKAGE_INFO)
 	@$(DOCKER) $(IMAGE) python setup.py sdist --dist-dir=.
 	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install toree-$(VERSION).tar.gz && jupyter toree install'
-	@find dist/toree-pip -type f -not -name 'toree-0.1.0.dev5-incubating.tar.gz' -maxdepth 1 | xargs rm
+	-@(cd dist/toree-pip; find . -not -name 'toree-$(VERSION).tar.gz' -maxdepth 1 | xargs rm -r )
 
 pip-release: dist/toree-pip/toree-$(VERSION).tar.gz
 
