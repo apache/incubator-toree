@@ -27,7 +27,10 @@ jdk:
     - openjdk7
 
 script:
-    - make test-travis
+    - make all-travis
+
+before_cache:
+    - make clean-travis
 
 sudo: false
 

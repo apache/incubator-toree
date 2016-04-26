@@ -15,7 +15,7 @@
 # limitations under the License
 #
 
-.PHONY: help clean clean-dist build dev test test-travis release pip-release bin-release dev-binder .binder-image audit
+.PHONY: help clean clean-dist build dev test test-travis release pip-release bin-release dev-binder .binder-image audit audit-licenses
 
 VERSION?=0.1.0.dev6-incubating
 COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
@@ -160,11 +160,6 @@ dist/toree: dist/toree/VERSION dist/toree-legal dist/toree/lib dist/toree/bin RE
 
 dist: dist/toree
 
-test-travis:
-	$(ENV_OPTS) sbt clean test -Dakka.test.timefactor=3
-	find $(HOME)/.sbt -name "*.lock" | xargs rm
-	find $(HOME)/.ivy2 -name "ivydata-*.properties" | xargs rm
-
 define JUPYTER_COMMAND
 pip install toree-$(VERSION).tar.gz
 jupyter toree install --interpreters=PySpark,SQL,Scala,SparkR
@@ -258,11 +253,19 @@ release: pip-release src-release bin-release sign
 
 sign: sign-bin sign-src sign-pip
 
-audit: sign
+audit-licenses:
 	@etc/tools/./check-licenses
+
+audit: sign audit-licenses
 	@etc/tools/./verify-release dist/toree-bin dist/toree-src dist/toree-pip
 
 publish: audit publish-bin publish-pip publish-src publish-jars
 
 all: clean test audit
+
+all-travis: clean test audit-licenses
+
+clean-travis:
+	find $(HOME)/.sbt -name "*.lock" | xargs rm
+	find $(HOME)/.ivy2 -name "ivydata-*.properties" | xargs rm
 
