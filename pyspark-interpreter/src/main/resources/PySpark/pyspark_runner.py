@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-import sys, getopt, traceback
+import sys, getopt, traceback, re
 
 from py4j.java_gateway import java_import, JavaGateway, GatewayClient
 from py4j.protocol import Py4JJavaError
@@ -36,7 +36,7 @@ from pyspark.sql import SQLContext, HiveContext, SchemaRDD, Row
 client = GatewayClient(port=int(sys.argv[1]))
 sparkVersion = sys.argv[2]
 
-if sparkVersion.startswith("1.4"):
+if re.match("^1\.[456]\..*$", sparkVersion):
   gateway = JavaGateway(client, auto_convert = True)
 else:
   gateway = JavaGateway(client)
@@ -61,7 +61,7 @@ if sparkVersion.startswith("1.2"):
 elif sparkVersion.startswith("1.3"):
   java_import(gateway.jvm, "org.apache.spark.sql.*")
   java_import(gateway.jvm, "org.apache.spark.sql.hive.*")
-elif sparkVersion.startswith("1.4"):
+elif re.match("^1\.[456]\..*$", sparkVersion):
   java_import(gateway.jvm, "org.apache.spark.sql.*")
   java_import(gateway.jvm, "org.apache.spark.sql.hive.*")
 
