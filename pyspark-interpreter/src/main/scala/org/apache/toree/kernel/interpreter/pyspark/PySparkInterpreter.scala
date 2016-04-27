@@ -32,11 +32,13 @@ import scala.tools.nsc.interpreter.{InputStream, OutputStream}
 /**
  * Represents an interpreter interface to PySpark. Requires a properly-set
  * SPARK_HOME, PYTHONPATH pointing to Spark's Python source, and py4j installed
- * where it is accessible to the Spark Kernel.
+ * where it is accessible to the Spark Kernel.  Optionally specify PYTHON_EXEC
+ * to override the default python executable "python'
  *
  */
 class PySparkInterpreter(
 ) extends Interpreter {
+  private val PythonExecEnv = "PYTHON_EXEC"
   private val logger = LoggerFactory.getLogger(this.getClass)
   private var _kernel:KernelLike = _
 
@@ -63,6 +65,7 @@ class PySparkInterpreter(
     )
 
   private lazy val pySparkService = new PySparkService(
+    Option(System.getenv(PythonExecEnv)).getOrElse("python"),
     gatewayServer,
     pySparkBridge,
     pySparkProcessHandler

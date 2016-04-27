@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory
 /**
  * Represents the Python process used to evaluate PySpark code.
  *
+ * @param pythonProcessName name of python process
  * @param pySparkBridge The bridge to use to retrieve kernel output streams
  *                      and the Spark version to be verified
  * @param pySparkProcessHandler The handler to use when the process fails or
@@ -37,12 +38,13 @@ import org.slf4j.LoggerFactory
  * @param sparkVersion The version of Spark that the process will be using
  */
 class PySparkProcess(
+  private val pythonProcessName: String,
   private val pySparkBridge: PySparkBridge,
   private val pySparkProcessHandler: PySparkProcessHandler,
   private val port: Int,
   private val sparkVersion: String
 ) extends BrokerProcess(
-  processName = "python",
+  processName = pythonProcessName,
   entryResource = "PySpark/pyspark_runner.py",
   otherResources = Nil,
   brokerBridge = pySparkBridge,

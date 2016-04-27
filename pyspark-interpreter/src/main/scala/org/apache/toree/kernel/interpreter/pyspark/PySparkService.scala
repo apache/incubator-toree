@@ -28,6 +28,7 @@ import scala.concurrent.Future
  * Represents the service that provides the high-level interface between the
  * JVM and Python.
  *
+ * @param pythonProcessName name of python process
  * @param gatewayServer The backend to start to communicate between the JVM and
  *                      Python
  * @param pySparkBridge The bridge to use for communication between the JVM and
@@ -36,6 +37,7 @@ import scala.concurrent.Future
  *                              the PySpark process
  */
 class PySparkService(
+  private val pythonProcessName: String,
   private val gatewayServer: GatewayServer,
   private val pySparkBridge: PySparkBridge,
   private val pySparkProcessHandler: PySparkProcessHandler
@@ -48,6 +50,7 @@ class PySparkService(
   /** Represents the process used to execute Python code via the bridge. */
   private lazy val pySparkProcess = {
     val p = new PySparkProcess(
+      pythonProcessName,
       pySparkBridge,
       pySparkProcessHandler,
       gatewayServer.getListeningPort,
