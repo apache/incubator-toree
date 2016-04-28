@@ -101,10 +101,12 @@ class PluginSearcher {
       .filter(c => classMatches(Seq(c)))
   }
 
-  private def classpath = System.getProperty("java.class.path")
-    .split(File.pathSeparator)
-    .map(s => if (s.trim.length == 0) "." else s)
-    .map(new File(_))
-    .filter(_.getAbsolutePath.toLowerCase.contains("toree"))
-    .toList
+  private def classpath = {
+    new File(this.getClass.getProtectionDomain.getCodeSource.getLocation.getPath) :: System.getProperty("java.class.path")
+     .split(File.pathSeparator)
+     .map(s => if (s.trim.length == 0) "." else s)
+     .map(new File(_))
+     .filter(_.getAbsolutePath.toLowerCase.contains("toree"))
+     .toList
+  }
 }
