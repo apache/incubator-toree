@@ -162,7 +162,7 @@ dist/toree: dist/toree/VERSION dist/toree-legal dist/toree/lib dist/toree/bin RE
 dist: dist/toree
 
 define JUPYTER_COMMAND
-pip install toree-$(VERSION).tar.gz
+pip install toree-$(BASE_VERSION).tar.gz
 jupyter toree install --interpreters=PySpark,SQL,Scala,SparkR
 cd /srv/toree/etc/examples/notebooks
 jupyter notebook --ip=* --no-browser
