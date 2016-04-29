@@ -36,7 +36,7 @@ for directory in "$@"
 do
 	
 	# For all the files in the directory which are not signatures or checksums
-	for file_to_verify in `find ${FWDIR}/${directory} -type f -not -name *.asc -not -name *.md5 -not -name *.sha -maxdepth 1`; do
+	for file_to_verify in `find ${FWDIR}/${directory} -type f -name toree-* -not -name *.asc -not -name *.md5 -not -name *.sha -maxdepth 1`; do
 		results="${results}\n${file_to_verify}"
 		 
 		# Verify the signature exists

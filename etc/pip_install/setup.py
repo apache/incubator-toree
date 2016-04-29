@@ -61,9 +61,7 @@ setup_args = dict(
         'Intended Audience :: System Administrators',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Scala',
         'Programming Language :: Python',
-        'Programming Language :: R',
         'Programming Language :: SQL'
     ]
 )

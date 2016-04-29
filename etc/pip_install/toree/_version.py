@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-# This file is populated when doing a make release. It should be empty by default.
+# This file is populated when making the pip package. It should be empty by default.
