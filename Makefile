@@ -177,7 +177,7 @@ jupyter: .example-image pip-release
 # Jars
 ################################################################################
 publish-jars:
-	@$(ENV_OPTS) GPG_PASSWORD=$(GPG_PASSWORD) GPG=$(GPG) sbt publish-signed
+	@$(ENV_OPTS) GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) sbt publish-signed
 	
 ################################################################################
 # PIP PACKAGE 
