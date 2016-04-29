@@ -15,10 +15,9 @@
 # limitations under the License.
 #
 
+import os
 import os.path
-import sys
 import json
-import shutil
 from os import listdir
 from traitlets import Unicode, Dict, Set
 from jupyter_client.kernelspecapp  import InstallKernelSpec
@@ -55,7 +54,7 @@ class ToreeInstall(InstallKernelSpec):
     jupyter toree install --python=python
     '''
 
-    spark_home = Unicode('/usr/local/spark', config=True,
+    spark_home = Unicode(os.getenv(SPARK_HOME, '/usr/local/spark'), config=True,
         help='''Specify where the spark files can be found.'''
     )
     kernel_name = Unicode('Apache Toree', config=True,
