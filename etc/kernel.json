@@ -10,7 +10,7 @@
     "MAX_INTERPRETER_THREADS": "16",
     "CAPTURE_STANDARD_OUT": "true",
     "SEND_EMPTY_OUTPUT": "false",
-    "PYTHON_EXEC": "python'
+    "PYTHON_EXEC": "python"
   },
   "argv": [
     "/usr/local/share/jupyter/kernels/toree/bin/run.sh",
