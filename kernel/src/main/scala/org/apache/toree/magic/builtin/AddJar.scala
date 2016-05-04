@@ -37,7 +37,7 @@ object AddJar {
         if(config.hasPath("jar_dir") && Files.exists(Paths.get(config.getString("jar_dir")))) {
           config.getString("jar_dir")
         } else {
-          Files.createTempDirectory("spark_kernel_add_jars").toFile.getAbsolutePath
+          Files.createTempDirectory("toree_add_jars").toFile.getAbsolutePath
         }
       )
       jarDir.get
