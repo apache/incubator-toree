@@ -21,7 +21,6 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.KernelInfoReply
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.utils.LogLike
-import play.api.libs.json.Json
 
 import scala.concurrent._
 
@@ -43,7 +42,6 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader)
         kernelInfo.implementation,
         kernelInfo.implementationVersion,
         kernelInfo.language_info,
-        kernelInfo.languageVersion,
         kernelInfo.banner
       )
 

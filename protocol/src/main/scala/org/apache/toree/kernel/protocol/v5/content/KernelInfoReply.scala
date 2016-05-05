@@ -25,7 +25,6 @@ case class KernelInfoReply (
   implementation: String,
   implementation_version: String,
   language_info: Map[String, String],
-  language_version: String,
   banner: String
 ) extends KernelMessageContent {
   override def content: String =
