@@ -117,7 +117,7 @@ dev: .example-image dist
 			&& jupyter notebook --ip=* --no-browser"
 
 test: VM_WORKDIR=/src/toree-kernel
-test:
+test: jupyter-tests
 	$(call RUN,$(ENV_OPTS) sbt compile test)
 
 sbt-%:
@@ -174,6 +174,17 @@ jupyter: .example-image pip-release
 	@$(DOCKER) -p 8888:8888  -e SPARK_OPTS="--master=local[4]" --user=root  $(EXAMPLE_IMAGE) bash -c "$$JUPYTER_COMMAND"
 
 ################################################################################
+# System Tests Using Jupyter Kernel Test (https://github.com/jupyter/jupyter_kernel_test)
+################################################################################
+jupyter-tests: pip-release
+	@echo '-- Building jupyter kernel test image'
+	@docker build -f Dockerfile.jupyter_kernel_tests -t toree/jupyter-kernel-test .
+	@echo '-- Running jupyter kernel tests'
+	@docker run --rm -ti \
+		--name jupyter_kernel_tests \
+		toree/jupyter-kernel-test
+
+################################################################################
 # Jars
 ################################################################################
 publish-jars:
@@ -194,7 +205,7 @@ dist/toree-pip/toree-$(BASE_VERSION).tar.gz: dist/toree
 	@cp -R dist/toree/licenses dist/toree-pip/licenses
 	@cp -rf etc/pip_install/* dist/toree-pip/.
 	@$(GEN_PIP_PACKAGE_INFO)
-	@$(DOCKER) $(IMAGE) python setup.py sdist --dist-dir=.
+	@$(DOCKER) --user=root $(IMAGE) python setup.py sdist --dist-dir=.
 	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install toree-$(BASE_VERSION).tar.gz && jupyter toree install'
 #	-@(cd dist/toree-pip; find . -not -name 'toree-$(VERSION).tar.gz' -maxdepth 1 | xargs rm -r )
 
