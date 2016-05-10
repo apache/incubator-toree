@@ -15,7 +15,7 @@
 # limitations under the License
 #
 
-.PHONY: help clean clean-dist build dev test test-travis release pip-release bin-release dev-binder .binder-image audit audit-licenses
+.PHONY: help clean clean-dist build dev test system-test test-travis release pip-release bin-release dev-binder .binder-image audit audit-licenses
 
 BASE_VERSION=0.1.0.dev8
 VERSION=$(BASE_VERSION)-incubating
@@ -117,7 +117,7 @@ dev: .example-image dist
 			&& jupyter notebook --ip=* --no-browser"
 
 test: VM_WORKDIR=/src/toree-kernel
-test: jupyter-tests
+test:
 	$(call RUN,$(ENV_OPTS) sbt compile test)
 
 sbt-%:
@@ -176,13 +176,15 @@ jupyter: .example-image pip-release
 ################################################################################
 # System Tests Using Jupyter Kernel Test (https://github.com/jupyter/jupyter_kernel_test)
 ################################################################################
-jupyter-tests: pip-release
-	@echo '-- Building jupyter kernel test image'
-	@docker build -f Dockerfile.jupyter_kernel_tests -t toree/jupyter-kernel-test .
+system-test: pip-release
 	@echo '-- Running jupyter kernel tests'
 	@docker run --rm -ti \
 		--name jupyter_kernel_tests \
-		toree/jupyter-kernel-test
+		-v `pwd`/dist/toree-pip:/srv/toree-pip \
+		-v `pwd`/test_toree.py:/srv/test_toree.py \
+		$(IMAGE) \
+		bash -c "pip install /srv/toree-pip/toree*.tar.gz ; jupyter toree install --user --kernel_name='Apache_Toree' ; \
+		pip install nose jupyter_kernel_test ; python /srv/test_toree.py"
 
 ################################################################################
 # Jars
@@ -273,9 +275,9 @@ audit: sign audit-licenses
 
 publish: audit publish-bin publish-pip publish-src publish-jars
 
-all: clean test audit
+all: clean test system-test audit
 
-all-travis: clean test audit-licenses
+all-travis: clean test system-test audit-licenses
 
 clean-travis:
 	find $(HOME)/.sbt -name "*.lock" | xargs rm
