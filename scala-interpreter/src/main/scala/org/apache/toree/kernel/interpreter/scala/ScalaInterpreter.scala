@@ -263,7 +263,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
   override def interpret(code: String, silent: Boolean = false):
   (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
     val starting = (Results.Success, Left(""))
-    interpretRec(code.trim.split("\n").toList, false, starting)
+    interpretRec(code.trim.split("\n").toList.filterNot(_.trim.startsWith("//")), false, starting)
   }
 
   def truncateResult(result:String, showType:Boolean =false, noTruncate: Boolean = false): String = {
