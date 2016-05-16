@@ -30,8 +30,12 @@ class PluginSearcher {
   /** Represents logger used by plugin searcher. */
   private val logger = LoggerFactory.getLogger(this.getClass)
 
+  /** Contains all internal class information for matching plugins. */
+  private lazy val internalClassInfo: Map[String, ClassInfo] =
+    loadClassMap(newClassFinder())
+
   /** Contains all internal plugins for the system. */
-  lazy val internal: Seq[ClassInfo] = findPluginClasses(newClassFinder()).toSeq
+  lazy val internal: Seq[ClassInfo] = findPluginClasses(internalClassInfo).toSeq
 
   /**
    * Searches in the provided paths (jars/zips/directories) for plugin classes.
@@ -40,7 +44,7 @@ class PluginSearcher {
    * @return An iterator over plugin class information
    */
   def search(paths: File*): Iterator[ClassInfo] = {
-    findPluginClasses(newClassFinder(paths))
+    findPluginClasses(loadClassMap(newClassFinder(paths)))
   }
 
   /**
@@ -60,27 +64,45 @@ class PluginSearcher {
   protected def newClassFinder(paths: Seq[File]): ClassFinder = ClassFinder(paths)
 
   /**
-   * Searches for classes implementing in the plugin interface, directly or
-   * indirectly.
+   * Loads all class information using the provided class finder.
    *
-   * @param classFinder The class finder from which to retrieve class information
-   * @return An iterator over plugin class information
+   * @param classFinder The class finder to use when loading class information
+   * @return The map of class names to class info
    */
-  private def findPluginClasses(classFinder: ClassFinder): Iterator[ClassInfo] = {
+  private def loadClassMap(classFinder: ClassFinder): Map[String, ClassInfo] = {
     val tryStream = Try(classFinder.getClasses())
     tryStream.failed.foreach(logger.error(
-      s"Failed to find plugins from classpath: ${classFinder.classpath.mkString(",")}",
+      s"Failed to load class info from classpath: ${classFinder.classpath.mkString(",")}",
       _: Throwable
     ))
     val stream = tryStream.getOrElse(Stream.empty)
-    val classMap = ClassFinder.classInfoMap(stream.toIterator)
-    concreteSubclasses(classOf[Plugin].getName, classMap)
+    ClassFinder.classInfoMap(stream.toIterator)
   }
 
-  /** Patched search that also traverses interfaces. */
+  /**
+   * Searches for classes implementing in the plugin interface, directly or
+   * indirectly.
+   *
+   * @param classMap The map of class information to search for plugins
+   * @return An iterator over plugin class information
+   */
+  private def findPluginClasses(classMap: Map[String, ClassInfo]): Iterator[ClassInfo] = {
+    concreteSubclasses(classOf[Plugin].getName, classMap, internalClassInfo)
+  }
+
+  /**
+   * Patched search that also traverses interfaces.
+   *
+   * @param ancestor The fully-qualified name of the class whose children to
+   *                 find
+   * @param classes The collection of classes to search
+   * @param extraClasses Additional classes to use when traversing superclasses
+   *                     and interfaces in the classes collection
+   */
   private def concreteSubclasses(
     ancestor: String,
-    classes: Map[String, ClassInfo]
+    classes: Map[String, ClassInfo],
+    extraClasses: Map[String, ClassInfo]
   ): Iterator[ClassInfo] = {
     @tailrec def classMatches(
       classesToCheck: Seq[ClassInfo]
@@ -90,8 +112,10 @@ class PluginSearcher {
       else if (classesToCheck.exists(_.superClassName == ancestor)) true
       else if (classesToCheck.exists(_ implements ancestor)) true
       else {
-        val superClasses = classesToCheck.map(_.superClassName).flatMap(classes.get)
-        val interfaces = classesToCheck.flatMap(_.interfaces).flatMap(classes.get)
+        val superClasses = classesToCheck.map(_.superClassName)
+          .flatMap(n => classes.get(n).orElse(extraClasses.get(n)))
+        val interfaces = classesToCheck.flatMap(_.interfaces)
+          .flatMap(i => classes.get(i).orElse(extraClasses.get(i)))
         classMatches(superClasses ++ interfaces)
       }
     }
