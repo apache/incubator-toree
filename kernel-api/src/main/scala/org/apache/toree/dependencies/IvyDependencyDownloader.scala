@@ -89,7 +89,7 @@ class IvyDependencyDownloader(
     transitive: Boolean = true,
     excludeBaseDependencies: Boolean,
     ignoreResolutionErrors: Boolean,
-    extraRepositories: Seq[URL],
+    extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean,
     trace: Boolean
   ): Seq[URI] = {
@@ -197,7 +197,7 @@ class IvyDependencyDownloader(
    *
    * @param url The url of the repository
    */
-  override def addMavenRepository(url: URL): Unit = ???
+  override def addMavenRepository(url: URL, credentials: Option[Credentials]): Unit = ???
 
   /**
    * Remove the specified resolver url from the search options.

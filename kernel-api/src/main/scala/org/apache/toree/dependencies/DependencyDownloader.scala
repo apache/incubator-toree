@@ -50,7 +50,7 @@ abstract class DependencyDownloader {
     transitive: Boolean = true,
     excludeBaseDependencies: Boolean = true,
     ignoreResolutionErrors: Boolean = true,
-    extraRepositories: Seq[URL] = Nil,
+    extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean = false,
     trace: Boolean = false
   ): Seq[URI]
@@ -67,7 +67,7 @@ abstract class DependencyDownloader {
    *
    * @param url The url of the repository
    */
-  def addMavenRepository(url: URL): Unit
+  def addMavenRepository(url: URL, credentials: Option[Credentials]): Unit
 
   /**
    * Remove the specified resolver url from the search options.

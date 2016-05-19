@@ -20,15 +20,14 @@ package org.apache.toree.magic.builtin
 import java.io.{ByteArrayOutputStream, OutputStream}
 import java.net.{URI, URL}
 
-import org.apache.toree.dependencies.DependencyDownloader
+import org.apache.toree.dependencies.{Credentials, DependencyDownloader}
 import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.utils.ArgumentParsingSupport
 import org.apache.spark.SparkContext
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{GivenWhenThen, Matchers, FunSpec}
+import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
-
 import org.apache.toree.magic._
 import org.apache.toree.magic.dependencies._
 
@@ -71,7 +70,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         verify(mockSC, times(0)).addJar(any())
         verify(mockDownloader, times(0)).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
-          anyBoolean(), any[Seq[URL]], anyBoolean(), anyBoolean()
+          anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean()
         )
         actual should be (expected)
       }
@@ -80,7 +79,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
-          anyBoolean(), any[Seq[URL]], anyBoolean(), anyBoolean()
+          anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean()
         )
 
         val addDepsMagic = new AddDeps
@@ -108,7 +107,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
-          anyBoolean(), any[Seq[URL]], anyBoolean(), anyBoolean()
+          anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean()
         )
 
         val addDepsMagic = new AddDeps
@@ -136,7 +135,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
-          anyBoolean(), any[Seq[URL]], anyBoolean(), anyBoolean()
+          anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean()
         )
         val mockInterpreter = mock[Interpreter]
 
@@ -166,7 +165,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         doReturn(fakeUri :: fakeUri :: fakeUri :: Nil)
           .when(mockDependencyDownloader).retrieve(
             anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
-            anyBoolean(), any[Seq[URL]], anyBoolean(), anyBoolean()
+            anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean()
           )
         val mockSparkContext = mock[SparkContext]
 

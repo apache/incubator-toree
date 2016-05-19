@@ -16,14 +16,16 @@
  */
 package org.apache.toree.dependencies
 
-import java.io.{File, PrintStream}
+import java.io.{File, FileInputStream, PrintStream}
 import java.net.{URI, URL}
+import java.util.Properties
 import java.util.concurrent.ConcurrentHashMap
 
+import coursier.core.Authentication
 import coursier.Cache.Logger
 import coursier.Dependency
 import coursier.core.Repository
-import coursier.ivy.{IvyXml, IvyRepository}
+import coursier.ivy.{IvyRepository, IvyXml}
 import coursier.maven.MavenRepository
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 
@@ -40,7 +42,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
 
   // Initialization
   setDownloadDirectory(DependencyDownloader.DefaultDownloadDirectory)
-  addMavenRepository(DependencyDownloader.DefaultMavenRepository)
+  addMavenRepository(DependencyDownloader.DefaultMavenRepository, None)
 
   /**
    * Retrieves the dependency and all of its dependencies as jars.
@@ -69,7 +71,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     transitive: Boolean,
     excludeBaseDependencies: Boolean,
     ignoreResolutionErrors: Boolean,
-    extraRepositories: Seq[URL],
+    extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean,
     trace: Boolean
   ): Seq[URI] = {
@@ -95,12 +97,9 @@ class CoursierDependencyDownloader extends DependencyDownloader {
 
     lazy val defaultBase = new File(localDirectory).getAbsoluteFile
 
-    lazy val downloadLocations = Seq(
-      "http://" -> new File(defaultBase, "http"),
-      "https://" -> new File(defaultBase, "https")
-    )
+    lazy val downloadLocations = defaultBase
 
-    val allRepositories = extraRepositories.map(urlToMavenRepository) ++ repositories
+    val allRepositories = extraRepositories.map(x => urlToMavenRepository(x._1, x._2.map(_.authentication))) ++ repositories
 
     // Build list of locations to fetch dependencies
     val fetchLocations = Seq(ivy2Cache(localDirectory)) ++ allRepositories
@@ -150,10 +149,10 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    *
    * @param url The string representation of the url
    */
-  override def addMavenRepository(url: URL): Unit =
-    repositories :+= urlToMavenRepository(url)
+  override def addMavenRepository(url: URL, credentials: Option[Credentials]): Unit =
+    repositories :+= urlToMavenRepository(url, credentials.map(_.authentication))
 
-  private def urlToMavenRepository(url: URL) = MavenRepository(url.toString)
+  private def urlToMavenRepository(url: URL, credentials: Option[Authentication]) = MavenRepository(url.toString, authentication = credentials)
 
   /**
    * Remove the specified resolver url from the search options.
@@ -162,7 +161,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    */
   override def removeMavenRepository(url: URL): Unit = {
     repositories = repositories.filterNot {
-      case MavenRepository(urlString, _, _) => url.toString == urlString
+      case MavenRepository(urlString, _, _, _) => url.toString == urlString
       case _                                => false
     }
   }
@@ -314,8 +313,8 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    * @return The resulting URIs
    */
   private def repositoriesToURIs(repositories: Seq[Repository]) = repositories.map {
-    case IvyRepository(pattern, _, _, _, _, _, _, _)  => pattern
-    case MavenRepository(root, _, _)                  => root
+    case IvyRepository(pattern, _, _, _, _, _, _, _, _)  => pattern
+    case MavenRepository(root, _, _, _)                  => root
   }.map(new URI(_))
 
   /** Creates new Ivy2 local repository using base home URI. */
@@ -339,4 +338,52 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     withSignatures = false,
     dropInfoAttributes = true
   )
+}
+
+
+sealed abstract class Credentials extends Product with Serializable {
+  def user: String
+  def password: String
+  def host: String
+
+  def authentication: Authentication =
+    Authentication(user, password)
+}
+
+object Credentials {
+
+  case class FromFile(file: File) extends Credentials {
+
+    private lazy val props = {
+      val p = new Properties()
+      p.load(new FileInputStream(file))
+      p
+    }
+
+    private def findKey(keys: Seq[String]) = keys
+      .iterator
+      .map(props.getProperty)
+      .filter(_ != null)
+      .toStream
+      .headOption
+      .getOrElse {
+        throw new NoSuchElementException(s"${keys.head} key in $file")
+      }
+
+    lazy val user: String = findKey(FromFile.fileUserKeys)
+    lazy val password: String = findKey(FromFile.filePasswordKeys)
+    lazy val host: String = findKey(FromFile.fileHostKeys)
+  }
+
+  object FromFile {
+    // from sbt.Credentials
+    private val fileUserKeys = Seq("user", "user.name", "username")
+    private val filePasswordKeys = Seq("password", "pwd", "pass", "passwd")
+    private val fileHostKeys = Seq("host", "host.name", "hostname", "domain")
+  }
+
+
+  def apply(file: File): Credentials =
+    FromFile(file)
+
 }

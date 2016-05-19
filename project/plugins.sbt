@@ -50,7 +50,7 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.8.1")
 addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.3")
 
 // Provides alternative resolving/downloading over sbt
-addSbtPlugin("com.github.alexarchambault" % "coursier-sbt-plugin" % "1.0.0-M10")
+addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-M12")
 
 //  Used for signing jars published via `sbt publish-signed`
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
