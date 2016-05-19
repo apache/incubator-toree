@@ -71,6 +71,14 @@ class CommandLineOptions(args: Seq[String]) {
     parser.accepts("magic-url", "path to a magic jar")
       .withRequiredArg().ofType(classOf[String])
 
+  private val _default_repositories = parser.accepts(
+    "default_repositories", "comma seperated list of additional repositories to resolve"
+  ).withRequiredArg().ofType(classOf[String])
+
+  private val _default_repository_credentials = parser.accepts(
+    "default_repository_credentials", "comma seperated list of credential files to use"
+  ).withRequiredArg().ofType(classOf[String])
+
   private val _max_interpreter_threads = parser.accepts(
     "max-interpreter-threads",
     "total number of worker threads to use to execute code"
@@ -144,7 +152,12 @@ class CommandLineOptions(args: Seq[String]) {
       "jar_dir" -> get(_jar_dir),
       "default_interpreter" -> get(_default_interpreter),
       "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false)),
-      "interpreter_plugins" -> interpreterPlugins
+      "interpreter_plugins" -> interpreterPlugins,
+      "default_repositories" -> getAll(_default_repositories).map(_.asJava)
+        .flatMap(list => if (list.isEmpty) None else Some(list)),
+      "default_repository_credentials" -> getAll(_default_repository_credentials).map(_.asJava)
+          .flatMap(list => if (list.isEmpty) None else Some(list))
+
     ).flatMap(removeEmptyOptions).asInstanceOf[Map[String, AnyRef]].asJava)
 
     commandLineConfig.withFallback(profileConfig).withFallback(ConfigFactory.load)
@@ -182,7 +195,8 @@ class CommandLineOptions(args: Seq[String]) {
 
   /**
    * Prints the help message to the output stream provided.
-   * @param out The output stream to direct the help message
+    *
+    * @param out The output stream to direct the help message
    */
   def printHelpOn(out: OutputStream) =
     parser.printHelpOn(out)

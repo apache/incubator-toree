@@ -71,20 +71,10 @@ class AddDeps extends LineMagic with IncludeInterpreter
     val nonOptionArgs = parseArgs(code)
     dependencyDownloader.setPrintStream(printStream)
 
-    val extraRepositories = getAll(_repository).getOrElse(Nil).map(u => (u, Try(new URL(u))))
+    val repository = getAll(_repository).getOrElse(Nil)
+    val credentials = getAll(_credentials).getOrElse(Nil)
 
-    // Print error information
-    extraRepositories.filter(_._2.isFailure).map(_._1)
-      .foreach(u => printStream.println(s"Ignoring invalid URL $u"))
-
-    // match up credentials with repositories
-    val repositories = extraRepositories.flatMap(_._2.toOption)
-    val authentication = getAll(_credentials).getOrElse(Nil)
-      .map(f => new File(f))
-      .map(Credentials(_))
-      .map(c => (c.host, c)).toMap
-
-    val repositoriesWithCreds = repositories.map(u => (u, authentication.get(u.getHost)))
+    val repositoriesWithCreds = dependencyDownloader.resolveRepositoriesAndCredentials(repository, credentials)
 
     if (nonOptionArgs.size == 3) {
       // get the jars and hold onto the paths at which they reside
@@ -106,4 +96,6 @@ class AddDeps extends LineMagic with IncludeInterpreter
       printHelp(printStream, """%AddDeps my.company artifact-id version""")
     }
   }
+
+
 }

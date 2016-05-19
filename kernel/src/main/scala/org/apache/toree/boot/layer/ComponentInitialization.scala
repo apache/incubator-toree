@@ -18,14 +18,15 @@
 package org.apache.toree.boot.layer
 
 import java.io.File
-import java.nio.file.{Paths, Files}
+import java.net.URL
+import java.nio.file.{Files, Paths}
 import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor.ActorRef
 import com.typesafe.config.Config
 import org.apache.spark.SparkConf
 import org.apache.toree.comm.{CommManager, CommRegistrar, CommStorage, KernelCommManager}
-import org.apache.toree.dependencies.{CoursierDependencyDownloader, DependencyDownloader}
+import org.apache.toree.dependencies.{CoursierDependencyDownloader, Credentials, DependencyDownloader}
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.Kernel
 import org.apache.toree.kernel.protocol.v5.KMBuilder
@@ -129,6 +130,17 @@ trait StandardComponentInitialization extends ComponentInitialization {
     dependencyDownloader.setDownloadDirectory(
       new File(depsDir)
     )
+
+    if (config.hasPath("default_repositories")) {
+      val repository = config.getStringList("default_repositories").asScala.toList
+
+      val credentials = if (config.hasPath("default_repository_credentials")) {
+        config.getStringList("default_repository_credentials").asScala.toList
+      } else Nil
+
+      dependencyDownloader.resolveRepositoriesAndCredentials(repository, credentials)
+        .foreach{case (u, c) => dependencyDownloader.addMavenRepository(u, c)}
+    }
 
     dependencyDownloader
   }

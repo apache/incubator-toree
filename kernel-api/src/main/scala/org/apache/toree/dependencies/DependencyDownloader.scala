@@ -20,6 +20,7 @@ package org.apache.toree.dependencies
 import java.io.{File, PrintStream}
 import java.net.{URI, URL}
 import java.nio.file.Files
+import scala.util.Try
 
 abstract class DependencyDownloader {
   /**
@@ -98,6 +99,33 @@ abstract class DependencyDownloader {
    * @return The directory as a string
    */
   def getDownloadDirectory: String
+
+
+  /**
+   * Assigns credentials to the right repository and build tuples
+   *
+   * @param repository Sequence of repository urls
+   * @param credentials Sequence of credential filenames
+   * @return
+   */
+  def resolveRepositoriesAndCredentials(repository: List[String], credentials: List[String]): List[(URL, Option[Credentials])] = {
+    val extraRepositories = repository.map(u => (u, Try(new URL(u))))
+
+    // Print error information
+    //    extraRepositories.filter(_._2.isFailure).map(_._1)
+    //      .foreach(u => printStream.println(s"Ignoring invalid URL $u"))
+
+    // match up credentials with repositories
+    val repositories = extraRepositories.flatMap(_._2.toOption)
+    val authentication = credentials
+      .map(f => new File(f))
+      .map(Credentials(_))
+      .map(c => (c.host, c)).toMap
+
+    val repositoriesWithCreds = repositories.map(u => (u, authentication.get(u.getHost)))
+    repositoriesWithCreds
+  }
+
 }
 
 object DependencyDownloader {
