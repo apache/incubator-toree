@@ -31,7 +31,7 @@ class CoursierDependencyDownloaderSpec extends FunSpec with Matchers
       it("should add to the list of repositories") {
         val repo = new URL("http://some-repo.com")
 
-        coursierDependencyDownloader.addMavenRepository(repo)
+        coursierDependencyDownloader.addMavenRepository(repo, None)
 
         val repos = coursierDependencyDownloader.getRepositories
 
@@ -43,7 +43,7 @@ class CoursierDependencyDownloaderSpec extends FunSpec with Matchers
       it("should remove from the list of repositories") {
         val repo = new URL("http://some-repo.com")
 
-        coursierDependencyDownloader.addMavenRepository(repo)
+        coursierDependencyDownloader.addMavenRepository(repo, None)
         coursierDependencyDownloader.removeMavenRepository(repo)
 
         val repos = coursierDependencyDownloader.getRepositories
