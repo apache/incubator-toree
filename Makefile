@@ -17,7 +17,7 @@
 
 .PHONY: help clean clean-dist build dev test system-test test-travis release pip-release bin-release dev-binder .binder-image audit audit-licenses
 
-BASE_VERSION=0.1.0.dev8
+BASE_VERSION=0.1.0.dev9
 VERSION=$(BASE_VERSION)-incubating
 COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
 ifeq (, $(findstring dev, $(VERSION)))
