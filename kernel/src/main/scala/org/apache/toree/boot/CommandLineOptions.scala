@@ -72,11 +72,11 @@ class CommandLineOptions(args: Seq[String]) {
       .withRequiredArg().ofType(classOf[String])
 
   private val _default_repositories = parser.accepts(
-    "default_repositories", "comma seperated list of additional repositories to resolve"
+    "default-repositories", "comma seperated list of additional repositories to resolve"
   ).withRequiredArg().ofType(classOf[String])
 
   private val _default_repository_credentials = parser.accepts(
-    "default_repository_credentials", "comma seperated list of credential files to use"
+    "default-repository-credentials", "comma seperated list of credential files to use"
   ).withRequiredArg().ofType(classOf[String])
 
   private val _max_interpreter_threads = parser.accepts(
