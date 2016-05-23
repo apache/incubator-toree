@@ -1,0 +1,211 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>handler - com.ibm.spark.kernel.protocol.v5.handler</title>
+          <meta name="description" content="handler - com.ibm.spark.kernel.protocol.v5.handler" />
+          <meta name="keywords" content="handler com.ibm.spark.kernel.protocol.v5.handler" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../../../index.html';
+            var hash = 'com.ibm.spark.kernel.protocol.v5.handler.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../../../package.html" class="extype" name="com">com</a>.<a href="../../../../../package.html" class="extype" name="com.ibm">ibm</a>.<a href="../../../../package.html" class="extype" name="com.ibm.spark">spark</a>.<a href="../../../package.html" class="extype" name="com.ibm.spark.kernel">kernel</a>.<a href="../../package.html" class="extype" name="com.ibm.spark.kernel.protocol">protocol</a>.<a href="../package.html" class="extype" name="com.ibm.spark.kernel.protocol.v5">v5</a></p>
+        <h1>handler</h1>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">handler</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="com.ibm.spark.kernel.protocol.v5.handler.BaseHandler" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="BaseHandlerextendsOrderedSupportwithMessageLogSupport"></a>
+      <a id="BaseHandler:BaseHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="BaseHandler.html"><span class="name">BaseHandler</span></a><span class="result"> extends <a href="../OrderedSupport.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.OrderedSupport">OrderedSupport</a> with <a href="../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.handler.CodeCompleteHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CodeCompleteHandlerextendsBaseHandlerwithMessageLogSupport"></a>
+      <a id="CodeCompleteHandler:CodeCompleteHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="CodeCompleteHandler.html"><span class="name">CodeCompleteHandler</span></a><span class="result"> extends <a href="BaseHandler.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.handler.BaseHandler">BaseHandler</a> with <a href="../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.handler.CommCloseHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommCloseHandlerextendsBaseHandlerwithMessageLogSupport"></a>
+      <a id="CommCloseHandler:CommCloseHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="CommCloseHandler.html"><span class="name">CommCloseHandler</span></a><span class="result"> extends <a href="BaseHandler.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.handler.BaseHandler">BaseHandler</a> with <a href="../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Represents the handler for comm_close messages.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.handler.CommMsgHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommMsgHandlerextendsBaseHandlerwithMessageLogSupport"></a>
+      <a id="CommMsgHandler:CommMsgHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="CommMsgHandler.html"><span class="name">CommMsgHandler</span></a><span class="result"> extends <a href="BaseHandler.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.handler.BaseHandler">BaseHandler</a> with <a href="../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Represents the handler for comm_msg messages.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.handler.CommOpenHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="CommOpenHandlerextendsBaseHandlerwithMessageLogSupport"></a>
+      <a id="CommOpenHandler:CommOpenHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="CommOpenHandler.html"><span class="name">CommOpenHandler</span></a><span class="result"> extends <a href="BaseHandler.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.handler.BaseHandler">BaseHandler</a> with <a href="../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Represents the handler for comm_open messages.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.handler.ExecuteRequestHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteRequestHandlerextendsBaseHandlerwithLogLike"></a>
+      <a id="ExecuteRequestHandler:ExecuteRequestHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteRequestHandler.html"><span class="name">ExecuteRequestHandler</span></a><span class="result"> extends <a href="BaseHandler.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.handler.BaseHandler">BaseHandler</a> with <a href="../../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Receives an ExecuteRequest KernelMessage and forwards the ExecuteRequest
+to the interpreter actor.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.handler.GenericSocketMessageHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="GenericSocketMessageHandlerextendsActorwithLogLike"></a>
+      <a id="GenericSocketMessageHandler:GenericSocketMessageHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="GenericSocketMessageHandler.html"><span class="name">GenericSocketMessageHandler</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="../../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">All KernelMessage leaving the kernel for the client will exit the relay in a similar pattern.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.handler.InputRequestReplyHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="InputRequestReplyHandlerextendsOrderedSupportwithMessageLogSupport"></a>
+      <a id="InputRequestReplyHandler:InputRequestReplyHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="InputRequestReplyHandler.html"><span class="name">InputRequestReplyHandler</span></a><span class="result"> extends <a href="../OrderedSupport.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.OrderedSupport">OrderedSupport</a> with <a href="../../../../utils/MessageLogSupport.html" class="extype" name="com.ibm.spark.utils.MessageLogSupport">MessageLogSupport</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Represents the handler for both input request and input reply messages.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.handler.KernelInfoRequestHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KernelInfoRequestHandlerextendsBaseHandlerwithLogLike"></a>
+      <a id="KernelInfoRequestHandler:KernelInfoRequestHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="KernelInfoRequestHandler.html"><span class="name">KernelInfoRequestHandler</span></a><span class="result"> extends <a href="BaseHandler.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.handler.BaseHandler">BaseHandler</a> with <a href="../../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Receives a KernelInfoRequest KernelMessage and returns a KernelInfoReply
+KernelMessage.</p>
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../../../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../../../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../../../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../../../../../lib/template.js"></script>
+    </body>
+      </html>
