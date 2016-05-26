@@ -182,9 +182,10 @@ system-test: pip-release
 		--name jupyter_kernel_tests \
 		-v `pwd`/dist/toree-pip:/srv/toree-pip \
 		-v `pwd`/test_toree.py:/srv/test_toree.py \
+		-v `pwd`/scala-interpreter/src/test/resources:/srv/system-test-resources \
 		$(IMAGE) \
-		bash -c "pip install /srv/toree-pip/toree*.tar.gz ; jupyter toree install --user --kernel_name='Apache_Toree' ; \
-		pip install nose jupyter_kernel_test ; python /srv/test_toree.py"
+		bash -c "(cd /srv/system-test-resources && python -m http.server 8000 &) && pip install /srv/toree-pip/toree*.tar.gz && jupyter toree install --user --kernel_name='Apache_Toree' && \
+		pip install nose jupyter_kernel_test && python /srv/test_toree.py"
 
 ################################################################################
 # Jars

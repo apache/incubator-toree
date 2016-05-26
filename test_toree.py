@@ -36,14 +36,64 @@ class ToreeKernelTests(jupyter_kernel_test.KernelTests):
     # Code in the kernel's language to write "hello, world" to stdout
     code_hello_world = "println(\"hello, world\")"
 
-    # Samples of code which generate a result value (ie, some text
-    # displayed as Out[n])
-    code_execute_result = [
+    test_statements_execute_result = [
         {'code': '6*7', 'result': '42'},
         {'code': 'sc.parallelize(List(1, 2, 3, 4)).map(_*2).reduce(_+_)', 'result': '20'},
         {'code': '%showtypes on\n1', 'result': 'Int = 1'},
         {'code': '%showtypes off\n1', 'result': '1'}
     ]
+
+    test_statements_stdout = [
+        {'code': '%AddJar http://0.0.0.0:8000/TestJar.jar\nimport com.ibm.testjar.TestClass\nprintln(new TestClass().sayHello("Person"))', 'result': 'Hello, Person\n'}
+    ]
+
+    def test_scala_stdout(self):
+        '''Asserts test_statements execute correctly meaning the last message is the expected result'''
+        for sample in self.test_statements_stdout:
+            with self.subTest(code=sample['code']):
+                self.flush_channels()
+                reply, output_msgs = self.execute_helper(sample['code'])
+
+                self.assertEqual(reply['content']['status'], 'ok')
+
+                self.assertGreaterEqual(len(output_msgs), 1)
+                self.assertEqual(output_msgs[-1]['msg_type'], 'stream')
+                self.assertEqual(output_msgs[-1]['content']['name'], 'stdout')
+                self.assertIn(sample['result'], output_msgs[-1]['content']['text'])
+
+    def test_scala_execute_result(self):
+        '''Asserts test_statements execute correctly meaning the last message is the expected result'''
+        for sample in self.test_statements_execute_result:
+            with self.subTest(code=sample['code']):
+                self.flush_channels()
+
+                reply, output_msgs = self.execute_helper(sample['code'])
+                self.assertEqual(reply['content']['status'], 'ok')
+                #Use last message as code may be multiple lines/stream
+                self.assertIn('text/plain', output_msgs[-1]['content']['data'])
+                self.assertEqual(output_msgs[-1]['content']['data']['text/plain'], sample['result'])
+
+    def execute_helper(self, code, timeout=15,
+                       silent=False, store_history=True):
+        '''Overrides the jupyter kernel test execute_helper'''
+        self.kc.execute(code=code, silent=silent, store_history=store_history)
+
+        reply = self.kc.get_shell_msg(timeout=timeout)
+
+        output_msgs = []
+        while True:
+            msg = self.kc.iopub_channel.get_msg(timeout=0.1)
+            if msg['msg_type'] == 'status':
+                if msg['content']['execution_state'] == 'busy':
+                    continue
+                elif msg['content']['execution_state'] == 'idle':
+                    break
+            elif msg['msg_type'] == 'execute_input':
+                self.assertEqual(msg['content']['code'], code)
+                continue
+            output_msgs.append(msg)
+
+        return reply, output_msgs
 
 if __name__ == '__main__':
     unittest.main()
