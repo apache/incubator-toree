@@ -37,7 +37,6 @@ libraryDependencies ++= Seq(
 // EXECUTION DEPENDENCIES
 //
 libraryDependencies += "org.apache.commons" % "commons-exec" % "1.3"
-libraryDependencies += "com.google.guava" % "guava" % "14.0.1"
 
 //
 // CLI DEPENDENCIES
