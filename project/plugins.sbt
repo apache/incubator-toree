@@ -35,7 +35,7 @@ addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.0")
 
 // Provides a generated build info object to sync between build and application
-addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.3.2")
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.6.1")
 
 // Provides code coverage support
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.4")

@@ -14,49 +14,83 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-
 import org.apache.commons.io.FileUtils
 import sbt._
-import Keys._
+import sbt.Keys._
+import sbtbuildinfo._
+import sbtbuildinfo.BuildInfoKeys._
+import scoverage.ScoverageSbtPlugin
 import coursier.Keys._
 import com.typesafe.sbt.pgp.PgpKeys._
 import scala.util.{Try, Properties}
 
 object Common {
   //  Parameters for publishing to artifact repositories
-  val versionNumber             = Properties.envOrElse("VERSION", "0.0.0-dev")
-  val snapshot                  = Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
-  val gpgLocation               = Properties.envOrElse("GPG","/usr/local/bin/gpg")
-  val gpgPassword               = Properties.envOrElse("GPG_PASSWORD","")
+  private val versionNumber             = Properties.envOrElse("VERSION", "0.0.0-dev")
+  private val snapshot                  = Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
+  private val gpgLocation               = Properties.envOrElse("GPG","/usr/local/bin/gpg")
+  private val gpgPassword               = Properties.envOrElse("GPG_PASSWORD","")
+  private val buildOrganization         = "org.apache.toree.kernel"
+  private val buildVersion              = if (snapshot) s"$versionNumber-SNAPSHOT" else versionNumber
+  private val buildScalaVersion         = "2.10.4"
 
-  private val buildOrganization = "org.apache.toree"
-  private val buildVersion      =
-    if (snapshot) s"$versionNumber-SNAPSHOT"
-    else versionNumber
-  private val buildScalaVersion = "2.10.4"
-
-
-  // Global dependencies provided to all projects
-  private var buildLibraryDependencies = Seq(
-
-    // Needed to force consistent typesafe config with play json and spark
-    "com.typesafe" % "config" % "1.2.1",
-    "org.slf4j" % "slf4j-log4j12" % "1.7.5" % "test",
-    "log4j" % "log4j" % "1.2.17" % "test",
-    "org.scalatest" %% "scalatest" % "2.2.0" % "test", // Apache v2
-    "org.scalactic" %% "scalactic" % "2.2.0" % "test", // Apache v2
-    "org.mockito" % "mockito-all" % "1.9.5" % "test"   // MIT
+  val buildInfoSettings = Seq(
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, "sparkVersion" -> sparkVersion),
+    buildInfoPackage := buildOrganization,
+    buildInfoOptions += BuildInfoOption.BuildTime
   )
 
-  private val buildResolvers = Seq(
-    "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
+  def ToreeProject(projectName: String, doFork: Boolean = false, needsSpark: Boolean = false):Project = (
+    ToreeProject(s"toree-$projectName", projectName, doFork, needsSpark)
   )
 
-  // The prefix used for our custom artifact names
-  private val artifactPrefix = "ibm-spark"
-  lazy val sparkVersion = {
+  def ToreeProject(projectName: String, projectDir: String, doFork: Boolean, needsSpark: Boolean):Project = (
+    Project(projectName, file(projectDir))
+      .configs( UnitTest )
+      .configs( IntegrationTest )
+      .configs( SystemTest )
+      .configs( ScratchTest )
+      .settings(commonSettings:_*)
+      .settings( inConfig(UnitTest)(Defaults.testTasks) : _*)
+      .settings( inConfig(IntegrationTest)(Defaults.testTasks) : _*)
+      .settings( inConfig(SystemTest)(Defaults.testTasks) : _*)
+      .settings( inConfig(ScratchTest)(Defaults.testTasks) : _*)
+      .settings(
+        testOptions in UnitTest := Seq(Tests.Filter(unitFilter)),
+        testOptions in IntegrationTest := Seq(Tests.Filter(intFilter)),
+        testOptions in SystemTest := Seq(Tests.Filter(sysFilter)),
+        testOptions in ScratchTest := Seq(Tests.Filter(scratchFilter))
+      ).settings(
+        fork in Test := doFork,
+        fork in UnitTest := doFork,
+        fork in IntegrationTest := doFork,
+        fork in SystemTest := doFork,
+        fork in ScratchTest := doFork,
+        libraryDependencies ++= (
+          if (needsSpark) sparkLibraries
+          else Nil
+        )
+      )
+  )
+
+  def scratchFilter(name: String): Boolean =
+    (name endsWith "SpecForScratch") || (name startsWith "scratch.")
+  def sysFilter(name: String): Boolean =
+    (name endsWith "SpecForSystem") || (name startsWith "system.")
+  def intFilter(name: String): Boolean =
+    (name endsWith "SpecForIntegration") || (name startsWith "integration.")
+  def unitFilter(name: String): Boolean =
+    (name endsWith "Spec") && !intFilter(name) &&
+      !sysFilter(name) && !scratchFilter(name)
+
+  lazy val UnitTest = config("unit") extend Test
+  lazy val IntegrationTest = config("integration") extend Test
+  lazy val SystemTest = config("system") extend Test
+  lazy val ScratchTest = config("scratch") extend Test
+
+  private lazy val sparkVersion = {
     val sparkEnvironmentVariable = "APACHE_SPARK_VERSION"
-    val defaultSparkVersion = "1.5.1"
+    val defaultSparkVersion = "1.6.1"
 
     val _sparkVersion = Properties.envOrNone(sparkEnvironmentVariable)
 
@@ -77,17 +111,36 @@ object Common {
     }
   }
 
-  val settings: Seq[Def.Setting[_]] = Seq(
+  private val sparkLibraries = Seq(
+    "org.apache.spark" %% "spark-core" % sparkVersion  % "provided" excludeAll( // Apache v2
+      // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
+      ExclusionRule(
+        organization = "org.jboss.netty",
+        name = "netty"
+      )
+    ),
+    "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-mllib" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-graphx" % sparkVersion % "provided",
+    "org.apache.spark" %% "spark-repl" % sparkVersion  % "provided"
+  )
+
+  val commonSettings: Seq[Def.Setting[_]] = Seq(
     organization := buildOrganization,
     useGpg := true,
     gpgCommand := gpgLocation,
     pgpPassphrase in Global := Some(gpgPassword.toArray),
     version := buildVersion,
     scalaVersion := buildScalaVersion,
-    libraryDependencies ++= buildLibraryDependencies,
     isSnapshot := snapshot,
-    resolvers ++= buildResolvers,
-
+    resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+    // Test dependencies
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "2.2.6" % "test", // Apache v2
+      "org.mockito" % "mockito-all" % "1.10.19" % "test"   // MIT
+    ),
+    ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := false,
     pomExtra :=
       <parent>
         <groupId>org.apache</groupId>
@@ -168,12 +221,9 @@ object Common {
     // Add additional test option to show time taken per test
     testOptions in Test += Tests.Argument("-oD"),
 
-    // Add a global resource directory with compile/ and test/ for resources
-    // in all projects
-    unmanagedResourceDirectories in Compile +=
-      (baseDirectory in Build.root).value / "resources/compile",
-    unmanagedResourceDirectories in Test +=
-      (baseDirectory in Build.root).value / "resources/test",
+    // Add a global resource directory with compile/ and test/ for resources in all projects
+    unmanagedResourceDirectories in Compile += file("resources/compile"),
+    unmanagedResourceDirectories in Test += file("resources/test"),
 
     // Publish Settings
     publishTo := {
@@ -187,21 +237,6 @@ object Common {
     // Add rebuild ivy xml to the following tasks
     compile <<= (compile in Compile) dependsOn (rebuildIvyXml dependsOn deliverLocal)
   ) ++ rebuildIvyXmlSettings // Include our rebuild ivy xml settings
-
-  buildLibraryDependencies ++= Seq( "org.apache.spark" %% "spark-core" % sparkVersion  % "provided" excludeAll( // Apache v2
-
-    // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
-    ExclusionRule(
-      organization = "org.jboss.netty",
-      name = "netty"
-    )
-    ),
-    "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
-    "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
-    "org.apache.spark" %% "spark-mllib" % sparkVersion % "provided",
-    "org.apache.spark" %% "spark-graphx" % sparkVersion % "provided",
-    "org.apache.spark" %% "spark-repl" % sparkVersion  % "provided"
-  )
 
   // ==========================================================================
   // = REBUILD IVY XML SETTINGS BELOW
@@ -225,4 +260,5 @@ object Common {
       FileUtils.copyFile(inputFile, outputFile)
     }
   )
+
 }

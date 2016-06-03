@@ -28,7 +28,7 @@ object Main extends App {
     options.printHelpOn(System.out)
   } else if (options.version) {
     println(s"Kernel Version:       ${BuildInfo.version}")
-    println(s"Build Date:           ${BuildInfo.buildDate}")
+    println(s"Build Date:           ${BuildInfo.builtAtString}")
     println(s"Scala Version:        ${BuildInfo.scalaVersion}")
     println(s"Apache Spark Version: ${BuildInfo.sparkVersion}")
   } else {

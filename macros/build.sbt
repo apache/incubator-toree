@@ -18,6 +18,6 @@
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 
 libraryDependencies ++= (
-  if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" %% "quasiquotes" % "2.0.1")
+  if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" %% "quasiquotes" % "2.1.0")
   else Nil
 )

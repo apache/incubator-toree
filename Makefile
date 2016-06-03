@@ -99,7 +99,7 @@ dev-binder: .binder-image
 target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
 target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
-target/scala-2.10/$(ASSEMBLY_JAR): dist/toree-legal project/build.properties project/Build.scala project/Common.scala project/plugins.sbt
+target/scala-2.10/$(ASSEMBLY_JAR): dist/toree-legal project/build.properties build.sbt project/common.scala project/plugins.sbt
 	$(call RUN,$(ENV_OPTS) sbt toree/assembly)
 
 build: target/scala-2.10/$(ASSEMBLY_JAR)
@@ -191,9 +191,9 @@ system-test: pip-release
 ################################################################################
 publish-jars:
 	@$(ENV_OPTS) GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) sbt publish-signed
-	
+
 ################################################################################
-# PIP PACKAGE 
+# PIP PACKAGE
 ################################################################################
 dist/toree-pip/toree-$(BASE_VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 dist/toree-pip/toree-$(BASE_VERSION).tar.gz: dist/toree
@@ -282,4 +282,3 @@ all-travis: clean test system-test audit-licenses
 clean-travis:
 	find $(HOME)/.sbt -name "*.lock" | xargs rm
 	find $(HOME)/.ivy2 -name "ivydata-*.properties" | xargs rm
-

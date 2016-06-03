@@ -14,23 +14,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
 //
 // JSON DEPENDENCIES
 //
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-json" % "2.3.6" excludeAll( // Apache v2
+  "com.typesafe.play" %% "play-json" % "2.3.10" excludeAll( // Apache v2
       ExclusionRule(organization = "com.fasterxml.jackson.core")
     ),
-  "org.slf4j" % "slf4j-api" % "1.7.5" // MIT
+  "org.slf4j" % "slf4j-api" % "1.7.21" // MIT
 )
 
 //
 // TEST DEPENDENCIES
 //
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "2.2.0" % "test", // Apache v2
-  "org.scalactic" %% "scalactic" % "2.2.0" % "test", // Apache v2
-  "org.mockito" % "mockito-all" % "1.9.5" % "test"   // MIT
+  "org.scalactic" %% "scalactic" % "2.2.6" % "test", // Apache v2
+  "com.fasterxml.jackson.core" % "jackson-databind" % "2.7.4" // Apache v2
 )
