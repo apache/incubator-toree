@@ -19,7 +19,6 @@ package org.apache.toree.boot
 
 import akka.actor.{ActorRef, ActorSystem}
 import com.typesafe.config.Config
-import org.apache.spark.SparkContext
 import org.apache.toree.boot.layer._
 import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.kernel.api.Kernel
@@ -45,7 +44,6 @@ class KernelBootstrap(config: Config) extends LogLike {
   private var statusDispatch: ActorRef          = _
   private var kernel: Kernel                    = _
 
-  private var sparkContext: SparkContext        = _
   private var interpreters: Seq[Interpreter]    = Nil
 
   /**
@@ -91,7 +89,6 @@ class KernelBootstrap(config: Config) extends LogLike {
         appName     = DefaultAppName,
         actorLoader = actorLoader
       )
-    //this.sparkContext = sparkContext
     this.interpreters ++= Seq(interpreter)
 
     this.kernel = kernel
@@ -127,11 +124,6 @@ class KernelBootstrap(config: Config) extends LogLike {
    * Shuts down all kernel systems.
    */
   def shutdown() = {
-    logger.info("Shutting down Spark Context")
-    Try(kernel.sparkContext.stop()).failed.foreach(
-      logger.error("Failed to shutdown Spark Context", _: Throwable)
-    )
-
     logger.info("Shutting down interpreters")
     Try(interpreters.foreach(_.stop())).failed.foreach(
       logger.error("Failed to shutdown interpreters", _: Throwable)
@@ -171,4 +163,3 @@ class KernelBootstrap(config: Config) extends LogLike {
     logger.info("ZeroMQ (JeroMQ) version: " + ZMQ.getVersionString)
   }
 }
-
