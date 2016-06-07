@@ -21,11 +21,11 @@ import org.apache.toree.interpreter._
 import org.apache.toree.kernel.protocol.v5.MIMEType
 import org.apache.toree.magic.dependencies.IncludeKernelInterpreter
 import org.apache.toree.utils.DataFrameConverter
-import org.mockito.Matchers._
-import org.mockito.Matchers.{eq => mockEq}
+import org.mockito.Matchers.{anyString, eq => mockEq, _}
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+
 import scala.util.Success
 
 class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfter {
@@ -46,7 +46,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         val (magic, interpreter, _) = createMocks
         val message: Either[ExecuteOutput, ExecuteFailure] = Right(mock[ExecuteAborted])
         val code = "code"
-        doReturn((Results.Aborted,message)).when(interpreter).interpret(code, false)
+        when(interpreter.interpret(code)).thenReturn((Results.Aborted, message))
         val output = magic.execute(code)
         output.contains(MIMEType.PlainText) should be(true)
         output(MIMEType.PlainText) should be(DataFrameResponses.ErrorMessage(
@@ -62,7 +62,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         doReturn(mockError).when(mockExecuteError).value
         val message: Either[ExecuteOutput, ExecuteFailure] = Right(mockExecuteError)
         val code = "code"
-        doReturn((Results.Error,message)).when(interpreter).interpret(code, false)
+        when(interpreter.interpret(code)).thenReturn((Results.Error, message))
         val output = magic.execute(code)
         output.contains(MIMEType.PlainText) should be(true)
         output(MIMEType.PlainText) should be(DataFrameResponses.ErrorMessage(
@@ -78,7 +78,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         doReturn(mockError).when(mockExecuteError).value
         val message: Either[ExecuteOutput, ExecuteFailure] = Right(mockExecuteError )
         val code = "code"
-        doReturn((Results.Error,message)).when(interpreter).interpret(code, false)
+        when(interpreter.interpret(code)).thenReturn((Results.Error, message))
         val output = magic.execute(code)
         output.contains(MIMEType.PlainText) should be(true)
         output(MIMEType.PlainText) should be(DataFrameResponses.ErrorMessage(
@@ -104,7 +104,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         val executeCode =s"""--output=json
                              |${variableName}
                   """.stripMargin
-        doReturn((Results.Success,message)).when(interpreter).interpret(variableName, false)
+        when(interpreter.interpret(variableName)).thenReturn((Results.Success, message))
         doReturn(Some(variableName)).when(interpreter).lastExecutionVariableName
         doReturn(Some(mockDataFrame)).when(interpreter).read(variableName)
         doReturn(Success(outputText)).when(converter).convert(
@@ -124,7 +124,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         val executeCode =s"""--output=html
                              |${variableName}
                   """.stripMargin
-        doReturn((Results.Success,message)).when(interpreter).interpret(variableName, false)
+        when(interpreter.interpret(variableName)).thenReturn((Results.Success, message))
         doReturn(Some(variableName)).when(interpreter).lastExecutionVariableName
         doReturn(Some(mockDataFrame)).when(interpreter).read(variableName)
         doReturn(Success(outputText)).when(converter).convert(
@@ -144,7 +144,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         val executeCode =s"""--output=csv
                              |${variableName}
                   """.stripMargin
-        doReturn((Results.Success,message)).when(interpreter).interpret(variableName, false)
+        when(interpreter.interpret(variableName)).thenReturn((Results.Success, message))
         doReturn(Some(variableName)).when(interpreter).lastExecutionVariableName
         doReturn(Some(mockDataFrame)).when(interpreter).read(variableName)
         doReturn(Success(outputText)).when(converter).convert(
@@ -164,7 +164,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         val executeCode =s"""--output=html --limit=3
                              |${variableName}
                   """.stripMargin
-        doReturn((Results.Success,message)).when(interpreter).interpret(variableName, false)
+        when(interpreter.interpret(variableName)).thenReturn((Results.Success, message))
         doReturn(Some(variableName)).when(interpreter).lastExecutionVariableName
         doReturn(Some(mockDataFrame)).when(interpreter).read(variableName)
         doReturn(Success(outputText)).when(converter).convert(
@@ -180,7 +180,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         val message: Either[ExecuteOutput, ExecuteFailure] = Left(outputText)
         val mockDataFrame = mock[org.apache.spark.sql.DataFrame]
         val code = "variable"
-        doReturn((Results.Success,message)).when(interpreter).interpret(code, false)
+        when(interpreter.interpret(code)).thenReturn((Results.Success, message))
         doReturn(Some(code)).when(interpreter).lastExecutionVariableName
         doReturn(Some(mockDataFrame)).when(interpreter).read(code)
         doThrow(new RuntimeException()).when(converter).convert(

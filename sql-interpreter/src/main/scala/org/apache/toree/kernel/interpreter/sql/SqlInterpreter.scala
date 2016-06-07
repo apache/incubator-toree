@@ -46,13 +46,13 @@ class SqlInterpreter() extends Interpreter {
    * @return The success/failure of the interpretation and the output from the
    *         execution or the failure
    */
-  override def interpret(code: String, silent: Boolean):
+  override def interpret(code: String, silent: Boolean, output: Option[OutputStream]):
     (Result, Either[ExecuteOutput, ExecuteFailure]) =
   {
     if (!sqlService.isRunning) sqlService.start()
 
     val futureResult = sqlTransformer.transformToInterpreterResult(
-      sqlService.submitCode(code)
+      sqlService.submitCode(code, kernelOutputStream = output)
     )
 
     Await.result(futureResult, Duration.Inf)

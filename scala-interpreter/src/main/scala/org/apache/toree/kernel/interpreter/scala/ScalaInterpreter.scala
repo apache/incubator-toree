@@ -260,7 +260,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     this
   }
 
-  override def interpret(code: String, silent: Boolean = false):
+  override def interpret(code: String, silent: Boolean = false, output: Option[OutputStream]):
   (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
     val starting = (Results.Success, Left(""))
     interpretRec(code.trim.split("\n").toList, false, starting)

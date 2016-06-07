@@ -22,7 +22,8 @@ import java.util.concurrent.ConcurrentHashMap
 import org.apache.toree.interpreter.broker.BrokerTypes._
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{Promise, Future, promise}
+import scala.concurrent.{Future, Promise}
+import scala.tools.nsc.interpreter.OutputStream
 
 /**
  * Represents the state structure of broker.
@@ -41,6 +42,8 @@ class BrokerState(private val maxQueuedCode: Int) {
     new java.util.concurrent.ConcurrentLinkedQueue[BrokerCode]()
   protected val promiseMap: collection.mutable.Map[CodeId, BrokerPromise] =
     new ConcurrentHashMap[CodeId, BrokerPromise]().asScala
+  protected val outputResultStreamMap : collection.mutable.Map[CodeId, Option[OutputStream]] =
+    new ConcurrentHashMap[CodeId, Option[OutputStream]]().asScala
 
   /**
    * Adds new code to eventually be executed.
@@ -49,7 +52,7 @@ class BrokerState(private val maxQueuedCode: Int) {
    *
    * @return The future containing the results of the execution
    */
-  def pushCode(code: Code): Future[CodeResults] = synchronized {
+  def pushCode(code: Code, outputResultStream: Option[OutputStream]): Future[CodeResults] = synchronized {
     // Throw the standard error if our maximum limit has been reached
     if (codeQueue.size() >= maxQueuedCode)
       throw new IllegalStateException(
@@ -69,8 +72,19 @@ class BrokerState(private val maxQueuedCode: Int) {
     // Add the code to be executed to our queue and the promise to our map
     codeQueue.add(brokerCode)
     promiseMap.put(brokerPromise.codeId, brokerPromise)
-
+    // Maintain an output stream for each codeId
+    outputResultStreamMap.put(brokerPromise.codeId, outputResultStream)
     codeExecutionPromise.future
+  }
+
+  // Called from pyspark
+  def sendOutput(codeId: String, output: String): Unit = {
+    // finds the output stream associated with the code id
+    // and writes to it
+    outputResultStreamMap.get(codeId).get match {
+      case Some(outputStream) => outputStream.write(output.getBytes())
+      case _ => logger.debug(s"Output stream is invalid for codeId $codeId")
+    }
   }
 
   /**

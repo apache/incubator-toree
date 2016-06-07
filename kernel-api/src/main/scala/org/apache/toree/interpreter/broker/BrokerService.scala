@@ -18,7 +18,9 @@
 package org.apache.toree.interpreter.broker
 
 import org.apache.toree.interpreter.broker.BrokerTypes.{Code, CodeResults}
+
 import scala.concurrent.Future
+import scala.tools.nsc.interpreter._
 
 /**
  * Represents the service that provides the high-level interface between the
@@ -42,7 +44,7 @@ trait BrokerService {
    *
    * @return The result as a future to eventually return
    */
-  def submitCode(code: Code): Future[CodeResults]
+  def submitCode(code: Code, kernelOutputStream: Option[OutputStream]): Future[CodeResults]
 
   /** Stops the running broker service. */
   def stop(): Unit

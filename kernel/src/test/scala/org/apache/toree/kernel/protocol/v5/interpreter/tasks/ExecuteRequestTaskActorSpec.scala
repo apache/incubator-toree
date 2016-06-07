@@ -18,16 +18,17 @@
 package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
 import java.io.OutputStream
+
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
+import com.typesafe.config.ConfigFactory
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
-import com.typesafe.config.ConfigFactory
+import org.mockito.Matchers.{anyBoolean, anyString, anyObject}
 import org.mockito.Mockito._
-import org.mockito.Matchers.{anyString, anyBoolean}
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{Matchers, FunSpecLike}
+import org.scalatest.{FunSpecLike, Matchers}
 import test.utils.MaxAkkaTestTimeout
 
 object ExecuteRequestTaskActorSpec {
@@ -49,7 +50,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
       it("should return an ExecuteReplyOk if the interpreter returns success") {
         val mockInterpreter = mock[Interpreter]
         doReturn((Results.Success, Left(new ExecuteOutput))).when(mockInterpreter)
-          .interpret(anyString(), anyBoolean())
+          .interpret(anyString(), anyBoolean(), anyObject())
 
         val executeRequestTask =
           system.actorOf(Props(
@@ -75,7 +76,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
       it("should return an ExecuteReplyAbort if the interpreter returns aborted") {
         val mockInterpreter = mock[Interpreter]
         doReturn((Results.Aborted, Right(mock[ExecuteAborted]))).when(mockInterpreter)
-          .interpret(anyString(), anyBoolean())
+          .interpret(anyString(), anyBoolean(), anyObject())
 
         val executeRequestTask =
           system.actorOf(Props(
@@ -101,7 +102,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
       it("should return an ExecuteReplyError if the interpreter returns error") {
         val mockInterpreter = mock[Interpreter]
         doReturn((Results.Error, Right(mock[ExecuteError]))).when(mockInterpreter)
-          .interpret(anyString(), anyBoolean())
+          .interpret(anyString(), anyBoolean(), anyObject())
 
         val executeRequestTask =
           system.actorOf(Props(
@@ -127,7 +128,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
       it("should return ExecuteReplyError if interpreter returns incomplete") {
         val mockInterpreter = mock[Interpreter]
         doReturn((Results.Incomplete, Right(""))).when(mockInterpreter)
-          .interpret(anyString(), anyBoolean())
+          .interpret(anyString(), anyBoolean(), anyObject())
 
         val executeRequestTask =
           system.actorOf(Props(
@@ -153,7 +154,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
       it("should return an ExecuteReplyOk when receiving empty code.") {
         val mockInterpreter = mock[Interpreter]
         doReturn((Results.Incomplete, Right(""))).when(mockInterpreter)
-          .interpret(anyString(), anyBoolean())
+          .interpret(anyString(), anyBoolean(), anyObject())
 
         val executeRequestTask =
           system.actorOf(Props(

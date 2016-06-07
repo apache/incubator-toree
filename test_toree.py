@@ -18,7 +18,7 @@
 import unittest
 import jupyter_kernel_test
 
-class ToreeKernelTests(jupyter_kernel_test.KernelTests):
+class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
     # Required --------------------------------------
 
     # The name identifying an installed kernel to run the tests against
@@ -94,6 +94,30 @@ class ToreeKernelTests(jupyter_kernel_test.KernelTests):
             output_msgs.append(msg)
 
         return reply, output_msgs
+
+class ToreePythonKernelTests(jupyter_kernel_test.KernelTests):
+    # Required --------------------------------------
+
+    # The name identifying an installed kernel to run the tests against
+    kernel_name = "apache_toree_pyspark"
+
+    # language_info.name in a kernel_info_reply should match this
+    language_name = "scala"
+
+    # Optional --------------------------------------
+
+    # the normal file extension (including the leading dot) for this language
+    # checked against language_info.file_extension in kernel_info_reply
+    file_extension = ".py"
+
+    # Code in the kernel's language to write "hello, world" to stdout
+    code_hello_world = "print(\"hello, world\")"
+
+    # Samples of code which generate a result value (ie, some text
+    # displayed as Out[n])
+    code_execute_result = [
+        {'code': '6*7', 'result': '42'}
+    ]
 
 if __name__ == '__main__':
     unittest.main()

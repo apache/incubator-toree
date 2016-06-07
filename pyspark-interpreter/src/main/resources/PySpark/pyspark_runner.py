@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-import sys, getopt, traceback, re
+import sys, getopt, traceback, re, ast
 
 from py4j.java_gateway import java_import, JavaGateway, GatewayClient
 from py4j.protocol import Py4JJavaError
@@ -70,6 +70,7 @@ java_import(gateway.jvm, "scala.Tuple2")
 
 sc = None
 sqlContext = None
+code_info = None
 
 kernel = bridge.kernel()
 
@@ -78,6 +79,7 @@ class Logger(object):
     self.out = ""
 
   def write(self, message):
+    state.sendOutput(code_info.codeId(), message)
     self.out = self.out + message
 
   def get(self):
@@ -92,6 +94,7 @@ sys.stderr = output
 
 while True :
   try:
+    global code_info
     code_info = state.nextCode()
 
     # If code is not available, try again later
@@ -129,11 +132,24 @@ while True :
         sqlContext = SQLContext(sc, sqlContext=jsqlContext)
 
     if final_code:
-      compiled_code = compile(final_code, "<string>", "exec")
-      #sc.setJobGroup(jobGroup, "Spark Kernel")
+      '''Parse the final_code to an AST parse tree.  If the last node is an expression (where an expression
+      can be a print function or an operation like 1+1) turn it into an assignment where temp_val = last expression.
+      The modified parse tree will get executed.  If the variable temp_val introduced is not none then we have the
+      result of the last expression and should return it as an execute result.  The sys.stdout sendOutput logic
+      gets triggered on each logger message to support long running code blocks instead of bulk'''
+      ast_parsed = ast.parse(final_code)
+      the_last_expression_to_assign_temp_value = None
+      if isinstance(ast_parsed.body[-1], ast.Expr):
+        new_node = (ast.Assign(targets=[ast.Name(id='the_last_expression_to_assign_temp_value', ctx=ast.Store())], value=ast_parsed.body[-1].value))
+        ast_parsed.body[-1] = ast.fix_missing_locations(new_node)
+      compiled_code = compile(ast_parsed, "<string>", "exec")
       eval(compiled_code)
+      if the_last_expression_to_assign_temp_value is not None:
+        state.markSuccess(code_info.codeId(), str(the_last_expression_to_assign_temp_value))
+      else:
+        state.markSuccess(code_info.codeId(), "")
+      del the_last_expression_to_assign_temp_value
 
-    state.markSuccess(code_info.codeId(), output.get())
   except Py4JJavaError:
     excInnerError = traceback.format_exc() # format_tb() does not return the inner exception
     innerErrorStart = excInnerError.find("Py4JJavaError:")

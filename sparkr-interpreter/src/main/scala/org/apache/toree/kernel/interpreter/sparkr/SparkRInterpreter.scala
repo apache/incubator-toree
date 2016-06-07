@@ -78,13 +78,13 @@ class SparkRInterpreter(
    * @return The success/failure of the interpretation and the output from the
    *         execution or the failure
    */
-  override def interpret(code: String, silent: Boolean):
+  override def interpret(code: String, silent: Boolean, output: Option[OutputStream]):
     (Result, Either[ExecuteOutput, ExecuteFailure]) =
   {
     if (!sparkRService.isRunning) sparkRService.start()
 
     val futureResult = sparkRTransformer.transformToInterpreterResult(
-      sparkRService.submitCode(code)
+      sparkRService.submitCode(code, kernelOutputStream = output)
     )
 
     Await.result(futureResult, Duration.Inf)

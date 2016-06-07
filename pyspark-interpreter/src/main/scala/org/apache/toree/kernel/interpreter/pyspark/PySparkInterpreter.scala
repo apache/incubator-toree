@@ -18,7 +18,6 @@ package org.apache.toree.kernel.interpreter.pyspark
 
 import java.net.URL
 
-import com.typesafe.config.Config
 import org.apache.toree.interpreter.Results.Result
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
@@ -89,13 +88,13 @@ class PySparkInterpreter(
    * @return The success/failure of the interpretation and the output from the
    *         execution or the failure
    */
-  override def interpret(code: String, silent: Boolean):
+  override def interpret(code: String, silent: Boolean, output: Option[OutputStream] = None):
     (Result, Either[ExecuteOutput, ExecuteFailure]) =
   {
     if (!pySparkService.isRunning) pySparkService.start()
 
     val futureResult = pySparkTransformer.transformToInterpreterResult(
-      pySparkService.submitCode(code)
+      pySparkService.submitCode(code, output)
     )
 
     Await.result(futureResult, Duration.Inf)

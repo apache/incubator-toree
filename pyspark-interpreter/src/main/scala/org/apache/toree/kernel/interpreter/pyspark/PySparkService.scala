@@ -18,11 +18,11 @@ package org.apache.toree.kernel.interpreter.pyspark
 
 import org.apache.toree.interpreter.broker.BrokerService
 import org.apache.toree.kernel.interpreter.pyspark.PySparkTypes._
-import org.apache.spark.SparkContext
 import org.slf4j.LoggerFactory
 import py4j.GatewayServer
 
 import scala.concurrent.Future
+import scala.tools.nsc.interpreter.OutputStream
 
 /**
  * Represents the service that provides the high-level interface between the
@@ -91,8 +91,8 @@ class PySparkService(
    *
    * @return The result as a future to eventually return
    */
-  def submitCode(code: Code): Future[CodeResults] = {
-    pySparkBridge.state.pushCode(code)
+  def submitCode(code: Code, kernelOutputStream: Option[OutputStream]): Future[CodeResults] = {
+    pySparkBridge.state.pushCode(code, kernelOutputStream)
   }
 
   /** Stops the running PySpark service. */

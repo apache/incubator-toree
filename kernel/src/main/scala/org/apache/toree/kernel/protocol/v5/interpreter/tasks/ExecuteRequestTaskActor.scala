@@ -19,14 +19,13 @@ package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
 import java.io.OutputStream
 
-import akka.actor.{Props, Actor}
+import akka.actor.{Actor, Props}
 import org.apache.toree.global.StreamState
-import org.apache.toree.interpreter.{ExecuteAborted, Results, ExecuteError, Interpreter}
-import org.apache.toree.kernel.api.StreamInfo
+import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError, Interpreter, Results}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.security.KernelSecurityManager
-import org.apache.toree.utils.{ConditionalOutputStream, MultiOutputStream, LogLike}
+import org.apache.toree.utils.{ConditionalOutputStream, LogLike, MultiOutputStream}
 
 object ExecuteRequestTaskActor {
   def props(interpreter: Interpreter): Props =
@@ -77,7 +76,7 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
 //                Console.setErr(System.err)
 //              }""".trim)
 //            }
-            interpreter.interpret(executeRequest.code.trim)
+            interpreter.interpret(executeRequest.code.trim, outputStreamResult = Some(outputStream))
           }
 
         logger.debug(s"Interpreter execution result was ${success}")

@@ -23,6 +23,7 @@ import org.apache.toree.kernel.interpreter.sparkr.SparkRTypes.{Code, CodeResults
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.{Future, future}
+import scala.tools.nsc.interpreter._
 
 /**
  * Represents the service that provides the high-level interface between the
@@ -100,8 +101,8 @@ class SparkRService(
    *
    * @return The result as a future to eventually return
    */
-  override def submitCode(code: Code): Future[CodeResults] = {
-    sparkRBridge.state.pushCode(code)
+  override def submitCode(code: Code, kernelOutputStream: Option[OutputStream]): Future[CodeResults] = {
+    sparkRBridge.state.pushCode(code, kernelOutputStream)
   }
 
   /** Stops the running SparkR service. */

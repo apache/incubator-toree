@@ -118,7 +118,7 @@ dev: .example-image dist
 
 test: VM_WORKDIR=/src/toree-kernel
 test:
-	$(call RUN,$(ENV_OPTS) sbt compile test)
+	$(call RUN,$(ENV_OPTS) JAVA_OPTS="-Xmx4096M" sbt compile test)
 
 sbt-%:
 	$(call RUN,$(ENV_OPTS) sbt $(subst sbt-,,$@) )
@@ -183,8 +183,10 @@ system-test: pip-release
 		-v `pwd`/dist/toree-pip:/srv/toree-pip \
 		-v `pwd`/test_toree.py:/srv/test_toree.py \
 		-v `pwd`/scala-interpreter/src/test/resources:/srv/system-test-resources \
+		--user=root \
 		$(IMAGE) \
-		bash -c "(cd /srv/system-test-resources && python -m http.server 8000 &) && pip install /srv/toree-pip/toree*.tar.gz && jupyter toree install --user --kernel_name='Apache_Toree' && \
+		bash -c "(cd /srv/system-test-resources && python -m http.server 8000 &) && \
+		pip install /srv/toree-pip/toree*.tar.gz && jupyter toree install --interpreters=PySpark,Scala && \
 		pip install nose jupyter_kernel_test && python /srv/test_toree.py"
 
 ################################################################################

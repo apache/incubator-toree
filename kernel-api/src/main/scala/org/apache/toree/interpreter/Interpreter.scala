@@ -20,8 +20,6 @@ package org.apache.toree.interpreter
 import java.net.URL
 
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.spark.SparkContext
-import org.apache.spark.sql.SQLContext
 
 import scala.tools.nsc.interpreter._
 
@@ -65,7 +63,7 @@ trait Interpreter {
    * @return The success/failure of the interpretation and the output from the
    *         execution or the failure
    */
-  def interpret(code: String, silent: Boolean = false):
+  def interpret(code: String, silent: Boolean = false, outputStreamResult: Option[OutputStream] = None):
     (Results.Result, Either[ExecuteOutput, ExecuteFailure])
 
   /**

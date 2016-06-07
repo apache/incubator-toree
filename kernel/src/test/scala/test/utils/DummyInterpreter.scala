@@ -19,13 +19,11 @@ package test.utils
 
 import java.net.URL
 
-import org.apache.toree.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter}
 import org.apache.toree.interpreter.Results.Result
+import org.apache.toree.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter}
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.spark.SparkContext
-import org.apache.spark.sql.SQLContext
 
-import scala.tools.nsc.interpreter.{OutputStream, InputStream}
+import scala.tools.nsc.interpreter.{InputStream, OutputStream}
 
 class DummyInterpreter(kernel: KernelLike) extends Interpreter {
   /**
@@ -112,7 +110,7 @@ class DummyInterpreter(kernel: KernelLike) extends Interpreter {
    * @return The success/failure of the interpretation and the output from the
    *         execution or the failure
    */
-  override def interpret(code: String, silent: Boolean): (Result, Either[ExecuteOutput, ExecuteFailure]) = ???
+  override def interpret(code: String, silent: Boolean, outputStreamResult: Option[OutputStream]): (Result, Either[ExecuteOutput, ExecuteFailure]) = ???
 
   /**
    * Attempts to perform code completion via the <TAB> command.
