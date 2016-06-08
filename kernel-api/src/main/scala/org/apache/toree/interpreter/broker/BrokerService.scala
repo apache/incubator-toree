@@ -41,6 +41,7 @@ trait BrokerService {
    * Submits code to the broker service to be executed and return a result.
    *
    * @param code The code to execute
+   * @param kernelOutputStream The output stream to write to
    *
    * @return The result as a future to eventually return
    */

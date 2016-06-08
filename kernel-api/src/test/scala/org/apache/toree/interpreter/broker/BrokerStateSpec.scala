@@ -32,11 +32,11 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
 
         // Fill up to the max of our queue
         for (i <- 1 to TestMaxQueuedCode)
-          brokerState.pushCode(code, None)
+          brokerState.pushCode(code)
 
         // Adding an additional code should throw an exception
         intercept[IllegalStateException] {
-          brokerState.pushCode(code, None)
+          brokerState.pushCode(code)
         }
       }
 
@@ -44,7 +44,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
         val code = "some code"
 
         brokerState.totalQueuedCode() should be (0)
-        brokerState.pushCode(code, None)
+        brokerState.pushCode(code)
         brokerState.totalQueuedCode() should be (1)
       }
     }
@@ -56,7 +56,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
         // Queue up to the maximum test elements, verifying that the total
         // queued element count increases per push
         for (i <- 1 to TestMaxQueuedCode) {
-          brokerState.pushCode(code, None)
+          brokerState.pushCode(code)
           brokerState.totalQueuedCode() should be (i)
         }
       }
@@ -66,7 +66,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
       it("should return the next code element if available") {
         val code = "some code"
 
-        brokerState.pushCode(code, None)
+        brokerState.pushCode(code)
 
         brokerState.nextCode().code should be (code)
       }
@@ -101,7 +101,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
 
     describe("#markSuccess") {
       it("should mark the future for the code as successful") {
-        val future = brokerState.pushCode("some code", None)
+        val future = brokerState.pushCode("some code")
         val BrokerCode(codeId, _) = brokerState.nextCode()
 
         brokerState.markSuccess(codeId)
@@ -109,7 +109,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
       }
 
       it("should use the provided message as the contents of the future") {
-        val future = brokerState.pushCode("some code", None)
+        val future = brokerState.pushCode("some code")
         val BrokerCode(codeId, _) = brokerState.nextCode()
 
         val message = "some message"
@@ -118,7 +118,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
       }
 
       it("should do nothing if the code id is invalid") {
-        val future = brokerState.pushCode("some code", None)
+        val future = brokerState.pushCode("some code")
         val BrokerCode(codeId, _) = brokerState.nextCode()
 
         brokerState.markSuccess(codeId + "1")
@@ -128,7 +128,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
 
     describe("#markFailure") {
       it("should mark the future for the code as failure") {
-        val future = brokerState.pushCode("some code", None)
+        val future = brokerState.pushCode("some code")
         val BrokerCode(codeId, _) = brokerState.nextCode()
 
         brokerState.markFailure(codeId)
@@ -136,7 +136,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
       }
 
       it("should use the provided message as the contents of the exception") {
-        val future = brokerState.pushCode("some code", None)
+        val future = brokerState.pushCode("some code")
         val BrokerCode(codeId, _) = brokerState.nextCode()
 
         val message = "some message"
@@ -147,7 +147,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
       }
 
       it("should do nothing if the code id is invalid") {
-        val future = brokerState.pushCode("some code", None)
+        val future = brokerState.pushCode("some code")
         val BrokerCode(codeId, _) = brokerState.nextCode()
 
         brokerState.markFailure(codeId + "1")
@@ -157,7 +157,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
 
     describe("#reset") {
       it("should clear any code still in the queue") {
-        brokerState.pushCode("some code", None)
+        brokerState.pushCode("some code")
 
         brokerState.reset("")
 
@@ -165,7 +165,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
       }
 
       it("should mark any evaluating code as a failure if marked true") {
-        val future = brokerState.pushCode("some code", None)
+        val future = brokerState.pushCode("some code")
 
         brokerState.reset("")
 
@@ -173,7 +173,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
       }
 
       it("should use the message as the contents of the failed code futures") {
-        val future = brokerState.pushCode("some code", None)
+        val future = brokerState.pushCode("some code")
 
         val message = "some message"
         brokerState.reset(message)
@@ -183,7 +183,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
       }
 
       it("should mark any evaluating code as a success if marked false") {
-        val future = brokerState.pushCode("some code", None)
+        val future = brokerState.pushCode("some code")
 
         brokerState.reset("", markAllAsFailure = false)
 
@@ -191,7 +191,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
       }
 
       it("should use the message as the contents of the successful code futures") {
-        val future = brokerState.pushCode("some code", None)
+        val future = brokerState.pushCode("some code")
 
         val message = "some message"
         brokerState.reset(message, markAllAsFailure = false)

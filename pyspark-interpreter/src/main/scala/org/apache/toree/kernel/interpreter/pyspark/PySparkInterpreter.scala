@@ -88,7 +88,7 @@ class PySparkInterpreter(
    * @return The success/failure of the interpretation and the output from the
    *         execution or the failure
    */
-  override def interpret(code: String, silent: Boolean, output: Option[OutputStream] = None):
+  override def interpret(code: String, silent: Boolean, output: Option[OutputStream]):
     (Result, Either[ExecuteOutput, ExecuteFailure]) =
   {
     if (!pySparkService.isRunning) pySparkService.start()

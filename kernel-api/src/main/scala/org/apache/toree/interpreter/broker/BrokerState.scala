@@ -52,7 +52,7 @@ class BrokerState(private val maxQueuedCode: Int) {
    *
    * @return The future containing the results of the execution
    */
-  def pushCode(code: Code, outputResultStream: Option[OutputStream]): Future[CodeResults] = synchronized {
+  def pushCode(code: Code, outputResultStream: Option[OutputStream] = None): Future[CodeResults] = synchronized {
     // Throw the standard error if our maximum limit has been reached
     if (codeQueue.size() >= maxQueuedCode)
       throw new IllegalStateException(
@@ -77,10 +77,14 @@ class BrokerState(private val maxQueuedCode: Int) {
     codeExecutionPromise.future
   }
 
-  // Called from pyspark
+  /**
+    * Finds the output stream associated with the given codeId and
+    * writes the output to it.
+    *
+    * @param codeId The id of the code to sendOutput
+    * @param output The output string to be written to the the output stream
+    */
   def sendOutput(codeId: String, output: String): Unit = {
-    // finds the output stream associated with the code id
-    // and writes to it
     outputResultStreamMap.get(codeId).get match {
       case Some(outputStream) => outputStream.write(output.getBytes())
       case _ => logger.debug(s"Output stream is invalid for codeId $codeId")
