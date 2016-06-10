@@ -113,8 +113,8 @@ We are working on porting our documentation into Apache. For the time being, you
 
 [website]: http://toree.apache.org
 [issues]: https://issues.apache.org/jira/browse/TOREE
-[build-badge]: https://travis-ci.org/ibm-et/spark-kernel.svg?branch=master
-[build-url]: https://travis-ci.org/ibm-et/spark-kernel
+[build-badge]: https://travis-ci.org/apache/incubator-toree.svg?branch=master
+[build-url]: https://travis-ci.org/apache/incubator-toree
 [license-badge]: https://img.shields.io/badge/License-Apache%202-blue.svg?style=flat
 [license-url]: LICENSE
 [gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
