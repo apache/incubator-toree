@@ -21,7 +21,6 @@ import java.net.URL
 import org.apache.toree.interpreter.Results.Result
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.toree.kernel.BuildInfo
 import org.slf4j.LoggerFactory
 import py4j.GatewayServer
 
@@ -156,6 +155,10 @@ class PySparkInterpreter(
   // Unsupported
   override def doQuietly[T](body: => T): T = ???
 
-  override def languageInfo: Map[String, String] = Map("name" -> "scala", "version" -> BuildInfo.scalaVersion)
+  // TODO Identify how to plumb python version to here
+  override def languageInfo: Map[String, String] = Map(
+    "name" -> "python",
+    "version" -> "2.7.9",
+    "pygments_lexer" -> "ipython2")
 
 }
