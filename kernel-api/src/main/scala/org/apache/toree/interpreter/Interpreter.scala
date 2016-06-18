@@ -126,4 +126,10 @@ trait Interpreter {
    * @return The runtime class loader used by this interpreter
    */
   def classLoader: ClassLoader
+
+  /**
+    * Returns the language metadata for syntax highlighting
+    */
+  def languageInfo: Map[String, String]
+
 }

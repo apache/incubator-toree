@@ -21,6 +21,7 @@ import java.net.URL
 import org.apache.toree.interpreter.Results.Result
 import org.apache.toree.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter}
 import org.apache.toree.kernel.api.KernelLike
+import org.apache.toree.kernel.BuildInfo
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -112,4 +113,7 @@ class SqlInterpreter() extends Interpreter {
 
   // Unsupported
   override def doQuietly[T](body: => T): T = ???
+
+  override def languageInfo: Map[String, String] = Map("name" -> "scala", "version" -> BuildInfo.scalaVersion)
+
 }
