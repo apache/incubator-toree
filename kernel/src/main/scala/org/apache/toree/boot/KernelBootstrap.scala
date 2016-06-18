@@ -174,7 +174,7 @@ class KernelBootstrap(config: Config) extends LogLike {
 
   @inline private def displayVersionInfo() = {
     logger.info("Kernel version: " + SparkKernelInfo.implementationVersion)
-    logger.info("Scala version: " + SparkKernelInfo.language_info.get("version"))
+    logger.info("Scala version: " + SparkKernelInfo.scalaVersion)
     logger.info("ZeroMQ (JeroMQ) version: " + ZMQ.getVersionString)
   }
 }

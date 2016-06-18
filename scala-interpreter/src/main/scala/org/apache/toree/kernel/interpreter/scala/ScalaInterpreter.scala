@@ -31,6 +31,7 @@ import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.{KernelLike, KernelOptions}
 import org.apache.toree.utils.{MultiOutputStream, TaskManager}
 import org.slf4j.LoggerFactory
+import org.apache.toree.kernel.BuildInfo
 
 import scala.annotation.tailrec
 import scala.concurrent.{Await, Future}
@@ -335,6 +336,9 @@ object ScalaInterpreter {
     })
     outputDir
   }
+
+
+  override def languageInfo: Map[String, String] = Map("name" -> "scala", "version" -> BuildInfo.scalaVersion)
 
 }
 

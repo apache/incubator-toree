@@ -113,4 +113,7 @@ class DummyInterpreter(kernel: KernelLike) extends Interpreter {
    * @return The newly initialized interpreter
    */
   override def init(kernel: KernelLike): Interpreter = ???
+
+  override def languageInfo: Map[String, String] = Map.empty
+
 }

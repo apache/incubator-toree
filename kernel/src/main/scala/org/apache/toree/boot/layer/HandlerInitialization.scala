@@ -86,7 +86,7 @@ trait StandardHandlerInitialization extends HandlerInitialization {
     responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit = {
     initializeKernelHandlers(
-      actorSystem, actorLoader, kernel, commRegistrar, commStorage, responseMap
+      actorSystem, actorLoader, interpreter, kernel, commRegistrar, commStorage, responseMap
     )
     initializeSystemActors(
       actorSystem, actorLoader, interpreter, pluginManager, magicManager
@@ -117,7 +117,7 @@ trait StandardHandlerInitialization extends HandlerInitialization {
 
   private def initializeKernelHandlers(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
-    kernel: Kernel,
+    interpreter: Interpreter, kernel: Kernel,
     commRegistrar: CommRegistrar, commStorage: CommStorage,
     responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit = {
@@ -161,7 +161,7 @@ trait StandardHandlerInitialization extends HandlerInitialization {
     initializeRequestHandler(classOf[ExecuteRequestHandler],
       MessageType.Incoming.ExecuteRequest, kernel)
     initializeRequestHandler(classOf[KernelInfoRequestHandler],
-      MessageType.Incoming.KernelInfoRequest)
+      MessageType.Incoming.KernelInfoRequest, interpreter.languageInfo)
     initializeRequestHandler(classOf[CommInfoRequestHandler],
       MessageType.Incoming.CommInfoRequest, commStorage)
     initializeRequestHandler(classOf[CodeCompleteHandler],
