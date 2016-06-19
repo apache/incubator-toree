@@ -29,10 +29,6 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
 
     # Optional --------------------------------------
 
-    # the normal file extension (including the leading dot) for this language
-    # checked against language_info.file_extension in kernel_info_reply
-    file_extension = ".scala"
-
     # Code in the kernel's language to write "hello, world" to stdout
     code_hello_world = "println(\"hello, world\")"
 
@@ -105,10 +101,6 @@ class ToreePythonKernelTests(jupyter_kernel_test.KernelTests):
     language_name = "scala"
 
     # Optional --------------------------------------
-
-    # the normal file extension (including the leading dot) for this language
-    # checked against language_info.file_extension in kernel_info_reply
-    file_extension = ".py"
 
     # Code in the kernel's language to write "hello, world" to stdout
     code_hello_world = "print(\"hello, world\")"
