@@ -152,6 +152,7 @@ class PySparkInterpreter(
   override def languageInfo: Map[String, String] = Map(
     "name" -> "python",
     "version" -> "2.7.9",
-    "pygments_lexer" -> "ipython2")
+    "pygments_lexer" -> "ipython2",
+    "file_extension" -> ".py")
 
 }
