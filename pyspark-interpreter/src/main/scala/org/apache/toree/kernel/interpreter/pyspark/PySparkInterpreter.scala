@@ -149,10 +149,10 @@ class PySparkInterpreter(
   override def doQuietly[T](body: => T): T = ???
 
   // TODO Identify how to plumb python version to here
-  override def languageInfo: Map[String, String] = Map(
-    "name" -> "python",
-    "version" -> "2.7.9",
-    "pygments_lexer" -> "ipython2",
-    "file_extension" -> ".py")
+  override def languageInfo = LanguageInfo(
+    "python",
+    "2.7.9",
+    ".py",
+    pygmentsLexer = Some("ipython2"))
 
 }

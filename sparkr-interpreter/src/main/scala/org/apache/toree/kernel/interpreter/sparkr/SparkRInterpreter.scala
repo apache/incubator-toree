@@ -138,7 +138,7 @@ class SparkRInterpreter(
 
   // Unsupported
   override def doQuietly[T](body: => T): T = ???
-
-  override def languageInfo: Map[String, String] = Map("name" -> "scala", "version" -> BuildInfo.scalaVersion)
+  
+  override def languageInfo = LanguageInfo("scala", BuildInfo.scalaVersion, ".scala")
 
 }

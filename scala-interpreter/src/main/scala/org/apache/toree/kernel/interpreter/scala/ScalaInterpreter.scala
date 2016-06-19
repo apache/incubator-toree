@@ -338,9 +338,6 @@ object ScalaInterpreter {
   }
 
 
-  override def languageInfo: Map[String, String] = Map(
-    "name" -> "scala",
-    "version" -> BuildInfo.scalaVersion,
-    "file_extension" -> ".scala")
+  override def languageInfo = LanguageInfo("scala", BuildInfo.scalaVersion, ".scala")
 
 }

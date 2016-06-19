@@ -20,7 +20,7 @@ package test.utils
 import java.net.URL
 
 import org.apache.toree.interpreter.Results.Result
-import org.apache.toree.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter}
+import org.apache.toree.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter, LanguageInfo}
 import org.apache.toree.kernel.api.KernelLike
 
 import scala.tools.nsc.interpreter.{InputStream, OutputStream}
@@ -114,6 +114,6 @@ class DummyInterpreter(kernel: KernelLike) extends Interpreter {
    */
   override def init(kernel: KernelLike): Interpreter = ???
 
-  override def languageInfo: Map[String, String] = Map.empty
+  override def languageInfo: LanguageInfo = ???
 
 }
