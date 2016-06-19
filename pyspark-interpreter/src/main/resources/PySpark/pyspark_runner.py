@@ -94,6 +94,13 @@ class Kernel(object):
     def __init__(self, jkernel):
         self._jvm_kernel = jkernel
 
+    def __getattr__(self, name):
+        return self._jvm_kernel.__getattribute__(name)
+
+    def __dir__(self):
+        parent = super().__dir__()
+        return parent + [x for x in self._jvm_kernel.__dir__() if x not in parent]
+
     def createSparkContext(self, config):
         jconf = gateway.jvm.org.apache.spark.SparkConf(False)
         for key,value in config.getAll():
