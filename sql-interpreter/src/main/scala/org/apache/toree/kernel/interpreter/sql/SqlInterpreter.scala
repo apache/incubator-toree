@@ -19,7 +19,7 @@ package org.apache.toree.kernel.interpreter.sql
 import java.net.URL
 
 import org.apache.toree.interpreter.Results.Result
-import org.apache.toree.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter}
+import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.kernel.BuildInfo
 
@@ -114,6 +114,6 @@ class SqlInterpreter() extends Interpreter {
   // Unsupported
   override def doQuietly[T](body: => T): T = ???
 
-  override def languageInfo: Map[String, String] = Map("name" -> "scala", "version" -> BuildInfo.scalaVersion)
+  override def languageInfo = LanguageInfo("scala", BuildInfo.scalaVersion, ".scala")
 
 }
