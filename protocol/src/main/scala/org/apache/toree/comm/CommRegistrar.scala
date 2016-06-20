@@ -17,7 +17,6 @@
 
 package org.apache.toree.comm
 
-import org.apache.toree.annotations.Experimental
 import org.apache.toree.comm.CommCallbacks._
 import org.apache.toree.kernel.protocol.v5
 
@@ -32,7 +31,6 @@ import scala.collection.immutable
  * @param commStorage The storage used to save/load callbacks
  * @param defaultTargetName The default target name to use for functions
  */
-@Experimental
 class CommRegistrar(
   private val commStorage: CommStorage,
   private[comm] val defaultTargetName: Option[String] = None

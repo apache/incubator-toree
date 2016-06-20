@@ -19,7 +19,6 @@ package org.apache.toree.comm
 
 import java.util.UUID
 
-import org.apache.toree.annotations.Experimental
 import org.apache.toree.comm.CommCallbacks.{CloseCallback, OpenCallback}
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5._
@@ -31,7 +30,6 @@ import org.apache.toree.kernel.protocol.v5.content.CommContent
  *
  * @param commRegistrar The registrar to use for callback registration
  */
-@Experimental
 abstract class CommManager(private val commRegistrar: CommRegistrar) {
   /**
    * The base function to call that performs a link given the target name and
