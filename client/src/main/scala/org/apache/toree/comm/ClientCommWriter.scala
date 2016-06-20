@@ -17,7 +17,6 @@
 
 package org.apache.toree.comm
 
-import org.apache.toree.annotations.Experimental
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
 import org.apache.toree.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen, CommContent}
@@ -32,7 +31,6 @@ import org.apache.toree.kernel.protocol.v5._
  * @param commId The comm id associated with this writer (defaults to a
  *               random UUID)
  */
-@Experimental
 class ClientCommWriter(
   private val actorLoader: ActorLoader,
   private val kmBuilder: KMBuilder,
