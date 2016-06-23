@@ -28,7 +28,6 @@ import scala.collection.immutable
  * @param callbackStorage The structure used to connect targets with callbacks
  * @param linkStorage The structure used to connect targets to specific ids
  */
-@Experimental
 class CommStorage(
   private val callbackStorage: collection.mutable.Map[String, CommCallbacks] =
     new collection.mutable.HashMap[String, CommCallbacks](),

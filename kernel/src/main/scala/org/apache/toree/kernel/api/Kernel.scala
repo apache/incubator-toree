@@ -52,7 +52,6 @@ import scala.util.{DynamicVariable, Try}
  * @param comm The Comm manager to expose in this instance
  * @param actorLoader The actor loader to use for message relaying
  */
-@Experimental
 class Kernel (
   private val _config: Config,
   private val actorLoader: ActorLoader,

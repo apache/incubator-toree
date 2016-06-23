@@ -32,7 +32,6 @@ import scala.collection.immutable
  * @param commStorage The storage used to save/load callbacks
  * @param defaultTargetName The default target name to use for functions
  */
-@Experimental
 class CommRegistrar(
   private val commStorage: CommStorage,
   private[comm] val defaultTargetName: Option[String] = None

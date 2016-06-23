@@ -32,7 +32,6 @@ import org.apache.toree.kernel.protocol.v5._
  * @param commId The comm id associated with this writer (defaults to a
  *               random UUID)
  */
-@Experimental
 class ClientCommWriter(
   private val actorLoader: ActorLoader,
   private val kmBuilder: KMBuilder,
