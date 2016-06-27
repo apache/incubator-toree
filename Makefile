@@ -19,13 +19,15 @@
 
 BASE_VERSION=0.1.0
 DEV_VERSION?=dev9
-PYPI_VERSION=$(BASE_VERSION).$(DEV_VERSION)
-VERSION=$(BASE_VERSION)-$(DEV_VERSION)-incubating
 COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
-ifeq (, $(findstring dev, $(VERSION)))
+ifeq (, $(findstring dev, $(DEV_VERSION)))
 IS_SNAPSHOT?=false
+PYPI_VERSION=$(BASE_VERSION)
+VERSION=$(BASE_VERSION)
 else
 IS_SNAPSHOT?=true
+PYPI_VERSION=$(BASE_VERSION).$(DEV_VERSION)
+VERSION=$(BASE_VERSION)-$(DEV_VERSION)-incubating
 SNAPSHOT:=-SNAPSHOT
 endif
 
