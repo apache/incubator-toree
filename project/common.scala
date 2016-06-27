@@ -30,13 +30,14 @@ object Common {
   private val snapshot                  = Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
   private val gpgLocation               = Properties.envOrElse("GPG","/usr/local/bin/gpg")
   private val gpgPassword               = Properties.envOrElse("GPG_PASSWORD","")
+  private val buildInfoName             = "org.apache.toree.kernel"
   private val buildOrganization         = "org.apache.toree"
   private val buildVersion              = if (snapshot) s"$versionNumber-SNAPSHOT" else versionNumber
   private val buildScalaVersion         = "2.10.4"
 
   val buildInfoSettings = Seq(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, "sparkVersion" -> sparkVersion),
-    buildInfoPackage := buildOrganization,
+    buildInfoPackage := buildInfoName,
     buildInfoOptions += BuildInfoOption.BuildTime
   )
 
