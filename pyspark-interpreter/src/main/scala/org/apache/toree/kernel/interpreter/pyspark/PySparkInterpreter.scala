@@ -151,8 +151,7 @@ class PySparkInterpreter(
   // TODO Identify how to plumb python version to here
   override def languageInfo = LanguageInfo(
     "python",
-    "2.7.9",
-    ".py",
+    fileExtension = Some(".py"),
     pygmentsLexer = Some("ipython2"))
 
 }

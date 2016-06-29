@@ -25,8 +25,8 @@ import scala.tools.nsc.interpreter._
 
 case class LanguageInfo(
                  name: String,
-                 version: String,
-                 fileExtension: String,
+                 version: Option[String] = None,
+                 fileExtension: Option[String] = None,
                  pygmentsLexer: Option[String] = None) {
 }
 

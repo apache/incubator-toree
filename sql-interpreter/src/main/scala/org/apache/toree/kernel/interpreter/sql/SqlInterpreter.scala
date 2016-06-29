@@ -107,6 +107,6 @@ class SqlInterpreter() extends Interpreter {
   // Unsupported
   override def doQuietly[T](body: => T): T = ???
 
-  override def languageInfo = LanguageInfo("scala", BuildInfo.scalaVersion, ".scala")
+  override def languageInfo = LanguageInfo("SQL")
 
 }

@@ -76,7 +76,6 @@ sc = None
 spark = None
 code_info = None
 
-
 class Logger(object):
     def __init__(self):
         self.out = ""
