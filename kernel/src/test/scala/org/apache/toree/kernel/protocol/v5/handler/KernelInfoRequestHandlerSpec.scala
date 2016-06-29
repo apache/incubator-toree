@@ -42,7 +42,7 @@ class KernelInfoRequestHandlerSpec extends TestKit(
     ConfigFactory.parseString(KernelInfoRequestHandlerSpec.config))
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
   val actorLoader: ActorLoader =  mock[ActorLoader]
-  val actor = system.actorOf(Props(classOf[KernelInfoRequestHandler], actorLoader, LanguageInfo("test", "1.0.0", ".test")))
+  val actor = system.actorOf(Props(classOf[KernelInfoRequestHandler], actorLoader, LanguageInfo("test", Some("1.0.0"), Some(".test"))))
 
   val relayProbe : TestProbe = TestProbe()
   val relaySelection : ActorSelection =
