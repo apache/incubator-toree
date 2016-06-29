@@ -107,10 +107,16 @@ class Kernel(object):
         return parent + [x for x in self._jvm_kernel.__dir__() if x not in parent]
 
     def createSparkContext(self, config):
+        global conf, sc, sqlContext
+
         jconf = gateway.jvm.org.apache.spark.SparkConf(False)
         for key,value in config.getAll():
             jconf.set(key, value)
         self._jvm_kernel.createSparkContext(jconf)
+        conf = None
+        sc = None
+        sqlContext = None
+
         self.refreshContext()
 
     def refreshContext(self):
