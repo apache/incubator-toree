@@ -604,6 +604,6 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
   override def classLoader: ClassLoader = _runtimeClassloader
 
-  override def languageInfo = LanguageInfo("scala", Some(BuildInfo.scalaVersion), Some(".scala"))
+  override def languageInfo = LanguageInfo("scala", BuildInfo.scalaVersion, fileExtension = Some(".scala"))
 
 }

@@ -19,7 +19,7 @@ package org.apache.toree.kernel.protocol.v5
 
 case class LanguageInfo(
                  name: String,
-                 version: Option[String] = None,
+                 version: String,
                  file_extension: Option[String] = None,
                  pygments_lexer: Option[String] = None) {
 }
