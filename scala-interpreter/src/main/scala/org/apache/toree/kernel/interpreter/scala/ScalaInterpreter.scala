@@ -338,6 +338,6 @@ object ScalaInterpreter {
   }
 
 
-  override def languageInfo = LanguageInfo("scala", Some(BuildInfo.scalaVersion), Some(".scala"))
+  override def languageInfo = LanguageInfo("scala", BuildInfo.scalaVersion, fileExtension = Some(".scala"))
 
 }
