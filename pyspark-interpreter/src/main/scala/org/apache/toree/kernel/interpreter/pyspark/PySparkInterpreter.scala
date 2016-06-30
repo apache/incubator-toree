@@ -89,8 +89,7 @@ class PySparkInterpreter(
    *         execution or the failure
    */
   override def interpret(code: String, silent: Boolean, output: Option[OutputStream]):
-    (Result, Either[ExecuteOutput, ExecuteFailure]) =
-  {
+    (Result, Either[ExecuteOutput, ExecuteFailure]) = {
     if (!pySparkService.isRunning) pySparkService.start()
 
     val futureResult = pySparkTransformer.transformToInterpreterResult(
@@ -155,11 +154,22 @@ class PySparkInterpreter(
   // Unsupported
   override def doQuietly[T](body: => T): T = ???
 
-  // TODO Identify how to plumb python version to here
-  override def languageInfo = LanguageInfo(
-    "python",
-    pySparkState.getVersion(),
-    fileExtension = Some(".py"),
-    pygmentsLexer = Some("ipython2"))
+  override def languageInfo: LanguageInfo = {
+    if (!pySparkService.isRunning) pySparkService.start()
 
+    import scala.util.control.Breaks._
+    val waitLimit = System.currentTimeMillis() + java.util.concurrent.TimeUnit.SECONDS.toMillis(5)
+    while (!pySparkState.isReady) {
+      if (System.currentTimeMillis > waitLimit) {
+        logger.warn("Timed out waiting for broker state to become ready")
+        break
+      }
+    }
+
+    LanguageInfo(
+        "python",
+        pySparkState.getVersion(),
+        fileExtension = Some(".py"),
+        pygmentsLexer = Some("ipython2"))
+  }
 }
