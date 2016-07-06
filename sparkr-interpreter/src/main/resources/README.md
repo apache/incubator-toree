@@ -14,26 +14,18 @@ kernel to provide a form of communicate suitable for use as an interpreter:
         export("sparkR.connect")
 
 2. SparkR low-level methods to communicate with the backend were marked private,
-   but are used to communicate with our own bridge. These are now exported in
-   the _NAMESPACE_ file via the following:
+   but are used to communicate with our own bridge. If you need to use these invoke them with
    
-        export("isInstanceOf")
-        export("callJMethod")
-        export("callJStatic")
-        export("newJObject")
-        export("removeJObject")
-        export("isRemoveMethod")
-        export("invokeJava")
+        SparkR:::isInstanceOf
+        SparkR:::callJMethod
+        SparkR:::callJStatic
+        SparkR:::newJObject
+        SparkR:::removeJObject
+        SparkR:::isRemoveMethod
+        SparkR:::invokeJava
 
 3. `org.apache.spark.api.r.RBackend` is marked as limited access to the
    package scope of `org.apache.spark.api.r`
    
        - To circumvent, use a reflective wrapping under 
          `org.apache.toree.kernel.interpreter.r.ReflectiveRBackend`
-         
-Building the custom R bundle
-----------------------------
-
-To build the SparkR fork (until these changes appear upstream), you need to
-run `./package-sparkR.sh`. This will generate the output library and tar it
-up for use by the kernel.

@@ -36,42 +36,71 @@ setwd(script.basename)
 #
 #       and provide access in some form to the methods used to access the JVM
 # Add the SparkR library to our list
-#.libPaths(c(file.path(Sys.getenv("SPARK_HOME"), "R", "lib"), .libPaths()))
-install.packages("sparkr_bundle.tar.gz", repos = NULL, type="source")
+.libPaths(c(file.path(Sys.getenv("SPARK_HOME"), "R", "lib"), .libPaths()))
 library(SparkR)
 
 # Bring in other dependencies not exposed in standard SparkR
 source("sparkr_runner_utils.R")
 
+sparkR.connect <- function() {
+  if (connExists(.sparkREnv)) {
+    print("Connection to SparkR backend has already been established!")
+    return()
+  }
+
+  # Only allow connecting to an existing backend
+  existingPort <- Sys.getenv("EXISTING_SPARKR_BACKEND_PORT", "")
+  if (existingPort != "") {
+    backendPort <- existingPort
+  } else {
+    stop("No existing backend port found!")
+  }
+
+  # Connect to the backend service
+  .sparkREnv$backendPort <- backendPort
+  tryCatch({
+    connectBackend("localhost", backendPort)
+  }, error = function(err) {
+    stop("Failed to connect JVM: ", err)
+  })
+
+  # Set the start time to identify jobjs
+  # Seconds resolution is good enough for this purpose, so use ints
+  assign(".scStartTime", as.integer(Sys.time()), envir = .sparkREnv)
+
+  # Register a finalizer to sleep 1 seconds on R exit to make RStudio happy
+  reg.finalizer(.sparkREnv, function(x) { Sys.sleep(1) }, onexit = TRUE)
+}
+
 # Connect to the backend
 sparkR.connect()
 
 # Retrieve the bridge used to perform actions on the JVM
-bridge <- callJStatic(
+bridge <- SparkR:::Static(
   "org.apache.toree.kernel.interpreter.sparkr.SparkRBridge", "sparkRBridge"
 )
 
 # Retrieve the state used to pull code off the JVM and push results back
-state <- callJMethod(bridge, "state")
+state <- SparkR:::callJMethod(bridge, "state")
 
 # Acquire the kernel API instance to expose
-kernel <- callJMethod(bridge, "kernel")
+kernel <- SparkR:::callJMethod(bridge, "kernel")
 assign("kernel", kernel, .runnerEnv)
 
 # Acquire the SparkContext instance to expose
-#sc <- callJMethod(bridge, "javaSparkContext")
+#sc <- SparkR:::callJMethod(bridge, "javaSparkContext")
 #assign("sc", sc, .runnerEnv)
 sc <- NULL
 
 # Acquire the SQLContext instance to expose
-#sqlContext <- callJMethod(bridge, "sqlContext")
-#sqlContext <- callJMethod(kernel, "sqlContext")
+#sqlContext <- SparkR:::callJMethod(bridge, "sqlContext")
+#sqlContext <- SparkR:::callJMethod(kernel, "sqlContext")
 #assign("sqlContext", sqlContext, .runnerEnv)
 
 # TODO: Is there a way to control input/output (maybe use sink)
 repeat {
   # Load the conainer of the code
-  codeContainer <- callJMethod(state, "nextCode")
+  codeContainer <- SparkR:::callJMethod(state, "nextCode")
 
   # If not valid result, wait 1 second and try again
   if (!class(codeContainer) == "jobj") {
@@ -80,14 +109,14 @@ repeat {
   }
 
   # Retrieve the code id (for response) and code
-  codeId <- callJMethod(codeContainer, "codeId")
-  code <- callJMethod(codeContainer, "code")
+  codeId <- SparkR:::callJMethod(codeContainer, "codeId")
+  code <- SparkR:::callJMethod(codeContainer, "code")
 
   if (is.null(sc)) {
-    sc <- callJMethod(kernel, "javaSparkContext")
+    sc <- SparkR:::callJMethod(kernel, "javaSparkContext")
     if(!is.null(sc)) {
       assign("sc", sc, .runnerEnv)
-      sqlContext <- callJMethod(kernel, "sqlContext")
+      sqlContext <- SparkR:::callJMethod(kernel, "sqlContext")
       assign("sqlContext", sqlContext, .runnerEnv)
     }
   }
@@ -107,17 +136,17 @@ repeat {
     # If output is null/empty, ensure that we can send it (otherwise fails)
     if (is.null(result) || length(result) <= 0) {
       print("Marking success with no output")
-      callJMethod(state, "markSuccess", codeId)
+      SparkR:::callJMethod(state, "markSuccess", codeId)
     } else {
       # Clean the result before sending it back
       cleanedResult <- trimws(flatten(result, shouldTrim = FALSE))
 
       print(paste("Marking success with output:", cleanedResult))
-      callJMethod(state, "markSuccess", codeId, cleanedResult)
+      SparkR:::callJMethod(state, "markSuccess", codeId, cleanedResult)
     }
   }, error = function(ex) {
     # Mark the execution as a failure and send back the error
     print(paste("Failure", codeId, toString(ex)))
-    callJMethod(state, "markFailure", codeId, toString(ex))
+    SparkR:::callJMethod(state, "markFailure", codeId, toString(ex))
   })
 }
