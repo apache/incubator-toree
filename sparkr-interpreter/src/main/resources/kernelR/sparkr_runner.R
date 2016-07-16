@@ -41,6 +41,7 @@ library(SparkR)
 
 # Bring in other dependencies not exposed in standard SparkR
 source("sparkr_runner_utils.R")
+.sparkREnv <- SparkR:::.sparkREnv
 
 sparkR.connect <- function() {
   if (connExists(.sparkREnv)) {
@@ -59,7 +60,7 @@ sparkR.connect <- function() {
   # Connect to the backend service
   .sparkREnv$backendPort <- backendPort
   tryCatch({
-    connectBackend("localhost", backendPort)
+    SparkR:::connectBackend("localhost", backendPort)
   }, error = function(err) {
     stop("Failed to connect JVM: ", err)
   })
@@ -76,7 +77,7 @@ sparkR.connect <- function() {
 sparkR.connect()
 
 # Retrieve the bridge used to perform actions on the JVM
-bridge <- SparkR:::Static(
+bridge <- SparkR:::callJStatic(
   "org.apache.toree.kernel.interpreter.sparkr.SparkRBridge", "sparkRBridge"
 )
 
