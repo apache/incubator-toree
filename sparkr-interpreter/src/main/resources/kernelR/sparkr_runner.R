@@ -42,6 +42,7 @@ library(SparkR)
 # Bring in other dependencies not exposed in standard SparkR
 source("sparkr_runner_utils.R")
 .sparkREnv <- SparkR:::.sparkREnv
+rm(".sparkRcon", envir = .sparkREnv)
 
 sparkR.connect <- function() {
   if (connExists(.sparkREnv)) {
@@ -56,6 +57,7 @@ sparkR.connect <- function() {
   } else {
     stop("No existing backend port found!")
   }
+  print(c("ExistingPort:", existingPort))
 
   # Connect to the backend service
   .sparkREnv$backendPort <- backendPort
