@@ -5,7 +5,8 @@
 
 Apache Toree
 ============
-The main goal of the Toree is to provide the foundation for interactive applications to connect to and use [Apache Spark][1].
+The main goal of the Toree is to provide the foundation for interactive applications to connect to and use [Apache Spark][1]. This
+branch supports Apache Spark 1.6+. See master for Spark 2+ support.
 
 Overview
 ========
