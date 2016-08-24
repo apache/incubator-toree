@@ -22,7 +22,7 @@ import org.apache.toree.magic.MagicManager
 import scala.util.Try
 
 class MagicParser(private val magicManager: MagicManager) {
-  private val magicRegex = """^[%]{1,2}(\w+)""".r
+  private val magicRegex = """^[%]{1,2}(\w*)""".r
   protected[magic] val kernelObjectName = "kernel.magics"
 
   /**
