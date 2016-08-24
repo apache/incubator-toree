@@ -17,13 +17,17 @@
 
 .PHONY: help clean clean-dist build dev test system-test test-travis release pip-release bin-release dev-binder .binder-image audit audit-licenses
 
-BASE_VERSION=0.1.0.dev9
-VERSION=$(BASE_VERSION)-incubating
+BASE_VERSION=0.1.0
+DEV_VERSION?=dev9
 COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
-ifeq (, $(findstring dev, $(VERSION)))
+ifeq (, $(findstring dev, $(DEV_VERSION)))
 IS_SNAPSHOT?=false
+PYPI_VERSION=$(BASE_VERSION)
+VERSION=$(BASE_VERSION)
 else
 IS_SNAPSHOT?=true
+PYPI_VERSION=$(BASE_VERSION).$(DEV_VERSION)
+VERSION=$(BASE_VERSION)-$(DEV_VERSION)-incubating
 SNAPSHOT:=-SNAPSHOT
 endif
 
@@ -43,7 +47,7 @@ docker run -it --rm \
 endef
 
 define GEN_PIP_PACKAGE_INFO
-printf "__version__ = '$(BASE_VERSION)'\n" >> dist/toree-pip/toree/_version.py
+printf "__version__ = '$(PYPI_VERSION)'\n" >> dist/toree-pip/toree/_version.py
 printf "__commit__ = '$(COMMIT)'\n" >> dist/toree-pip/toree/_version.py
 endef
 
@@ -162,7 +166,7 @@ dist/toree: dist/toree/VERSION dist/toree-legal dist/toree/lib dist/toree/bin RE
 dist: dist/toree
 
 define JUPYTER_COMMAND
-pip install toree-$(BASE_VERSION).tar.gz
+pip install toree-$(PYPI_VERSION).tar.gz
 jupyter toree install --interpreters=PySpark,SQL,Scala,SparkR
 cd /srv/toree/etc/examples/notebooks
 jupyter notebook --ip=* --no-browser
@@ -198,8 +202,8 @@ publish-jars:
 ################################################################################
 # PIP PACKAGE
 ################################################################################
-dist/toree-pip/toree-$(BASE_VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
-dist/toree-pip/toree-$(BASE_VERSION).tar.gz: dist/toree
+dist/toree-pip/toree-$(PYPI_VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
+dist/toree-pip/toree-$(PYPI_VERSION).tar.gz: dist/toree
 	@mkdir -p dist/toree-pip
 	@cp -r dist/toree dist/toree-pip
 	@cp dist/toree/LICENSE dist/toree-pip/LICENSE
@@ -211,15 +215,15 @@ dist/toree-pip/toree-$(BASE_VERSION).tar.gz: dist/toree
 	@cp -rf etc/pip_install/* dist/toree-pip/.
 	@$(GEN_PIP_PACKAGE_INFO)
 	@$(DOCKER) --user=root $(IMAGE) python setup.py sdist --dist-dir=.
-	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install toree-$(BASE_VERSION).tar.gz && jupyter toree install'
+	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install toree-$(PYPI_VERSION).tar.gz && jupyter toree install'
 #	-@(cd dist/toree-pip; find . -not -name 'toree-$(VERSION).tar.gz' -maxdepth 1 | xargs rm -r )
 
-pip-release: dist/toree-pip/toree-$(BASE_VERSION).tar.gz
+pip-release: dist/toree-pip/toree-$(PYPI_VERSION).tar.gz
 
-dist/toree-pip/toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha: dist/toree-pip/toree-$(BASE_VERSION).tar.gz
-	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/toree-$(BASE_VERSION).tar.gz
+dist/toree-pip/toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/toree-$(PYPI_VERSION).tar.gz.asc dist/toree-pip/toree-$(PYPI_VERSION).tar.gz.sha: dist/toree-pip/toree-$(PYPI_VERSION).tar.gz
+	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/toree-$(PYPI_VERSION).tar.gz
 
-sign-pip: dist/toree-pip/toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha
+sign-pip: dist/toree-pip/toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/toree-$(PYPI_VERSION).tar.gz.asc dist/toree-pip/toree-$(PYPI_VERSION).tar.gz.sha
 
 publish-pip: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 publish-pip: PYPI_REPO?=https://pypi.python.org/pypi
@@ -229,7 +233,7 @@ publish-pip: PYPIRC=printf "[distutils]\nindex-servers =\n\tpypi\n\n[pypi]\nrepo
 publish-pip: sign-pip
 	@$(DOCKER) $(IMAGE) bash -c '$(PYPIRC) pip install twine && \
 		python setup.py register -r $(PYPI_REPO) && \
-		twine upload -r pypi toree-$(BASE_VERSION).tar.gz toree-$(BASE_VERSION).tar.gz.asc'
+		twine upload -r pypi toree-$(PYPI_VERSION).tar.gz toree-$(PYPI_VERSION).tar.gz.asc'
 
 ################################################################################
 # BIN PACKAGE
