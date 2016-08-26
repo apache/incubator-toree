@@ -18,13 +18,14 @@
 package org.apache.toree.kernel.protocol.v5.content
 
 import org.apache.toree.kernel.protocol.v5.KernelMessageContent
+import org.apache.toree.kernel.protocol.v5.LanguageInfo
 import play.api.libs.json.Json
 
 case class KernelInfoReply (
   protocol_version: String,
   implementation: String,
   implementation_version: String,
-  language_info: Map[String, String],
+  language_info: LanguageInfo,
   banner: String
 ) extends KernelMessageContent {
   override def content: String =
@@ -32,6 +33,8 @@ case class KernelInfoReply (
 }
 
 object KernelInfoReply extends TypeString {
+  implicit val languageInfoReads = Json.reads[LanguageInfo]
+  implicit val languageInfoWrites = Json.writes[LanguageInfo]
   implicit val kernelInfoReplyReads = Json.reads[KernelInfoReply]
   implicit val kernelInfoReplyWrites = Json.writes[KernelInfoReply]
 

@@ -28,7 +28,7 @@ import scala.concurrent._
  * Receives a KernelInfoRequest KernelMessage and returns a KernelInfoReply
  * KernelMessage.
  */
-class KernelInfoRequestHandler(actorLoader: ActorLoader)
+class KernelInfoRequestHandler(actorLoader: ActorLoader, languageInfo: LanguageInfo)
   extends BaseHandler(actorLoader) with LogLike
 {
   def process(kernelMessage: KernelMessage): Future[_] = {
@@ -41,7 +41,7 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader)
         kernelInfo.protocolVersion,
         kernelInfo.implementation,
         kernelInfo.implementationVersion,
-        kernelInfo.language_info,
+        languageInfo,
         kernelInfo.banner
       )
 

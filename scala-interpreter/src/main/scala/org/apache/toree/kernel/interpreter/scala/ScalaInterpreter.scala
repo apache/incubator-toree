@@ -32,6 +32,7 @@ import org.apache.toree.interpreter.imports.printers.{WrapperConsole, WrapperSys
 import org.apache.toree.kernel.api.{KernelLike, KernelOptions}
 import org.apache.toree.utils.{MultiOutputStream, TaskManager}
 import org.slf4j.LoggerFactory
+import org.apache.toree.kernel.BuildInfo
 
 import scala.annotation.tailrec
 import scala.concurrent.{Await, Future}
@@ -602,5 +603,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
   }
 
   override def classLoader: ClassLoader = _runtimeClassloader
-}
 
+  override def languageInfo = LanguageInfo("scala", BuildInfo.scalaVersion, fileExtension = Some(".scala"))
+
+}

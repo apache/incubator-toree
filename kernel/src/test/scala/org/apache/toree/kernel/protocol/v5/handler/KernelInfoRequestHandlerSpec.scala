@@ -20,7 +20,7 @@ import akka.actor.{ActorSelection, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import org.apache.toree.kernel.protocol.v5.content.KernelInfoReply
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
-import org.apache.toree.kernel.protocol.v5.{SystemActorType, Header, KernelMessage}
+import org.apache.toree.kernel.protocol.v5.{SystemActorType, Header, KernelMessage, LanguageInfo}
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import org.mockito.Matchers.{eq => mockEq}
 import com.typesafe.config.ConfigFactory
@@ -42,7 +42,7 @@ class KernelInfoRequestHandlerSpec extends TestKit(
     ConfigFactory.parseString(KernelInfoRequestHandlerSpec.config))
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
   val actorLoader: ActorLoader =  mock[ActorLoader]
-  val actor = system.actorOf(Props(classOf[KernelInfoRequestHandler], actorLoader))
+  val actor = system.actorOf(Props(classOf[KernelInfoRequestHandler], actorLoader, LanguageInfo("test", "1.0.0", Some(".test"))))
 
   val relayProbe : TestProbe = TestProbe()
   val relaySelection : ActorSelection =

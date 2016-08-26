@@ -78,7 +78,7 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
 
     describe("#isReady") {
       it("should return true if the broker state is marked as ready") {
-        brokerState.markReady()
+        brokerState.markReady("1.0.0")
         brokerState.isReady should be (true)
       }
 
@@ -90,11 +90,11 @@ class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
     describe("#markReady") {
       it("should mark the state of the broker as ready") {
         // Mark once to make sure that the state gets set
-        brokerState.markReady()
+        brokerState.markReady("1.0.0")
         brokerState.isReady should be (true)
 
         // Mark a second time to ensure that the state does not change
-        brokerState.markReady()
+        brokerState.markReady("1.0.0")
         brokerState.isReady should be (true)
       }
     }
