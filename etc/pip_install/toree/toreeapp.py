@@ -91,6 +91,7 @@ class ToreeInstall(InstallKernelSpec):
         try:
             py4j_zip = list(filter( lambda filename: "py4j" in filename, python_lib_contents))[0]
         except:
+            py4j_zip = None
             self.log.warn('Unable to find py4j, installing without PySpark support.')
 
         kernel_spec = KernelSpec()
