@@ -94,9 +94,8 @@ As it stands, we maintain several branches for legacy versions of Spark. The tab
 
 Branch                       | Apache Spark Version
 ---------------------------- | --------------------
-[master][master]             | 1.5.1+
-[branch-0.1.4][branch-0.1.4] | 1.4.1
-[branch-0.1.3][branch-0.1.3] | 1.3.1
+[master][master]             | 2.0
+[0.1.x][0.1.x]               | 1.6+
 
 Please note that for the most part, new features will mainly be added to the `master` branch.
 
@@ -124,5 +123,4 @@ We are working on porting our documentation into Apache. For the time being, you
 [mail-list]: mailto:dev@toree.incubator.apache.org
 
 [master]: https://github.com/apache/incubator-toree
-[branch-0.1.4]: https://github.com/apache/incubator-toree/tree/branch-0.1.4
-[branch-0.1.3]: https://github.com/apache/incubator-toree/tree/branch-0.1.3
+[0.1.x]: https://github.com/apache/incubator-toree/tree/0.1.x
