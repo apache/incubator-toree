@@ -186,6 +186,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
           config.getInt("shell_port") should be(40544)
           config.getInt("iopub_port") should be(43462)
           config.getInt("control_port") should be(44808)
+          config.getInt("max_interpreter_threads") should be (4)
         }
       }
     }

@@ -17,10 +17,9 @@
 package org.apache.toree.interpreter.broker
 
 import org.apache.toree.interpreter.{ExecuteError, Results}
-import org.scalatest.concurrent.Eventually
+import org.scalatest.concurrent.{Eventually}
+import scala.concurrent.Promise
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
-
-import scala.concurrent.promise
 
 class BrokerTransformerSpec extends FunSpec with Matchers
   with OneInstancePerTest with Eventually
@@ -30,7 +29,7 @@ class BrokerTransformerSpec extends FunSpec with Matchers
   describe("BrokerTransformer") {
     describe("#transformToInterpreterResult") {
       it("should convert to success with result output if no failure") {
-        val codeResultPromise = promise[BrokerTypes.CodeResults]()
+        val codeResultPromise = Promise[BrokerTypes.CodeResults]()
 
         val transformedFuture = brokerTransformer.transformToInterpreterResult(
           codeResultPromise.future
@@ -46,7 +45,7 @@ class BrokerTransformerSpec extends FunSpec with Matchers
       }
 
       it("should convert to error with broker exception if failure") {
-        val codeResultPromise = promise[BrokerTypes.CodeResults]()
+        val codeResultPromise = Promise[BrokerTypes.CodeResults]()
 
         val transformedFuture = brokerTransformer.transformToInterpreterResult(
           codeResultPromise.future

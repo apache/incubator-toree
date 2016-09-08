@@ -51,7 +51,7 @@ class CommInfoRequestHandler(
     }
   }
 
-  override def process(kernelMessage: KernelMessage): Future[_] = future {
+  override def process(kernelMessage: KernelMessage): Future[_] = Future {
     logKernelMessageAction("Initiating CommInfo request for", kernelMessage)
 
     val commMap = (Json.parse(kernelMessage.contentString) \ "target_name").asOpt[String] match {

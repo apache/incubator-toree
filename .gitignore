@@ -41,3 +41,4 @@ dist/
 .ensime_cache/
 
 Untitled*.ipynb
+.system-test-image

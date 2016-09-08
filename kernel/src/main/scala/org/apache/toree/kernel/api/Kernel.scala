@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 import com.typesafe.config.Config
 import org.apache.spark.api.java.JavaSparkContext
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.toree.annotations.Experimental
 import org.apache.toree.boot.layer.InterpreterManager
@@ -88,10 +88,10 @@ class Kernel (
   private val currentErrorKernelMessage =
     new DynamicVariable[KernelMessage](null)
 
-  private var _sparkContext:SparkContext = null;
-  private var _sparkConf:SparkConf = null;
-  private var _javaSparkContext:JavaSparkContext = null;
-  private var _sqlContext:SQLContext = null;
+  private var _sparkSession: SparkSession = null
+  def _sparkContext:SparkContext = _sparkSession.sparkContext
+  def _javaSparkContext: JavaSparkContext = new JavaSparkContext(_sparkContext)
+  //def _sqlContext = _sparkSession;
 
   /**
    * Represents magics available through the kernel.
@@ -345,19 +345,17 @@ class Kernel (
   }
 
   override def createSparkContext(conf: SparkConf): SparkContext = {
-    _sparkConf = createSparkConf(conf)
-    _sparkContext = initializeSparkContext(sparkConf)
-    _javaSparkContext = new JavaSparkContext(_sparkContext)
-    _sqlContext = initializeSqlContext(_sparkContext)
+    val sconf = createSparkConf(conf)
+    _sparkSession = SparkSession.builder.config(sconf).getOrCreate()
 
-    val sparkMaster = _sparkConf.getOption("spark.master").getOrElse("not_set")
+    val sparkMaster = sconf.getOption("spark.master").getOrElse("not_set")
     logger.info( s"Connecting to spark.master $sparkMaster")
 
     // TODO: Convert to events
-    pluginManager.dependencyManager.add(_sparkConf)
+    pluginManager.dependencyManager.add(sconf)
+    pluginManager.dependencyManager.add(_sparkSession)
     pluginManager.dependencyManager.add(_sparkContext)
     pluginManager.dependencyManager.add(_javaSparkContext)
-    pluginManager.dependencyManager.add(_sqlContext)
 
     pluginManager.fireEvent("sparkReady")
 
@@ -399,41 +397,12 @@ class Kernel (
     sparkContext
   }
 
-  protected[toree] def initializeSqlContext(
-    sparkContext: SparkContext
-  ): SQLContext = {
-    val sqlContext: SQLContext = try {
-      logger.info("Attempting to create Hive Context")
-      val hiveContextClassString =
-        "org.apache.spark.sql.hive.HiveContext"
-
-      logger.debug(s"Looking up $hiveContextClassString")
-      val hiveContextClass = Class.forName(hiveContextClassString)
-
-      val sparkContextClass = classOf[SparkContext]
-      val sparkContextClassName = sparkContextClass.getName
-
-      logger.debug(s"Searching for constructor taking $sparkContextClassName")
-      val hiveContextContructor =
-        hiveContextClass.getConstructor(sparkContextClass)
-
-      logger.debug("Invoking Hive Context constructor")
-      hiveContextContructor.newInstance(sparkContext).asInstanceOf[SQLContext]
-    } catch {
-      case _: Throwable =>
-        logger.warn("Unable to create Hive Context! Defaulting to SQL Context!")
-        new SQLContext(sparkContext)
-    }
-
-    sqlContext
-  }
-
   override def interpreter(name: String): Option[Interpreter] = {
     interpreterManager.interpreters.get(name)
   }
 
   override def sparkContext: SparkContext = _sparkContext
-  override def sparkConf: SparkConf = _sparkConf
+  override def sparkConf: SparkConf = _sparkSession.sparkContext.getConf
   override def javaSparkContext: JavaSparkContext = _javaSparkContext
-  override def sqlContext: SQLContext = _sqlContext
+  override def sparkSession: SparkSession = _sparkSession
 }

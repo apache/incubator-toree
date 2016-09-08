@@ -42,7 +42,9 @@ object CommInfoRequestHandlerSpec {
 
 class CommInfoRequestHandlerSpec extends TestKit(
   ActorSystem("CommInfoRequestHandlerSpec",
-    ConfigFactory.parseString(CommInfoRequestHandlerSpec.config))
+    ConfigFactory.parseString(CommInfoRequestHandlerSpec.config),
+    org.apache.toree.Main.getClass.getClassLoader
+  )
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
   var mockCommStorage: CommStorage = mock[CommStorage]

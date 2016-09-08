@@ -21,9 +21,11 @@ import java.io.{ByteArrayOutputStream, OutputStream}
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
+import com.typesafe.config.ConfigFactory
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.toree.kernel.interpreter.scala.{StandardTaskManagerProducer, StandardSparkIMainProducer, StandardSettingsProducer, ScalaInterpreter}
+import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.interpreter.InterpreterActor
@@ -65,11 +67,10 @@ class InterpreterActorSpecForIntegration extends TestKit(
 
   before {
     output.reset()
-    interpreter.start()
+    // interpreter.start()
     interpreter.init(mock[KernelLike])
 
     interpreter.doQuietly({
-      conf.set("spark.repl.class.uri", interpreter.classServerURI)
       //context = new SparkContext(conf) with NoSparkLogging
       //context = SparkContextProvider.sparkContext
       //interpreter.bind(

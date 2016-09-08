@@ -24,7 +24,7 @@ import org.apache.toree.comm._
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.client.execution.{DeferredExecution, ExecuteRequestTuple}
 import org.apache.toree.kernel.protocol.v5.client.socket.HeartbeatMessage
-import org.apache.toree.kernel.protocol.v5.client.socket.StdinClient.ResponseFunction
+import org.apache.toree.kernel.protocol.v5.client.socket.StdinClient.{ResponseFunctionMessage, ResponseFunction}
 import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest
 import org.apache.toree.utils.LogLike
 import scala.concurrent.duration._
@@ -60,7 +60,7 @@ class SparkKernelClient(
    * client.execute("println(1)").onStream(someFunction)
    * </code>
    * someFunction will receive a
-   * {@link org.apache.toree.kernel.protocol.v5.content.StreamContent} message:
+   * `org.apache.toree.kernel.protocol.v5.content.StreamContent` message:
    * <code>
    * {
    *  "name" : "stdout",
@@ -75,7 +75,7 @@ class SparkKernelClient(
    * client.execute("1+1").onResult(someFunction)
    * </code>
    * someFunction will receive a
-   * {@link org.apache.toree.kernel.protocol.v5.content.ExecuteResult} message:
+   * [[org.apache.toree.kernel.protocol.v5.content.ExecuteResult]] message:
    * <code>
    * {
    *  "execution_count" : 1,
@@ -92,7 +92,7 @@ class SparkKernelClient(
    * client.execute("1+1").onResult(someFunction)
    * </code>
    * someFunction will be invoked with an
-   * {@link org.apache.toree.kernel.protocol.v5.content.ExecuteReply} message
+   * [[org.apache.toree.kernel.protocol.v5.content.ExecuteReply]] message
    * containing the error.
    *
    * @param code Scala code
@@ -109,8 +109,10 @@ class SparkKernelClient(
    * Sets the response function used when input is requested by the kernel.
    * @param responseFunc The response function to use
    */
-  def setResponseFunction(responseFunc: ResponseFunction): Unit =
-    actorLoader.load(SocketType.StdInClient) ! responseFunc
+  def setResponseFunction(responseFunc: ResponseFunction): Unit = {
+    actorLoader.load(SocketType.StdInClient) !
+      ResponseFunctionMessage(responseFunc)
+  }
 
   /**
    * Represents the exposed interface for Comm communication with the kernel.
@@ -136,6 +138,6 @@ class SparkKernelClient(
 
   def shutdown() = {
     logger.info("Shutting down client")
-    actorSystem.shutdown()
+    actorSystem.terminate()
   }
 }

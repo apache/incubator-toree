@@ -27,7 +27,12 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
 import test.utils.MaxAkkaTestTimeout
 
-class GenericSocketMessageHandlerSpec extends TestKit(ActorSystem("GenericSocketMessageHandlerSystem"))
+class GenericSocketMessageHandlerSpec extends TestKit(
+  ActorSystem(
+    "GenericSocketMessageHandlerSystem",
+    None,
+    Some(org.apache.toree.Main.getClass.getClassLoader)
+  ))
 with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
   describe("GenericSocketMessageHandler( ActorLoader, SocketType )") {
     //  Create a mock ActorLoader for the Relay we are going to test

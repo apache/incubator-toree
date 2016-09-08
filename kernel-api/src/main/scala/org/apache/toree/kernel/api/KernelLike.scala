@@ -17,12 +17,12 @@
 
 package org.apache.toree.kernel.api
 
-import java.io.{PrintStream, InputStream, OutputStream}
+import java.io.{InputStream, OutputStream, PrintStream}
 
 import com.typesafe.config.Config
 import org.apache.spark.api.java.JavaSparkContext
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{SQLContext, SparkSession}
 
 /**
  * Interface for the kernel API. This does not include exposed variables.
@@ -111,5 +111,5 @@ trait KernelLike {
 
   def javaSparkContext: JavaSparkContext
 
-  def sqlContext: SQLContext
+  def sparkSession: SparkSession
 }

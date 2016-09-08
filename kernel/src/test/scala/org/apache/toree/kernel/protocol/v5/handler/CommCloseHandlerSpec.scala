@@ -33,7 +33,11 @@ import org.mockito.Matchers._
 import test.utils.MaxAkkaTestTimeout
 
 class CommCloseHandlerSpec extends TestKit(
-  ActorSystem("CommCloseHandlerSpec")
+  ActorSystem(
+    "CommCloseHandlerSpec",
+    None,
+    Some(org.apache.toree.Main.getClass.getClassLoader)
+  )
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter
 {

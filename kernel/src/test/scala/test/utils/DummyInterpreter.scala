@@ -53,11 +53,6 @@ class DummyInterpreter(kernel: KernelLike) extends Interpreter {
   override def addJars(jars: URL*): Unit = ???
 
   /**
-   * @return Returns a string to reference the URI of where the interpreted class files are created
-   */
-  override def classServerURI: String = ???
-
-  /**
    * Returns the name of the variable created from the last execution.
    * @return Some String name if a variable was created, otherwise None
    */

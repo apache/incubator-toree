@@ -49,3 +49,5 @@ derby.log
 service.properties
 MANIFEST.in
 target
+.system-test-image
+

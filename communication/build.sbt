@@ -18,7 +18,7 @@
 libraryDependencies ++= Seq(
   // LGPL with static linking exception
   "org.zeromq"        % "jeromq"        % "0.3.4",
-  "com.typesafe.akka" %% "akka-actor"   % "2.3.15",
-  "com.typesafe.akka" %% "akka-slf4j"   % "2.3.15",
-  "com.typesafe.akka" %% "akka-testkit" % "2.3.15" % "test"
+  "com.typesafe.akka" %% "akka-actor"   % "2.4.8",
+  "com.typesafe.akka" %% "akka-slf4j"   % "2.4.8",
+  "com.typesafe.akka" %% "akka-testkit" % "2.4.8" % "test"
 )

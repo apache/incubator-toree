@@ -37,8 +37,8 @@ class DownloadSupportSpec extends FunSpec with Matchers with BeforeAndAfter {
 
   //  Cleanup what we made
   after {
-    File(testFileName).deleteIfExists()
-    File(downloadDestinationUrl.getPath).deleteIfExists()
+    if (File(testFileName).exists) File(testFileName).delete()
+    if (File(downloadDestinationUrl.getPath).exists) File(downloadDestinationUrl.getPath).delete()
   }
 
   describe("DownloadSupport"){
@@ -78,7 +78,8 @@ class DownloadSupportSpec extends FunSpec with Matchers with BeforeAndAfter {
 
       it("should throw FileNotFoundException if the download URL is bad"){
         val badFilename = "file:///tmp/testbadfile.txt"
-        File(badFilename).deleteIfExists()
+        if (File(badFilename).exists) File(badFilename).delete()
+
         val badFileUrl = new URL(badFilename)
 
         val downloader = new Object with DownloadSupport

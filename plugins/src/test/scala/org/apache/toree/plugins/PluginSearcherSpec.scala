@@ -75,7 +75,7 @@ class PluginSearcherSpec extends FunSpec with Matchers
       it("should find any plugins directly extending the Plugin class") {
         val expected = directPluginClassInfo.name
 
-        doReturn(classInfos.toIterator).when(mockClassFinder).getClasses()
+        doReturn(classInfos.toStream).when(mockClassFinder).getClasses()
 
         val actual = pluginSearcher.internal.map(_.name)
 
@@ -85,7 +85,7 @@ class PluginSearcherSpec extends FunSpec with Matchers
       it("should find any plugins directly extending the Plugin trait") {
         val expected = directAsInterfacePluginClassInfo.name
 
-        doReturn(classInfos.toIterator).when(mockClassFinder).getClasses()
+        doReturn(classInfos.toStream).when(mockClassFinder).getClasses()
 
         val actual = pluginSearcher.internal.map(_.name)
 
@@ -95,7 +95,7 @@ class PluginSearcherSpec extends FunSpec with Matchers
       it("should find any plugins indirectly extending the Plugin class") {
         val expected = indirectPluginClassInfo.name
 
-        doReturn(classInfos.toIterator).when(mockClassFinder).getClasses()
+        doReturn(classInfos.toStream).when(mockClassFinder).getClasses()
 
         val actual = pluginSearcher.internal.map(_.name)
 
@@ -105,7 +105,7 @@ class PluginSearcherSpec extends FunSpec with Matchers
       it("should find any plugins indirectly extending the Plugin trait") {
         val expected = indirectAsInterfacePluginClassInfo.name
 
-        doReturn(classInfos.toIterator).when(mockClassFinder).getClasses()
+        doReturn(classInfos.toStream).when(mockClassFinder).getClasses()
 
         val actual = pluginSearcher.internal.map(_.name)
 
@@ -118,7 +118,7 @@ class PluginSearcherSpec extends FunSpec with Matchers
           traitPluginClassInfo.name
         )
 
-        doReturn(classInfos.toIterator).when(mockClassFinder).getClasses()
+        doReturn(classInfos.toStream).when(mockClassFinder).getClasses()
 
         val actual = pluginSearcher.internal.map(_.name)
 
@@ -130,7 +130,7 @@ class PluginSearcherSpec extends FunSpec with Matchers
       it("should find any plugins directly extending the Plugin class") {
         val expected = directPluginClassInfo.name
 
-        doReturn(classInfos.toIterator).when(mockClassFinder).getClasses()
+        doReturn(classInfos.toStream).when(mockClassFinder).getClasses()
 
         val actual = pluginSearcher.search().map(_.name).toSeq
 
@@ -140,7 +140,7 @@ class PluginSearcherSpec extends FunSpec with Matchers
       it("should find any plugins directly extending the Plugin trait") {
         val expected = directAsInterfacePluginClassInfo.name
 
-        doReturn(classInfos.toIterator).when(mockClassFinder).getClasses()
+        doReturn(classInfos.toStream).when(mockClassFinder).getClasses()
 
         val actual = pluginSearcher.search().map(_.name).toSeq
 
@@ -150,7 +150,7 @@ class PluginSearcherSpec extends FunSpec with Matchers
       it("should find any plugins indirectly extending the Plugin class") {
         val expected = indirectPluginClassInfo.name
 
-        doReturn(classInfos.toIterator).when(mockClassFinder).getClasses()
+        doReturn(classInfos.toStream).when(mockClassFinder).getClasses()
 
         val actual = pluginSearcher.search().map(_.name).toSeq
 
@@ -160,7 +160,7 @@ class PluginSearcherSpec extends FunSpec with Matchers
       it("should find any plugins indirectly extending the Plugin trait") {
         val expected = indirectAsInterfacePluginClassInfo.name
 
-        doReturn(classInfos.toIterator).when(mockClassFinder).getClasses()
+        doReturn(classInfos.toStream).when(mockClassFinder).getClasses()
 
         val actual = pluginSearcher.search().map(_.name).toSeq
 
@@ -173,7 +173,7 @@ class PluginSearcherSpec extends FunSpec with Matchers
           traitPluginClassInfo.name
         )
 
-        doReturn(classInfos.toIterator).when(mockClassFinder).getClasses()
+        doReturn(classInfos.toStream).when(mockClassFinder).getClasses()
 
         val actual = pluginSearcher.search().map(_.name).toSeq
 

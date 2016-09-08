@@ -68,7 +68,8 @@ object InterpreterManager {
             case e:Throwable =>
               logger.error("Error loading interpreter class " + className)
               logger.error(e.getMessage())
-              acc
+              //acc
+              throw e
           }
         case _ => acc
       }

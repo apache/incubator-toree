@@ -18,7 +18,6 @@ package org.apache.toree.plugins.dependencies
 
 import org.scalatest.{FunSpec, OneInstancePerTest, Matchers}
 
-import scala.tools.nsc.util.ScalaClassLoader.URLClassLoader
 
 class DependencySpec extends FunSpec with Matchers with OneInstancePerTest {
   import scala.reflect.runtime.universe._
@@ -63,7 +62,7 @@ class DependencySpec extends FunSpec with Matchers with OneInstancePerTest {
       it("should throw an exception if no matching class is found in the classloader") {
         intercept[ClassNotFoundException] {
           val d = Dependency("id", typeOf[DependencySpec], new Object)
-          d.typeClass(new URLClassLoader(Nil, null))
+          d.typeClass(ClassLoaderHelper.URLClassLoader(Nil, null))
         }
       }
     }
@@ -84,7 +83,7 @@ class DependencySpec extends FunSpec with Matchers with OneInstancePerTest {
         val d = Dependency.fromValue(new Object)
 
         // TODO: Stub out UUID method to test id was generated
-        d.name should not be (empty)
+        d.name should not be empty
       }
 
       it("should use the provided value as the dependency's value") {

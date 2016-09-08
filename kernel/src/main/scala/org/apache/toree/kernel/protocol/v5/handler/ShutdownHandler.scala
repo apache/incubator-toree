@@ -26,7 +26,7 @@ import play.api.data.validation.ValidationError
 import play.api.libs.json.JsPath
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, future}
+import scala.concurrent.Future
 
 /**
  * Represents the handler to shutdown the kernel
@@ -37,7 +37,7 @@ class ShutdownHandler(
   actorLoader: ActorLoader
 ) extends BaseHandler(actorLoader) with MessageLogSupport
 {
-  override def process(kernelMessage: KernelMessage): Future[_] = future {
+  override def process(kernelMessage: KernelMessage): Future[_] = Future {
     logKernelMessageAction("Initiating Shutdown request for", kernelMessage)
 
     val shutdownReply = ShutdownReply(false)

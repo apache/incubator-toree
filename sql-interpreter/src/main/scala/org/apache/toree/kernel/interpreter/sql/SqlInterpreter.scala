@@ -99,9 +99,6 @@ class SqlInterpreter() extends Interpreter {
   override def updatePrintStreams(in: InputStream, out: OutputStream, err: OutputStream): Unit = ???
 
   // Unsupported
-  override def classServerURI: String = ""
-
-  // Unsupported
   override def interrupt(): Interpreter = ???
 
   // Unsupported

@@ -40,7 +40,9 @@ object KernelCommWriterSpec {
 
 class KernelCommWriterSpec extends TestKit(
   ActorSystem("KernelCommWriterSpec",
-    ConfigFactory.parseString(KernelCommWriterSpec.config))
+    ConfigFactory.parseString(KernelCommWriterSpec.config),
+    org.apache.toree.Main.getClass.getClassLoader
+  )
 ) with FunSpecLike with Matchers with BeforeAndAfter with MockitoSugar
 {
 

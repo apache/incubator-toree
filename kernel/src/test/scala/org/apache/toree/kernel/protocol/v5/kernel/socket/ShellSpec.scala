@@ -41,7 +41,12 @@ object ShellSpec {
     }"""
 }
 
-class ShellSpec extends TestKit(ActorSystem("ShellActorSpec", ConfigFactory.parseString(ShellSpec.config)))
+class ShellSpec extends TestKit(
+  ActorSystem(
+    "ShellActorSpec",
+    ConfigFactory.parseString(ShellSpec.config),
+    org.apache.toree.Main.getClass.getClassLoader
+  ))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
   describe("Shell") {

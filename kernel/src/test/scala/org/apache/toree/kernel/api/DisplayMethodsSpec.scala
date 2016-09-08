@@ -28,8 +28,11 @@ import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout
 
 class DisplayMethodsSpec extends TestKit(
-  ActorSystem("DisplayMethodsSpec")
-) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
+  ActorSystem(
+    "DisplayMethodsSpec",
+    None,
+    Some(org.apache.toree.Main.getClass.getClassLoader)
+  )) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter
 {
   

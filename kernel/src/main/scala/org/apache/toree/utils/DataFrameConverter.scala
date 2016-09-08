@@ -17,7 +17,7 @@
 
 package org.apache.toree.utils
 
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{Dataset, Row}
 import org.apache.toree.plugins.Plugin
 import play.api.libs.json.{JsObject, Json}
 
@@ -30,7 +30,7 @@ class DataFrameConverter extends Plugin with LogLike {
   }
 
   def convert(
-     df: DataFrame, outputType: String, limit: Int = 10
+     df: Dataset[Row], outputType: String, limit: Int = 10
   ): Try[String] = {
     Try(
       outputType.toLowerCase() match {
@@ -44,12 +44,13 @@ class DataFrameConverter extends Plugin with LogLike {
     )
   }
 
-  private def convertToHtml(df: DataFrame, limit: Int = 10): String = {
+  private def convertToHtml(df: Dataset[Row], limit: Int = 10): String = {
+      import df.sqlContext.implicits._
       val columnFields = df.schema.fieldNames.map(columnName => {
         s"<th>${columnName}</th>"
       }).reduce(_ + _)
       val columns = s"<tr>${columnFields}</tr>"
-      val rows = df.map(row => {
+      val rows = df.rdd.map(row => {
         val fieldValues = row.toSeq.map(field => {
          s"<td>${field.toString}</td>"
         }).reduce(_ + _)
@@ -58,17 +59,22 @@ class DataFrameConverter extends Plugin with LogLike {
       s"<table>${columns}${rows}</table>"
   }
 
-  private def convertToJson(df: DataFrame, limit: Int = 10): String = {
+  private def convertToJson(df: Dataset[Row], limit: Int = 10): String = {
+    import df.sqlContext.implicits._
+    val schema = Json.toJson(df.schema.fieldNames)
+    val transformed = df.rdd.map(row =>
+      row.toSeq.map(_.toString).toArray)
+    val rows = transformed.take(limit)
     JsObject(Seq(
-      "columns" -> Json.toJson(df.schema.fieldNames),
-      "rows" -> Json.toJson(df.map(row =>
-        row.toSeq.map(_.toString).toArray).take(limit))
+      "columns" -> schema,
+      "rows" -> Json.toJson(rows)
     )).toString()
   }
 
-  private def convertToCsv(df: DataFrame, limit: Int = 10): String = {
+  private def convertToCsv(df: Dataset[Row], limit: Int = 10): String = {
+      import df.sqlContext.implicits._
       val headers = df.schema.fieldNames.reduce(_ + "," + _)
-      val rows = df.map(row => {
+      val rows = df.rdd.map(row => {
         row.toSeq.map(field => field.toString).reduce(_ + "," + _)
       }).take(limit).reduce(_ + "\n" + _)
       s"${headers}\n${rows}"

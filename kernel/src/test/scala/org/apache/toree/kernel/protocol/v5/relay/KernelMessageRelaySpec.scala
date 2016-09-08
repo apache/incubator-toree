@@ -38,7 +38,13 @@ import scala.util.Random
 import ExecutionContext.Implicits.global
 import test.utils._
 
-class KernelMessageRelaySpec extends TestKit(ActorSystem("RelayActorSystem"))
+class KernelMessageRelaySpec extends TestKit(
+  ActorSystem(
+    "RelayActorSystem",
+    None,
+    Some(org.apache.toree.Main.getClass.getClassLoader)
+  )
+)
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter with ScalaFutures {
   private val IncomingMessageType = MessageType.Incoming.CompleteRequest.toString

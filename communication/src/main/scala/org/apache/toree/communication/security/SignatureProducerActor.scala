@@ -43,7 +43,7 @@ class SignatureProducerActor(
   }
 
   /**
-   * Defines the types that will be stashed by {@link #waiting() waiting}
+   * Defines the types that will be stashed by [[waiting]]
    * while the Actor is in processing state.
    * @return
    */

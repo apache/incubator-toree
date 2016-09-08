@@ -37,7 +37,11 @@ object IOPubSpec {
     }"""
 }
 
-class IOPubSpec extends TestKit(ActorSystem("IOPubActorSpec", ConfigFactory.parseString(IOPubSpec.config)))
+class IOPubSpec extends TestKit(
+  ActorSystem("IOPubActorSpec",
+    ConfigFactory.parseString(IOPubSpec.config),
+    org.apache.toree.Main.getClass.getClassLoader
+  ))
 with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
   describe("IOPubActor") {

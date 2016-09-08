@@ -35,7 +35,12 @@ object HeartbeatSpec {
     }"""
 }
 
-class HeartbeatSpec extends TestKit(ActorSystem("HeartbeatActorSpec", ConfigFactory.parseString(HeartbeatSpec.config)))
+class HeartbeatSpec extends TestKit(
+  ActorSystem(
+    "HeartbeatActorSpec",
+    ConfigFactory.parseString(HeartbeatSpec.config),
+    org.apache.toree.Main.getClass.getClassLoader
+  ))
 with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
   val SomeMessage: String = "some message"
   val SomeZMQMessage: ZMQMessage = ZMQMessage(ByteString(SomeMessage.getBytes))

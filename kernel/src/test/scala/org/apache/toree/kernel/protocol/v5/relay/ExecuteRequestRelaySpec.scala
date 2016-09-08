@@ -43,7 +43,8 @@ object ExecuteRequestRelaySpec {
 class ExecuteRequestRelaySpec extends TestKit(
   ActorSystem(
     "ExecuteRequestRelayActorSystem",
-    ConfigFactory.parseString(ExecuteRequestRelaySpec.config)
+    ConfigFactory.parseString(ExecuteRequestRelaySpec.config),
+    org.apache.toree.Main.getClass.getClassLoader
   )
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter

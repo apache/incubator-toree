@@ -19,13 +19,12 @@ package integration
 
 import java.io.OutputStream
 
-import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.toree.kernel.interpreter.scala.{StandardSettingsProducer, StandardTaskManagerProducer, StandardSparkIMainProducer, ScalaInterpreter}
+import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 import org.apache.toree.kernel.protocol.v5.magic.PostProcessor
-import org.apache.toree.utils.{TaskManager, MultiOutputStream}
+import org.apache.toree.utils.{MultiOutputStream, TaskManager}
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
+import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 
 class PostProcessorSpecForIntegration extends FunSpec with Matchers
   with BeforeAndAfter with MockitoSugar
@@ -42,7 +41,7 @@ class PostProcessorSpecForIntegration extends FunSpec with Matchers
       override protected def bindKernelVariable(kernel: KernelLike): Unit = { }
     }
 
-    scalaInterpreter.start()
+    // scalaInterpreter.start()
     scalaInterpreter.init(mock[KernelLike])
 
     postProcessor = new PostProcessor(scalaInterpreter)

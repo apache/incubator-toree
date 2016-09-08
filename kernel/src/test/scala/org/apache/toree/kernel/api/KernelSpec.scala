@@ -198,9 +198,6 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
         val expected = "some value"
         doReturn(expected).when(mockConfig).getString("spark.master")
 
-        // Provide stub for interpreter classServerURI since also executed
-        doReturn("").when(mockInterpreter).classServerURI
-
         val sparkConf = kernel.createSparkConf(new SparkConf().setMaster(expected))
 
         sparkConf.get("spark.master") should be (expected)

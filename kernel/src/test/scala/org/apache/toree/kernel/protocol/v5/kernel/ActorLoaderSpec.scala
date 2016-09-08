@@ -25,7 +25,12 @@ import org.scalatest.{FunSpecLike, Matchers}
 import test.utils.TestProbeProxyActor
 import test.utils.MaxAkkaTestTimeout
 
-class ActorLoaderSpec extends TestKit(ActorSystem("ActorLoaderSpecSystem"))
+class ActorLoaderSpec extends TestKit(
+  ActorSystem(
+    "ActorLoaderSpecSystem",
+    None,
+    Some(org.apache.toree.Main.getClass.getClassLoader)
+  ))
 with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
   describe("ActorLoader"){
     describe("#load( MessageType )"){

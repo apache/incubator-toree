@@ -27,7 +27,7 @@ trait OrderedSupport extends Actor with Stash with LogLike {
   /**
    * Executes instead of the default receive when the Actor has begun
    * processing. Stashes incoming messages of particular types, defined by
-   * {@link #orderedTypes() orderedTypes} function, for later processing. Uses
+   * [[orderedTypes]] function, for later processing. Uses
    * the default receive method for all other types. Upon receiving a
    * FinishedProcessing message, resumes processing all messages with the
    * default receive.
@@ -48,7 +48,7 @@ trait OrderedSupport extends Actor with Stash with LogLike {
 
   /**
    * Suspends the default receive method for types defined by the
-   * {@link #orderedTypes() orderedTypes} function.
+   * [[orderedTypes]] function.
    */
   def startProcessing(): Unit = {
     logger.debug("Actor is in processing state and will stash messages of " +
@@ -80,7 +80,7 @@ trait OrderedSupport extends Actor with Stash with LogLike {
   }
 
   /**
-   * Defines the types that will be stashed by {@link #waiting() waiting}
+   * Defines the types that will be stashed by [[waiting]]
    * while the Actor is in processing state.
    * @return
    */

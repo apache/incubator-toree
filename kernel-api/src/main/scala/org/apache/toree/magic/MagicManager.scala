@@ -93,10 +93,13 @@ class MagicManager(private val pluginManager: PluginManager) extends Dynamic {
   private def handleMagicResult(name: String, result: Try[Any]) = result match {
      case Success(magicOutput) => magicOutput match {
         case null | _: BoxedUnit => Right(LineMagicOutput)
-        case cmo: CellMagicOutput => Left(cmo)
+        case cmo: Map[_, _]
+             if cmo.keys.forall(_.isInstanceOf[String]) &&
+                cmo.values.forall(_.isInstanceOf[String]) =>
+             Left(cmo.asInstanceOf[CellMagicOutput])
         case unknown =>
           val message =
-            s"""Magic ${name} did not return proper magic output
+            s"""Magic $name did not return proper magic output
                |type. Expected ${classOf[CellMagicOutput].getName} or
                |${classOf[LineMagicOutput].getName}, but found type of
                |${unknown.getClass.getName}.""".trim.stripMargin
@@ -104,7 +107,7 @@ class MagicManager(private val pluginManager: PluginManager) extends Dynamic {
           Left(CellMagicOutput("text/plain" -> message))
       }
       case Failure(t) =>
-        val message =  s"Magic ${name} failed to execute with error: \n${t.getMessage}"
+        val message =  s"Magic $name failed to execute with error: \n${t.getMessage}"
         logger.warn(message)
         Left(CellMagicOutput("text/plain" -> message))
   }

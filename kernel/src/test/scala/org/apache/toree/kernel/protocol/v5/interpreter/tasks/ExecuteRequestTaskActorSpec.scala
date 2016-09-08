@@ -41,7 +41,8 @@ object ExecuteRequestTaskActorSpec {
 class ExecuteRequestTaskActorSpec extends TestKit(
   ActorSystem(
     "ExecuteRequestTaskActorSpec",
-    ConfigFactory.parseString(ExecuteRequestTaskActorSpec.config)
+    ConfigFactory.parseString(ExecuteRequestTaskActorSpec.config),
+    org.apache.toree.Main.getClass.getClassLoader
   )
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
 {

@@ -17,8 +17,6 @@
 
 package org.apache.toree.kernel.interpreter.scala
 
-import org.apache.spark.repl.SparkCommandLine
-
 import scala.tools.nsc.Settings
 
 trait SettingsProducerLike {
@@ -30,9 +28,4 @@ trait SettingsProducerLike {
    * @return The new instance of Settings
    */
   def newSettings(args: List[String]): Settings
-}
-
-trait StandardSettingsProducer extends SettingsProducerLike {
-  override def newSettings(args: List[String]): Settings =
-    new SparkCommandLine(args).settings
 }

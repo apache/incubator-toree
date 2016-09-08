@@ -67,11 +67,6 @@ trait Interpreter {
     (Results.Result, Either[ExecuteOutput, ExecuteFailure])
 
   /**
-   * @return Returns a string to reference the URI of where the interpreted class files are created
-   */
-  def classServerURI: String
-
-  /**
    * Executes body and will not print anything to the console during the execution
    * @param body The function to execute
    * @tparam T The return type of body

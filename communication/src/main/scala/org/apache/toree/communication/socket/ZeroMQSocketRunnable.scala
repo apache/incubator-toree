@@ -147,9 +147,19 @@ class ZeroMQSocketRunnable(
         Try(processNextOutboundMessage(socket)).failed.foreach(
           logger.error("Failed to send next outgoing message!", _: Throwable)
         )
-        Try(processNextInboundMessage(socket)).failed.foreach(
-          logger.error("Failed to retrieve next incoming message!", _: Throwable)
-        )
+        Try(processNextInboundMessage(socket)).failed.foreach({
+          e: Throwable => {
+            e match {
+              case ex: java.lang.IllegalStateException => {
+//                if (ex.getMessage != "Cannot receive another request") {
+//                  logger.error("Failed to retrieve next incoming message!", e)
+//                } else {
+//                  /* Swallow this common exception */
+//                }
+              }
+              case _ => logger.error("Failed to retrieve next incoming message!", e)
+            }
+        }})
         Thread.sleep(1)
       }
     } catch {

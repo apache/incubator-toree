@@ -24,7 +24,13 @@ import org.scalatest.{FunSpecLike, Matchers}
 import test.utils.TestProbeProxyActor
 import test.utils.MaxAkkaTestTimeout
 
-class SimpleActorLoaderSpec extends TestKit(ActorSystem("SimpleActorLoaderSpecSystem"))
+class SimpleActorLoaderSpec extends TestKit(
+  ActorSystem(
+    "SimpleActorLoaderSpecSystem",
+    None,
+    Some(org.apache.toree.Main.getClass.getClassLoader)
+  )
+)
   with FunSpecLike with Matchers
 {
   describe("SimpleActorLoader") {

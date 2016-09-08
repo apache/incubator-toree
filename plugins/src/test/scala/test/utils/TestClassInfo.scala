@@ -19,7 +19,7 @@ package test.utils
 import java.io.File
 
 import org.clapper.classutil.Modifier.Modifier
-import org.clapper.classutil.{ClassInfo, FieldInfo, MethodInfo}
+import org.clapper.classutil._
 
 case class TestClassInfo(
   superClassName: String = "",
@@ -29,6 +29,6 @@ case class TestClassInfo(
   fields: Set[FieldInfo] = Set(),
   signature: String = "",
   modifiers: Set[Modifier] = Set(),
-  name: String = ""
+  name: String = "",
+  annotations: Set[AnnotationInfo] = Set()
 ) extends ClassInfo
-

@@ -38,7 +38,8 @@ class DataFrameConverterSpec extends FunSpec with MockitoSugar with Matchers {
 
   doReturn(mockStruct).when(mockDataFrame).schema
   doReturn(columns).when(mockStruct).fieldNames
-  doReturn(mockRdd).when(mockDataFrame).map(any())(any())
+  doReturn(mockRdd).when(mockDataFrame).rdd
+  doReturn(mockRdd).when(mockRdd).map(any())(any())
   doReturn(rowsOfArrays).when(mockRdd).take(anyInt())
 
   describe("DataFrameConverter") {

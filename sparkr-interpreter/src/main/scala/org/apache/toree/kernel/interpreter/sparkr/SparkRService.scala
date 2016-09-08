@@ -22,7 +22,7 @@ import org.apache.toree.interpreter.broker.BrokerService
 import org.apache.toree.kernel.interpreter.sparkr.SparkRTypes.{Code, CodeResults}
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{Future, future}
+import scala.concurrent.Future
 import scala.tools.nsc.interpreter._
 
 /**
@@ -68,10 +68,11 @@ class SparkRService(
     SparkRBridge.sparkRBridge = sparkRBridge
 
     val initialized = new Semaphore(0)
+    val classLoader = SparkRBridge.getClass.getClassLoader
     import scala.concurrent.ExecutionContext.Implicits.global
-    val rBackendRun = future {
+    val rBackendRun = Future {
       logger.debug("Initializing RBackend")
-      rBackendPort = rBackend.init()
+      rBackendPort = rBackend.init(classLoader)
       logger.debug(s"RBackend running on port $rBackendPort")
       initialized.release()
       logger.debug("Running RBackend")

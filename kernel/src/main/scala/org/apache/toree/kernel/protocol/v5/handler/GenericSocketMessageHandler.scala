@@ -26,7 +26,7 @@ import org.apache.toree.utils.{MessageLogSupport, LogLike}
 /**
  * All KernelMessage leaving the kernel for the client will exit the relay in a similar pattern. This class is meant
  * to encapsulate this behaviour into one generic method. This class should be used by mapping a
- * {@link org.apache.toree.kernel.protocol.MessageType} to the {@link org.apache.toree.kernel.protocol.SocketType} constructor
+ * `org.apache.toree.kernel.protocol.v5.MessageType` to the `org.apache.toree.kernel.protocol.v5.SocketType` constructor
  * parameter. This will map MessageTypes to their corresponding SocketTypes. An example us of this class would be
  *
  * actorSystem.actorOf(
@@ -51,7 +51,7 @@ class GenericSocketMessageHandler(actorLoader: ActorLoader, socketType: Enumerat
   }
 
   /**
-   * Defines the types that will be stashed by {@link #waiting() waiting}
+   * Defines the types that will be stashed by [[waiting]]
    * while the Actor is in processing state.
    * @return
    */

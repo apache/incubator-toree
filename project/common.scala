@@ -20,7 +20,7 @@ import sbt.Keys._
 import sbtbuildinfo._
 import sbtbuildinfo.BuildInfoKeys._
 import scoverage.ScoverageSbtPlugin
-import coursier.Keys._
+//import coursier.Keys._
 import com.typesafe.sbt.pgp.PgpKeys._
 import scala.util.{Try, Properties}
 
@@ -32,11 +32,13 @@ object Common {
   private val gpgPassword               = Properties.envOrElse("GPG_PASSWORD","")
   private val buildOrganization         = "org.apache.toree.kernel"
   private val buildVersion              = if (snapshot) s"$versionNumber-SNAPSHOT" else versionNumber
-  private val buildScalaVersion         = "2.10.4"
+  private val buildScalaVersion         = "2.11.8"
+//  private val buildScalaVersion         = "2.10.6"
 
   val buildInfoSettings = Seq(
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, "sparkVersion" -> sparkVersion),
     buildInfoPackage := buildOrganization,
+    buildInfoUsePackageAsPath := true,
     buildInfoOptions += BuildInfoOption.BuildTime
   )
 
@@ -90,7 +92,7 @@ object Common {
 
   private lazy val sparkVersion = {
     val sparkEnvironmentVariable = "APACHE_SPARK_VERSION"
-    val defaultSparkVersion = "1.6.1"
+    val defaultSparkVersion = "2.0.0"
 
     val _sparkVersion = Properties.envOrNone(sparkEnvironmentVariable)
 
@@ -133,8 +135,14 @@ object Common {
     pgpPassphrase in Global := Some(gpgPassword.toArray),
     version := buildVersion,
     scalaVersion := buildScalaVersion,
+//    crossScalaVersions := Seq("2.10.5", "2.11.8"),
+    crossScalaVersions := Seq("2.11.8"),
     isSnapshot := snapshot,
-    resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+    updateOptions := updateOptions.value.withCachedResolution(true),
+    resolvers ++= Seq(
+      "Apache Snapshots" at "http://repository.apache.org/snapshots/",
+      "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
+    ),
     // Test dependencies
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "2.2.6" % "test", // Apache v2
@@ -165,17 +173,17 @@ object Common {
     mappings in packageBin in Compile += file("LICENSE") -> "LICENSE",
     mappings in packageBin in Compile += file("NOTICE") -> "NOTICE",
 
-    coursierVerbosity := {
-      val level = Try(Integer.valueOf(Properties.envOrElse(
-        "TOREE_RESOLUTION_VERBOSITY", "1")
-      ).toInt).getOrElse(1)
-
-      scala.Console.out.println(
-        s"[INFO] Toree Resolution Verbosity Level = $level"
-      )
-
-      level
-    },
+//    coursierVerbosity := {
+//      val level = Try(Integer.valueOf(Properties.envOrElse(
+//        "TOREE_RESOLUTION_VERBOSITY", "1")
+//      ).toInt).getOrElse(1)
+//
+//      scala.Console.out.println(
+//        s"[INFO] Toree Resolution Verbosity Level = $level"
+//      )
+//
+//      level
+//    },
 
     scalacOptions in (Compile, doc) ++= Seq(
       // Ignore packages (for Scaladoc) not from our project
@@ -187,10 +195,11 @@ object Common {
 
     // Scala-based options for compilation
     scalacOptions ++= Seq(
-      "-deprecation", "-unchecked", "-feature",
+      "-deprecation",
+      "-unchecked", "-feature",
       //"-Xlint", // Scala 2.11.x only
       "-Xfatal-warnings",
-      "-Ywarn-all",
+      //"-Ywarn-all",
       "-language:reflectiveCalls",
       "-target:jvm-1.6"
     ),
@@ -210,6 +219,10 @@ object Common {
       "-target", "1.6"
     ),
 
+    scalacOptions in (Compile, doc) ++= Seq(
+      "-no-link-warnings" // Suppresses problems with Scaladoc @throws links
+    ),
+
     // Options provided to forked JVMs through sbt, based on our .jvmopts file
     javaOptions ++= Seq(
       "-Xms1024M", "-Xmx4096M", "-Xss2m", "-XX:MaxPermSize=1024M",
@@ -219,9 +232,9 @@ object Common {
     ),
 
     // Add additional test option to show time taken per test
-    testOptions in Test += Tests.Argument("-oD"),
+    testOptions in Test += Tests.Argument("-oDF"),
 
-    // Add a global resource directory with compile/ and test/ for resources in all projects
+      // Add a global resource directory with compile/ and test/ for resources in all projects
     unmanagedResourceDirectories in Compile += file("resources/compile"),
     unmanagedResourceDirectories in Test += file("resources/test"),
 

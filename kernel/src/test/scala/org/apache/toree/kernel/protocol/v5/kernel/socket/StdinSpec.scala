@@ -42,7 +42,9 @@ object StdinSpec {
 }
 
 class StdinSpec extends TestKit(ActorSystem(
-  "StdinActorSpec", ConfigFactory.parseString(StdinSpec.config)
+  "StdinActorSpec",
+  ConfigFactory.parseString(StdinSpec.config),
+  org.apache.toree.Main.getClass.getClassLoader
 )) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
   describe("Stdin") {
     val socketFactory = mock[SocketFactory]

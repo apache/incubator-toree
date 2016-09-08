@@ -28,7 +28,13 @@ import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout
 
-class StatusDispatchSpec extends TestKit(ActorSystem("StatusDispatchSystem"))
+class StatusDispatchSpec extends TestKit(
+  ActorSystem(
+    "StatusDispatchSystem",
+    None,
+    Some(org.apache.toree.Main.getClass.getClassLoader)
+  )
+)
 with FunSpecLike with Matchers with MockitoSugar with BeforeAndAfter{
   var statusDispatchRef: ActorRef = _
   var relayProbe: TestProbe = _

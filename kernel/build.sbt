@@ -19,5 +19,5 @@
 // TEST DEPENDENCIES
 //
 libraryDependencies +=
-  "org.spark-project.akka" %% "akka-testkit" % "2.3.4-spark" % "test" // MIT
+  "com.typesafe.akka" %% "akka-testkit" % "2.4.8" % "test" // MIT
 

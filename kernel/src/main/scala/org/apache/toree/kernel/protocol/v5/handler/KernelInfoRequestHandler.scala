@@ -33,7 +33,7 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader)
 {
   def process(kernelMessage: KernelMessage): Future[_] = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    future {
+    Future {
       logger.debug("Sending kernel info reply message")
 
       val kernelInfo = SparkKernelInfo

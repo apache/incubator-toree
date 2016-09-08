@@ -23,6 +23,7 @@ import org.apache.toree.kernel.protocol.v5
 
 import scala.annotation.tailrec
 import scala.collection.immutable
+import java.lang.AssertionError
 
 /**
  * Represents a point of communication to register new Comm entities (targets)

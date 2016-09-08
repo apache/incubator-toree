@@ -28,7 +28,11 @@ import test.utils.MaxAkkaTestTimeout
 import org.mockito.Mockito._
 
 class StreamMethodsSpec extends TestKit(
-  ActorSystem("StreamMethodsSpec")
+  ActorSystem(
+    "StreamMethodsSpec",
+    None,
+    Some(org.apache.toree.Main.getClass.getClassLoader)
+  )
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter
 {
