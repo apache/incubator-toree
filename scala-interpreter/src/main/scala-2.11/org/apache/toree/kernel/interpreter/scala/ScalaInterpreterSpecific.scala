@@ -326,11 +326,10 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     */
   override def isComplete(code: String): (String, String) = {
     val parse = iMain.parse
-    import parse._
     parse(code) match {
-      case Error(_) => ("invalid", "")
-      case Success(_) => ("complete", "")
-      case Incomplete(_) =>
+      case t: parse.Error => ("invalid", "")
+      case t: parse.Success => ("complete", "")
+      case t: parse.Incomplete =>
         val lastLine = code.split("\n").last
         // For now lets just grab the indent of the current line, if none default to 2 spaces.
         val indent = "\\s+".r.findFirstIn(lastLine).getOrElse("  ")
