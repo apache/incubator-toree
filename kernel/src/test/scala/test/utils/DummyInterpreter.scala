@@ -115,6 +115,8 @@ class DummyInterpreter(kernel: KernelLike) extends Interpreter {
    */
   override def completion(code: String, pos: Int): (Int, List[String]) = ???
 
+  override def isComplete(code: String) = ???
+
   /**
    * Initializes the interpreter.
    * @param kernel The kernel
