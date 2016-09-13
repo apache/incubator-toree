@@ -127,6 +127,9 @@ class SparkRInterpreter(
   override def completion(code: String, pos: Int): (Int, List[String]) =
     (pos, Nil)
 
+  // Unsupported (but can be invoked)
+  override def isComplete(code: String): (String, String) = ("unknown", "")
+
   // Unsupported
   override def updatePrintStreams(in: InputStream, out: OutputStream, err: OutputStream): Unit = ???
 

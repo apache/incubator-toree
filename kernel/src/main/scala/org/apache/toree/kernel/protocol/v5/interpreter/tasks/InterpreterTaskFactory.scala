@@ -34,4 +34,8 @@ class InterpreterTaskFactory(interpreter: Interpreter) {
    */
   def CodeCompleteTask(actorRefFactory: ActorRefFactory, name: String): ActorRef =
     actorRefFactory.actorOf(CodeCompleteTaskActor.props(interpreter), name)
+
+
+  def IsCompleteTask(actorRefFactory: ActorRefFactory, name: String): ActorRef =
+    actorRefFactory.actorOf(IsCompleteTaskActor.props(interpreter), name)
 }

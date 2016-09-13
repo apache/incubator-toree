@@ -317,6 +317,27 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     (result.cursor, result.candidates)
   }
 
+  /**
+    * Attempts to perform completeness checking for a statement by seeing if we can parse it
+    * using the scala parser.
+    *
+    * @param code The current cell to complete
+    * @return tuple of (completeStatus, indent)
+    */
+  override def isComplete(code: String): (String, String) = {
+    val parse = iMain.parse
+    import parse._
+    parse(code) match {
+      case Error(_) => ("invalid", "")
+      case Success(_) => ("complete", "")
+      case Incomplete(_) =>
+        val lastLine = code.split("\n").last
+        // For now lets just grab the indent of the current line, if none default to 2 spaces.
+        val indent = "\\s+".r.findFirstIn(lastLine).getOrElse("  ")
+        ("incomplete", indent)
+    }
+  }
+
   override def newSettings(args: List[String]): Settings = {
     val s = new Settings()
 

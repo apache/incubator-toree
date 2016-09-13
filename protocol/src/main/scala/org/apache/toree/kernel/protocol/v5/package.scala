@@ -87,6 +87,7 @@ package object v5 {
       val KernelInfoRequest  = Value("kernel_info_request")
       val ShutdownRequest = Value("shutdown_request")
       val CommInfoRequest = Value("comm_info_request")
+      val IsCompleteRequest = Value("is_complete_request")
 
       //  Stdin Router/Dealer Messages
       val InputReply      = Value("input_reply")
@@ -110,6 +111,7 @@ package object v5 {
       val KernelInfoReply    = Value("kernel_info_reply")
       val ShutdownReply   = Value("shutdown_reply")
       val CommInfoReply   = Value("comm_info_reply")
+      val IsCompleteReply = Value("is_complete_reply")
 
       //  Stdin Router/Dealer Messages
       val InputRequest    = Value("input_request")

@@ -15,14 +15,27 @@
  *  limitations under the License
  */
 
-package org.apache.toree.kernel.protocol.v5
+package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
-package object interpreter {
-  object InterpreterChildActorType extends Enumeration {
-    type InterpreterChildActorType = Value
+import akka.actor.{Actor, Props}
+import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.kernel.protocol.v5.content.IsCompleteRequest
+import org.apache.toree.utils.LogLike
 
-    val ExecuteRequestTask = Value("execute_request_task")
-    val CodeCompleteTask = Value("code_complete_task")
-    val IsCompleteTask = Value("is_complete_task")
+object IsCompleteTaskActor {
+  def props(interpreter: Interpreter): Props =
+    Props(classOf[IsCompleteTaskActor], interpreter)
+}
+
+class IsCompleteTaskActor(interpreter: Interpreter)
+  extends Actor with LogLike {
+  require(interpreter != null)
+
+  override def receive: Receive = {
+    case req: IsCompleteRequest =>
+      logger.debug("Invoking the interpreter completion")
+      sender ! interpreter.isComplete(req.code)
+    case _ =>
+      sender ! "Unknown message" // TODO: Provide a failure message type to be passed around?
   }
 }

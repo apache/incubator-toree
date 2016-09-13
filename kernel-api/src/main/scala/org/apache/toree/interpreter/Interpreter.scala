@@ -110,6 +110,13 @@ trait Interpreter {
    */
   def completion(code: String, pos: Int): (Int, List[String] )
 
+
+  /**
+    * Attempt to determine if a multiline block of code is complete
+    * @param code The code to determine for completeness
+    */
+  def isComplete(code: String): (String, String)
+
   /**
    * Returns the name of the variable created from the last execution.
    * @return Some String name if a variable was created, otherwise None

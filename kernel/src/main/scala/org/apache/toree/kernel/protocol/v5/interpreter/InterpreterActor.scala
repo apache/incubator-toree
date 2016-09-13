@@ -58,6 +58,7 @@ class InterpreterActor(
   //
   private var executeRequestTask: ActorRef = _
   private var completeCodeTask: ActorRef = _
+  private var isCompleteTask: ActorRef = _
 
   /**
    * Initializes all child actors performing tasks for the interpreter.
@@ -67,6 +68,8 @@ class InterpreterActor(
       context, InterpreterChildActorType.ExecuteRequestTask.toString)
     completeCodeTask = interpreterTaskFactory.CodeCompleteTask(
       context, InterpreterChildActorType.CodeCompleteTask.toString)
+    isCompleteTask = interpreterTaskFactory.IsCompleteTask(
+      context, InterpreterChildActorType.IsCompleteTask.toString)
   }
 
   override def receive: Receive = {
@@ -95,6 +98,14 @@ class InterpreterActor(
             ex.getLocalizedMessage,
             ex.getStackTrace.map(_.toString).toList)
           )
+      } pipeTo sender
+    case (isCompleteRequest: IsCompleteRequest) =>
+      logger.debug(s"InterpreterActor requesting is complete code ${isCompleteRequest.code}")
+      (isCompleteTask ? isCompleteRequest) recover {
+        case ex: Throwable =>
+          logger.warn(s"Could determine completeness for code ${isCompleteRequest.code}: " +
+            s"${ex.getMessage}")
+          Left(IsCompleteReply("unknown", ""))
       } pipeTo sender
   }
 }

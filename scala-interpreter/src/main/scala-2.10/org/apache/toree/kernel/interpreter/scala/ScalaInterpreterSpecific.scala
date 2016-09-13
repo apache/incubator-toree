@@ -343,6 +343,10 @@ trait ScalaInterpreterSpecific { this: ScalaInterpreter =>
     (result.cursor, result.candidates)
   }
 
+  override def isComplete(code: String): (String, String) = {
+    ("unknown", "")
+  }
+
   protected def newSettings(args: List[String]): Settings =
     new SparkCommandLine(args).settings
 

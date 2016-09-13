@@ -174,6 +174,8 @@ trait StandardHandlerInitialization extends HandlerInitialization {
       MessageType.Incoming.CommMsg)
     initializeCommHandler(classOf[CommCloseHandler],
       MessageType.Incoming.CommClose)
+    initializeCommHandler(classOf[IsCompleteHandler],
+      MessageType.Incoming.IsCompleteRequest)
 
     //  These are handlers for messages leaving the kernel through the sockets
     initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.KernelInfoReply)
