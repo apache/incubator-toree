@@ -325,16 +325,20 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     * @return tuple of (completeStatus, indent)
     */
   override def isComplete(code: String): (String, String) = {
-    val parse = iMain.parse
-    parse(code) match {
-      case t: parse.Error => ("invalid", "")
-      case t: parse.Success => ("complete", "")
-      case t: parse.Incomplete =>
-        val lastLine = code.split("\n").last
-        // For now lets just grab the indent of the current line, if none default to 2 spaces.
-        val indent = "\\s+".r.findFirstIn(lastLine).getOrElse("  ")
-        ("incomplete", indent)
+    val result = doQuietly {
+      val parse = iMain.parse
+      parse(code) match {
+        case t: parse.Error => ("invalid", "")
+        case t: parse.Success => ("complete", "")
+        case t: parse.Incomplete =>
+          val lastLine = code.split("\n").last
+          // For now lets just grab the indent of the current line, if none default to 2 spaces.
+          val indent = "\\s+".r.findFirstIn(lastLine).getOrElse("  ")
+          ("incomplete", indent)
+      }
     }
+    lastResultOut.reset()
+    result
   }
 
   override def newSettings(args: List[String]): Settings = {

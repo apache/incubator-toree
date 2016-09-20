@@ -39,6 +39,24 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
         {'code': '%showtypes off\n1', 'result': '1'}
     ]
 
+    complete_samples = [
+        "6 * 7",
+        "case class Foo(bar: Int)",
+        """def f(x: Int) = {
+               x + 8
+           }""",
+    ]
+
+    incomplete_samples = [
+         "case class Foo(bar: ",
+         "6 * ",
+    ]
+
+    invalid_code_samples = [
+         "case class Foo(bar)",
+         "* 6",
+    ]
+
     test_statements_stdout = [
         {'code': '%AddJar http://0.0.0.0:8000/TestJar.jar\nimport com.ibm.testjar.TestClass\nprintln(new TestClass().sayHello("Person"))', 'result': 'Hello, Person\n'}
     ]
