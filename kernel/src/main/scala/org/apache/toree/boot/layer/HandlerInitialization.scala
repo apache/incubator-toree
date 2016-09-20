@@ -166,6 +166,8 @@ trait StandardHandlerInitialization extends HandlerInitialization {
       MessageType.Incoming.CommInfoRequest, commStorage)
     initializeRequestHandler(classOf[CodeCompleteHandler],
       MessageType.Incoming.CompleteRequest)
+    initializeRequestHandler(classOf[IsCompleteHandler],
+      MessageType.Incoming.IsCompleteRequest)
     initializeInputHandler(classOf[InputRequestReplyHandler],
       MessageType.Incoming.InputReply)
     initializeCommHandler(classOf[CommOpenHandler],
@@ -174,14 +176,13 @@ trait StandardHandlerInitialization extends HandlerInitialization {
       MessageType.Incoming.CommMsg)
     initializeCommHandler(classOf[CommCloseHandler],
       MessageType.Incoming.CommClose)
-    initializeCommHandler(classOf[IsCompleteHandler],
-      MessageType.Incoming.IsCompleteRequest)
 
     //  These are handlers for messages leaving the kernel through the sockets
     initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.KernelInfoReply)
     initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.CommInfoReply)
     initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.ExecuteReply)
     initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.CompleteReply)
+    initializeSocketHandler(SocketType.Shell, MessageType.Outgoing.IsCompleteReply)
 
     initializeSocketHandler(SocketType.StdIn, MessageType.Outgoing.InputRequest)
 
