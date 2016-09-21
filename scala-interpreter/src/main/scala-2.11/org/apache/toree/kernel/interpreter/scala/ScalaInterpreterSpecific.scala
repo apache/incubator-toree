@@ -325,7 +325,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     * @return tuple of (completeStatus, indent)
     */
   override def isComplete(code: String): (String, String) = {
-    val result = doQuietly {
+    val result = iMain.beSilentDuring {
       val parse = iMain.parse
       parse(code) match {
         case t: parse.Error => ("invalid", "")
