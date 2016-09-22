@@ -296,7 +296,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
       iMain.interpret("import org.apache.spark.SparkContext._")
 
       logger.debug("Adding the hack for the exception handling retrieval.")
-      iMain.bind("_exceptionHack", exceptionHack)
+      iMain.bind("_exceptionHack", classOf[ExceptionHack].getName, exceptionHack, List("@transient"))
     }
 
     this
