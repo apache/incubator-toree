@@ -103,7 +103,7 @@ class InterpreterActor(
       logger.debug(s"InterpreterActor requesting is complete code ${isCompleteRequest.code}")
       (isCompleteTask ? isCompleteRequest) recover {
         case ex: Throwable =>
-          logger.warn(s"Could determine completeness for code ${isCompleteRequest.code}: " +
+          logger.warn(s"Could not determine completeness for code ${isCompleteRequest.code}: " +
             s"${ex.getMessage}")
           Left(IsCompleteReply("unknown", ""))
       } pipeTo sender
