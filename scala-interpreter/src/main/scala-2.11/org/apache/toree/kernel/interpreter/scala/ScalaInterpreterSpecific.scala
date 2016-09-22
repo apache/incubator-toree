@@ -352,7 +352,9 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
   }
 
   private def retrieveLastException: Throwable = {
-    iMain.interpret("_exceptionHack.lastException = lastException")
+    iMain.beSilentDuring {
+      iMain.interpret("_exceptionHack.lastException = lastException")
+    }
     exceptionHack.lastException
   }
 
@@ -423,7 +425,8 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
           "Compile Error", output, List()
         )
       else
-        ExecuteError("Unknown", "Unable to retrieve error!", List())
+        // May as capture the output here.  Could be useful
+        ExecuteError("Unknown Error", output, List())
   }
 }
 
