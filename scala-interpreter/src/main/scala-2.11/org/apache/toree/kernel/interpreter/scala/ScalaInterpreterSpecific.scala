@@ -35,7 +35,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
   private val ExecutionExceptionName = "lastException"
 
   private var iMain: IMain = _
-  private var jLineCompleter: JLineCompletion = _
+  private var completer: PresentationCompilerCompleter = _
   private val exceptionHack = new ExceptionHack()
 
   def _runtimeClassloader = {
@@ -192,7 +192,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     taskManager = null
 
     // Erase our completer
-    jLineCompleter = null
+    completer = null
 
     // Close the entire interpreter (loses all state)
     if (iMain != null) iMain.close()
@@ -285,7 +285,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     //iMain.initializeSynchronous()
 
     logger.debug("Initializing completer")
-    jLineCompleter = new JLineCompletion(iMain)
+    completer = new PresentationCompilerCompleter.(iMain)
 
     iMain.beQuietDuring {
       //logger.info("Rerouting Console and System related input and output")
@@ -309,14 +309,10 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
    * @return The cursor position and list of possible completions
    */
   override def completion(code: String, pos: Int): (Int, List[String]) = {
-    require(jLineCompleter != null)
+    require(completer != null)
 
     logger.debug(s"Attempting code completion for ${code}")
-    val regex = """[0-9a-zA-Z._]+$""".r
-    val parsedCode = (regex findAllIn code).mkString("")
-
-    logger.debug(s"Attempting code completion for ${parsedCode}")
-    val result = jLineCompleter.completer().complete(parsedCode, pos)
+    val result = completer.complete(code, pos)
 
     (result.cursor, result.candidates)
   }
