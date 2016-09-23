@@ -108,16 +108,6 @@ class DummyInterpreter(kernel: KernelLike) extends Interpreter {
   override def interpret(code: String, silent: Boolean, outputStreamResult: Option[OutputStream]): (Result, Either[ExecuteOutput, ExecuteFailure]) = ???
 
   /**
-   * Attempts to perform code completion via the <TAB> command.
-   * @param code The current cell to complete
-   * @param pos The cursor position
-   * @return The cursor position and list of possible completions
-   */
-  override def completion(code: String, pos: Int): (Int, List[String]) = ???
-
-  override def isComplete(code: String) = ???
-
-  /**
    * Initializes the interpreter.
    * @param kernel The kernel
    * @return The newly initialized interpreter

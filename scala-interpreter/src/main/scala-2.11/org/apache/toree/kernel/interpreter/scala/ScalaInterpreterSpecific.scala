@@ -309,6 +309,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
    * @return The cursor position and list of possible completions
    */
   override def completion(code: String, pos: Int): (Int, List[String]) = {
+
     require(completer != null)
 
     logger.debug(s"Attempting code completion for ${code}")

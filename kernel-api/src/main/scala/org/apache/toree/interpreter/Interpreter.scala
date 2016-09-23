@@ -23,6 +23,7 @@ import org.apache.toree.kernel.api.KernelLike
 
 import scala.tools.nsc.interpreter._
 
+
 trait Interpreter {
 
   /**
@@ -108,14 +109,13 @@ trait Interpreter {
    * @param pos The cursor position
    * @return The cursor position and list of possible completions
    */
-  def completion(code: String, pos: Int): (Int, List[String] )
-
+  def completion(code: String, pos: Int): (Int, List[String] ) = (pos, Nil)
 
   /**
     * Attempt to determine if a multiline block of code is complete
     * @param code The code to determine for completeness
     */
-  def isComplete(code: String): (String, String)
+  def isComplete(code: String): (String, String) = ("unknown", "")
 
   /**
    * Returns the name of the variable created from the last execution.
