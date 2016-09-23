@@ -43,6 +43,19 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
         {'code': '%AddJar http://0.0.0.0:8000/TestJar.jar\nimport com.ibm.testjar.TestClass\nprintln(new TestClass().sayHello("Person"))', 'result': 'Hello, Person\n'}
     ]
 
+    completion_samples = [
+        # completion for some scala code
+        {
+            'text': 'object O { def x_y_z = 1 }; import O._; x_y',
+            'matches': {'x_y_z'},
+        },
+        # completion for bound variable
+        {
+            'text': 'spar',
+            'matches': {'spark'}
+        },
+    ]
+
     def test_scala_stdout(self):
         '''Asserts test_statements execute correctly meaning the last message is the expected result'''
         for sample in self.test_statements_stdout:

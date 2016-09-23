@@ -285,7 +285,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     //iMain.initializeSynchronous()
 
     logger.debug("Initializing completer")
-    completer = new PresentationCompilerCompleter.(iMain)
+    completer = new PresentationCompilerCompleter(iMain)
 
     iMain.beQuietDuring {
       //logger.info("Rerouting Console and System related input and output")
