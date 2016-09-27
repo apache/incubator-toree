@@ -18,12 +18,6 @@ Toree provides an interface that allows clients to interact with a Spark Cluster
 
 The main supported language is `Scala`, but it is also capable of processing both `Python` and `R`. It implements the latest Jupyter message protocol (5.0), so it can easily plug into the latest releases of Jupyter/IPython (3.2.x+ and 4.x+) for quick, interactive data exploration.
 
-#### Disclaimer
-This project is currently not fully compliant with Apache release policy
-as it includes a runtime dependency that is licensed as LGPL v3 (plus a static
-linking exception). This package is currently under an effort to re-license
-(https://github.com/zeromq/jeromq/issues/327).
-
 Try It
 ======
 A version of Toree is deployed as part of the [Try Jupyter!][try-jupyter] site. Select `Scala 2.10.4 (Spark 1.4.1)` under the `New` dropdown. Note that this version only supports `Scala`.

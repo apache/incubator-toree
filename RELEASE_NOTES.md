@@ -8,9 +8,6 @@ As part of moving to Apache, the original codebase from [SparkKernel](https://gi
 been renamed, repackaged and improved in a variety of areas. It is also important to note that the version has been
 reset back to `0.1.0` in favor or the version scheme used in the old project.
 
-Note that this release contains an LGPL dependency ([JeroMQ](https://github.com/zeromq/jeromq)) which is currently 
-undergoing efforts to change to MPLv2 license.
-
 * Support for installation as a Jupyter kernel using pip
 * New plugin framework for extending Toree. Currently only used for Magics.
 * Support for sharing Spark context across different language interpreters.
