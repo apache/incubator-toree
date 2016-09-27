@@ -28,6 +28,3 @@ libraryDependencies ++= Seq(
 //
 // TEST DEPENDENCIES
 //
-libraryDependencies ++= Seq(
-  "org.scalactic" %% "scalactic" % "2.2.6" % "test" // Apache v2
-)
