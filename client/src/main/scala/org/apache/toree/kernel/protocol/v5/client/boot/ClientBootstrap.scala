@@ -63,7 +63,7 @@ class ClientBootstrap(config: Config) extends LogLike {
     logger.trace(s"Initializing handlers for, '$actorSystemName'")
     initializeHandlers(actorSystem, actorLoader)
 
-    logger.trace(s"ZeroMQ (JeroMQ) version: ${ZMQ.getVersionString}")
+    logger.trace(s"ZeroMQ version: ${ZMQ.getVersionString}")
 
     new SparkKernelClient(actorLoader, actorSystem, commRegistrar)
   }

@@ -7,13 +7,12 @@ package is subject to the terms and conditions of the following
 licenses.
 
 ========================================================================
-GNU General Lesser Public License (LGPL) version 3.0
-(plus a static linking exception)
+MPL v2
 ========================================================================
 
 Direct dependencies
 
-   org.zeromq:jeromq:0.3.4 -> https://github.com/zeromq/jeromq/blob/master/COPYING and licenses/COPYING, https://github.com/zeromq/jeromq/blob/master/COPYING.LESSER and licenses/COPYING.LESSER
+   org.zeromq:jeromq:0.3.6 -> https://github.com/zeromq/jeromq/blob/master/LICENSE
 
 ========================================================================
 BSD-like
