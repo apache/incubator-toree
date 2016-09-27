@@ -45,5 +45,5 @@ cache:
 
 branches:
     only:
-        - master
+        - 0.1.x
 
