@@ -38,7 +38,7 @@ BINDER_IMAGE?=apache/toree-binder
 DOCKER_WORKDIR?=/srv/toree
 DOCKER_ARGS?=
 define DOCKER
-docker run -it --rm \
+docker run -t --rm \
 	--workdir $(DOCKER_WORKDIR) \
 	-e PYTHONPATH='/srv/toree' \
 	-v `pwd`:/srv/toree $(DOCKER_ARGS)
@@ -83,7 +83,7 @@ clean: clean-dist
 .example-image: EXTRA_CMD?=printf "deb http://cran.rstudio.com/bin/linux/debian jessie-cran3/" >> /etc/apt/sources.list; apt-key adv --keyserver keys.gnupg.net --recv-key 381BA480; apt-get update; pip install jupyter_declarativewidgets==0.4.4; jupyter declarativewidgets install --user; jupyter declarativewidgets activate; pip install jupyter_dashboards; jupyter dashboards install --user; jupyter dashboards activate; apt-get update; apt-get install --yes curl; curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -; apt-get install --yes nodejs r-base r-base-dev; npm install -g bower;
 .example-image:
 	@-docker rm -f examples_image
-	@docker run -it --user root --name examples_image \
+	@docker run -t --user root --name examples_image \
 		$(IMAGE) bash -c '$(EXTRA_CMD)'
 	@docker commit examples_image $(EXAMPLE_IMAGE)
 	@-docker rm -f examples_image
@@ -91,7 +91,7 @@ clean: clean-dist
 
 .system-test-image:
 	@-docker rm -f system_test_image
-	@docker run -it --user root --name system_test_image \
+	@docker run -t --user root --name system_test_image \
 		$(IMAGE) bash -c "cd /tmp && \
 			wget http://apache.claz.org/spark/spark-$(APACHE_SPARK_VERSION)/spark-$(APACHE_SPARK_VERSION)-bin-hadoop2.6.tgz && \
 			tar xzf spark-$(APACHE_SPARK_VERSION)-bin-hadoop2.6.tgz -C /usr/local && \
@@ -121,7 +121,7 @@ clean: clean-dist
 	@docker build --rm -t $(BINDER_IMAGE) .
 
 dev-binder: .binder-image
-	@docker run --rm -it -p 8888:8888	\
+	@docker run --rm -t -p 8888:8888	\
 		-v `pwd`:/home/main/notebooks \
 		--workdir /home/main/notebooks $(BINDER_IMAGE) \
 		/home/main/start-notebook.sh --ip=0.0.0.0
@@ -208,7 +208,7 @@ jupyter: .example-image pip-release
 ################################################################################
 system-test: pip-release .system-test-image
 	@echo '-- Running jupyter kernel tests'
-	@docker run -ti --rm \
+	@docker run -t --rm \
 		--name jupyter_kernel_tests \
 		-v `pwd`/dist/toree-pip:/srv/toree-pip \
 		-v `pwd`/test_toree.py:/srv/test_toree.py \
