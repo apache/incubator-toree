@@ -341,11 +341,11 @@ class ScalaInterpreterSpec extends FunSpec
         }
       }
 
-      it("should execute the underlying valueOfTerm method") {
+      it("should execute the underlying eval method") {
         interpreter.start()
         interpreter.read("someVariable")
 
-        verify(mockSparkIMain).valueOfTerm(anyString())
+        verify(mockSparkIMain).eval(anyString())
       }
     }
 
