@@ -18,6 +18,8 @@
 //
 // TEST DEPENDENCIES
 //
-libraryDependencies +=
-  "org.spark-project.akka" %% "akka-testkit" % "2.3.4-spark" % "test" // MIT
+libraryDependencies ++=
+  Seq("org.spark-project.akka" %% "akka-testkit" % "2.3.4-spark" % "test", // MIT
+    "com.google.guava"  % "guava" % "19.0")
+
 
