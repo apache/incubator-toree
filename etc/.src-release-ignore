@@ -14,3 +14,4 @@ licenses
 derby.log
 etc/tools/apache-rat-0.11.jar
 kernel/lib/mesos-0.18.1-shaded-protobuf.jar
+*-ivy.xml
