@@ -198,8 +198,8 @@ publish-jars:
 ################################################################################
 # PIP PACKAGE
 ################################################################################
-dist/toree-pip/toree-$(BASE_VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
-dist/toree-pip/toree-$(BASE_VERSION).tar.gz: dist/toree
+dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
+dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz: dist/toree
 	@mkdir -p dist/toree-pip
 	@cp -r dist/toree dist/toree-pip
 	@cp dist/toree/LICENSE dist/toree-pip/LICENSE
@@ -211,15 +211,15 @@ dist/toree-pip/toree-$(BASE_VERSION).tar.gz: dist/toree
 	@cp -rf etc/pip_install/* dist/toree-pip/.
 	@$(GEN_PIP_PACKAGE_INFO)
 	@$(DOCKER) --user=root $(IMAGE) python setup.py sdist --dist-dir=.
-	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install toree-$(BASE_VERSION).tar.gz && jupyter toree install'
-#	-@(cd dist/toree-pip; find . -not -name 'toree-$(VERSION).tar.gz' -maxdepth 1 | xargs rm -r )
+	@$(DOCKER) -p 8888:8888 --user=root  $(IMAGE) bash -c	'pip install apache-toree-$(BASE_VERSION).tar.gz && jupyter toree install'
+	-@(cd dist/toree-pip; find . -not -name 'apache-toree-$(BASE_VERSION).tar.gz' -maxdepth 1 | xargs rm -r )
 
-pip-release: dist/toree-pip/toree-$(BASE_VERSION).tar.gz
+pip-release: dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz
 
-dist/toree-pip/toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha: dist/toree-pip/toree-$(BASE_VERSION).tar.gz
-	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/toree-$(BASE_VERSION).tar.gz
+dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha: dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz
+	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz
 
-sign-pip: dist/toree-pip/toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha
+sign-pip: dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha
 
 publish-pip: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 publish-pip: PYPI_REPO?=https://pypi.python.org/pypi
@@ -229,37 +229,37 @@ publish-pip: PYPIRC=printf "[distutils]\nindex-servers =\n\tpypi\n\n[pypi]\nrepo
 publish-pip: sign-pip
 	@$(DOCKER) $(IMAGE) bash -c '$(PYPIRC) pip install twine && \
 		python setup.py register -r $(PYPI_REPO) && \
-		twine upload -r pypi toree-$(BASE_VERSION).tar.gz toree-$(BASE_VERSION).tar.gz.asc'
+		twine upload -r pypi apache-toree-$(BASE_VERSION).tar.gz apache-toree-$(BASE_VERSION).tar.gz.asc'
 
 ################################################################################
 # BIN PACKAGE
 ################################################################################
-dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz: dist/toree
+dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz: dist/toree
 	@mkdir -p dist/toree-bin
-	@(cd dist; tar -cvzf toree-bin/toree-$(VERSION)-binary-release.tar.gz toree)
+	@(cd dist; tar -cvzf toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz toree)
 
-bin-release: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+bin-release: dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz
 
-dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
-	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.sha: dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz
+	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz
 
-sign-bin: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha
+sign-bin: dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.sha
 
 publish-bin:
 
 ################################################################################
 # SRC PACKAGE
 ################################################################################
-dist/toree-src/toree-$(VERSION)-source-release.tar.gz:
+dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz:
 	@mkdir -p dist/toree-src
-	@tar -X 'etc/.src-release-ignore' -cvzf dist/toree-src/toree-$(VERSION)-source-release.tar.gz .
+	@tar -X 'etc/.src-release-ignore' -cvzf dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz .
 
-src-release: dist/toree-src/toree-$(VERSION)-source-release.tar.gz
+src-release: dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz
 
-dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha: dist/toree-src/toree-$(VERSION)-source-release.tar.gz
-	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-src/toree-$(VERSION)-source-release.tar.gz
+dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz.sha: dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz
+	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz
 
-sign-src: dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha
+sign-src: dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz.sha
 
 publish-src:
 

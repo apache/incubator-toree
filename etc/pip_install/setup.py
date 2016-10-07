@@ -26,7 +26,7 @@ with open(os.path.join(here, 'toree', '_version.py')) as f:
     exec(f.read(), {}, version_ns)
 
 setup_args = dict(
-    name='toree',
+    name='apache-toree',
     author='Apache Toree Development Team',
     author_email='dev@toree.incubator.apache.org',
     description='A Jupyter kernel for enabling remote applications to interaction with Apache Spark.',
