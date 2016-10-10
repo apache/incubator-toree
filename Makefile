@@ -282,9 +282,11 @@ publish-bin:
 ################################################################################
 # SRC PACKAGE
 ################################################################################
-dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz:
+dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz: dist/toree-legal
 	@mkdir -p dist/toree-src
-	@tar -X 'etc/.src-release-ignore' -cvzf dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz .
+	@tar -X 'etc/.src-release-ignore' -cvf dist/toree-src/apache-toree-$(VERSION)-source-release.tar .
+	@tar -rvf dist/toree-src/apache-toree-$(VERSION)-source-release.tar -C dist/toree-legal .
+	@gzip dist/toree-src/apache-toree-$(VERSION)-source-release.tar
 
 src-release: dist/toree-src/apache-toree-$(VERSION)-source-release.tar.gz
 
