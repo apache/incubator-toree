@@ -217,7 +217,7 @@ system-test: pip-release .system-test-image
 		$(SYSTEM_TEST_IMAGE) \
 		bash -c "(cd /srv/system-test-resources && python -m http.server 8000 &) && \
 		rm -rf /home/jovyan/.local/share/jupyter/kernels/apache_toree_scala/ && \
-		pip install /srv/toree-pip/toree*.tar.gz && jupyter toree install --interpreters=PySpark,Scala,SparkR && \
+		pip install /srv/toree-pip/apache-toree*.tar.gz && jupyter toree install --interpreters=PySpark,Scala,SparkR && \
 		pip install nose jupyter_kernel_test && python /srv/test_toree.py"
 
 
