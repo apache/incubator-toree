@@ -251,7 +251,9 @@ publish-pip: sign-pip
 ################################################################################
 dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz: dist/toree
 	@mkdir -p dist/toree-bin
-	@(cd dist; tar -cvzf toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz toree)
+	@ln -fs dist/toree apache-toree
+	@tar -cvzhf dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz apache-toree
+	@-rm apache-toree
 
 bin-release: dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz
 
