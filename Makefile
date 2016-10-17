@@ -201,7 +201,7 @@ system-test: pip-release
 		--user=root \
 		$(IMAGE) \
 		bash -c "(cd /srv/system-test-resources && python -m http.server 8000 &) && \
-		pip install /srv/toree-pip/toree*.tar.gz && jupyter toree install --interpreters=PySpark,Scala && \
+		pip install /srv/toree-pip/apache-toree*.tar.gz && jupyter toree install --interpreters=PySpark,Scala && \
 		pip install nose jupyter_kernel_test && python /srv/test_toree.py"
 
 ################################################################################
