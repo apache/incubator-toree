@@ -155,7 +155,7 @@ class PySparkInterpreter(
   override def doQuietly[T](body: => T): T = ???
 
   override def languageInfo: LanguageInfo = {
-    if (!pySparkService.isRunning) or (!pySparkState.isReady) {
+    if ((!pySparkService.isRunning) || (!pySparkState.isReady)) {
       LanguageInfo(
         "python",
         version = "UNKNOWN",
