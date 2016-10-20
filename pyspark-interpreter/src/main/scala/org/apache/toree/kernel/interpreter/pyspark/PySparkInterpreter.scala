@@ -37,6 +37,9 @@ import scala.tools.nsc.interpreter.{InputStream, OutputStream}
  */
 class PySparkInterpreter(
 ) extends Interpreter {
+  /** Maximum time to wait for the python kernel to be readu */
+  private val WAIT_DURATION: Long = java.util.concurrent.TimeUnit.SECONDS.toMillis(50)
+
   private val PythonExecEnv = "PYTHON_EXEC"
   private val logger = LoggerFactory.getLogger(this.getClass)
   private var _kernel:KernelLike = _
@@ -73,7 +76,8 @@ class PySparkInterpreter(
 
   /**
    * Initializes the interpreter.
-   * @param kernel The kernel
+    *
+    * @param kernel The kernel
    * @return The newly initialized interpreter
    */
   override def init(kernel: KernelLike): Interpreter = {
@@ -83,7 +87,8 @@ class PySparkInterpreter(
 
   /**
    * Executes the provided code with the option to silence output.
-   * @param code The code to execute
+    *
+    * @param code The code to execute
    * @param silent Whether or not to execute the code silently (no output)
    * @return The success/failure of the interpretation and the output from the
    *         execution or the failure
@@ -101,7 +106,8 @@ class PySparkInterpreter(
 
   /**
    * Starts the interpreter, initializing any internal state.
-   * @return A reference to the interpreter
+    *
+    * @return A reference to the interpreter
    */
   override def start(): Interpreter = {
     pySparkService.start()
@@ -111,7 +117,8 @@ class PySparkInterpreter(
 
   /**
    * Stops the interpreter, removing any previous internal state.
-   * @return A reference to the interpreter
+    *
+    * @return A reference to the interpreter
    */
   override def stop(): Interpreter = {
     pySparkService.stop()
@@ -148,21 +155,18 @@ class PySparkInterpreter(
   override def doQuietly[T](body: => T): T = ???
 
   override def languageInfo: LanguageInfo = {
-    if (!pySparkService.isRunning) pySparkService.start()
-
-    import scala.util.control.Breaks._
-    val waitLimit = System.currentTimeMillis() + java.util.concurrent.TimeUnit.SECONDS.toMillis(5)
-    while (!pySparkState.isReady) {
-      if (System.currentTimeMillis > waitLimit) {
-        logger.warn("Timed out waiting for broker state to become ready")
-        break
-      }
-    }
-
-    LanguageInfo(
+    if (!pySparkService.isRunning) or (!pySparkState.isReady) {
+      LanguageInfo(
+        "python",
+        version = "UNKNOWN",
+        fileExtension = Some(".py"),
+        pygmentsLexer = Some("python"))
+    } else {
+      LanguageInfo(
         "python",
         pySparkState.getVersion(),
         fileExtension = Some(".py"),
-        pygmentsLexer = Some("ipython2"))
+        pygmentsLexer = Some("python"))
+    }
   }
 }
