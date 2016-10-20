@@ -146,7 +146,9 @@ object Common {
     // Test dependencies
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "2.2.6" % "test", // Apache v2
-      "org.mockito" % "mockito-all" % "1.10.19" % "test"   // MIT
+      "org.mockito" % "mockito-all" % "1.10.19" % "test",   // MIT
+      // use the same jackson version in test than the one provided at runtime by Spark 2.0.0
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.5" % "test" // Apache v2
     ),
     ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := false,
     pomExtra :=

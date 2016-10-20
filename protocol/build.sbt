@@ -29,6 +29,5 @@ libraryDependencies ++= Seq(
 // TEST DEPENDENCIES
 //
 libraryDependencies ++= Seq(
-  "org.scalactic" %% "scalactic" % "2.2.6" % "test", // Apache v2
-  "com.fasterxml.jackson.core" % "jackson-databind" % "2.7.4" // Apache v2
+  "org.scalactic" %% "scalactic" % "2.2.6" % "test" // Apache v2
 )
