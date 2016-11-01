@@ -316,7 +316,12 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    }
 
    override def classLoader: ClassLoader = _runtimeClassloader
- }
+
+  /**
+    * Returns the language metadata for syntax highlighting
+    */
+  override def languageInfo = LanguageInfo("scala", BuildInfo.scalaVersion, fileExtension = Some(".scala"))
+}
 
 object ScalaInterpreter {
 
@@ -336,8 +341,5 @@ object ScalaInterpreter {
     })
     outputDir
   }
-
-
-  override def languageInfo = LanguageInfo("scala", BuildInfo.scalaVersion, fileExtension = Some(".scala"))
 
 }
