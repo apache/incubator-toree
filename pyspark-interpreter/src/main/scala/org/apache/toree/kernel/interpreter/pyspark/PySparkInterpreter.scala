@@ -41,6 +41,7 @@ class PySparkInterpreter(
   private val WAIT_DURATION: Long = java.util.concurrent.TimeUnit.SECONDS.toMillis(50)
 
   private val PythonExecEnv = "PYTHON_EXEC"
+  private lazy val pythonExecutable = Option(System.getenv(PythonExecEnv)).getOrElse("python")
   private val logger = LoggerFactory.getLogger(this.getClass)
   private var _kernel:KernelLike = _
 
@@ -67,7 +68,7 @@ class PySparkInterpreter(
     )
 
   private lazy val pySparkService = new PySparkService(
-    Option(System.getenv(PythonExecEnv)).getOrElse("python"),
+    pythonExecutable,
     gatewayServer,
     pySparkBridge,
     pySparkProcessHandler
@@ -155,18 +156,18 @@ class PySparkInterpreter(
   override def doQuietly[T](body: => T): T = ???
 
   override def languageInfo: LanguageInfo = {
-    if ((!pySparkService.isRunning) || (!pySparkState.isReady)) {
-      LanguageInfo(
-        "python",
-        version = "UNKNOWN",
-        fileExtension = Some(".py"),
-        pygmentsLexer = Some("python"))
-    } else {
-      LanguageInfo(
-        "python",
-        pySparkState.getVersion(),
-        fileExtension = Some(".py"),
-        pygmentsLexer = Some("python"))
-    }
+    import scala.sys.process._
+
+    // Issue a subprocess call to grab the python version.  This is better than polling a child process.
+    val version = Seq(
+      pythonExecutable,
+      "-c",
+      "import sys; print('{s.major}.{s.minor}.{s.micro}'.format(s=sys.version_info))").!!
+
+    LanguageInfo(
+      "python",
+      version = version,
+      fileExtension = Some(".py"),
+      pygmentsLexer = Some("python"))
   }
 }

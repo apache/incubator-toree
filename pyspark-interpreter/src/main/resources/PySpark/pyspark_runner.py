@@ -15,7 +15,11 @@
 # limitations under the License.
 #
 
-import sys, getopt, traceback, re, ast, platform
+import sys
+import getopt
+import traceback
+import re
+import ast
 
 print("PYTHON::: Starting imports")
 from py4j.java_gateway import java_import, JavaGateway, GatewayClient
@@ -53,7 +57,7 @@ java_import(gateway.jvm, "org.apache.spark.mllib.api.python.*")
 
 bridge = gateway.entry_point
 state = bridge.state()
-state.markReady(platform.python_version())
+state.markReady()
 
 if sparkVersion.startswith("1.2"):
     java_import(gateway.jvm, "org.apache.spark.sql.SparkSession")

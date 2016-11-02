@@ -22,6 +22,7 @@ import scala.collection.JavaConverters._
 /**
  * Represents the R process used to evaluate SparkR code.
  *
+ * @param processName The name of the Rscript process to run.
  * @param sparkRBridge The bridge to use to retrieve kernel output streams
  *                      and the Spark version to be verified
  * @param sparkRProcessHandler The handler to use when the process fails or
@@ -30,11 +31,12 @@ import scala.collection.JavaConverters._
  *             back to the JVM
  */
 class SparkRProcess(
+  processName: String,
   private val sparkRBridge: SparkRBridge,
   private val sparkRProcessHandler: SparkRProcessHandler,
   private val port: Int
 ) extends BrokerProcess(
-  processName = "Rscript",
+  processName = processName,
   entryResource = "kernelR/sparkr_runner.R",
   otherResources = Seq("kernelR/sparkr_runner_utils.R"),
   brokerBridge = sparkRBridge,

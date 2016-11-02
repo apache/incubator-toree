@@ -38,7 +38,6 @@ class BrokerState(private val maxQueuedCode: Int) {
   import scala.collection.JavaConverters._
 
   @volatile private var _isReady: Boolean = false
-  @volatile private var _version: String = _
 
   protected val codeQueue: java.util.Queue[BrokerCode] =
     new java.util.concurrent.ConcurrentLinkedQueue[BrokerCode]()
@@ -128,15 +127,9 @@ class BrokerState(private val maxQueuedCode: Int) {
 
    * @param version The language version used by the broker service
    */
-  def markReady(version: String): Unit = {
+  def markReady(): Unit = {
     _isReady = true
-    _version = version
   }
-
-  /**
-  * Retrieve the runtime language version used by the broker service
-  */
-  def getVersion(): String = _version
 
   /**
    * Marks the specified code as successfully completed using its id.

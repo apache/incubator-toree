@@ -38,6 +38,7 @@ class SparkRInterpreter(
 ) extends Interpreter {
   private val logger = LoggerFactory.getLogger(this.getClass)
   private var _kernel: KernelLike = _
+  private val rScriptExecutable = "Rscript"
 
   // TODO: Replace hard-coded maximum queue count
   /** Represents the state used by this interpreter's R instance. */
@@ -61,6 +62,7 @@ class SparkRInterpreter(
     )
 
   private lazy val sparkRService = new SparkRService(
+    rScriptExecutable,
     rBackend,
     sparkRBridge,
     sparkRProcessHandler
@@ -139,6 +141,16 @@ class SparkRInterpreter(
   // Unsupported
   override def doQuietly[T](body: => T): T = ???
 
-  override def languageInfo = LanguageInfo("R", "Unknown", fileExtension = Some(".R"), pygmentsLexer = Some("r"))
+  override def languageInfo = {
+    import sys.process._
+
+    // Issue a subprocess call to grab the R version.  This is better than polling a child process.
+    val version = Seq(
+      rScriptExecutable,
+      "-e",
+      "cat(R.version$major, '.', R.version$minor, sep='', fill=TRUE)").!!
+
+    LanguageInfo("R", version = version, fileExtension = Some(".R"), pygmentsLexer = Some("r"))
+  }
 
 }
