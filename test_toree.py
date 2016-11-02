@@ -150,7 +150,7 @@ class ToreeSparkRKernelTests(jupyter_kernel_test.KernelTests):
     kernel_name = "apache_toree_sparkr"
 
     # language_info.name in a kernel_info_reply should match this
-    language_name = "scala"
+    language_name = "R"
 
     # Optional --------------------------------------
 
