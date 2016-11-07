@@ -17,6 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
+import org.apache.toree.kernel.protocol.v5.LanguageInfo
 import org.scalatest.{FunSpec, Matchers}
 import play.api.data.validation.ValidationError
 import play.api.libs.json._
@@ -27,13 +28,13 @@ class KernelInfoReplySpec extends FunSpec with Matchers {
     "protocol_version": "x.y.z",
     "implementation": "<name>",
     "implementation_version": "z.y.x",
-    "language_info": { "name": "<some language>", "version": "a.b.c" },
+    "language_info": { "name": "<some language>", "version": "a.b.c", "file_extension": "<some extension>" },
     "banner": "<some banner>"
   }
   """)
 
   val kernelInfoReply: KernelInfoReply = KernelInfoReply(
-    "x.y.z", "<name>", "z.y.x", Map("name" -> "<some language>", "version" -> "a.b.c"), "<some banner>"
+    "x.y.z", "<name>", "z.y.x", LanguageInfo("<some language>", "a.b.c", Some("<some extension>")), "<some banner>"
   )
 
   describe("KernelInfoReply") {
@@ -73,4 +74,3 @@ class KernelInfoReplySpec extends FunSpec with Matchers {
     }
   }
 }
-

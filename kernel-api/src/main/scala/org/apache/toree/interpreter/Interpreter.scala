@@ -23,6 +23,12 @@ import org.apache.toree.kernel.api.KernelLike
 
 import scala.tools.nsc.interpreter._
 
+case class LanguageInfo(
+                 name: String,
+                 version: String,
+                 fileExtension: Option[String] = None,
+                 pygmentsLexer: Option[String] = None) {
+}
 
 trait Interpreter {
 
@@ -128,4 +134,10 @@ trait Interpreter {
    * @return The runtime class loader used by this interpreter
    */
   def classLoader: ClassLoader
+
+  /**
+    * Returns the language metadata for syntax highlighting
+    */
+  def languageInfo: LanguageInfo
+
 }

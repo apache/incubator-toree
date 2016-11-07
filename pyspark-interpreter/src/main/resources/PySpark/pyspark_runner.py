@@ -15,7 +15,11 @@
 # limitations under the License.
 #
 
-import sys, getopt, traceback, re, ast
+import sys
+import getopt
+import traceback
+import re
+import ast
 
 print("PYTHON::: Starting imports")
 from py4j.java_gateway import java_import, JavaGateway, GatewayClient
@@ -76,7 +80,6 @@ sc = None
 spark = None
 code_info = None
 
-
 class Logger(object):
     def __init__(self):
         self.out = ""
@@ -108,10 +111,16 @@ class Kernel(object):
         return parent + [x for x in self._jvm_kernel.__dir__() if x not in parent]
 
     def createSparkContext(self, config):
+        global conf, sc, sqlContext
+
         jconf = gateway.jvm.org.apache.spark.SparkConf(False)
         for key,value in config.getAll():
             jconf.set(key, value)
         self._jvm_kernel.createSparkContext(jconf)
+        conf = None
+        sc = None
+        sqlContext = None
+
         self.refreshContext()
 
     def refreshContext(self):

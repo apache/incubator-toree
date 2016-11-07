@@ -37,7 +37,8 @@ class BrokerState(private val maxQueuedCode: Int) {
 
   import scala.collection.JavaConverters._
 
-  private var _isReady: Boolean = false
+  @volatile private var _isReady: Boolean = false
+
   protected val codeQueue: java.util.Queue[BrokerCode] =
     new java.util.concurrent.ConcurrentLinkedQueue[BrokerCode]()
   protected val promiseMap: collection.mutable.Map[CodeId, BrokerPromise] =
@@ -123,8 +124,12 @@ class BrokerState(private val maxQueuedCode: Int) {
 
   /**
    * Marks the state of broker as ready.
+
+   * @param version The language version used by the broker service
    */
-  def markReady(): Unit = _isReady = true
+  def markReady(): Unit = {
+    _isReady = true
+  }
 
   /**
    * Marks the specified code as successfully completed using its id.
@@ -192,4 +197,3 @@ class BrokerState(private val maxQueuedCode: Int) {
     }
   }
 }
-

@@ -37,7 +37,11 @@ import scala.tools.nsc.interpreter.{InputStream, OutputStream}
  */
 class PySparkInterpreter(
 ) extends Interpreter {
+  /** Maximum time to wait for the python kernel to be readu */
+  private val WAIT_DURATION: Long = java.util.concurrent.TimeUnit.SECONDS.toMillis(50)
+
   private val PythonExecEnv = "PYTHON_EXEC"
+  private lazy val pythonExecutable = Option(System.getenv(PythonExecEnv)).getOrElse("python")
   private val logger = LoggerFactory.getLogger(this.getClass)
   private var _kernel:KernelLike = _
 
@@ -64,7 +68,7 @@ class PySparkInterpreter(
     )
 
   private lazy val pySparkService = new PySparkService(
-    Option(System.getenv(PythonExecEnv)).getOrElse("python"),
+    pythonExecutable,
     gatewayServer,
     pySparkBridge,
     pySparkProcessHandler
@@ -73,7 +77,8 @@ class PySparkInterpreter(
 
   /**
    * Initializes the interpreter.
-   * @param kernel The kernel
+    *
+    * @param kernel The kernel
    * @return The newly initialized interpreter
    */
   override def init(kernel: KernelLike): Interpreter = {
@@ -83,14 +88,14 @@ class PySparkInterpreter(
 
   /**
    * Executes the provided code with the option to silence output.
-   * @param code The code to execute
+    *
+    * @param code The code to execute
    * @param silent Whether or not to execute the code silently (no output)
    * @return The success/failure of the interpretation and the output from the
    *         execution or the failure
    */
   override def interpret(code: String, silent: Boolean, output: Option[OutputStream]):
-    (Result, Either[ExecuteOutput, ExecuteFailure]) =
-  {
+    (Result, Either[ExecuteOutput, ExecuteFailure]) = {
     if (!pySparkService.isRunning) pySparkService.start()
 
     val futureResult = pySparkTransformer.transformToInterpreterResult(
@@ -102,7 +107,8 @@ class PySparkInterpreter(
 
   /**
    * Starts the interpreter, initializing any internal state.
-   * @return A reference to the interpreter
+    *
+    * @return A reference to the interpreter
    */
   override def start(): Interpreter = {
     pySparkService.start()
@@ -112,7 +118,8 @@ class PySparkInterpreter(
 
   /**
    * Stops the interpreter, removing any previous internal state.
-   * @return A reference to the interpreter
+    *
+    * @return A reference to the interpreter
    */
   override def stop(): Interpreter = {
     pySparkService.stop()
@@ -148,4 +155,19 @@ class PySparkInterpreter(
   // Unsupported
   override def doQuietly[T](body: => T): T = ???
 
+  override def languageInfo: LanguageInfo = {
+    import scala.sys.process._
+
+    // Issue a subprocess call to grab the python version.  This is better than polling a child process.
+    val version = Seq(
+      pythonExecutable,
+      "-c",
+      "import sys; print('{s.major}.{s.minor}.{s.micro}'.format(s=sys.version_info))").!!
+
+    LanguageInfo(
+      "python",
+      version = version,
+      fileExtension = Some(".py"),
+      pygmentsLexer = Some("python"))
+  }
 }

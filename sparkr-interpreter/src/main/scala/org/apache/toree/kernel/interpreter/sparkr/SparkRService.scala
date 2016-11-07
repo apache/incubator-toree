@@ -29,12 +29,14 @@ import scala.tools.nsc.interpreter._
  * Represents the service that provides the high-level interface between the
  * JVM and R.
  *
+ * @param processName The name of the Rscript process to run.
  * @param rBackend The backend to start to communicate between the JVM and R
  * @param sparkRBridge The bridge to use for communication between the JVM and R
  * @param sparkRProcessHandler The handler used for events that occur with the
  *                             SparkR process
  */
 class SparkRService(
+  processName: String,
   private val rBackend: ReflectiveRBackend,
   private val sparkRBridge: SparkRBridge,
   private val sparkRProcessHandler: SparkRProcessHandler
@@ -47,6 +49,7 @@ class SparkRService(
   /** Represents the process used to execute R code via the bridge. */
   private lazy val sparkRProcess: SparkRProcess = {
     val p = new SparkRProcess(
+      processName,
       sparkRBridge,
       sparkRProcessHandler,
       rBackendPort

@@ -29,7 +29,7 @@ import org.apache.toree.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFact
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.magic.{MagicParser, PostProcessor}
 import org.apache.toree.kernel.protocol.v5.relay.ExecuteRequestRelay
-import org.apache.toree.kernel.protocol.v5.{MessageType, SocketType, SystemActorType}
+import org.apache.toree.kernel.protocol.v5.{MessageType, SocketType, SystemActorType, LanguageInfo}
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
 import org.apache.toree.utils.LogLike
@@ -86,7 +86,7 @@ trait StandardHandlerInitialization extends HandlerInitialization {
     responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit = {
     initializeKernelHandlers(
-      actorSystem, actorLoader, kernel, commRegistrar, commStorage, responseMap
+      actorSystem, actorLoader, interpreter, kernel, commRegistrar, commStorage, responseMap
     )
     initializeSystemActors(
       actorSystem, actorLoader, interpreter, pluginManager, magicManager
@@ -117,7 +117,7 @@ trait StandardHandlerInitialization extends HandlerInitialization {
 
   private def initializeKernelHandlers(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
-    kernel: Kernel,
+    interpreter: Interpreter, kernel: Kernel,
     commRegistrar: CommRegistrar, commStorage: CommStorage,
     responseMap: collection.mutable.Map[String, ActorRef]
   ): Unit = {
@@ -157,11 +157,18 @@ trait StandardHandlerInitialization extends HandlerInitialization {
       )
     }
 
+    val langInfo = interpreter.languageInfo
+    val internalInfo = LanguageInfo(
+      name=langInfo.name,
+      version=langInfo.version,
+      file_extension=langInfo.fileExtension,
+      pygments_lexer=langInfo.pygmentsLexer)
+
     //  These are the handlers for messages coming into the
     initializeRequestHandler(classOf[ExecuteRequestHandler],
       MessageType.Incoming.ExecuteRequest, kernel)
     initializeRequestHandler(classOf[KernelInfoRequestHandler],
-      MessageType.Incoming.KernelInfoRequest)
+      MessageType.Incoming.KernelInfoRequest, internalInfo)
     initializeRequestHandler(classOf[CommInfoRequestHandler],
       MessageType.Incoming.CommInfoRequest, commStorage)
     initializeRequestHandler(classOf[CodeCompleteHandler],
