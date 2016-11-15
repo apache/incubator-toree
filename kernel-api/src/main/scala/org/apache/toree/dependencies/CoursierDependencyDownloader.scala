@@ -161,8 +161,8 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    */
   override def removeMavenRepository(url: URL): Unit = {
     repositories = repositories.filterNot {
-      case MavenRepository(urlString, _, _, _, _) => url.toString == urlString
-      case _                                => false
+      case maven: MavenRepository => url.toString == maven.root
+      case _                      => false
     }
   }
 
@@ -313,8 +313,8 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    * @return The resulting URIs
    */
   private def repositoriesToURIs(repositories: Seq[Repository]) = repositories.map {
-    case IvyRepository(pattern, _, _, _, _, _, _, _)  => pattern.string
-    case MavenRepository(root, _, _, _, _)                  => root
+    case ivy: IvyRepository => ivy.pattern.string
+    case maven: MavenRepository => maven.root
   }.map(new URI(_))
 
   /** Creates new Ivy2 local repository using base home URI. */
