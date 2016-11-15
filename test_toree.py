@@ -17,6 +17,8 @@
 
 import unittest
 import jupyter_kernel_test
+import textwrap
+
 
 class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
     # Required --------------------------------------
@@ -35,6 +37,16 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
     test_statements_execute_result = [
         {'code': '6*7', 'result': '42'},
         {'code': 'sc.parallelize(List(1, 2, 3, 4)).map(_*2).reduce(_+_)', 'result': '20'},
+        {
+            'code': textwrap.dedent("""\
+                case class Foo(bar: Int)
+                val ses = spark
+                import ses.implicits._
+                import org.apache.spark.sql.functions._
+                val ds = spark.createDataset(Seq(Foo(1), Foo(2)))
+                ds.agg(sum($"bar")).collect.head(0)"""), 
+          'result': '3'
+        },
         {'code': '%showtypes on\n1', 'result': 'Int = 1'},
         {'code': '%showtypes off\n1', 'result': '1'}
     ]
