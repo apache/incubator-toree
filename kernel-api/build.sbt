@@ -52,8 +52,8 @@ libraryDependencies += "com.typesafe" % "config" % "1.3.0"
 libraryDependencies ++= Seq(
   // Used to find and download jars from Maven-based repositories
   "org.apache.ivy" % "ivy" % "2.4.0-rc1", // Apache v2
-  "io.get-coursier" %% "coursier" % "1.0.0-M12", // Apache v2
-  "io.get-coursier" %% "coursier-cache" % "1.0.0-M12" // Apache v2
+  "io.get-coursier" %% "coursier" % "1.0.0-M14", // Apache v2
+  "io.get-coursier" %% "coursier-cache" % "1.0.0-M14" // Apache v2
 )
 
 // Brought in in order to simplify the reading of each project's ivy.xml file
