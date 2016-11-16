@@ -131,6 +131,8 @@ class KernelBootstrap(config: Config) extends LogLike {
     logger.info("Marking relay as ready for receiving messages")
     kernelMessageRelayActor ! true
 
+    interpreters foreach {_.postInit()}
+    
     this
   }
 

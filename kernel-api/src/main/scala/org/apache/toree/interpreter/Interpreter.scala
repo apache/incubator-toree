@@ -140,4 +140,9 @@ trait Interpreter {
     */
   def languageInfo: LanguageInfo
 
+  /**
+   * Initialization done after all other Toree initialization done.
+   */
+
+   def postInit () = {}
 }
