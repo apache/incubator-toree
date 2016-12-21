@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5
 
-import org.apache.toree.kernel.BuildInfo
+import org.apache.toree.BuildInfo
 
 object SparkKernelInfo {
   /**

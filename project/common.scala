@@ -20,7 +20,7 @@ import sbt.Keys._
 import sbtbuildinfo._
 import sbtbuildinfo.BuildInfoKeys._
 import scoverage.ScoverageSbtPlugin
-import coursier.Keys._
+//import coursier.Keys._
 import com.typesafe.sbt.pgp.PgpKeys._
 import scala.util.{Try, Properties}
 
@@ -30,7 +30,7 @@ object Common {
   private val snapshot                  = Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
   private val gpgLocation               = Properties.envOrElse("GPG","/usr/local/bin/gpg")
   private val gpgPassword               = Properties.envOrElse("GPG_PASSWORD","")
-  private val buildOrganization         = "org.apache.toree.kernel"
+  private val buildOrganization         = "org.apache.toree"
   private val buildVersion              = if (snapshot) s"$versionNumber-SNAPSHOT" else versionNumber
   private val buildScalaVersion         = "2.10.4"
 
@@ -167,7 +167,7 @@ object Common {
     mappings in packageBin in Compile += file("LICENSE") -> "LICENSE",
     mappings in packageBin in Compile += file("NOTICE") -> "NOTICE",
 
-    coursierVerbosity := {
+    /*coursierVerbosity := {
       val level = Try(Integer.valueOf(Properties.envOrElse(
         "TOREE_RESOLUTION_VERBOSITY", "1")
       ).toInt).getOrElse(1)
@@ -177,7 +177,7 @@ object Common {
       )
 
       level
-    },
+    },*/
 
     scalacOptions in (Compile, doc) ++= Seq(
       // Ignore packages (for Scaladoc) not from our project
@@ -232,9 +232,9 @@ object Common {
       if (isSnapshot.value)
         Some("Apache Staging Repo" at "https://repository.apache.org/content/repositories/snapshots/")
       else
-        Some("Apache Staging Repo" at "https://repository.apache.org/content/repositories/staging/")
+        Some("Apache Staging Repo" at "https://repository.apache.org/service/local/staging/deploy/maven2/")
     },
-    credentials += Credentials(Path.userHome / ".ivy2" / ".credentials"),
+    publishMavenStyle := true,
 
     // Add rebuild ivy xml to the following tasks
     compile <<= (compile in Compile) dependsOn (rebuildIvyXml dependsOn deliverLocal)
