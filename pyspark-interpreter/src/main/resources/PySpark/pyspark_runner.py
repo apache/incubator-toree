@@ -93,6 +93,9 @@ class Logger(object):
 
     def reset(self):
         self.out = ""
+        
+    def flush(self):
+    	pass
 
 output = Logger()
 sys.stdout = output
