@@ -32,11 +32,11 @@ if [ ! -d "${FWDIR}"  ]; then
     exit 1
 fi
 results="Signature And Checksum Audit:"
-for directory in "$@"
-do
-	
+for directory in "$@"; do
+    files_to_verify=`find ${FWDIR}/${directory} -maxdepth 1 -type f -name "apache-toree-*" -not -name "*.asc" -not -name "*.md5" -not -name "*.sha"`
+
 	# For all the files in the directory which are not signatures or checksums
-	for file_to_verify in `find ${FWDIR}/${directory} -type f -name toree-* -not -name *.asc -not -name *.md5 -not -name *.sha -maxdepth 1`; do
+    for file_to_verify in ${files_to_verify}; do
 		results="${results}\n${file_to_verify}"
 		 
 		# Verify the signature exists
