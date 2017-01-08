@@ -40,5 +40,7 @@ dist/
 .ensime
 .ensime_cache/
 
+.jekyll-metadata
+
 Untitled*.ipynb
 .system-test-image
