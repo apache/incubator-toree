@@ -15,30 +15,43 @@
 # limitations under the License.
 #
 
-build/
-**/derby.log
-**/metastore_db
-**/*__pycache__
-**.swp
-target/
+# Mac
+.DS_Store
+
+# Intellij
 .idea/
 .idea_modules/
-.DS_Store
-.vagrant
 *.iml
+*.iws
+*.class
+*.log
+
+# Jekyll
+.jekyll-metadata
+
+# Python
+**/*__pycache__
+
+# Notebooks
+!etc/**/*.ipynb
 *.ipynb
 .ipynb_checkpoints/
-apache-rat-*.jar
-!etc/**/*.ipynb
-scratch/
-**/*ivy.xml
+Untitled*.ipynb
+
+# Other build related artifacts
+target/
+build/
 test-output/
 out/
 dist/
-
+scratch/
+apache-rat-*.jar
+**/derby.log
+**/metastore_db
+**.swp
+**/*ivy.xml
+.vagrant
 .example-image
 .ensime
 .ensime_cache/
-
-Untitled*.ipynb
 .system-test-image
