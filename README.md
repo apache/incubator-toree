@@ -66,8 +66,10 @@ Refer to your `Docker` setup for the ip address. The notebook will be at `http:/
 
 Install
 =======
+PIP packages are hosted on Apache dist. Currently we have a developer preview of 0.1.0.
+
 ```
-pip install --pre toree
+pip install https://dist.apache.org/repos/dist/dev/incubator/toree/0.1.0/snapshots/toree-0.1.0.dev8.tar.gz
 jupyter toree install
 ```
 
