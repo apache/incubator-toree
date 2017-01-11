@@ -173,6 +173,20 @@ jupyter: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 jupyter: .example-image pip-release
 	@$(DOCKER) -p 8888:8888  -e SPARK_OPTS="--master=local[4]" --user=root  $(EXAMPLE_IMAGE) bash -c "$$JUPYTER_COMMAND"
 
+export JUPYTER_COMMAND
+test-release:  env-PIP_RELEASE_URL .example-image
+	@$(DOCKER) -p 8888:8888  -e SPARK_OPTS="--master=local[4]" --user=root  $(EXAMPLE_IMAGE) \
+		bash -c "pip install $(PIP_RELEASE_URL) && \
+    jupyter toree install --interpreters=PySpark,SQL,Scala,SparkR && \
+    cd /srv/toree/etc/examples/notebooks && \
+    jupyter notebook --ip=* --no-browser"
+
+env-%:
+	@if [ "${${*}}" = "" ]; then \
+		echo "Environment variable $* not set"; \
+		exit 1; \
+	fi
+
 ################################################################################
 # System Tests Using Jupyter Kernel Test (https://github.com/jupyter/jupyter_kernel_test)
 ################################################################################
