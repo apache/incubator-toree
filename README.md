@@ -111,7 +111,7 @@ We are working on porting our documentation into Apache. For the time being, you
 [license-badge]: https://img.shields.io/badge/License-Apache%202-blue.svg?style=flat
 [license-url]: LICENSE
 [gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
-[gitter-url]: https://gitter.im/ibm-et/spark-kernel
+[gitter-url]: https://gitter.im/apache/toree
 [try-jupyter]: http://try.jupyter.org
 [vagrant]: https://www.vagrantup.com/
 [mail-list]: mailto:dev@toree.incubator.apache.org
