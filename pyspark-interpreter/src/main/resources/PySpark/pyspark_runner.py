@@ -93,6 +93,9 @@ class Logger(object):
 
     def reset(self):
         self.out = ""
+        
+    def flush(self):
+    	pass
 
 output = Logger()
 sys.stdout = output
@@ -148,12 +151,14 @@ kernel = Kernel(bridge.kernel())
 
 while True:
     try:
-        code_info = state.nextCode()
+        next_code_info = state.nextCode()
 
         # If code is not available, try again later
-        if code_info is None:
+        if next_code_info is None:
             sleep(1)
             continue
+            
+        code_info = next_code_info
 
         code_lines = code_info.code().split("\n")
         final_code = None
