@@ -74,6 +74,11 @@ class ExecuteRequestHandler(
         actorLoader.load(SystemActorType.ExecuteRequestRelay),
         (executeRequest, km, outputStream)
       ).mapTo[(ExecuteReply, ExecuteResult)]
+      
+      if (!executeRequest.silent){
+        import org.apache.toree.plugins.Implicits._
+        kernel.pluginManager.fireEvent("preRunCell", "outputStream" -> outputStream)
+      }
 
       // Flush the output stream after code execution completes to ensure
       // stream messages are sent prior to idle status messages.
