@@ -1,6 +1,6 @@
 [![Build Status][build-badge]][build-url]
 [![License][license-badge]][license-url]
-[![Join the chat at https://gitter.im/ibm-et/spark-kernel][gitter-badge]][gitter-url]
+[![Join the chat at https://gitter.im/apache/toree][gitter-badge]][gitter-url]
 [![Binder](http://mybinder.org/badge.svg)](http://mybinder.org/repo/apache/incubator-toree)
 
 Apache Toree
