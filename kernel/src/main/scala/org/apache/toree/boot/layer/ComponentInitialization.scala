@@ -21,7 +21,6 @@ import java.io.File
 import java.net.URL
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.ConcurrentHashMap
-
 import akka.actor.ActorRef
 import com.typesafe.config.Config
 import org.apache.spark.SparkConf
@@ -34,8 +33,8 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
 import org.apache.toree.utils.LogLike
-
 import scala.collection.JavaConverters._
+import org.apache.toree.plugins.AllInterpretersReady
 
 /**
  * Represents the component initialization. All component-related pieces of the
@@ -89,7 +88,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
     interpreterManager.initializeInterpreters(kernel)
     
-    pluginManager.fireEvent("allInterpretersReady")
+    pluginManager.fireEvent(AllInterpretersReady)
 
     val responseMap = initializeResponseMap()
 

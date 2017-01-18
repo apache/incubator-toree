@@ -30,10 +30,10 @@ import Utilities._
 import org.apache.toree.utils._
 import play.api.data.validation.ValidationError
 import play.api.libs.json.JsPath
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.util.{Failure, Success}
+import org.apache.toree.plugins.PreRunCell
 
 /**
  * Receives an ExecuteRequest KernelMessage and forwards the ExecuteRequest
@@ -75,9 +75,9 @@ class ExecuteRequestHandler(
         (executeRequest, km, outputStream)
       ).mapTo[(ExecuteReply, ExecuteResult)]
       
-      if (!executeRequest.silent){
+      if (!executeRequest.silent && kernel.pluginManager != null){
         import org.apache.toree.plugins.Implicits._
-        kernel.pluginManager.fireEvent("preRunCell", "outputStream" -> outputStream)
+        kernel.pluginManager.fireEvent(PreRunCell, "outputStream" -> outputStream)
       }
 
       // Flush the output stream after code execution completes to ensure

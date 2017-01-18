@@ -19,7 +19,6 @@ package org.apache.toree.kernel.api
 
 import java.io.{InputStream, PrintStream}
 import java.util.concurrent.ConcurrentHashMap
-
 import com.typesafe.config.Config
 import org.apache.spark.api.java.JavaSparkContext
 import org.apache.spark.sql.{SQLContext, SparkSession}
@@ -39,10 +38,10 @@ import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
 import org.apache.toree.utils.{KeyValuePairUtils, LogLike}
-
 import scala.language.dynamics
 import scala.reflect.runtime.universe._
 import scala.util.{DynamicVariable, Try}
+import org.apache.toree.plugins.SparkReady
 
 /**
  * Represents the main kernel API to be used for interaction.
@@ -357,7 +356,7 @@ class Kernel (
     pluginManager.dependencyManager.add(_sparkContext)
     pluginManager.dependencyManager.add(_javaSparkContext)
 
-    pluginManager.fireEvent("sparkReady")
+    pluginManager.fireEvent(SparkReady)
 
     _sparkContext
   }
