@@ -29,7 +29,7 @@ endif
 
 APACHE_SPARK_VERSION?=2.0.0
 SCALA_VERSION?=2.11
-IMAGE?=jupyter/all-spark-notebook:07a7c4d6d447
+IMAGE?=jupyter/all-spark-notebook
 EXAMPLE_IMAGE?=apache/toree-examples
 SYSTEM_TEST_IMAGE?=apache/toree-systemtest
 GPG?=gpg
