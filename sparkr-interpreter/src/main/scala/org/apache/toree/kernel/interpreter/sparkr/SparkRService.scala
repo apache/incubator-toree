@@ -68,10 +68,11 @@ class SparkRService(
     SparkRBridge.sparkRBridge = sparkRBridge
 
     val initialized = new Semaphore(0)
+    val classLoader = SparkRBridge.getClass.getClassLoader
     import scala.concurrent.ExecutionContext.Implicits.global
     val rBackendRun = future {
       logger.debug("Initializing RBackend")
-      rBackendPort = rBackend.init()
+      rBackendPort = rBackend.init(classLoader)
       logger.debug(s"RBackend running on port $rBackendPort")
       initialized.release()
       logger.debug("Running RBackend")

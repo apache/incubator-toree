@@ -29,9 +29,9 @@ class ReflectiveRBackend {
    *
    * @return The port used by the service
    */
-  def init(): Int = {
+  def init(cl: ClassLoader): Int = {
     val runMethod = rBackendClass.getDeclaredMethod("init")
-
+    Thread.currentThread().setContextClassLoader(cl)
     runMethod.invoke(rBackendInstance).asInstanceOf[Int]
   }
 
