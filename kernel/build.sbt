@@ -18,6 +18,10 @@
 //
 // TEST DEPENDENCIES
 //
+
+libraryDependencies +=
+  "com.typesafe.play" %% "play-json" % "2.5.9"
+
 libraryDependencies +=
   "com.typesafe.akka" %% "akka-testkit" % "2.4.8" % "test" // MIT
 

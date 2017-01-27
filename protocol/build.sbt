@@ -19,8 +19,8 @@
 // JSON DEPENDENCIES
 //
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-json" % "2.3.10" excludeAll( // Apache v2
-      ExclusionRule(organization = "com.fasterxml.jackson.core")
+  "com.typesafe.play" %% "play-json" % "2.5.9" excludeAll( // Apache v2
+      //ExclusionRule(organization = "com.fasterxml.jackson.core")
     ),
   "org.slf4j" % "slf4j-api" % "1.7.21" // MIT
 )
