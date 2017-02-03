@@ -329,16 +329,34 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
       val parse = iMain.parse
       parse(code) match {
         case t: parse.Error => ("invalid", "")
-        case t: parse.Success => ("complete", "")
+        case t: parse.Success =>
+          val lines = code.split("\n", -1)
+          val numLines = lines.length
+          // for multiline code blocks, require an empty line before executing
+          // to mimic the behavior of ipython
+          if (numLines > 1 && lines.last.matches("\\s*\\S.*")) {
+            ("incomplete", startingWhiteSpace(lines.last))
+          } else {
+            ("complete", "")
+          }
         case t: parse.Incomplete =>
-          val lastLine = code.split("\n").last
+          val lines = code.split("\n", -1)
           // For now lets just grab the indent of the current line, if none default to 2 spaces.
-          val indent = "\\s+".r.findFirstIn(lastLine).getOrElse("  ")
-          ("incomplete", indent)
+          ("incomplete", startingWhiteSpace(lines.last))
       }
     }
     lastResultOut.reset()
     result
+  }
+
+  private def startingWhiteSpace(line: String): String = {
+    val indent = "^\\s+".r.findFirstIn(line).getOrElse("")
+    // increase the indent if the line ends with => or {
+    if (line.matches(".*(?:(?:\\{)|(?:=>))\\s*")) {
+      indent + "  "
+    } else {
+      indent
+    }
   }
 
   override def newSettings(args: List[String]): Settings = {
