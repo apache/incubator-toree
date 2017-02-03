@@ -48,8 +48,8 @@ class CodeCompleteHandler(actorLoader: ActorLoader)
     val codeCompleteFuture = ask(interpreterActor, cr).mapTo[(Int, List[String])]
     codeCompleteFuture.onComplete {
       case Success(tuple) =>
-        val reply = CompleteReplyOk(tuple._2, cr.cursor_pos,
-                                    tuple._1, Metadata())
+        val reply = CompleteReplyOk(tuple._2, tuple._1,
+                                    cr.cursor_pos, Metadata())
         val completeReplyType = MessageType.Outgoing.CompleteReply.toString
         logKernelMessageAction("Sending code complete reply for", km)
         actorLoader.load(SystemActorType.KernelMessageRelay) !
