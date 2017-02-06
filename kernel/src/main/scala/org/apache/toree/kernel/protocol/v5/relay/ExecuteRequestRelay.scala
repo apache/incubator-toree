@@ -76,8 +76,7 @@ case class ExecuteRequestRelay(
     future: Future[Either[ExecuteOutput, ExecuteFailure]]
   ): Future[(ExecuteReply, ExecuteResult)] = future.map { value =>
     if (value.isLeft) {
-      val output = value.left.get
-      val data = postProcessor.process(output)
+      val data = value.left.get
       (
         ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
         ExecuteResult(1, data, Metadata())

@@ -18,30 +18,30 @@
 package org.apache.toree.kernel.interpreter.scala
 
 import java.io.ByteArrayOutputStream
-import java.net.{URL, URLClassLoader}
-import java.nio.charset.Charset
 import java.util.concurrent.ExecutionException
-
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.repl.Main
-
 import org.apache.toree.interpreter._
-import org.apache.toree.kernel.api.{KernelLike, KernelOptions}
+import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.utils.TaskManager
 import org.slf4j.LoggerFactory
 import org.apache.toree.kernel.BuildInfo
-
+import org.apache.toree.kernel.protocol.v5.MIMEType
 import scala.annotation.tailrec
 import scala.concurrent.{Await, Future}
 import scala.language.reflectiveCalls
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.{IR, OutputStream}
 import scala.tools.nsc.util.ClassPath
-import scala.util.{Try => UtilTry}
+import scala.util.matching.Regex
 
 class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends Interpreter with ScalaInterpreterSpecific {
+  import ScalaInterpreter._
+
+   private var kernel: KernelLike = _
+
    protected val logger = LoggerFactory.getLogger(this.getClass.getName)
 
    protected val _thisClassloader = this.getClass.getClassLoader
@@ -79,6 +79,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     * @return The newly initialized interpreter
     */
    override def init(kernel: KernelLike): Interpreter = {
+     this.kernel = kernel
      val args = interpreterArgs(kernel)
      settings = newSettings(args)
      settings = appendClassPath(settings)
@@ -157,86 +158,76 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
    override def interpret(code: String, silent: Boolean = false, output: Option[OutputStream]):
     (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
-      val starting = (Results.Success, Left(""))
-      interpretRec(code.trim.split("\n").toList, false, starting)
+     interpretBlock(code, silent)
    }
 
-   def truncateResult(result:String, showType:Boolean =false, noTruncate: Boolean = false): String = {
-     val resultRX="""(?s)(res\d+):\s+(.+)\s+=\s+(.*)""".r
+  def prepareResult(interpreterOutput: String,
+                    showType: Boolean = false,
+                    noTruncate: Boolean = false
+                   ): (Option[AnyRef], Option[String], Option[String]) = {
+    if (interpreterOutput.isEmpty) {
+      return (None, None, None)
+    }
 
-     result match {
-       case resultRX(varName,varType,resString) => {
-           var returnStr=resString
-           if (noTruncate)
-           {
-             val r=read(varName)
-             returnStr=r.getOrElse("").toString
-           }
+    var lastResult = Option.empty[AnyRef]
+    var lastResultAsString = ""
+    val definitions = new StringBuilder
+    val text = new StringBuilder
 
-           if (showType)
-             returnStr=varType+" = "+returnStr
+    interpreterOutput.split("\n").foreach {
+      case NamedResult(name, vtype, value) if read(name).nonEmpty =>
+        val result = read(name)
 
-         returnStr
+        lastResultAsString = result.map(String.valueOf(_)).getOrElse("")
+        lastResult = result
 
-       }
-       case _ => ""
-     }
+        val defLine = (showType, noTruncate) match {
+          case (true, true) =>
+            s"$name: $vtype = $lastResultAsString\n"
+          case (true, false) =>
+            s"$name: $vtype = $value\n"
+          case (false, true) =>
+            s"$name = $lastResultAsString\n"
+          case (false, false) =>
+            s"$name = $value\n"
+        }
 
+        // suppress interpreter-defined values
+        if (!name.matches("res\\d+")) {
+          definitions.append(defLine)
+        }
 
-   }
+      case Definition(defType, name) =>
+        lastResultAsString = ""
+        definitions.append(s"defined $defType $name\n")
 
-   protected def interpretRec(lines: List[String], silent: Boolean = false, results: (Results.Result, Either[ExecuteOutput, ExecuteFailure])): (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
-     lines match {
-       case Nil => results
-       case x :: xs =>
-         val output = interpretLine(x)
+      case Import(name) =>
+        // do nothing with the line
 
-         output._1 match {
-           // if success, keep interpreting and aggregate ExecuteOutputs
-           case Results.Success =>
-             val result = for {
-               originalResult <- output._2.left
-             } yield(truncateResult(originalResult, KernelOptions.showTypes,KernelOptions.noTruncation))
-             interpretRec(xs, silent, (output._1, result))
+      case line if lastResultAsString.contains(line) =>
+        // do nothing with the line
 
-           // if incomplete, keep combining incomplete statements
-           case Results.Incomplete =>
-             xs match {
-               case Nil => interpretRec(Nil, silent, (Results.Incomplete, results._2))
-               case _ => interpretRec(x + "\n" + xs.head :: xs.tail, silent, results)
-             }
+      case line =>
+        text.append(line).append("\n")
+    }
 
-           //
-           case Results.Aborted =>
-             output
-              //interpretRec(Nil, silent, output)
+    (lastResult,
+     if (definitions.nonEmpty) Some(definitions.toString) else None,
+     if (text.nonEmpty) Some(text.toString) else None)
+  }
 
-           // if failure, stop interpreting and return the error
-           case Results.Error =>
-             val result = for {
-               curr <- output._2.right
-             } yield curr
-             interpretRec(Nil, silent, (output._1, result))
-         }
-     }
-   }
+  protected def interpretBlock(code: String, silent: Boolean = false):
+    (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
 
+     logger.trace(s"Interpreting line: $code")
 
-   protected def interpretLine(line: String, silent: Boolean = false):
-     (Results.Result, Either[ExecuteOutput, ExecuteFailure]) =
-   {
-     logger.trace(s"Interpreting line: $line")
-
-     val futureResult = interpretAddTask(line, silent)
+     val futureResult = interpretAddTask(code, silent)
 
      // Map the old result types to our new types
      val mappedFutureResult = interpretMapToCustomResult(futureResult)
 
      // Determine whether to provide an error or output
-     val futureResultAndOutput = interpretMapToResultAndOutput(mappedFutureResult)
-
-     val futureResultAndExecuteInfo =
-       interpretMapToResultAndExecuteInfo(futureResultAndOutput)
+     val futureResultAndExecuteInfo = interpretMapToResultAndOutput(mappedFutureResult)
 
      // Block indefinitely until our result has arrived
      import scala.concurrent.duration._
@@ -256,12 +247,29 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
    protected def interpretMapToResultAndOutput(future: Future[Results.Result]) = {
      import scala.concurrent.ExecutionContext.Implicits.global
+
      future map {
-       result =>
-         val output =
-           lastResultOut.toString(Charset.forName("UTF-8").name()).trim
+       case result @ (Results.Success | Results.Incomplete) =>
+         val lastOutput = lastResultOut.toString("UTF-8").trim
          lastResultOut.reset()
-         (result, output)
+
+         val (obj, defStr, text) = prepareResult(lastOutput)
+         defStr.foreach(kernel.display.content(MIMEType.PlainText, _))
+         text.foreach(kernel.display.content(MIMEType.PlainText, _))
+         val output = Map(MIMEType.PlainText -> obj.toString)
+         (result, Left(output))
+
+       case Results.Error =>
+         val lastOutput = lastResultOut.toString("UTF-8").trim
+         lastResultOut.reset()
+
+         val (obj, defStr, text) = prepareResult(lastOutput)
+         defStr.foreach(kernel.display.content(MIMEType.PlainText, _))
+         val output = interpretConstructExecuteError(text.get)
+         (Results.Error, Right(output))
+
+       case Results.Aborted =>
+         (Results.Aborted, Right(null))
      }
    }
 
@@ -347,6 +355,10 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 }
 
 object ScalaInterpreter {
+
+  val NamedResult: Regex = """(\w+):\s+([^=]+)\s+=\s*(.*)""".r
+  val Definition: Regex = """defined\s+(\w+)\s+(.+)""".r
+  val Import: Regex = """import\s+([\w\.,\{\}\s]+)""".r
 
   /**
     * Utility method to ensure that a temporary directory for the REPL exists for testing purposes.

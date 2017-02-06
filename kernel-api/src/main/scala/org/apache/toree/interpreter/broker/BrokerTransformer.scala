@@ -43,7 +43,7 @@ class BrokerTransformer {
     import scala.concurrent.ExecutionContext.Implicits.global
 
     futureResult
-      .map(results => (Results.Success, Left(results)))
+      .map(results => (Results.Success, Left(Map("text/plain" -> results))))
       .recover({ case ex: BrokerException =>
         (Results.Error, Right(ExecuteError(
           name = ex.getClass.getName,

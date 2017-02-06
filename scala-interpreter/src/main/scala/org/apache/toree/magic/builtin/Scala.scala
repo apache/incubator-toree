@@ -18,9 +18,8 @@ package org.apache.toree.magic.builtin
 
 import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError}
 import org.apache.toree.kernel.interpreter.scala.{ScalaException, ScalaInterpreter}
-import org.apache.toree.kernel.protocol.v5.MIMEType
 import org.apache.toree.magic.dependencies.IncludeKernel
-import org.apache.toree.magic.{CellMagic, CellMagicOutput}
+import org.apache.toree.magic.{CellMagic, MagicOutput}
 import org.apache.toree.plugins.annotations.Event
 /**
  * Represents the magic interface to use the Scala interpreter.
@@ -28,7 +27,7 @@ import org.apache.toree.plugins.annotations.Event
 class Scala extends CellMagic with IncludeKernel {
 
   @Event(name = "scala")
-  override def execute(code: String): CellMagicOutput = {
+  override def execute(code: String): MagicOutput = {
     val scala = kernel.interpreter("Scala")
 
     if (scala.isEmpty || scala.get == null)
@@ -39,7 +38,7 @@ class Scala extends CellMagic with IncludeKernel {
         val (_, output) = scalaInterpreter.interpret(code)
         output match {
           case Left(executeOutput) =>
-            CellMagicOutput(MIMEType.PlainText -> executeOutput)
+            MagicOutput(executeOutput.toSeq:_*)
           case Right(executeFailure) => executeFailure match {
             case executeAborted: ExecuteAborted =>
               throw new ScalaException("Scala code was aborted!")
