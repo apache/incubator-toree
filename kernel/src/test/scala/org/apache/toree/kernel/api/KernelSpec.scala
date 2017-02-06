@@ -67,7 +67,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
     when(mockInterpreter.interpret(BadCode.get))
       .thenReturn((Results.Incomplete, null))
     when(mockInterpreter.interpret(GoodCode.get))
-      .thenReturn((Results.Success, Left(new ExecuteOutput("ok"))))
+      .thenReturn((Results.Success, Left(Map("text/plain" -> "ok"))))
     when(mockInterpreter.interpret(ErrorCode.get))
       .thenReturn((Results.Error, Right(ExecuteError("error","bad", List("1")))))
 
@@ -91,19 +91,19 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
   describe("Kernel") {
     describe("#eval") {
       it("should return syntax error") {
-        kernel eval BadCode should be((false, "Syntax Error!"))
+        kernel eval BadCode should be((false, Map("text/plain" -> "Syntax Error!")))
       }
 
       it("should return ok") {
-        kernel eval GoodCode should be((true, "ok"))
+        kernel eval GoodCode should be((true, Map("text/plain" -> "ok")))
       }
 
       it("should return error") {
-        kernel eval ErrorCode should be((false, ErrorMsg))
+        kernel eval ErrorCode should be((false, Map("text/plain" -> ErrorMsg)))
       }
 
       it("should return error on None") {
-        kernel eval None should be ((false, "Error!"))
+        kernel eval None should be ((false, Map("text/plain" -> "Error!")))
       }
     }
 

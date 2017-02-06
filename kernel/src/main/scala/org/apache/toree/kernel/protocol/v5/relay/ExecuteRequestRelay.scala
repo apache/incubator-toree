@@ -25,7 +25,7 @@ import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError, ExecuteFailur
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
-import org.apache.toree.kernel.protocol.v5.magic.{PostProcessor, MagicParser}
+import org.apache.toree.kernel.protocol.v5.magic.MagicParser
 import org.apache.toree.plugins.PluginManager
 import org.apache.toree.utils.LogLike
 import scala.concurrent.Future
@@ -35,8 +35,7 @@ import org.apache.toree.plugins.NewOutputStream
 case class ExecuteRequestRelay(
   actorLoader: ActorLoader,
   pluginManager: PluginManager,
-  magicParser: MagicParser,
-  postProcessor: PostProcessor
+  magicParser: MagicParser
 )
   extends Actor with LogLike
 {
@@ -46,7 +45,7 @@ case class ExecuteRequestRelay(
   /**
    * Takes an ExecuteFailure and (ExecuteReply, ExecuteResult) with contents
    * dictated by the type of failure (either an error or an abort).
- *
+   *
    * @param failure the failure
    * @return (ExecuteReply, ExecuteResult)
    */
@@ -68,7 +67,7 @@ case class ExecuteRequestRelay(
 
   /**
    * Packages the response into an ExecuteReply,ExecuteResult tuple.
- *
+   *
    * @param future The future containing either the output or failure
    * @return The tuple representing the proper response
    */
@@ -76,8 +75,7 @@ case class ExecuteRequestRelay(
     future: Future[Either[ExecuteOutput, ExecuteFailure]]
   ): Future[(ExecuteReply, ExecuteResult)] = future.map { value =>
     if (value.isLeft) {
-      val output = value.left.get
-      val data = postProcessor.process(output)
+      val data = value.left.get
       (
         ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
         ExecuteResult(1, data, Metadata())

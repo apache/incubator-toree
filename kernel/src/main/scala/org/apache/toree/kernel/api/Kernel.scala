@@ -134,19 +134,19 @@ class Kernel (
    */
   private def handleInterpreterOutput(
     output: (Result, Either[ExecuteOutput, ExecuteFailure])
-  ): (Boolean, String) = {
+  ): (Boolean, ExecuteOutput) = {
     val (success, result) = output
     success match {
       case Results.Success =>
-        (true, result.left.getOrElse("").asInstanceOf[String])
+        (true, result.left.get)
       case Results.Error =>
-        (false, result.right.getOrElse("").toString)
+        (false, Map("text/plain" -> result.right.getOrElse("").toString))
       case Results.Aborted =>
-        (false, "Aborted!")
+        (false, Map("text/plain" -> "Aborted!"))
       case Results.Incomplete =>
         // If we get an incomplete it's most likely a syntax error, so
         // let the user know.
-        (false, "Syntax Error!")
+        (false, Map("text/plain" -> "Syntax Error!"))
     }
   }
 
@@ -161,16 +161,16 @@ class Kernel (
    * @return A tuple containing the result (true/false) and the output as a
    *         string
    */
-  def eval(code: Option[String]): (Boolean, String) = {
+  def eval(code: Option[String]): (Boolean, ExecuteOutput) = {
     code.map(c => {
       magicParser.parse(c) match {
         case Left(parsedCode) =>
           val output = interpreter.interpret(parsedCode)
           handleInterpreterOutput(output)
         case Right(errMsg) =>
-          (false, errMsg)
+          (false, Map("text/plain" -> errMsg))
       }
-    }).getOrElse((false, "Error!"))
+    }).getOrElse((false, Map("text/plain" -> "Error!")))
   }
 
   /**

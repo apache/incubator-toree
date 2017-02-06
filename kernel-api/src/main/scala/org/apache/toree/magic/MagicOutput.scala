@@ -1,5 +1,3 @@
-import sbt.Tests.{Group, SubProcess}
-
 /*
  *  Licensed to the Apache Software Foundation (ASF) under one or more
  *  contributor license agreements.  See the NOTICE file distributed with
@@ -17,5 +15,11 @@ import sbt.Tests.{Group, SubProcess}
  *  limitations under the License
  */
 
-libraryDependencies ++= Dependencies.sparkAll.value
-libraryDependencies += "com.github.jupyter" % "jvm-repr" % "0.1.0"
+package org.apache.toree.magic
+
+/**
+ * Represents the output of a magic execution.
+ */
+case class MagicOutput(data: (String, String)*) {
+  lazy val asMap: Map[String, String] = Map(data:_*)
+}

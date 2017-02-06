@@ -23,6 +23,6 @@ package object interpreter {
   /**
    * Represents the output from an interpret execution.
    */
-  type ExecuteOutput = String
+  type ExecuteOutput = Map[String, String]
 
 }

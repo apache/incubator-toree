@@ -27,7 +27,7 @@ import org.apache.toree.kernel.protocol.v5.handler._
 import org.apache.toree.kernel.protocol.v5.interpreter.InterpreterActor
 import org.apache.toree.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
-import org.apache.toree.kernel.protocol.v5.magic.{MagicParser, PostProcessor}
+import org.apache.toree.kernel.protocol.v5.magic.MagicParser
 import org.apache.toree.kernel.protocol.v5.relay.ExecuteRequestRelay
 import org.apache.toree.kernel.protocol.v5.{MessageType, SocketType, SystemActorType, LanguageInfo}
 import org.apache.toree.magic.MagicManager
@@ -105,11 +105,10 @@ trait StandardHandlerInitialization extends HandlerInitialization {
     )
 
     logger.debug("Creating execute request relay actor")
-    val postProcessor = new PostProcessor(interpreter)
     val magicParser = new MagicParser(magicManager)
     val executeRequestRelayActor = actorSystem.actorOf(
       Props(classOf[ExecuteRequestRelay],
-        actorLoader, pluginManager, magicParser, postProcessor
+        actorLoader, pluginManager, magicParser
       ),
       name = SystemActorType.ExecuteRequestRelay.toString
     )

@@ -47,7 +47,9 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
                 ds.agg(sum($"bar")).collect.head(0)"""), 
           'result': '3'
         },
-        {'code': '%showtypes on\n1', 'result': 'Int = 1'},
+        # showtypes controls info displayed to stdout, return values are
+        # handled by Jupyter displayers.
+        {'code': '%showtypes on\n1', 'result': '1'},
         {'code': '%showtypes off\n1', 'result': '1'}
     ]
 
@@ -70,7 +72,8 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
     ]
 
     test_statements_stdout = [
-        {'code': '%AddJar http://0.0.0.0:8000/TestJar.jar\nimport com.ibm.testjar.TestClass\nprintln(new TestClass().sayHello("Person"))', 'result': 'Hello, Person\n'}
+        {'code': '%AddJar http://0.0.0.0:8000/TestJar.jar'},
+        {'code': 'import com.ibm.testjar.TestClass\nprintln(new TestClass().sayHello("Person"))', 'result': 'Hello, Person\n'}
     ]
 
     completion_samples = [
@@ -95,10 +98,11 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
 
                 self.assertEqual(reply['content']['status'], 'ok')
 
-                self.assertGreaterEqual(len(output_msgs), 1)
-                self.assertEqual(output_msgs[-1]['msg_type'], 'stream')
-                self.assertEqual(output_msgs[-1]['content']['name'], 'stdout')
-                self.assertIn(sample['result'], output_msgs[-1]['content']['text'])
+                if 'result' in sample:
+                    self.assertGreaterEqual(len(output_msgs), 1)
+                    self.assertEqual(output_msgs[-1]['msg_type'], 'stream')
+                    self.assertEqual(output_msgs[-1]['content']['name'], 'stdout')
+                    self.assertIn(sample['result'], output_msgs[-1]['content']['text'])
 
     def test_scala_execute_result(self):
         '''Asserts test_statements execute correctly meaning the last message is the expected result'''

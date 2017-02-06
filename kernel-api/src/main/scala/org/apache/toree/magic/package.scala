@@ -18,16 +18,10 @@
 package org.apache.toree
 
 package object magic {
-  /**
-   * Represents the output of a magic execution.
-   */
-  // TODO: This is a duplicate of Data in kernel protocol, needs to be given
-  //       a type/val that can be translated into a specific protocol via
-  //       implicits - or some other transformation - to separate this from
-  //       the protocol type
-  type CellMagicOutput = Map[String, String]
-  val CellMagicOutput = Map
-  
-  type LineMagicOutput = Unit
-  val LineMagicOutput : LineMagicOutput = ()
+  type CellMagicOutput = MagicOutput
+  type LineMagicOutput = MagicOutput
+
+  // support old uses of CellMagicOutput and LineMagicOutput
+  val CellMagicOutput = MagicOutput
+  val LineMagicOutput = MagicOutput()
 }

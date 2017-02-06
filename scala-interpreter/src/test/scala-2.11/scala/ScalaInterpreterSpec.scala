@@ -51,8 +51,8 @@ class ScalaInterpreterSpec extends FunSpec
   }
 
   trait SingleLineInterpretLineRec extends StubbedStartInterpreter {
-    override protected def interpretRec(lines: List[String], silent: Boolean, results: (Result, Either[ExecuteOutput, ExecuteFailure])): (Result, Either[ExecuteOutput, ExecuteFailure]) =
-      interpretLine(lines.mkString("\n"))
+    protected def interpretRec(lines: List[String], silent: Boolean, results: (Result, Either[ExecuteOutput, ExecuteFailure])): (Result, Either[ExecuteOutput, ExecuteFailure]) =
+      interpretBlock(lines.mkString("\n"))
   }
 
   trait StubbedInterpretAddTask extends StubbedStartInterpreter {
@@ -67,11 +67,11 @@ class ScalaInterpreterSpec extends FunSpec
 
   trait StubbedInterpretMapToResultAndOutput extends StubbedStartInterpreter {
     override protected def interpretMapToResultAndOutput(future: Future[Results.Result]) =
-      mock[Future[(Results.Result, String)]]
+      mock[Future[(Results.Result, Either[Map[String, String], ExecuteError])]]
   }
 
   trait StubbedInterpretMapToResultAndExecuteInfo extends StubbedStartInterpreter {
-    override protected def interpretMapToResultAndExecuteInfo(future: Future[(Results.Result, String)]) =
+    protected def interpretMapToResultAndExecuteInfo(future: Future[(Results.Result, String)]) =
       mock[Future[(
         Results.Result with Product with Serializable,
         Either[ExecuteOutput, ExecuteFailure] with Product with Serializable
@@ -79,7 +79,7 @@ class ScalaInterpreterSpec extends FunSpec
   }
 
   trait StubbedInterpretConstructExecuteError extends StubbedStartInterpreter {
-    override protected def interpretConstructExecuteError(value: Option[AnyRef], output: String) =
+    protected def interpretConstructExecuteError(value: Option[AnyRef], output: String) =
       mock[ExecuteError]
   }
 
@@ -382,28 +382,46 @@ class ScalaInterpreterSpec extends FunSpec
 //      }
     }
 
-    describe("#truncateResult") {
+    describe("#prepareResult") {
       it("should truncate result of res result") {
+        interpreter.start()
+        doReturn(38).when(mockSparkIMain).eval("i")
+        doReturn(Vector(1, 2)).when(mockSparkIMain).eval("res4")
+        doReturn("snakes").when(mockSparkIMain).eval("resabc")
+
         //  Results that match
-        interpreter.truncateResult("res7: Int = 38") should be("38")
-        interpreter.truncateResult("res7: Int = 38",true) should be("Int = 38")
-        interpreter.truncateResult("res4: String = \nVector(1\n, 2\n)") should be ("Vector(1\n, 2\n)")
-        interpreter.truncateResult("res4: String = \nVector(1\n, 2\n)",true) should be ("String = Vector(1\n, 2\n)")
-        interpreter.truncateResult("res123") should be("")
-        interpreter.truncateResult("res1") should be("")
+        interpreter.prepareResult("i: Int = 38") should be((Some(38), Some("i = 38\n"), None))
+        interpreter.prepareResult("i: Int = 38",true) should be((Some(38), Some("i: Int = 38\n"), None))
+        // resN results are suppressed
+        interpreter.prepareResult("res4: String = \nVector(1\n, 2\n)") should be((Some(Vector(1, 2)), None, None))
+        interpreter.prepareResult("res4: String = \nVector(1\n, 2\n)",true) should be((Some(Vector(1, 2)), None, None))
+        // missing variables are None, unmatched lines are returned in text
+        interpreter.prepareResult("res123") should be((None, None, Some("res123\n")))
+        interpreter.prepareResult("res123: Int = 38") should be((None, None, Some("res123: Int = 38\n")))
         //  Results that don't match
-        interpreter.truncateResult("resabc: Int = 38") should be("")
+        interpreter.prepareResult("resabc: Int = 38") should be((Some("snakes"), Some("resabc = 38\n"), None))
+
+        interpreter.stop()
       }
 
       it("should truncate res results that have tuple values") {
-        interpreter.truncateResult("res0: (String, Int) = (hello,1)") should
-          be("(hello,1)")
+        interpreter.start()
+        doReturn(("hello", 1)).when(mockSparkIMain).eval("res0")
+
+        interpreter.prepareResult("res0: (String, Int) = (hello,1)") should be((Some(("hello", 1)), None, None))
+
+        interpreter.stop()
       }
 
       it("should truncate res results that have parameterized types") {
-        interpreter.truncateResult(
+        interpreter.start()
+        doReturn(scala.Tuple2).when(mockSparkIMain).eval("res0")
+
+        interpreter.prepareResult(
           "res0: Class[_ <: (String, Int)] = class scala.Tuple2"
-        ) should be("class scala.Tuple2")
+        ) should be((Some(scala.Tuple2), None, None))
+
+        interpreter.stop()
       }
     }
   }

@@ -50,7 +50,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
     describe("#receive") {
       it("should return an ExecuteReplyOk if the interpreter returns success") {
         val mockInterpreter = mock[Interpreter]
-        doReturn((Results.Success, Left(new ExecuteOutput))).when(mockInterpreter)
+        doReturn((Results.Success, Left(Map()))).when(mockInterpreter)
           .interpret(anyString(), anyBoolean(), anyObject())
 
         val executeRequestTask =
