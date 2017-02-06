@@ -128,11 +128,12 @@ class KernelBootstrap(config: Config) extends LogLike {
     logger.debug("Initializing security manager")
     System.setSecurityManager(new KernelSecurityManager)
 
+    logger.debug("Running postInit for interpreters")
+    interpreters foreach {_.postInit()}
+
     logger.info("Marking relay as ready for receiving messages")
     kernelMessageRelayActor ! true
 
-    interpreters foreach {_.postInit()}
-    
     this
   }
 
