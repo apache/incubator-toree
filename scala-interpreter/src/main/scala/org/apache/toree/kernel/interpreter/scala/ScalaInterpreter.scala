@@ -162,7 +162,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
   }
 
   def truncateResult(result: String, showType: Boolean = false, noTruncate: Boolean = false): String = {
-    val resultRX="""(?s)(res\d+):\s+(.+)\s+=\s+(.*)""".r
+    val resultRX="""(?s)(res\d+):\s+(.+?)\s+=\s+(.*)""".r
 
     result match {
       case resultRX(varName, varType, resString) => {
