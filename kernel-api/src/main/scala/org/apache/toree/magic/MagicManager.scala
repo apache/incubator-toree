@@ -108,7 +108,7 @@ class MagicManager(private val pluginManager: PluginManager) extends Dynamic {
       }
       case Failure(t) =>
         val message =  s"Magic $name failed to execute with error: \n${t.getMessage}"
-        logger.warn(message)
+        logger.warn(message, t)
         Left(CellMagicOutput("text/plain" -> message))
   }
 }
