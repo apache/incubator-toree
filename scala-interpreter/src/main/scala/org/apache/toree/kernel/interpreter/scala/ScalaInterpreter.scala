@@ -90,10 +90,11 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      this
    }
 
-   override def postInit(): Unit = {
-          bindSparkSession()
-          bindSparkContext()
-   }
+  override def postInit(): Unit = {
+    bindSparkSession()
+    bindSparkContext()
+    defineImplicits()
+  }
 
    protected[scala] def buildClasspath(classLoader: ClassLoader): String = {
 
@@ -317,6 +318,22 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
      }
    }
+
+  def defineImplicits(): Unit = {
+    val code =
+      """
+        |import org.apache.spark.sql.SparkSession
+        |import org.apache.spark.sql.SQLContext
+        |import org.apache.spark.sql.SQLImplicits
+        |
+        |object implicits extends SQLImplicits with Serializable {
+        |  protected override def _sqlContext: SQLContext = SparkSession.builder.getOrCreate.sqlContext
+        |}
+        |
+        |import implicits._
+      """.stripMargin
+    doQuietly(interpret(code))
+  }
 
    override def classLoader: ClassLoader = _runtimeClassloader
 
