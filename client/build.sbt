@@ -19,7 +19,7 @@ scalacOptions += "-language:reflectiveCalls"
 
 // Main library dependencies to function
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.4.8",
-  "com.typesafe.akka" %% "akka-slf4j" % "2.4.8",
-  "com.typesafe.akka" %% "akka-testkit" % "2.4.8" % "test"
+  Dependencies.akkaActor,
+  Dependencies.akkaSlf4j,
+  Dependencies.akkaTestkit % "test"
 )

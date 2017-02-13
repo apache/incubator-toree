@@ -24,6 +24,8 @@ import scoverage.ScoverageSbtPlugin
 import com.typesafe.sbt.pgp.PgpKeys._
 import scala.util.{Try, Properties}
 
+import Dependencies.sparkVersion
+
 object Common {
   //  Parameters for publishing to artifact repositories
   private val versionNumber             = Properties.envOrElse("VERSION", "0.0.0-dev")
@@ -36,7 +38,7 @@ object Common {
 //  private val buildScalaVersion         = "2.10.6"
 
   val buildInfoSettings = Seq(
-    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, "sparkVersion" -> sparkVersion),
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, "sparkVersion" -> sparkVersion.value),
     buildInfoPackage := buildOrganization,
     buildInfoUsePackageAsPath := true,
     buildInfoOptions += BuildInfoOption.BuildTime
@@ -69,7 +71,20 @@ object Common {
         fork in SystemTest := doFork,
         fork in ScratchTest := doFork,
         libraryDependencies ++= (
-          if (needsSpark) sparkLibraries
+          if (needsSpark) Seq(
+            Dependencies.sparkCore.value % "provided" excludeAll(
+              // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
+              ExclusionRule(
+                organization = "org.jboss.netty",
+                name = "netty"
+              )
+            ),
+            Dependencies.sparkGraphX.value % "provided",
+            Dependencies.sparkMllib.value % "provided",
+            Dependencies.sparkRepl.value % "provided",
+            Dependencies.sparkSql.value % "provided",
+            Dependencies.sparkStreaming.value % "provided"
+          )
           else Nil
         )
       )
@@ -90,44 +105,6 @@ object Common {
   lazy val SystemTest = config("system") extend Test
   lazy val ScratchTest = config("scratch") extend Test
 
-  private lazy val sparkVersion = {
-    val sparkEnvironmentVariable = "APACHE_SPARK_VERSION"
-    val defaultSparkVersion = "2.0.0"
-
-    val _sparkVersion = Properties.envOrNone(sparkEnvironmentVariable)
-
-    if (_sparkVersion.isEmpty) {
-      scala.Console.out.println(
-        s"""
-           |[INFO] Using default Apache Spark $defaultSparkVersion!
-           """.stripMargin.trim.replace('\n', ' '))
-      defaultSparkVersion
-    } else {
-      val version = _sparkVersion.get
-      scala.Console.out.println(
-        s"""
-           |[INFO] Using Apache Spark $version provided from
-                                                |$sparkEnvironmentVariable!
-           """.stripMargin.trim.replace('\n', ' '))
-      version
-    }
-  }
-
-  private val sparkLibraries = Seq(
-    "org.apache.spark" %% "spark-core" % sparkVersion  % "provided" excludeAll( // Apache v2
-      // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
-      ExclusionRule(
-        organization = "org.jboss.netty",
-        name = "netty"
-      )
-    ),
-    "org.apache.spark" %% "spark-streaming" % sparkVersion % "provided",
-    "org.apache.spark" %% "spark-sql" % sparkVersion % "provided",
-    "org.apache.spark" %% "spark-mllib" % sparkVersion % "provided",
-    "org.apache.spark" %% "spark-graphx" % sparkVersion % "provided",
-    "org.apache.spark" %% "spark-repl" % sparkVersion  % "provided"
-  )
-
   val commonSettings: Seq[Def.Setting[_]] = Seq(
     organization := buildOrganization,
     useGpg := true,
@@ -145,10 +122,9 @@ object Common {
     ),
     // Test dependencies
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "2.2.6" % "test", // Apache v2
-      "org.mockito" % "mockito-all" % "1.10.19" % "test",   // MIT
-      // use the same jackson version in test than the one provided at runtime by Spark 2.0.0
-      "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.5" % "test" // Apache v2
+      Dependencies.scalaTest % "test",
+      Dependencies.mockito % "test",
+      Dependencies.jacksonDatabind % "test"
     ),
     ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := false,
     pomExtra :=
