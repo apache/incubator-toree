@@ -17,42 +17,14 @@
 
 logLevel := Level.Warn
 
-resolvers += Classpaths.sbtPluginReleases
-
-resolvers += "jgit-repo" at "http://download.eclipse.org/jgit/maven"
-
-resolvers += "Apache Snapshots" at "http://repository.apache.org/snapshots/"
-
-// Provides the ability to create an IntelliJ project using `sbt gen-idea`
-addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
-
 // Provides the ability to generate unifed documentation for multiple projects
 addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.0")
-
-// Provides the ability to list dependencies in a readable format using
-// `sbt dependencyTree`; there are other commands provided as well
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
 
 // Provides abilit to create an uber-jar
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.0")
 
 // Provides a generated build info object to sync between build and application
 addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.6.1")
-
-// Provides code coverage support
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.0.4")
-
-// Provides coveralls integration (for use with Travis-ci)
-addSbtPlugin("org.scoverage" % "sbt-coveralls" % "1.0.0.BETA1")
-
-// Provides site generation functionality
-addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "0.8.1")
-
-// Provides auto-generating and publishing a gh-pages site
-addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.5.3")
-
-// Provides alternative resolving/downloading over sbt
-//addSbtPlugin("io.get-coursier" % "sbt-coursier" % "1.0.0-M14")
 
 //  Used for signing jars published via `sbt publish-signed`
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")

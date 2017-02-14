@@ -83,8 +83,6 @@ libraryDependencies in ThisBuild ++= Seq(
   Dependencies.jacksonDatabind % "test"
 )
 
-ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting in ThisBuild := false
-
 // Publish settings
 useGpg in ThisBuild := true
 pgpPassphrase in ThisBuild := Some(Properties.envOrElse("GPG_PASSWORD","").toArray)
