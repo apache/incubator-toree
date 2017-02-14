@@ -4,20 +4,7 @@ import scala.util.Properties
 
 object Dependencies {
 
-  val sparkVersion = Def.setting{
-    //sLog.value.warn("danger!")
-    val envVar = "APACHE_SPARK_VERSION"
-    val defaultVersion = "2.0.0"
-
-    Properties.envOrNone(envVar) match {
-      case None =>
-        sLog.value.info(s"Using default Apache Spark version $defaultVersion!")
-        defaultVersion
-      case Some(version) =>
-        sLog.value.info(s"Using Apache Spark version $version, provided from $envVar")
-        version
-    }
-  }
+  // Libraries
 
   val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.4.17"
   val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % "2.4.17"
@@ -54,6 +41,7 @@ object Dependencies {
 
   val slf4jApi = "org.slf4j" % "slf4j-api" % "1.7.21" // MIT
 
+  val sparkVersion = settingKey[String]("Version of Apache Spark to use in Toree") // defined in root build
   val sparkCore = Def.setting{ "org.apache.spark" %% "spark-core" % sparkVersion.value }
   val sparkGraphX = Def.setting{ "org.apache.spark" %% "spark-graphx" % sparkVersion.value }
   val sparkMllib = Def.setting{ "org.apache.spark" %% "spark-mllib" % sparkVersion.value }
@@ -62,5 +50,24 @@ object Dependencies {
   val sparkStreaming = Def.setting{ "org.apache.spark" %% "spark-streaming" % sparkVersion.value }
 
   val springCore = "org.springframework" % "spring-core" % "4.1.1.RELEASE"// Apache v2
+
+  // Projects
+
+  val sparkAll = Def.setting{
+    Seq(
+      sparkCore.value % "provided" excludeAll(
+        // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
+        ExclusionRule(
+          organization = "org.jboss.netty",
+          name = "netty"
+        )
+      ),
+      sparkGraphX.value % "provided",
+      sparkMllib.value % "provided",
+      sparkRepl.value % "provided",
+      sparkSql.value % "provided",
+      sparkStreaming.value % "provided"
+    )
+  }
 
 }

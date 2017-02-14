@@ -25,6 +25,8 @@ libraryDependencies ++= Seq(
   Dependencies.slf4jApi
 )
 
-//
-// TEST DEPENDENCIES
-//
+enablePlugins(BuildInfoPlugin)
+buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, "sparkVersion" -> Dependencies.sparkVersion.value)
+buildInfoPackage := organization.value
+buildInfoUsePackageAsPath := true
+buildInfoOptions += BuildInfoOption.BuildTime

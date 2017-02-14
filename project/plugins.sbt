@@ -27,7 +27,7 @@ resolvers += "Apache Snapshots" at "http://repository.apache.org/snapshots/"
 addSbtPlugin("com.github.mpeltonen" % "sbt-idea" % "1.6.0")
 
 // Provides the ability to generate unifed documentation for multiple projects
-addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.3.1")
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.0")
 
 // Provides the ability to list dependencies in a readable format using
 // `sbt dependencyTree`; there are other commands provided as well

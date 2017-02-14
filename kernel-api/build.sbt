@@ -15,6 +15,8 @@
  *  limitations under the License
  */
 
+libraryDependencies ++= Dependencies.sparkAll.value
+
 //
 // SCALA INTERPRETER DEPENDENCIES
 //
