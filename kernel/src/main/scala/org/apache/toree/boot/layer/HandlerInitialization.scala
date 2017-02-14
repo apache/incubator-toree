@@ -162,7 +162,9 @@ trait StandardHandlerInitialization extends HandlerInitialization {
       name=langInfo.name,
       version=langInfo.version,
       file_extension=langInfo.fileExtension,
-      pygments_lexer=langInfo.pygmentsLexer)
+      pygments_lexer=langInfo.pygmentsLexer,
+      mimetype=langInfo.mimeType,
+      codemirror_mode=langInfo.codemirrorMode)
 
     //  These are the handlers for messages coming into the
     initializeRequestHandler(classOf[ExecuteRequestHandler],

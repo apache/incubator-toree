@@ -27,7 +27,9 @@ case class LanguageInfo(
                  name: String,
                  version: String,
                  fileExtension: Option[String] = None,
-                 pygmentsLexer: Option[String] = None) {
+                 pygmentsLexer: Option[String] = None,
+                 mimeType: Option[String] = None,
+                 codemirrorMode: Option[String] = None) {
 }
 
 trait Interpreter {

@@ -150,7 +150,12 @@ class SparkRInterpreter(
       "-e",
       "cat(R.version$major, '.', R.version$minor, sep='', fill=TRUE)").!!
 
-    LanguageInfo("R", version = version, fileExtension = Some(".R"), pygmentsLexer = Some("r"))
+    LanguageInfo(
+      "R", version = version,
+      fileExtension = Some(".R"),
+      pygmentsLexer = Some("r"),
+      mimeType = Some("text/x-rsrc"),
+      codemirrorMode = Some("text/x-rsrc"))
   }
 
 }
