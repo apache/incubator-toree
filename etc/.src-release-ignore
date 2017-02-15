@@ -1,6 +1,5 @@
 target
 dist
-etc/legal
 .git
 .idea
 .vagrant
