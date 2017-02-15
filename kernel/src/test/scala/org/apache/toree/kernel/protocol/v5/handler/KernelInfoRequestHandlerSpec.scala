@@ -18,6 +18,7 @@
 package org.apache.toree.kernel.protocol.v5.handler
 import akka.actor.{ActorSelection, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
+import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5.content.KernelInfoReply
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.{SystemActorType, Header, KernelMessage, LanguageInfo}
@@ -39,7 +40,8 @@ object KernelInfoRequestHandlerSpec {
 
 class KernelInfoRequestHandlerSpec extends TestKit(
   ActorSystem("KernelInfoRequestHandlerSpec",
-    ConfigFactory.parseString(KernelInfoRequestHandlerSpec.config))
+    ConfigFactory.parseString(KernelInfoRequestHandlerSpec.config),
+    Main.getClass.getClassLoader)
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
   val actorLoader: ActorLoader =  mock[ActorLoader]
   val actor = system.actorOf(Props(classOf[KernelInfoRequestHandler], actorLoader, LanguageInfo("test", "1.0.0", Some(".test"))))

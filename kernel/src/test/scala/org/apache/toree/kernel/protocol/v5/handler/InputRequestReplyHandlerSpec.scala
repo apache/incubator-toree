@@ -21,6 +21,7 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import akka.actor.{Props, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
+import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5.content.InputReply
 import org.apache.toree.kernel.protocol.v5.{HeaderBuilder, MessageType, KMBuilder, SystemActorType}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
@@ -34,7 +35,7 @@ import org.mockito.Mockito._
 import collection.JavaConverters._
 
 class InputRequestReplyHandlerSpec
-  extends TestKit(ActorSystem("InputRequestReplyHandlerSystem"))
+  extends TestKit(ActorSystem("InputRequestReplyHandlerSystem", None, Some(Main.getClass.getClassLoader)))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter with Eventually
 {

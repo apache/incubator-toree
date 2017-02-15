@@ -23,6 +23,7 @@ import org.apache.toree.kernel.protocol.v5
 
 import akka.actor.{Props, ActorRef, ActorSystem}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
+import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5.content.{CommClose, ClearOutput, CommOpen}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.comm._
@@ -34,7 +35,7 @@ import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import test.utils.MaxAkkaTestTimeout
 
 class CommOpenHandlerSpec extends TestKit(
-  ActorSystem("CommOpenHandlerSpec")
+  ActorSystem("CommOpenHandlerSpec", None, Some(Main.getClass.getClassLoader))
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter
 {
