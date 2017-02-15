@@ -215,6 +215,7 @@ system-test: pip-release
 # Jars
 ################################################################################
 publish-jars:
+	@$(if $(GPG),,$(error GPG executable is missing from path!))
 	@$(ENV_OPTS) GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) $(SBT) publish-signed
 
 ################################################################################
@@ -239,6 +240,7 @@ dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz: dist/toree
 pip-release: dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz
 
 dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha: dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz
+	@$(if $(GPG),,$(error GPG executable is missing from path!))
 	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz
 
 sign-pip: dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha
@@ -265,6 +267,7 @@ dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz: dist/toree
 bin-release: dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz
 
 dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.sha: dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz
+	@$(if $(GPG),,$(error GPG executable is missing from path!))
 	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz
 
 sign-bin: dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/apache-toree-$(VERSION)-binary-release.tar.gz.sha
