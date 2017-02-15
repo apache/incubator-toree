@@ -42,15 +42,16 @@ Tests can be run by doing `make test`.
 
 Build & Package
 ===============
-To build and package up Toree, run
+To build and package up Toree, you currently need `docker` installed. Once you do, run
 ```
 make release
 ```
 
-This results in 2 packages.
+This results in 3 packages.
 
+- `./dist/toree-<VERSION>-source-release.tar.gz` is an archive containing the source used to build the binary
 - `./dist/toree-<VERSION>-binary-release.tar.gz` is a simple package that contains JAR and executable
-- `./dist/toree-<VERSION>.tar.gz` is a `pip` installable package that adds Toree as a Jupyter kernel.
+- `./dist/toree-<VERSION>.tar.gz` is a `pip` installable package that adds Apache Toree as a Jupyter kernel
 
 NOTE: `make release` uses `docker`. Please refer to `docker` installation instructions for your system. `USE_VAGRANT` is not supported by this `make` target.
 
