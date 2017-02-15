@@ -23,6 +23,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.toree.Main
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
@@ -48,7 +49,8 @@ object InterpreterActorSpecForIntegration {
 class InterpreterActorSpecForIntegration extends TestKit(
   ActorSystem(
     "InterpreterActorSpec",
-    ConfigFactory.parseString(InterpreterActorSpecForIntegration.config)
+    ConfigFactory.parseString(InterpreterActorSpecForIntegration.config),
+    Main.getClass.getClassLoader
   )
 ) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
   with MockitoSugar with UncaughtExceptionSuppression {

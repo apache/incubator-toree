@@ -19,6 +19,7 @@ package org.apache.toree.kernel.protocol.v5.handler
 
 import akka.actor._
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
+import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.CompleteRequest
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
@@ -29,7 +30,7 @@ import org.mockito.Mockito._
 import test.utils.MaxAkkaTestTimeout
 
 class CodeCompleteHandlerSpec extends TestKit(
-  ActorSystem("CodeCompleteHandlerSpec")
+  ActorSystem("CodeCompleteHandlerSpec", None, Some(Main.getClass.getClassLoader))
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter {
 

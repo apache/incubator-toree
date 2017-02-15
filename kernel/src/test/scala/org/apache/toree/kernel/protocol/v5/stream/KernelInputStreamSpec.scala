@@ -19,6 +19,7 @@ package org.apache.toree.kernel.protocol.v5.stream
 
 import akka.actor.{ActorRef, Actor, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit, TestProbe}
+import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.InputRequest
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
@@ -29,7 +30,7 @@ import play.api.libs.json.Json
 import test.utils._
 
 class KernelInputStreamSpec
-  extends TestKit(ActorSystem("KernelInputStreamActorSystem"))
+  extends TestKit(ActorSystem("KernelInputStreamActorSystem", None, Some(Main.getClass.getClassLoader)))
   with FunSpecLike with Matchers with GivenWhenThen with BeforeAndAfter
   with MockitoSugar
 {

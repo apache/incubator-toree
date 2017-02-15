@@ -21,6 +21,7 @@ import java.util.UUID
 
 import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
+import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.utils.ScheduledTaskManager
@@ -32,7 +33,7 @@ import org.apache.toree.kernel.protocol.v5.content.StreamContent
 import test.utils.MaxAkkaTestTimeout
 
 class KernelOuputStreamSpec
-  extends TestKit(ActorSystem("KernelOutputStreamActorSystem"))
+  extends TestKit(ActorSystem("KernelOutputStreamActorSystem", None, Some(Main.getClass.getClassLoader)))
   with FunSpecLike with Matchers with GivenWhenThen with BeforeAndAfter
   with MockitoSugar
 {

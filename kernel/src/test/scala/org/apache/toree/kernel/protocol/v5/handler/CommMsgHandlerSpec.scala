@@ -20,6 +20,7 @@ package org.apache.toree.kernel.protocol.v5.handler
 import java.util.UUID
 import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.comm._
@@ -32,7 +33,7 @@ import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import test.utils.MaxAkkaTestTimeout
 
 class CommMsgHandlerSpec extends TestKit(
-  ActorSystem("CommMsgHandlerSpec")
+  ActorSystem("CommMsgHandlerSpec", None, Some(Main.getClass.getClassLoader))
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
   with BeforeAndAfter
 {
