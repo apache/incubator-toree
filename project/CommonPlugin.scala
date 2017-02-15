@@ -43,7 +43,14 @@ object CommonPlugin extends AutoPlugin {
       ),
       unmanagedResourceDirectories in Test ++= Seq(
         (baseDirectory in ThisBuild).value / "resources" / "test"
-      )
+      ),
+      resourceGenerators in Compile += Def.task {
+        val inputFile = (deliverLocal in Compile).value
+        val outputFile = (resourceManaged in Compile).value / s"${name.value}-ivy.xml"
+        streams.value.log.info(s"Copying ${inputFile.getPath} to ${outputFile.getPath}")
+        IO.copyFile(inputFile, outputFile)
+        Seq(outputFile)
+      }.taskValue
     )
   }
 
