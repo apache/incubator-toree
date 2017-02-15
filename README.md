@@ -97,6 +97,19 @@ Branch                       | Apache Spark Version
 
 Please note that for the most part, new features will mainly be added to the `master` branch.
 
+Building a Release for Apache
+=============================
+
+1. Generate the source, binary, and pip distributables via `make release`. Copy the contents
+   to the subversion repository `https://dist.apache.org/repos/dist/dev/incubator/toree`
+   as a new release candidate for the specified version (e.g. 0.1.0).
+
+2. Publish staging jars to be available on Apache via `GPG_PASSWORD=... make publish-jars`.
+   From there, you need to close the open repo to promote to staging. This closing is done
+   via the UI here: https://repository.apache.org/#stagingRepositories
+
+3. Create a vote thread similar to [https://lists.apache.org/thread.html/493874de453d9ccbdbc3aecc2f527dea6af82d657104732d726e07f9@<dev.toree.apache.org>](https://lists.apache.org/thread.html/493874de453d9ccbdbc3aecc2f527dea6af82d657104732d726e07f9@<dev.toree.apache.org>)
+
 Resources
 =========
 
