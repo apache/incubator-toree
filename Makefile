@@ -19,7 +19,14 @@
 
 BASE_VERSION=0.1.0
 VERSION=$(BASE_VERSION)-incubating
-COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
+
+# Grab the commit id, or provide a default so we can continue
+COMMIT=$(shell git rev-parse --short=12 --verify HEAD 2> /dev/null)
+ifeq (,$(COMMIT))
+$(info WARN: Pure source repository without Git, so using default commit id!)
+COMMIT="000000000000"
+endif
+
 ifeq (, $(findstring dev, $(VERSION)))
 IS_SNAPSHOT?=false
 else
@@ -31,7 +38,7 @@ SBT=sbt/sbt
 APACHE_SPARK_VERSION?=1.6.1
 IMAGE?=jupyter/pyspark-notebook:8dfd60b729bf
 EXAMPLE_IMAGE?=apache/toree-examples
-GPG?=/usr/local/bin/gpg
+GPG?=$(shell which gpg)
 GPG_PASSWORD?=
 BINDER_IMAGE?=apache/toree-binder
 DOCKER_WORKDIR?=/srv/toree
