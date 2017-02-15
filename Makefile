@@ -26,6 +26,7 @@ else
 IS_SNAPSHOT?=true
 SNAPSHOT:=-SNAPSHOT
 endif
+SBT=sbt/sbt
 
 APACHE_SPARK_VERSION?=1.6.1
 IMAGE?=jupyter/pyspark-notebook:8dfd60b729bf
@@ -75,7 +76,7 @@ clean-dist:
 
 clean: VM_WORKDIR=/src/toree-kernel
 clean: clean-dist
-	$(call RUN,$(ENV_OPTS) sbt clean)
+	$(call RUN,$(ENV_OPTS) $(SBT) clean)
 	rm -r `find . -name target -type d`
 
 .example-image: EXTRA_CMD?=printf "deb http://cran.rstudio.com/bin/linux/debian jessie-cran3/" >> /etc/apt/sources.list; apt-key adv --keyserver keys.gnupg.net --recv-key 381BA480; apt-get update; pip install jupyter_declarativewidgets==0.4.4; jupyter declarativewidgets install --user; jupyter declarativewidgets activate; pip install jupyter_dashboards; jupyter dashboards install --user; jupyter dashboards activate; apt-get update; apt-get install --yes curl; curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -; apt-get install --yes nodejs r-base r-base-dev; npm install -g bower;
@@ -100,7 +101,7 @@ target/scala-2.10/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
 target/scala-2.10/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
 target/scala-2.10/$(ASSEMBLY_JAR): dist/toree-legal project/build.properties build.sbt project/common.scala project/plugins.sbt
-	$(call RUN,$(ENV_OPTS) sbt toree/assembly)
+	$(call RUN,$(ENV_OPTS) $(SBT) toree/assembly)
 
 build: target/scala-2.10/$(ASSEMBLY_JAR)
 
@@ -118,10 +119,10 @@ dev: .example-image dist
 
 test: VM_WORKDIR=/src/toree-kernel
 test:
-	$(call RUN,$(ENV_OPTS) JAVA_OPTS="-Xmx4096M" sbt compile test)
+	$(call RUN,$(ENV_OPTS) JAVA_OPTS="-Xmx4096M" $(SBT) compile test)
 
 sbt-%:
-	$(call RUN,$(ENV_OPTS) sbt $(subst sbt-,,$@) )
+	$(call RUN,$(ENV_OPTS) $(SBT) $(subst sbt-,,$@) )
 
 dist/toree/lib: target/scala-2.10/$(ASSEMBLY_JAR)
 	@mkdir -p dist/toree/lib
@@ -207,7 +208,7 @@ system-test: pip-release
 # Jars
 ################################################################################
 publish-jars:
-	@$(ENV_OPTS) GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) sbt publish-signed
+	@$(ENV_OPTS) GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) $(SBT) publish-signed
 
 ################################################################################
 # PIP PACKAGE
