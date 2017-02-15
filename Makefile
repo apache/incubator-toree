@@ -140,13 +140,13 @@ dist/toree/VERSION:
 dist/toree-legal/LICENSE: LICENSE etc/legal/LICENSE_extras
 	@mkdir -p dist/toree-legal
 	@cat LICENSE > dist/toree-legal/LICENSE
-	@echo '\n' >> dist/toree-legal/LICENSE
+	@printf "\n" >> dist/toree-legal/LICENSE
 	@cat etc/legal/LICENSE_extras >> dist/toree-legal/LICENSE
 
 dist/toree-legal/NOTICE: NOTICE etc/legal/NOTICE_extras
 	@mkdir -p dist/toree-legal
 	@cat NOTICE > dist/toree-legal/NOTICE
-	@echo '\n' >> dist/toree-legal/NOTICE
+	@printf "\n" >> dist/toree-legal/NOTICE
 	@cat etc/legal/NOTICE_extras >> dist/toree-legal/NOTICE
 
 dist/toree-legal/DISCLAIMER:
