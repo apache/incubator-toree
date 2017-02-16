@@ -19,7 +19,6 @@ package org.apache.toree
 
 import org.apache.toree.boot.layer._
 import org.apache.toree.boot.{CommandLineOptions, KernelBootstrap}
-import org.apache.toree.kernel.BuildInfo
 
 object Main extends App {
   private val options = new CommandLineOptions(args)
@@ -27,10 +26,9 @@ object Main extends App {
   if (options.help) {
     options.printHelpOn(System.out)
   } else if (options.version) {
-    println(s"Kernel Version:       ${BuildInfo.version}")
-    println(s"Build Date:           ${BuildInfo.builtAtString}")
-    println(s"Scala Version:        ${BuildInfo.scalaVersion}")
-    println(s"Apache Spark Version: ${BuildInfo.sparkVersion}")
+    println(s"Kernel Version:       0.2.0")
+    println(s"Scala Version:        2.11.8")
+    println(s"Apache Spark Version: 2.0.0")
   } else {
     (new KernelBootstrap(options.toConfig)
       with StandardBareInitialization

@@ -31,7 +31,6 @@ import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.{KernelLike, KernelOptions}
 import org.apache.toree.utils.TaskManager
 import org.slf4j.LoggerFactory
-import org.apache.toree.kernel.BuildInfo
 
 import scala.annotation.tailrec
 import scala.concurrent.{Await, Future}
@@ -339,7 +338,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     * Returns the language metadata for syntax highlighting
     */
   override def languageInfo = LanguageInfo(
-    "scala", BuildInfo.scalaVersion,
+    "scala", "2.11.8",
     fileExtension = Some(".scala"),
     pygmentsLexer = Some("scala"),
     mimeType = Some("text/x-scala"),

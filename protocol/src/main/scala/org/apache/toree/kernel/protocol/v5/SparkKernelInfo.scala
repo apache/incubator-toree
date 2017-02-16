@@ -17,7 +17,6 @@
 
 package org.apache.toree.kernel.protocol.v5
 
-import org.apache.toree.kernel.BuildInfo
 
 object SparkKernelInfo {
   /**
@@ -33,12 +32,12 @@ object SparkKernelInfo {
   /**
    * Represents the kernel version.
    */
-  val implementationVersion   = BuildInfo.version
+  val implementationVersion   = "0.2.0"
 
   /**
    * Represents the scala version.
    */
-  val scalaVersion            = BuildInfo.scalaVersion
+  val scalaVersion            = "2.11.8"
 
   /**
    * Represents the displayed name of the kernel.

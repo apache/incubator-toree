@@ -21,7 +21,6 @@ import java.net.URL
 import org.apache.toree.interpreter.Results.Result
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
-import org.apache.toree.kernel.BuildInfo
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.Await
