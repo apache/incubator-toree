@@ -15,6 +15,8 @@
  *  limitations under the License
  */
 
+libraryDependencies ++= Dependencies.sparkAll.value
+
 //
 // SCALA INTERPRETER DEPENDENCIES
 //
@@ -28,35 +30,33 @@ ivyConfigurations += Configurations.ScalaTool
 // Add the usual dependency on the library as well on the compiler in the
 //  'scala-tool' configuration
 libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-library" % scalaVersion.value,
-  "org.scala-lang" % "scala-compiler" % scalaVersion.value % "scala-tool",
-  "org.scala-lang" % "scala-reflect" % scalaVersion.value
+  Dependencies.scalaLibrary.value,
+  Dependencies.scalaCompiler.value % "scala-tool",
+  Dependencies.scalaReflect.value
 )
 
 //
 // EXECUTION DEPENDENCIES
 //
-libraryDependencies += "org.apache.commons" % "commons-exec" % "1.3"
+libraryDependencies += Dependencies.commonsExec
 
 //
 // CLI DEPENDENCIES
 //
-libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "4.6" // MIT
+libraryDependencies += Dependencies.joptSimple
 
 
-libraryDependencies += "com.typesafe" % "config" % "1.3.0"
+libraryDependencies += Dependencies.config
 
 //
 // MAGIC DEPENDENCIES
 //
 libraryDependencies ++= Seq(
-  // Used to find and download jars from Maven-based repositories
-  "org.apache.ivy" % "ivy" % "2.4.0-rc1", // Apache v2
-  "io.get-coursier" %% "coursier" % "1.0.0-M14", // Apache v2
-  "io.get-coursier" %% "coursier-cache" % "1.0.0-M14" // Apache v2
+  Dependencies.coursier,
+  Dependencies.coursierCache
 )
 
 // Brought in in order to simplify the reading of each project's ivy.xml file
 // from the classpath. If we really want we can write our own class and remove
 // this dependency but the wheel has already been invented.
-libraryDependencies += "org.springframework" % "spring-core" % "4.1.1.RELEASE" // Apache v2
+libraryDependencies += Dependencies.springCore // Apache v2

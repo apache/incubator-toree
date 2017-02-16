@@ -19,12 +19,14 @@
 // JSON DEPENDENCIES
 //
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-json" % "2.3.10" excludeAll( // Apache v2
-      ExclusionRule(organization = "com.fasterxml.jackson.core")
-    ),
-  "org.slf4j" % "slf4j-api" % "1.7.21" // MIT
+  Dependencies.playJson excludeAll(
+    ExclusionRule(organization = "com.fasterxml.jackson.core")
+  ),
+  Dependencies.slf4jApi
 )
 
-//
-// TEST DEPENDENCIES
-//
+enablePlugins(BuildInfoPlugin)
+buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, "sparkVersion" -> Dependencies.sparkVersion.value)
+buildInfoPackage := organization.value
+buildInfoUsePackageAsPath := true
+buildInfoOptions += BuildInfoOption.BuildTime

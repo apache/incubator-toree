@@ -14,10 +14,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
+fork in Test := true
+libraryDependencies ++= Dependencies.sparkAll.value
 
 //
 // TEST DEPENDENCIES
 //
-libraryDependencies +=
-  "com.typesafe.akka" %% "akka-testkit" % "2.4.8" % "test" // MIT
+libraryDependencies += Dependencies.akkaTestkit % "test"
 

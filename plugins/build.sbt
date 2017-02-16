@@ -15,15 +15,14 @@
  *  limitations under the License
  */
 
+fork in Test := true
+
 // Needed for type inspection
 libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-  // BSD 3-clause license, used for detecting plugins
-  "org.clapper" %% "classutil" % "1.0.12",
-  "org.slf4j" % "slf4j-api" % "1.7.21" // MIT
+  Dependencies.scalaReflect.value,
+  Dependencies.clapper,
+  Dependencies.slf4jApi
 )
 
 // Test dependencies
-libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-compiler" % scalaVersion.value % "test"
-)
+libraryDependencies += Dependencies.scalaCompiler.value % "test"

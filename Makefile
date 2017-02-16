@@ -106,8 +106,9 @@ dev-binder: .binder-image
 target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
 target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
-target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): dist/toree-legal project/build.properties build.sbt project/common.scala project/plugins.sbt
-	$(call RUN,$(ENV_OPTS) sbt toree/assembly)
+target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): ${shell find ./project/*.scala} ${shell find ./project/*.sbt}
+target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): dist/toree-legal project/build.properties build.sbt
+	$(call RUN,$(ENV_OPTS) sbt root/assembly)
 
 build: target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR)
 
