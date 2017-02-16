@@ -19,9 +19,10 @@ package org.apache.toree.kernel.api
 
 import java.io.{InputStream, PrintStream}
 import java.util.concurrent.ConcurrentHashMap
+import scala.collection.mutable
 import com.typesafe.config.Config
 import org.apache.spark.api.java.JavaSparkContext
-import org.apache.spark.sql.{SQLContext, SparkSession}
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.toree.annotations.Experimental
 import org.apache.toree.boot.layer.InterpreterManager
@@ -86,11 +87,6 @@ class Kernel (
     new DynamicVariable[PrintStream](null)
   private val currentErrorKernelMessage =
     new DynamicVariable[KernelMessage](null)
-
-  private var _sparkSession: SparkSession = null
-  def _sparkContext:SparkContext = _sparkSession.sparkContext
-  def _javaSparkContext: JavaSparkContext = new JavaSparkContext(_sparkContext)
-  //def _sqlContext = _sparkSession;
 
   /**
    * Represents magics available through the kernel.
@@ -345,20 +341,20 @@ class Kernel (
 
   override def createSparkContext(conf: SparkConf): SparkContext = {
     val sconf = createSparkConf(conf)
-    _sparkSession = SparkSession.builder.config(sconf).getOrCreate()
+    val _sparkSession = SparkSession.builder.config(sconf).getOrCreate()
 
     val sparkMaster = sconf.getOption("spark.master").getOrElse("not_set")
     logger.info( s"Connecting to spark.master $sparkMaster")
 
     // TODO: Convert to events
-    pluginManager.dependencyManager.add(sconf)
+    pluginManager.dependencyManager.add(_sparkSession.sparkContext.getConf)
     pluginManager.dependencyManager.add(_sparkSession)
-    pluginManager.dependencyManager.add(_sparkContext)
-    pluginManager.dependencyManager.add(_javaSparkContext)
+    pluginManager.dependencyManager.add(_sparkSession.sparkContext)
+    pluginManager.dependencyManager.add(javaSparkContext(_sparkSession))
 
     pluginManager.fireEvent(SparkReady)
 
-    _sparkContext
+    _sparkSession.sparkContext
   }
 
   override def createSparkContext(
@@ -400,8 +396,17 @@ class Kernel (
     interpreterManager.interpreters.get(name)
   }
 
-  override def sparkContext: SparkContext = _sparkContext
-  override def sparkConf: SparkConf = _sparkSession.sparkContext.getConf
-  override def javaSparkContext: JavaSparkContext = _javaSparkContext
-  override def sparkSession: SparkSession = _sparkSession
+  override def sparkSession: SparkSession = SparkSession.builder.getOrCreate
+  override def sparkContext: SparkContext = sparkSession.sparkContext
+  override def sparkConf: SparkConf = sparkSession.sparkContext.getConf
+  override def javaSparkContext: JavaSparkContext = javaSparkContext(sparkSession)
+
+  private val javaContexts = new mutable.WeakHashMap[SparkSession, JavaSparkContext]
+  private def javaSparkContext(sparkSession: SparkSession): JavaSparkContext = {
+    javaContexts.synchronized {
+      javaContexts.getOrElseUpdate(
+        sparkSession,
+        new JavaSparkContext(sparkSession.sparkContext))
+    }
+  }
 }
