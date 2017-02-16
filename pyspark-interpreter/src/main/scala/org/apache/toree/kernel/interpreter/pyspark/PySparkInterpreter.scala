@@ -168,6 +168,8 @@ class PySparkInterpreter(
       "python",
       version = version,
       fileExtension = Some(".py"),
-      pygmentsLexer = Some("python"))
+      pygmentsLexer = Some("python"),
+      mimeType = Some("text/x-ipython"),
+      codemirrorMode = Some("text/x-ipython"))
   }
 }

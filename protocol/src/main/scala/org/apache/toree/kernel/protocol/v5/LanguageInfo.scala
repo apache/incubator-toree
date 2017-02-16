@@ -21,5 +21,7 @@ case class LanguageInfo(
                  name: String,
                  version: String,
                  file_extension: Option[String] = None,
-                 pygments_lexer: Option[String] = None) {
+                 pygments_lexer: Option[String] = None,
+                 mimetype: Option[String] = None,
+                 codemirror_mode: Option[String] = None) {
 }
