@@ -21,7 +21,7 @@ import java.io.OutputStream
 import java.net.URL
 
 import org.apache.toree.interpreter.Interpreter
-import org.apache.toree.magic.dependencies.{IncludeOutputStream, IncludeInterpreter, IncludeSparkContext}
+import org.apache.toree.magic.dependencies.{IncludeOutputStream, IncludeInterpreter}
 import org.apache.toree.magic.{CellMagic, LineMagic}
 import org.apache.spark.SparkContext
 import org.scalatest.{Matchers, FunSpec}
@@ -32,11 +32,9 @@ import org.mockito.Matchers._
 
 class TestLSMagic(sc: SparkContext, intp: Interpreter, os: OutputStream)
   extends LSMagic
-  with IncludeSparkContext
   with IncludeInterpreter
   with IncludeOutputStream
   {
-    override val sparkContext: SparkContext = sc
     override val interpreter: Interpreter = intp
     override val outputStream: OutputStream = os
   }

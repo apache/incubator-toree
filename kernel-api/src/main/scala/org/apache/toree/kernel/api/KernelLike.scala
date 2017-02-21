@@ -17,21 +17,17 @@
 
 package org.apache.toree.kernel.api
 
-import java.io.{InputStream, OutputStream, PrintStream}
-
+import java.io.{InputStream, PrintStream}
+import java.net.URI
 import com.typesafe.config.Config
 import org.apache.spark.api.java.JavaSparkContext
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.{SQLContext, SparkSession}
+import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.sql.SparkSession
 
 /**
  * Interface for the kernel API. This does not include exposed variables.
  */
 trait KernelLike {
-
-  def createSparkContext(conf: SparkConf): SparkContext
-
-  def createSparkContext(master: String): SparkContext
 
   /**
    * Executes a block of code represented as a string and returns the result.
@@ -104,6 +100,8 @@ trait KernelLike {
   def interpreter(name: String): Option[org.apache.toree.interpreter.Interpreter]
 
   def config: Config
+
+  def addJars(uris: URI*)
 
   def sparkContext: SparkContext
 

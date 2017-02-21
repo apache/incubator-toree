@@ -30,7 +30,7 @@ import org.apache.toree.plugins.annotations.Event
 
 
 class AddDeps extends LineMagic with IncludeInterpreter
-  with IncludeOutputStream with IncludeSparkContext with ArgumentParsingSupport
+  with IncludeOutputStream with ArgumentParsingSupport
   with IncludeDependencyDownloader with IncludeKernel
 {
 
@@ -78,7 +78,7 @@ class AddDeps extends LineMagic with IncludeInterpreter
 
     if (nonOptionArgs.size == 3) {
       // get the jars and hold onto the paths at which they reside
-      val urls = dependencyDownloader.retrieve(
+      val uris = dependencyDownloader.retrieve(
         groupId                 = nonOptionArgs.head,
         artifactId              = nonOptionArgs(1),
         version                 = nonOptionArgs(2),
@@ -87,11 +87,10 @@ class AddDeps extends LineMagic with IncludeInterpreter
         extraRepositories       = repositoriesWithCreds,
         verbose                 = _verbose,
         trace                   = _trace
-      ).map(_.toURL)
+      )
 
-      // add the jars to the interpreter and spark context
-      interpreter.addJars(urls:_*)
-      urls.foreach(url => sparkContext.addJar(url.getPath))
+      // pass the new Jars to the kernel
+      kernel.addJars(uris:_*)
     } else {
       printHelp(printStream, """%AddDeps my.company artifact-id version""")
     }

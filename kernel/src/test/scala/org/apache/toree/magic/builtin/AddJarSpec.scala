@@ -22,7 +22,7 @@ import java.net.URL
 import java.nio.file.{FileSystems, Files}
 
 import org.apache.toree.interpreter.Interpreter
-import org.apache.toree.magic.dependencies.{IncludeConfig, IncludeOutputStream, IncludeInterpreter, IncludeSparkContext}
+import org.apache.toree.magic.dependencies.{IncludeConfig, IncludeOutputStream, IncludeInterpreter}
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.SparkContext
 import org.apache.toree.plugins.PluginManager
@@ -43,12 +43,10 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
-          with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
           with IncludeConfig
         {
-          override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
           override lazy val pluginManager: PluginManager = mockPluginManager
@@ -112,12 +110,10 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
-          with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
           with IncludeConfig
         {
-          override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
           override val config = testConfig
@@ -153,12 +149,10 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
-          with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
           with IncludeConfig
         {
-          override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
           override val config = testConfig
@@ -194,12 +188,10 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
-          with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
           with IncludeConfig
         {
-          override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mockInterpreter
           override val outputStream: OutputStream = mockOutputStream
           override lazy val pluginManager: PluginManager = mockPluginManager

@@ -18,6 +18,7 @@
 package org.apache.toree.kernel.api
 
 import java.io.{InputStream, PrintStream}
+import java.net.URI
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.mutable
 import com.typesafe.config.Config
@@ -38,11 +39,10 @@ import org.apache.toree.kernel.protocol.v5.stream.KernelOutputStream
 import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
-import org.apache.toree.utils.{KeyValuePairUtils, LogLike}
+import org.apache.toree.utils.LogLike
 import scala.language.dynamics
 import scala.reflect.runtime.universe._
-import scala.util.{DynamicVariable, Try}
-import org.apache.toree.plugins.SparkReady
+import scala.util.DynamicVariable
 
 /**
  * Represents the main kernel API to be used for interaction.
@@ -60,6 +60,23 @@ class Kernel (
   val comm: CommManager,
   val pluginManager: PluginManager
 ) extends KernelLike with LogLike {
+
+  /**
+   * Jars that have been added to the kernel
+   */
+  private val jars = new mutable.ArrayBuffer[URI]()
+
+  override def addJars(uris: URI*): Unit = {
+    uris.foreach { uri =>
+      if (uri.getScheme != "file") {
+        throw new RuntimeException("Cannot add non-local jar: " + uri)
+      }
+    }
+
+    jars ++= uris
+    interpreter.addJars(uris.map(_.toURL):_*)
+    uris.foreach(uri => sparkContext.addJar(uri.getPath))
+  }
 
   /**
    * Represents the current input stream used by the kernel for the specific
@@ -339,30 +356,6 @@ class Kernel (
     someKernelMessage.get
   }
 
-  override def createSparkContext(conf: SparkConf): SparkContext = {
-    val sconf = createSparkConf(conf)
-    val _sparkSession = SparkSession.builder.config(sconf).getOrCreate()
-
-    val sparkMaster = sconf.getOption("spark.master").getOrElse("not_set")
-    logger.info( s"Connecting to spark.master $sparkMaster")
-
-    // TODO: Convert to events
-    pluginManager.dependencyManager.add(_sparkSession.sparkContext.getConf)
-    pluginManager.dependencyManager.add(_sparkSession)
-    pluginManager.dependencyManager.add(_sparkSession.sparkContext)
-    pluginManager.dependencyManager.add(javaSparkContext(_sparkSession))
-
-    pluginManager.fireEvent(SparkReady)
-
-    _sparkSession.sparkContext
-  }
-
-  override def createSparkContext(
-    master: String
-  ): SparkContext = {
-    createSparkContext(new SparkConf().setMaster(master))
-  }
-
   // TODO: Think of a better way to test without exposing this
   protected[toree] def createSparkConf(conf: SparkConf) = {
 
@@ -401,7 +394,9 @@ class Kernel (
     interpreterManager.interpreters.get(name)
   }
 
-  override def sparkSession: SparkSession = SparkSession.builder.getOrCreate
+  private lazy val defaultSparkConf: SparkConf = createSparkConf(new SparkConf())
+
+  override def sparkSession: SparkSession = SparkSession.builder.config(defaultSparkConf).getOrCreate
   override def sparkContext: SparkContext = sparkSession.sparkContext
   override def sparkConf: SparkConf = sparkSession.sparkContext.getConf
   override def javaSparkContext: JavaSparkContext = javaSparkContext(sparkSession)

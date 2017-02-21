@@ -44,13 +44,11 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         var printHelpWasRun = false
 
         val addDepsMagic = new AddDeps
-          with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
           with IncludeDependencyDownloader
           with ArgumentParsingSupport
         {
-          override val sparkContext: SparkContext = mockSC
           override val interpreter: Interpreter = mockIntp
           override val dependencyDownloader: DependencyDownloader =
             mockDownloader
@@ -83,13 +81,11 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         )
 
         val addDepsMagic = new AddDeps
-          with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
           with IncludeDependencyDownloader
           with ArgumentParsingSupport
         {
-          override val sparkContext: SparkContext = mock[SparkContext]
           override val interpreter: Interpreter = mock[Interpreter]
           override val dependencyDownloader: DependencyDownloader =
             mockDependencyDownloader
@@ -111,13 +107,11 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         )
 
         val addDepsMagic = new AddDeps
-          with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
           with IncludeDependencyDownloader
           with ArgumentParsingSupport
         {
-          override val sparkContext: SparkContext = mock[SparkContext]
           override val interpreter: Interpreter = mock[Interpreter]
           override val dependencyDownloader: DependencyDownloader =
             mockDependencyDownloader
@@ -140,13 +134,11 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         val mockInterpreter = mock[Interpreter]
 
         val addDepsMagic = new AddDeps
-          with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
           with IncludeDependencyDownloader
           with ArgumentParsingSupport
         {
-          override val sparkContext: SparkContext = mock[SparkContext]
           override val interpreter: Interpreter = mockInterpreter
           override val dependencyDownloader: DependencyDownloader =
             mockDependencyDownloader
@@ -170,13 +162,11 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         val mockSparkContext = mock[SparkContext]
 
         val addDepsMagic = new AddDeps
-          with IncludeSparkContext
           with IncludeInterpreter
           with IncludeOutputStream
           with IncludeDependencyDownloader
           with ArgumentParsingSupport
         {
-          override val sparkContext: SparkContext = mockSparkContext
           override val interpreter: Interpreter = mock[Interpreter]
           override val dependencyDownloader: DependencyDownloader =
             mockDependencyDownloader

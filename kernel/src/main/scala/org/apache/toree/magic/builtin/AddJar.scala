@@ -47,7 +47,7 @@ object AddJar {
 }
 
 class AddJar
-  extends LineMagic with IncludeInterpreter with IncludeSparkContext
+  extends LineMagic with IncludeInterpreter
   with IncludeOutputStream with DownloadSupport with ArgumentParsingSupport
   with IncludeKernel with IncludePluginManager with IncludeConfig with LogLike
 {
@@ -137,8 +137,7 @@ class AddJar
       val plugins = pluginManager.loadPlugins(fileDownloadLocation)
       pluginManager.initializePlugins(plugins)
     } else {
-      interpreter.addJars(fileDownloadLocation.toURI.toURL)
-      sparkContext.addJar(fileDownloadLocation.getCanonicalPath)
+      kernel.addJars(fileDownloadLocation.toURI)
     }
   }
 }
