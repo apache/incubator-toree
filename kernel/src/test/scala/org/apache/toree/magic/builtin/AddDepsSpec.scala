@@ -19,11 +19,9 @@ package org.apache.toree.magic.builtin
 
 import java.io.{ByteArrayOutputStream, OutputStream}
 import java.net.{URI, URL}
-
 import org.apache.toree.dependencies.{Credentials, DependencyDownloader}
-import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.utils.ArgumentParsingSupport
-import org.apache.spark.SparkContext
+import org.apache.toree.kernel.api.KernelLike
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
 import org.mockito.Mockito._
@@ -38,20 +36,17 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
     describe("#execute") {
       it("should print out the help message if the input is invalid") {
         val byteArrayOutputStream = new ByteArrayOutputStream()
-        val mockIntp = mock[Interpreter]
-        val mockSC = mock[SparkContext]
+        val mockKernel = mock[KernelLike]
         val mockDownloader = mock[DependencyDownloader]
         var printHelpWasRun = false
 
         val addDepsMagic = new AddDeps
-          with IncludeSparkContext
-          with IncludeInterpreter
+          with IncludeKernel
           with IncludeOutputStream
           with IncludeDependencyDownloader
           with ArgumentParsingSupport
         {
-          override val sparkContext: SparkContext = mockSC
-          override val interpreter: Interpreter = mockIntp
+          override val kernel: KernelLike = mockKernel
           override val dependencyDownloader: DependencyDownloader =
             mockDownloader
           override val outputStream: OutputStream = byteArrayOutputStream
@@ -65,9 +60,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         val actual = addDepsMagic.execute("notvalid")
 
         printHelpWasRun should be (true)
-        verify(mockIntp, times(0)).addJars(any())
-        verify(mockIntp, times(0)).bind(any(), any(), any(), any())
-        verify(mockSC, times(0)).addJar(any())
+        verify(mockKernel, times(0)).addJars(any())
         verify(mockDownloader, times(0)).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
           anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean()
@@ -83,14 +76,12 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         )
 
         val addDepsMagic = new AddDeps
-          with IncludeSparkContext
-          with IncludeInterpreter
+          with IncludeKernel
           with IncludeOutputStream
           with IncludeDependencyDownloader
           with ArgumentParsingSupport
         {
-          override val sparkContext: SparkContext = mock[SparkContext]
-          override val interpreter: Interpreter = mock[Interpreter]
+          override val kernel: KernelLike = mock[KernelLike]
           override val dependencyDownloader: DependencyDownloader =
             mockDependencyDownloader
           override val outputStream: OutputStream = mock[OutputStream]
@@ -111,14 +102,12 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         )
 
         val addDepsMagic = new AddDeps
-          with IncludeSparkContext
-          with IncludeInterpreter
+          with IncludeKernel
           with IncludeOutputStream
           with IncludeDependencyDownloader
           with ArgumentParsingSupport
         {
-          override val sparkContext: SparkContext = mock[SparkContext]
-          override val interpreter: Interpreter = mock[Interpreter]
+          override val kernel: KernelLike = mock[KernelLike]
           override val dependencyDownloader: DependencyDownloader =
             mockDependencyDownloader
           override val outputStream: OutputStream = mock[OutputStream]
@@ -131,23 +120,21 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           expected(0), expected(1), expected(2), false)
       }
 
-      it("should add retrieved artifacts to the interpreter") {
+      it("should add retrieved artifacts to the kernel") {
         val mockDependencyDownloader = mock[DependencyDownloader]
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
           anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean()
         )
-        val mockInterpreter = mock[Interpreter]
+        val mockKernel = mock[KernelLike]
 
         val addDepsMagic = new AddDeps
-          with IncludeSparkContext
-          with IncludeInterpreter
+          with IncludeKernel
           with IncludeOutputStream
           with IncludeDependencyDownloader
           with ArgumentParsingSupport
         {
-          override val sparkContext: SparkContext = mock[SparkContext]
-          override val interpreter: Interpreter = mockInterpreter
+          override val kernel: KernelLike = mockKernel
           override val dependencyDownloader: DependencyDownloader =
             mockDependencyDownloader
           override val outputStream: OutputStream = mock[OutputStream]
@@ -156,37 +143,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         val expected = "org.apache.toree" :: "kernel" :: "1.0" :: Nil
         addDepsMagic.execute(expected.mkString(" "))
 
-        verify(mockInterpreter).addJars(any[URL])
-      }
-
-      it("should add retrieved artifacts to the spark context") {
-        val mockDependencyDownloader = mock[DependencyDownloader]
-        val fakeUri = new URI("file:/foo")
-        doReturn(fakeUri :: fakeUri :: fakeUri :: Nil)
-          .when(mockDependencyDownloader).retrieve(
-            anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
-            anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean()
-          )
-        val mockSparkContext = mock[SparkContext]
-
-        val addDepsMagic = new AddDeps
-          with IncludeSparkContext
-          with IncludeInterpreter
-          with IncludeOutputStream
-          with IncludeDependencyDownloader
-          with ArgumentParsingSupport
-        {
-          override val sparkContext: SparkContext = mockSparkContext
-          override val interpreter: Interpreter = mock[Interpreter]
-          override val dependencyDownloader: DependencyDownloader =
-            mockDependencyDownloader
-          override val outputStream: OutputStream = mock[OutputStream]
-        }
-
-        val expected = "org.apache.toree" :: "kernel" :: "1.0" :: Nil
-        addDepsMagic.execute(expected.mkString(" "))
-
-        verify(mockSparkContext, times(3)).addJar(anyString())
+        verify(mockKernel).addJars(any[URI])
       }
     }
   }

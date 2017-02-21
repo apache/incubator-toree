@@ -18,7 +18,8 @@
 package org.apache.toree.kernel.api
 
 import java.io.{InputStream, PrintStream}
-import java.util.concurrent.ConcurrentHashMap
+import java.net.URI
+import java.util.concurrent.{ConcurrentHashMap, TimeUnit, TimeoutException}
 import scala.collection.mutable
 import com.typesafe.config.Config
 import org.apache.spark.api.java.JavaSparkContext
@@ -35,14 +36,15 @@ import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.magic.MagicParser
 import org.apache.toree.kernel.protocol.v5.stream.KernelOutputStream
-import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
+import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage, MIMEType}
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
-import org.apache.toree.utils.{KeyValuePairUtils, LogLike}
+import org.apache.toree.utils.LogLike
 import scala.language.dynamics
 import scala.reflect.runtime.universe._
-import scala.util.{DynamicVariable, Try}
-import org.apache.toree.plugins.SparkReady
+import scala.util.DynamicVariable
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Future, Await}
 
 /**
  * Represents the main kernel API to be used for interaction.
@@ -60,6 +62,23 @@ class Kernel (
   val comm: CommManager,
   val pluginManager: PluginManager
 ) extends KernelLike with LogLike {
+
+  /**
+   * Jars that have been added to the kernel
+   */
+  private val jars = new mutable.ArrayBuffer[URI]()
+
+  override def addJars(uris: URI*): Unit = {
+    uris.foreach { uri =>
+      if (uri.getScheme != "file") {
+        throw new RuntimeException("Cannot add non-local jar: " + uri)
+      }
+    }
+
+    jars ++= uris
+    interpreter.addJars(uris.map(_.toURL):_*)
+    uris.foreach(uri => sparkContext.addJar(uri.getPath))
+  }
 
   /**
    * Represents the current input stream used by the kernel for the specific
@@ -339,30 +358,6 @@ class Kernel (
     someKernelMessage.get
   }
 
-  override def createSparkContext(conf: SparkConf): SparkContext = {
-    val sconf = createSparkConf(conf)
-    val _sparkSession = SparkSession.builder.config(sconf).getOrCreate()
-
-    val sparkMaster = sconf.getOption("spark.master").getOrElse("not_set")
-    logger.info( s"Connecting to spark.master $sparkMaster")
-
-    // TODO: Convert to events
-    pluginManager.dependencyManager.add(_sparkSession.sparkContext.getConf)
-    pluginManager.dependencyManager.add(_sparkSession)
-    pluginManager.dependencyManager.add(_sparkSession.sparkContext)
-    pluginManager.dependencyManager.add(javaSparkContext(_sparkSession))
-
-    pluginManager.fireEvent(SparkReady)
-
-    _sparkSession.sparkContext
-  }
-
-  override def createSparkContext(
-    master: String
-  ): SparkContext = {
-    createSparkContext(new SparkConf().setMaster(master))
-  }
-
   // TODO: Think of a better way to test without exposing this
   protected[toree] def createSparkConf(conf: SparkConf) = {
 
@@ -401,7 +396,36 @@ class Kernel (
     interpreterManager.interpreters.get(name)
   }
 
-  override def sparkSession: SparkSession = SparkSession.builder.getOrCreate
+  private lazy val defaultSparkConf: SparkConf = createSparkConf(new SparkConf())
+
+  override def sparkSession: SparkSession = {
+    defaultSparkConf.getOption("spark.master") match {
+      case Some(master) if !master.contains("local") =>
+        // when connecting to a remote cluster, the first call to getOrCreate
+        // may create a session and take a long time, so this starts a future
+        // to get the session. if it take longer than 100 ms, then print a
+        // message to the user that Spark is starting.
+        import scala.concurrent.ExecutionContext.Implicits.global
+        val sessionFuture = Future {
+          SparkSession.builder.config(defaultSparkConf).getOrCreate
+        }
+
+        try {
+          Await.result(sessionFuture, Duration(100, TimeUnit.MILLISECONDS))
+        } catch {
+          case timeout: TimeoutException =>
+            // getting the session is taking a long time, so assume that Spark
+            // is starting and print a message
+            display.content(
+              MIMEType.PlainText, "Waiting for a Spark session to start...")
+            Await.result(sessionFuture, Duration.Inf)
+        }
+
+      case _ =>
+        SparkSession.builder.config(defaultSparkConf).getOrCreate
+    }
+  }
+
   override def sparkContext: SparkContext = sparkSession.sparkContext
   override def sparkConf: SparkConf = sparkSession.sparkContext.getConf
   override def javaSparkContext: JavaSparkContext = javaSparkContext(sparkSession)

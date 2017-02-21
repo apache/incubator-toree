@@ -45,7 +45,6 @@ trait ComponentInitialization {
    * Initializes and registers all components (not needed by bare init).
    *
    * @param config The config used for initialization
-   * @param appName The name of the "application" for Spark
    * @param actorLoader The actor loader to use for some initialization
    */
   def initializeComponents(
@@ -83,8 +82,6 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
     initializePlugins(config, pluginManager)
 
-    initializeSparkContext(config, kernel)
-
     interpreterManager.initializeInterpreters(kernel)
     
     pluginManager.fireEvent(AllInterpretersReady)
@@ -95,13 +92,6 @@ trait StandardComponentInitialization extends ComponentInitialization {
       interpreterManager.defaultInterpreter.get, kernel,
       dependencyDownloader, kernel.magics, pluginManager, responseMap)
 
-  }
-
-
-  def initializeSparkContext(config:Config, kernel:Kernel) = {
-    if(!config.getBoolean("nosparkcontext")) {
-      kernel.createSparkContext(config.getString("spark.master"))
-    }
   }
 
   private def initializeCommObjects(actorLoader: ActorLoader) = {
