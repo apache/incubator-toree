@@ -49,7 +49,7 @@ trait ComponentInitialization {
    * @param actorLoader The actor loader to use for some initialization
    */
   def initializeComponents(
-    config: Config, appName: String, actorLoader: ActorLoader
+    config: Config, actorLoader: ActorLoader
   ): (CommStorage, CommRegistrar, CommManager, Interpreter,
     Kernel, DependencyDownloader, MagicManager, PluginManager,
     collection.mutable.Map[String, ActorRef])
@@ -65,11 +65,10 @@ trait StandardComponentInitialization extends ComponentInitialization {
    * Initializes and registers all components (not needed by bare init).
    *
    * @param config The config used for initialization
-   * @param appName The name of the "application" for Spark
    * @param actorLoader The actor loader to use for some initialization
    */
   def initializeComponents(
-    config: Config, appName: String, actorLoader: ActorLoader
+    config: Config, actorLoader: ActorLoader
   ) = {
     val (commStorage, commRegistrar, commManager) =
       initializeCommObjects(actorLoader)
@@ -84,7 +83,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
     initializePlugins(config, pluginManager)
 
-    initializeSparkContext(config, kernel, appName)
+    initializeSparkContext(config, kernel)
 
     interpreterManager.initializeInterpreters(kernel)
     
@@ -99,9 +98,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
   }
 
 
-  def initializeSparkContext(config:Config, kernel:Kernel, appName:String) = {
+  def initializeSparkContext(config:Config, kernel:Kernel) = {
     if(!config.getBoolean("nosparkcontext")) {
-      kernel.createSparkContext(config.getString("spark.master"), appName)
+      kernel.createSparkContext(config.getString("spark.master"))
     }
   }
 
