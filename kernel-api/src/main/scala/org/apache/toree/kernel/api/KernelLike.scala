@@ -31,7 +31,7 @@ trait KernelLike {
 
   def createSparkContext(conf: SparkConf): SparkContext
 
-  def createSparkContext(master: String, appName: String): SparkContext
+  def createSparkContext(master: String): SparkContext
 
   /**
    * Executes a block of code represented as a string and returns the result.

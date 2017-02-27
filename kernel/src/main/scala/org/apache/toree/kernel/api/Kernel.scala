@@ -358,9 +358,9 @@ class Kernel (
   }
 
   override def createSparkContext(
-    master: String, appName: String
+    master: String
   ): SparkContext = {
-    createSparkContext(new SparkConf().setMaster(master).setAppName(appName))
+    createSparkContext(new SparkConf().setMaster(master))
   }
 
   // TODO: Think of a better way to test without exposing this

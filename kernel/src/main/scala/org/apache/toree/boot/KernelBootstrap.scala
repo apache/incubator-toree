@@ -40,7 +40,6 @@ class KernelBootstrap(config: Config) extends LogLike {
   this: BareInitialization with ComponentInitialization
     with HandlerInitialization with HookInitialization =>
 
-  private val DefaultAppName                    = SparkKernelInfo.banner
   private val DefaultActorSystemName            = "spark-kernel-actor-system"
 
   private var actorSystem: ActorSystem          = _
@@ -100,7 +99,6 @@ class KernelBootstrap(config: Config) extends LogLike {
       magicManager, pluginManager, responseMap) =
       initializeComponents(
         config      = config,
-        appName     = DefaultAppName,
         actorLoader = actorLoader
       )
     this.interpreters ++= Seq(interpreter)
