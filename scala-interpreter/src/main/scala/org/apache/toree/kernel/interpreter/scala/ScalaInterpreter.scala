@@ -86,15 +86,14 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
      start()
      bindKernelVariable(kernel)
- 
+
+     // ensure bindings are defined before allowing user code to run
+     bindSparkSession()
+     bindSparkContext()
+     defineImplicits()
+
      this
    }
-
-  override def postInit(): Unit = {
-    bindSparkSession()
-    bindSparkContext()
-    defineImplicits()
-  }
 
    protected[scala] def buildClasspath(classLoader: ClassLoader): String = {
 
