@@ -63,7 +63,7 @@ class ShellClientSpec extends TestKit(ActorSystem("ShellActorSpec"))
           "5.0"
         )
         val kernelMessage = KernelMessage(
-          Seq[String](), "",
+          Seq[Array[Byte]](), "",
           header, HeaderBuilder.empty,
           Metadata(), Json.toJson(request).toString
         )

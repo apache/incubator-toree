@@ -45,8 +45,7 @@ class PubSocketActor(connection: String)
 
   override def receive: Actor.Receive = {
     case zmqMessage: ZMQMessage => withProcessing {
-      val frames = zmqMessage.frames.map(byteString =>
-        new String(byteString.toArray, ZMQ.CHARSET))
+      val frames = zmqMessage.frames.map(byteString => byteString.toArray )
 
       socket.send(frames: _*)
     }

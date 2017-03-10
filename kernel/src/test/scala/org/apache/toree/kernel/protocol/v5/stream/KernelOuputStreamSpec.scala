@@ -237,7 +237,8 @@ class KernelOuputStreamSpec
         Then("the ids should be set to execute_result")
         val message = kernelOutputRelayProbe
           .receiveOne(MaxAkkaTestTimeout).asInstanceOf[KernelMessage]
-        message.ids should be (Seq(MessageType.Outgoing.Stream.toString))
+        
+        message.ids(0).deep should equal (MessageType.Outgoing.Stream.toString.getBytes.deep)
       }
 
       it("should set the message type in the header of the kernel message to an execute_result") {

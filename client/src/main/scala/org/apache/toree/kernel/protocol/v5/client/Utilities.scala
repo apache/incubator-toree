@@ -58,9 +58,9 @@ object Utilities extends LogLike {
     val delimiterIndex: Int =
       message.frames.indexOf(ByteString("<IDS|MSG>".getBytes))
     //  TODO Handle the case where there is no delimiter
-    val ids: Seq[String] =
+    val ids: Seq[Array[Byte]] =
       message.frames.take(delimiterIndex).map(
-        (byteString : ByteString) =>  { new String(byteString.toArray) }
+        (byteString : ByteString) =>  { byteString.toArray }
       )
     val header = Json.parse(message.frames(delimiterIndex + 2)).as[Header]
     val parentHeader = Json.parse(message.frames(delimiterIndex + 3)).validate[ParentHeader].fold[ParentHeader](
@@ -80,7 +80,7 @@ object Utilities extends LogLike {
 
   implicit def KernelMessageToZMQMessage(kernelMessage : KernelMessage) : ZMQMessage = {
     val frames: scala.collection.mutable.ListBuffer[ByteString] = scala.collection.mutable.ListBuffer()
-    kernelMessage.ids.map((id : String) => frames += id )
+    kernelMessage.ids.map((id : Array[Byte]) => frames += ByteString.apply(id) )
     frames += "<IDS|MSG>"
     frames += kernelMessage.signature
     frames += Json.toJson(kernelMessage.header).toString()
@@ -106,7 +106,7 @@ object Utilities extends LogLike {
     val header = Header(
       id, "spark", sessionId, MessageType.Incoming.ExecuteRequest.toString, "5.0")
 
-    KMBuilder().withIds(Seq[String]()).withSignature("").withHeader(header)
+    KMBuilder().withIds(Seq[Array[Byte]]()).withSignature("").withHeader(header)
       .withParentHeader(HeaderBuilder.empty).withContentString(message).build
   }
 

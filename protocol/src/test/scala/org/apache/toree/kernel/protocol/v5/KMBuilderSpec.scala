@@ -73,7 +73,7 @@ class KMBuilderSpec extends FunSpec with Matchers {
     describe("withXYZ"){
       describe("#withIds"){
         it("should produce a KMBuilder with a KernelMessage with ids set") {
-          val ids = Seq("baos", "win")
+          val ids = Seq("baos", "win").map(x => x.getBytes)
           val builder = KMBuilder().withIds(ids)
           builder.km.ids should be (ids)
         }

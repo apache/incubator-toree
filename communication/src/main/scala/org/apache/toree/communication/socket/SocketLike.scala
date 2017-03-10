@@ -28,7 +28,7 @@ trait SocketLike {
    *
    * @param message The message to send
    */
-  def send(message: String*): Unit
+  def send(message: Array[Byte]*): Unit
 
   /**
    * Closes the socket, marking it no longer able to process or send messages.

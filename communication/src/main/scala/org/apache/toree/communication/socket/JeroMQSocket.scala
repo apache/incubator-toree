@@ -35,10 +35,13 @@ class JeroMQSocket(private val runnable: ZeroMQSocketRunnable)
    *
    * @param message The message to send
    */
-  override def send(message: String*): Unit = {
+  override def send(message: Array[Byte]*): Unit = {
     assert(isAlive, "Socket is not alive to be able to send messages!")
 
-    runnable.offer(ZMsg.newStringMsg(message: _*))
+    val msg = new ZMsg()
+    for( frame <- message ) msg.add( frame )
+    
+    runnable.offer( msg )
   }
 
   /**

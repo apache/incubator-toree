@@ -75,7 +75,7 @@ class SocketManager {
    */
   def newReqSocket(
     address: String,
-    inboundMessageCallback: (Seq[String]) => Unit
+    inboundMessageCallback: (Seq[Array[Byte]]) => Unit
   ): SocketLike = withNewContext{ ctx =>
      new JeroMQSocket(new ReqSocketRunnable(
       ctx,
@@ -95,7 +95,7 @@ class SocketManager {
    */
   def newRepSocket(
     address: String,
-    inboundMessageCallback: (Seq[String]) => Unit
+    inboundMessageCallback: (Seq[Array[Byte]]) => Unit
   ): SocketLike = withNewContext{ ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
       ctx,
@@ -133,7 +133,7 @@ class SocketManager {
    */
   def newSubSocket(
     address: String,
-    inboundMessageCallback: (Seq[String]) => Unit
+    inboundMessageCallback: (Seq[Array[Byte]]) => Unit
   ): SocketLike = withNewContext { ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
       ctx,
@@ -155,7 +155,7 @@ class SocketManager {
    */
   def newRouterSocket(
     address: String,
-    inboundMessageCallback: (Seq[String]) => Unit
+    inboundMessageCallback: (Seq[Array[Byte]]) => Unit
   ): SocketLike = withNewContext { ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
       ctx,
@@ -176,7 +176,7 @@ class SocketManager {
    */
   def newDealerSocket(
     address: String,
-    inboundMessageCallback: (Seq[String]) => Unit,
+    inboundMessageCallback: (Seq[Array[Byte]]) => Unit,
     identity: String = UUID.randomUUID().toString
   ): SocketLike = withNewContext{ ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(

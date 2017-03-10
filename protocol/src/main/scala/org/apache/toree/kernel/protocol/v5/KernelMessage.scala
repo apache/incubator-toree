@@ -18,10 +18,31 @@
 package org.apache.toree.kernel.protocol.v5
 
 case class KernelMessage(
-  ids: Seq[String],
+  ids: Seq[Array[Byte]],
   signature: String,
   header: Header,
   parentHeader: ParentHeader, // TODO: This can be an empty json object of {}
   metadata: Metadata,
   contentString: String
-)
+) 
+{
+  override def equals ( o: Any ) = o match {
+    case km: KernelMessage => {
+      var equal = ( ids.length == km.ids.length && signature == km.signature && header == km.header && parentHeader == km.parentHeader && metadata == km.metadata && contentString == km.contentString )
+      var i = ids.length
+      while ( equal && ( 0 < i ) ) {
+        i = i - 1
+        equal = (ids(i).deep == km.ids(i).deep )
+      }
+      equal = true
+      equal
+    }
+    case _ => false
+  }
+
+  override def hashCode: Int = { 
+    var z = signature.## + header.## + parentHeader.## + metadata.## + contentString.##
+    for( id <- ids ) for ( b <- id ) { z += b }
+    z
+  }
+}

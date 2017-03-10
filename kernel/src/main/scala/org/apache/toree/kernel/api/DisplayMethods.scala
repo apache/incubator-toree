@@ -38,7 +38,7 @@ class DisplayMethods(
     val displayData = v5.content.DisplayData("user", Map(mimeType -> data), Map())
 
     val kernelMessage = kmBuilder
-      .withIds(Seq(v5.content.DisplayData.toTypeString))
+      .withIds(Seq(v5.content.DisplayData.toTypeString.getBytes))
       .withHeader(v5.content.DisplayData.toTypeString)
       .withContentString(displayData).build
 
@@ -49,7 +49,7 @@ class DisplayMethods(
     val clearOutput = v5.content.ClearOutput(wait)
 
     val kernelMessage = kmBuilder
-      .withIds(Seq(v5.content.ClearOutput.toTypeString))
+      .withIds(Seq(v5.content.ClearOutput.toTypeString.getBytes))
       .withHeader(v5.content.ClearOutput.toTypeString)
       .withContentString(clearOutput).build
 

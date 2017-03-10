@@ -36,7 +36,7 @@ import scala.util.Try
 class ZeroMQSocketRunnable(
   private val context: Context,
   private val socketType: SocketType,
-  private val inboundMessageCallback: Option[(Seq[String]) => Unit],
+  private val inboundMessageCallback: Option[(Seq[Array[Byte]]) => Unit],
   private val socketOptions: SocketOption*
 ) extends SocketRunnable[ZMsg](inboundMessageCallback)
   with LogLike {
@@ -120,8 +120,8 @@ class ZeroMQSocketRunnable(
     flags: Int = ZMQ.DONTWAIT
   ): Unit = {
     Option(ZMsg.recvMsg(socket, flags)).foreach(zMsg => {
-      inboundMessageCallback.foreach(_(zMsg.asScala.toSeq
-        .map(zFrame => new String(zFrame.getData, ZMQ.CHARSET))
+      inboundMessageCallback.foreach(_(zMsg.asScala.toSeq    
+        .map(zFrame => zFrame.getData)  
       ))
     })
   }

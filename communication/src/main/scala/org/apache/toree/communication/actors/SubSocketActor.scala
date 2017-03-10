@@ -32,7 +32,7 @@ class SubSocketActor(connection: String, listener: ActorRef)
 {
   logger.debug(s"Initializing subscribe socket actor for $connection")
   private val manager: SocketManager = new SocketManager
-  private val socket = manager.newSubSocket(connection, (message: Seq[String]) => {
+  private val socket = manager.newSubSocket(connection, (message: Seq[Array[Byte]]) => {
     listener ! ZMQMessage(message.map(ByteString.apply): _*)
   })
 

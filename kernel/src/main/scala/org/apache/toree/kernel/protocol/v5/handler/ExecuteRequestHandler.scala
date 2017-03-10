@@ -98,7 +98,7 @@ class ExecuteRequestHandler(
           //  Send an ExecuteResult with the result of the code execution
           if (executeResult.hasContent) {
             val executeResultMsg = skeletonBuilder
-              .withIds(Seq(MessageType.Outgoing.ExecuteResult.toString))
+              .withIds(Seq(MessageType.Outgoing.ExecuteResult.toString.getBytes))
               .withHeader(MessageType.Outgoing.ExecuteResult)
               .withContentString(executeResult).build
             relayMsg(executeResultMsg, relayActor)

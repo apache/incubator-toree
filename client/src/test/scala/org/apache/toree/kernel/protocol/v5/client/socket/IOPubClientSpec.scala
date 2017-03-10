@@ -238,7 +238,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           MessageType.Incoming.ExecuteRequest.toString, "5.0")
 
         val kernelMessage = new KernelMessage(
-          Seq[String](),
+          Seq[Array[Byte]](),
           "",
           header,
           parentHeader,
@@ -272,7 +272,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
           MessageType.Outgoing.Stream.toString, "5.0")
 
         val kernelMessage = new KernelMessage(
-          Seq[String](),
+          Seq[Array[Byte]](),
           "",
           header,
           null,

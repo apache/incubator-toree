@@ -65,7 +65,7 @@ class CommInfoRequestHandlerSpec extends TestKit(
   describe("Comm Info Request Handler") {
     it("should return a KernelMessage containing a comm info response for a specific target name") {
       val kernelMessage = new KernelMessage(
-        Seq[String](), "test message", header, header, Map[String, String](), "{\"target_name\":\"test.name\"}"
+        Seq[Array[Byte]](), "test message", header, header, Map[String, String](), "{\"target_name\":\"test.name\"}"
       )
 
       when(mockCommStorage.getTargets()).thenReturn(Set("test.name"))
@@ -83,7 +83,7 @@ class CommInfoRequestHandlerSpec extends TestKit(
 
   it("should return a KernelMessage containing a comm info response for all comms when target_name is missing from the message") {
     val kernelMessage = new KernelMessage(
-      Seq[String](), "test message", header, header, Map[String, String](), "{}"
+      Seq[Array[Byte]](), "test message", header, header, Map[String, String](), "{}"
     )
 
     when(mockCommStorage.getTargets()).thenReturn(Set("test.name1", "test.name2"))
@@ -103,7 +103,7 @@ class CommInfoRequestHandlerSpec extends TestKit(
 
   it("should return a KernelMessage containing an empty comm info response when the target name value is not found") {
     val kernelMessage = new KernelMessage(
-      Seq[String](), "test message", header, header, Map[String, String](), "{\"target_name\":\"can't_find_me\"}"
+      Seq[Array[Byte]](), "test message", header, header, Map[String, String](), "{\"target_name\":\"can't_find_me\"}"
     )
 
     when(mockCommStorage.getTargets()).thenReturn(Set("test.name"))

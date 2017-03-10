@@ -55,9 +55,9 @@ object Utilities extends LogLike {
     val delimiterIndex: Int =
       message.frames.indexOf(ByteString("<IDS|MSG>".getBytes))
     //  TODO Handle the case where there is no delimiter
-    val ids: Seq[String] =
+    val ids: Seq[Array[Byte]] =
       message.frames.take(delimiterIndex).map(
-        (byteString : ByteString) =>  { new String(byteString.toArray) }
+        (byteString : ByteString) =>  { byteString.toArray }
       )
     val header = Json.parse(message.frames(delimiterIndex + 2)).as[Header]
     // TODO: Investigate better solution than setting parentHeader to null for {}
@@ -78,7 +78,7 @@ object Utilities extends LogLike {
 
   implicit def KernelMessageToZMQMessage(kernelMessage : KernelMessage) : ZMQMessage = {
     val frames: scala.collection.mutable.ListBuffer[ByteString] = scala.collection.mutable.ListBuffer()
-    kernelMessage.ids.map((id : String) => frames += id )
+    kernelMessage.ids.map((id : Array[Byte]) => frames += ByteString.apply(id) )
     frames += "<IDS|MSG>"
     frames += kernelMessage.signature
     frames += Json.toJson(kernelMessage.header).toString()
