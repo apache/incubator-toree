@@ -48,7 +48,7 @@ case class KMBuilder(km: KernelMessage = KernelMessage(
                                             )) {
   require(km != null)
 
-  def withIds(newVal: Seq[String]) : KMBuilder =
+  def withIds(newVal: Seq[Array[Byte]]) : KMBuilder =
     KMBuilder(this.km.copy(ids = newVal))
 
   def withSignature(newVal: String) : KMBuilder =

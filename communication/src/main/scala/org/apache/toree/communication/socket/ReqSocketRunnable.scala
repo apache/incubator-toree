@@ -31,7 +31,7 @@ import org.zeromq.ZMQ.{Socket, Context}
  */
 class ReqSocketRunnable(
   private val context: Context,
-  private val inboundMessageCallback: Option[(Seq[String]) => Unit],
+  private val inboundMessageCallback: Option[(Seq[Array[Byte]]) => Unit],
   private val socketOptions: SocketOption*
 ) extends ZeroMQSocketRunnable(
   context,

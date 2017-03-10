@@ -106,7 +106,7 @@ class KernelOutputStream(
     )
 
     val kernelMessage = kmBuilder
-      .withIds(Seq(MessageType.Outgoing.Stream.toString))
+      .withIds(Seq(MessageType.Outgoing.Stream.toString.getBytes))
       .withHeader(MessageType.Outgoing.Stream)
       .withContentString(streamContent).build
 

@@ -33,7 +33,7 @@ class RepSocketActor(connection: String, listener: ActorRef)
 {
   logger.debug(s"Initializing reply socket actor for $connection")
   private val manager: SocketManager = new SocketManager
-  private val socket = manager.newRepSocket(connection, (message: Seq[String]) => {
+  private val socket = manager.newRepSocket(connection, (message: Seq[Array[Byte]]) => {
     listener ! ZMQMessage(message.map(ByteString.apply): _*)
   })
 
@@ -43,8 +43,7 @@ class RepSocketActor(connection: String, listener: ActorRef)
 
   override def receive: Actor.Receive = {
     case zmqMessage: ZMQMessage =>
-      val frames = zmqMessage.frames.map(byteString =>
-        new String(byteString.toArray, ZMQ.CHARSET))
+      val frames = zmqMessage.frames.map(byteString => byteString.toArray )
       socket.send(frames: _*)
   }
 }

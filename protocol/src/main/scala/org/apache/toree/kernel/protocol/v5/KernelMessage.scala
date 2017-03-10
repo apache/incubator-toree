@@ -18,7 +18,7 @@
 package org.apache.toree.kernel.protocol.v5
 
 case class KernelMessage(
-  ids: Seq[String],
+  ids: Seq[Array[Byte]],
   signature: String,
   header: Header,
   parentHeader: ParentHeader, // TODO: This can be an empty json object of {}

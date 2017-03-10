@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
  *                               through this runnable
  */
 abstract class SocketRunnable[T](
-   private val inboundMessageCallback: Option[(Seq[String]) => Unit]
+   private val inboundMessageCallback: Option[(Seq[Array[Byte]]) => Unit]
 ) extends Runnable {
 
   /** The collection of messages to be sent out through the socket. */

@@ -30,7 +30,7 @@ class StreamMethods(actorLoader: ActorLoader, parentMessage: KernelMessage)
 {
   private[api] val kmBuilder = v5.KMBuilder()
     .withParent(parentMessage)
-    .withIds(Seq(v5.content.StreamContent.toTypeString))
+    .withIds(Seq(v5.content.StreamContent.toTypeString.getBytes))
     .withHeader(v5.content.StreamContent.toTypeString)
 
   /**
