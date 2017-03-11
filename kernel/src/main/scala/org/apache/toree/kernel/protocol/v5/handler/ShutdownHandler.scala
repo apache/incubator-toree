@@ -64,7 +64,7 @@ class ShutdownHandler(
     KernelSecurityManager.enableRestrictedExit()
 
     System.exit(0)
-   }
+  }
 
 }
 
