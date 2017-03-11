@@ -26,6 +26,11 @@ object KernelSecurityManager {
   val RestrictedGroupName = "restricted-" + UUID.randomUUID().toString
 
   /**
+    * ThreadLocal to indicate that an exit from a restricted group thread is permitted.
+    */
+  private val tlEnableRestrictedExit:ThreadLocal[Boolean] = new ThreadLocal[Boolean]
+
+  /**
    * Special case for this permission since the name changes with each status
    * code.
    */
@@ -60,6 +65,17 @@ object KernelSecurityManager {
    */
   private def shouldCheckPermissionSpecialCases(name: String): Boolean =
     name.startsWith(SystemExitPermissionName)
+
+  /**
+    * Sets tlEnableRestrictedExit to true if caller is in the restricted group.  This
+    * method is intended to be called exclusively from the ShutdownHandler since that's
+    * the only path by which we should permit System.exit to succeed within the notebook.
+    * Note that dual SIGINTs occur from a non-restricted thread group and are also permitted.
+    */
+  def enableRestrictedExit() {
+    val currentGroup = Thread.currentThread().getThreadGroup
+    tlEnableRestrictedExit.set(currentGroup.getName == RestrictedGroupName)
+  }
 }
 
 class KernelSecurityManager extends SecurityManager {
@@ -117,10 +133,21 @@ class KernelSecurityManager extends SecurityManager {
   override def checkExit(status: Int): Unit = {
     val currentGroup = Thread.currentThread().getThreadGroup
 
-    if (currentGroup.getName == RestrictedGroupName) {
-      // TODO: Determine why System.exit(...) is being blocked in the ShutdownHandler
-      System.out.println("Unauthorized system.exit detected!")
-      //throw new SecurityException("Not allowed to invoke System.exit!")
+    // Exit will be denied if this thread is in the restricted group AND the restricted
+    // exit thread-local has not been enabled.  This will only happen when the request
+    // came from jupyter via a (cell) execution_request indicating the cell is attempting
+    // an exit call.  Proper notebook shutdown requests will go through the ShutdownHandler
+    // where restricted exits are enabled and SIGINT (ctrl-c) requests are not performed
+    // via the restricted group and thus allowed.
+    //
+    if (currentGroup.getName == RestrictedGroupName ) {
+      val isRestrictedExitEnabled:Option[Boolean] = Some(tlEnableRestrictedExit.get())
+
+      if ( !isRestrictedExitEnabled.getOrElse(false) ) {
+        throw new SecurityException("Not allowed to invoke System.exit!")
+      }
     }
+    // Just in case this thread remains alive - force it to pass through ShutdownHandler
+    tlEnableRestrictedExit.set(false)
   }
 }

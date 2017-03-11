@@ -21,6 +21,7 @@ import org.apache.toree.comm.{CommRegistrar, CommStorage, KernelCommWriter}
 import org.apache.toree.kernel.protocol.v5.content.{ShutdownReply, ShutdownRequest, CommOpen}
 import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import org.apache.toree.kernel.protocol.v5._
+import org.apache.toree.security.KernelSecurityManager
 import org.apache.toree.utils.MessageLogSupport
 import play.api.data.validation.ValidationError
 import play.api.libs.json.JsPath
@@ -58,6 +59,10 @@ class ShutdownHandler(
 
     logger.debug("Attempting graceful shutdown.")
     actorLoader.load(SystemActorType.KernelMessageRelay) ! kernelResponseMessage
+
+    // Instruct security manager that exit should be allowed
+    KernelSecurityManager.enableRestrictedExit()
+
     System.exit(0)
   }
 
