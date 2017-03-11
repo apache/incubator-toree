@@ -60,7 +60,7 @@ object KernelSecurityManager {
    * cases that don't exist in the normal name conventions.
    *
    * @param name The name of the permission
-   *:
+   *
    * @return True if the permission is to be checked, false otherwise
    */
   private def shouldCheckPermissionSpecialCases(name: String): Boolean =
