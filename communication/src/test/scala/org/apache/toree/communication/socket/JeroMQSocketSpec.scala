@@ -53,7 +53,7 @@ class JeroMQSocketSpec extends FunSpec with MockitoSugar
         val message: String = "Some Message"
         val expected = ZMsg.newStringMsg(message)
 
-        socket.send(message)
+        socket.send(message.getBytes)
         verify(runnable).offer(expected)
       }
 
@@ -61,7 +61,7 @@ class JeroMQSocketSpec extends FunSpec with MockitoSugar
         socket.close()
 
         intercept[AssertionError] {
-          socket.send("")
+          socket.send("".getBytes)
         }
       }
     }

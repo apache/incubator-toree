@@ -30,7 +30,7 @@ package object v5Test {
   val MockParenHeader: Header = Header("<PARENT-UUID>","<PARENT-USER>","<PARENT-SESSION>",
     MessageType.Outgoing.ClearOutput.toString, "<PARENT-VERSION>")
   //  The actual kernel message
-  val MockKernelMessage : KernelMessage = KernelMessage(Seq("<ID>"), "<SIGNATURE>", MockHeader,
+  val MockKernelMessage : KernelMessage = KernelMessage(Seq("<ID>".getBytes), "<SIGNATURE>", MockHeader,
     MockParenHeader, Metadata(), "<CONTENT>")
   //  Use the implicit to convert the KernelMessage to ZMQMessage
   //val MockZMQMessage : ZMQMessage = MockKernelMessage
@@ -41,7 +41,7 @@ package object v5Test {
     contentString =  Json.toJson(MockExecuteRequest).toString
   )
   val MockKernelMessageWithBadExecuteRequest = new KernelMessage(
-    Seq[String](), "test message", MockHeader, MockParenHeader, Map[String, String](),
+    Seq[Array[Byte]](), "test message", MockHeader, MockParenHeader, Map[String, String](),
     """
         {"code" : 124 }
     """

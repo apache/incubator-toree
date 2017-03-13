@@ -54,10 +54,10 @@ class KernelMessageRelaySpec extends TestKit(
     "<TYPE>", "<VERSION>")
   private val parentHeader: Header = Header("<PARENT-UUID>", "<PARENT-USER>",
     "<PARENT-SESSION>", "<PARENT-TYPE>", "<PARENT-VERSION>")
-  private val incomingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>"),
+  private val incomingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>".getBytes),
     "<SIGNATURE>", header.copy(msg_type = IncomingMessageType),
     parentHeader, Metadata(), "<CONTENT>")
-  private val outgoingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>"),
+  private val outgoingKernelMessage: KernelMessage = KernelMessage(Seq("<ID>".getBytes),
     "<SIGNATURE>", header.copy(msg_type = OutgoingMessageType),
     incomingKernelMessage.header, Metadata(), "<CONTENT>")
   private val incomingZmqStrings = "1" :: "2" :: "3" :: "4" :: Nil
@@ -221,7 +221,7 @@ class KernelMessageRelaySpec extends TestKit(
   def sendKernelMessages(n: Int, kernelMessageRelay: ActorRef): Unit ={
     // Sends n messages to the relay
     (0 until n).foreach (i => {
-      val km = KernelMessage(Seq("<ID>"), s"${i}",
+      val km = KernelMessage(Seq("<ID>".getBytes), s"${i}",
         header.copy(msg_type = IncomingMessageType), parentHeader,
         Metadata(), s"${i}")
       kernelMessageRelay ! Tuple2(Seq("SomeString"), km)

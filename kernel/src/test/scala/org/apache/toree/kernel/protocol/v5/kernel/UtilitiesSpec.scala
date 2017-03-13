@@ -33,7 +33,7 @@ class UtilitiesSpec extends FunSpec with Matchers {
     "<PARENT-UUID>", "<PARENT-STRING>", "<PARENT-UUID>", "<PARENT-STRING>", "<PARENT-FLOAT>"
   )
   val kernelMessage = KernelMessage(
-    Seq("<STRING-1>","<STRING-2>"),
+    Seq("<STRING-1>","<STRING-2>").map(x => x.getBytes),
     "<SIGNATURE>", header, parentHeader, Map(), "<STRING>"
   )
 
@@ -69,13 +69,13 @@ class UtilitiesSpec extends FunSpec with Matchers {
   describe("Utilities") {
     describe("implicit #KernelMessageToZMQMessage") {
       it("should correctly convert a kernel message to a ZMQMessage") {
-        Utilities.KernelMessageToZMQMessage(kernelMessage) should be (zmqMessage)
+        Utilities.KernelMessageToZMQMessage(kernelMessage) should equal (zmqMessage)
       }
     }
 
     describe("implicit #ZMQMessageToKernelMessage") {
       it("should correctly convert a ZMQMessage to a kernel message") {
-        Utilities.ZMQMessageToKernelMessage(zmqMessage) should be (kernelMessage)
+        Utilities.ZMQMessageToKernelMessage(zmqMessage) should equal (kernelMessage)
       }
     }
 
@@ -83,12 +83,12 @@ class UtilitiesSpec extends FunSpec with Matchers {
       it("should convert back to the original message, ZMQ -> Kernel -> ZMQ") {
         Utilities.KernelMessageToZMQMessage(
           Utilities.ZMQMessageToKernelMessage(zmqMessage)
-        ) should be (zmqMessage)
+        ) should equal (zmqMessage)
       }
       it("should convert back to the original message, Kernel -> ZMQ -> Kernel") {
         Utilities.ZMQMessageToKernelMessage(
           Utilities.KernelMessageToZMQMessage(kernelMessage)
-        ) should be (kernelMessage)
+        ) should equal (kernelMessage)
       }
     }
 
