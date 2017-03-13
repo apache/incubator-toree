@@ -47,8 +47,8 @@ class JeroMQSocketIntegrationSpec extends FunSpec
       it("should be able to communicate") {
         val address =s"inproc://${this.hashCode()}"
 
-        val replyMessages = new ConcurrentLinkedDeque[Seq[String]]()
-        val replyCallback: (Seq[String]) => Unit = { msg: Seq[String] =>
+        val replyMessages = new ConcurrentLinkedDeque[Seq[Array[Byte]]]()
+        val replyCallback: (Seq[Array[Byte]]) => Unit = { msg: Seq[Array[Byte]] =>
           replyMessages.offer(msg)
         }
         val reply =  socketManager.newRouterSocket(
@@ -60,8 +60,8 @@ class JeroMQSocketIntegrationSpec extends FunSpec
           reply.isReady should be (true)
         }
 
-        val requestMessages = new ConcurrentLinkedDeque[Seq[String]]()
-        val requestCallback: (Seq[String]) => Unit = { msg: Seq[String] =>
+        val requestMessages = new ConcurrentLinkedDeque[Seq[Array[Byte]]]()
+        val requestCallback: (Seq[Array[Byte]]) => Unit = { msg: Seq[Array[Byte]] =>
           requestMessages.offer(msg)
         }
         val request = socketManager.newDealerSocket(
@@ -73,7 +73,7 @@ class JeroMQSocketIntegrationSpec extends FunSpec
           request.isReady should be (true)
         }
 
-        request.send("Message from the request to the reply")
+        request.send("Message from the request to the reply".getBytes)
 
         eventually {
           replyMessages.size() should be(1)
@@ -88,8 +88,8 @@ class JeroMQSocketIntegrationSpec extends FunSpec
       it("should be able to communicate"){
         val address =s"inproc://${this.hashCode()}"
 
-        val routerMessages = new ConcurrentLinkedDeque[Seq[String]]()
-        val routerCallback: (Seq[String]) => Unit = { msg: Seq[String] =>
+        val routerMessages = new ConcurrentLinkedDeque[Seq[Array[Byte]]]()
+        val routerCallback: (Seq[Array[Byte]]) => Unit = { msg: Seq[Array[Byte]] =>
           routerMessages.offer(msg)
         }
         val router =  socketManager.newRouterSocket(
@@ -104,14 +104,14 @@ class JeroMQSocketIntegrationSpec extends FunSpec
 
         val dealer = socketManager.newDealerSocket(
           address,
-          (_: Seq[String]) => {}
+          (_: Seq[Array[Byte]]) => {}
         )
 
         eventually {
           dealer.isReady should be (true)
         }
 
-        dealer.send("Message from the dealer to the router")
+        dealer.send("Message from the dealer to the router".getBytes)
 
         eventually {
           routerMessages.size() should be(1)
@@ -135,8 +135,8 @@ class JeroMQSocketIntegrationSpec extends FunSpec
           publisher.isReady should be (true)
         }
 
-        val subscriberMessages = new ConcurrentLinkedDeque[Seq[String]]()
-        val subscriberCallback: (Seq[String]) => Unit = { msg: Seq[String] =>
+        val subscriberMessages = new ConcurrentLinkedDeque[Seq[Array[Byte]]]()
+        val subscriberCallback: (Seq[Array[Byte]]) => Unit = { msg: Seq[Array[Byte]] =>
           subscriberMessages.offer(msg)
         }
         val subscriber =  socketManager.newSubSocket(
@@ -148,7 +148,7 @@ class JeroMQSocketIntegrationSpec extends FunSpec
           subscriber.isReady should be (true)
         }
 
-        publisher.send("Message form the publisher to the subscriber")
+        publisher.send("Message form the publisher to the subscriber".getBytes)
 
         eventually {
           subscriberMessages.size() should be(1)

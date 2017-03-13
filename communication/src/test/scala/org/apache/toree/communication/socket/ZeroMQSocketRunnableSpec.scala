@@ -42,7 +42,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
     private val socket: ZMQ.Socket,
     private val context: Context,
     private val socketType: SocketType,
-    private val inboundMessageCallback: Option[(Seq[String]) => Unit],
+    private val inboundMessageCallback: Option[(Seq[Array[Byte]]) => Unit],
     private val socketOptions: SocketOption*
   ) extends ZeroMQSocketRunnable(
     context,

@@ -56,7 +56,7 @@ class KernelInfoRequestHandlerSpec extends TestKit(
 
   val header = Header("","","","","")
   val kernelMessage = new KernelMessage(
-    Seq[String](), "test message", header, header, Map[String, String](), "{}"
+    Seq[Array[Byte]](), "test message", header, header, Map[String, String](), "{}"
   )
 
   describe("Kernel Info Request Handler") {

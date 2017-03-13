@@ -80,7 +80,7 @@ class StdinSpec extends TestKit(ActorSystem(
 
         val kernelMessage: KernelMessage = MockZMQMessage
 
-        relayProbe.expectMsg(MaxAkkaTestTimeout, (zmqStrings, kernelMessage))
+        relayProbe.expectMsg(MaxAkkaTestTimeout, (kernelMessage, kernelMessage))
       }
     }
   }
