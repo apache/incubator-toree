@@ -83,7 +83,7 @@ class ShellSpec extends TestKit(
 
         val kernelMessage: KernelMessage = MockZMQMessage
 
-        relayProbe.expectMsg(MaxAkkaTestTimeout, (kernelMessage, kernelMessage))
+        relayProbe.expectMsg(MaxAkkaTestTimeout, (zmqStrings, kernelMessage))
       }
     }
   }

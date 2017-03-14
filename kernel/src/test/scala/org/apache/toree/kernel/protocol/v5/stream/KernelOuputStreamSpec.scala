@@ -31,6 +31,7 @@ import org.scalatest._
 import play.api.libs.json._
 import org.apache.toree.kernel.protocol.v5.content.StreamContent
 import test.utils.MaxAkkaTestTimeout
+import test.utils.CustomEquality._
 
 class KernelOuputStreamSpec
   extends TestKit(ActorSystem("KernelOutputStreamActorSystem", None, Some(Main.getClass.getClassLoader)))
