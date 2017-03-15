@@ -31,7 +31,6 @@ import org.scalatest._
 import play.api.libs.json._
 import org.apache.toree.kernel.protocol.v5.content.StreamContent
 import test.utils.MaxAkkaTestTimeout
-import test.utils.CustomEquality._
 
 class KernelOuputStreamSpec
   extends TestKit(ActorSystem("KernelOutputStreamActorSystem", None, Some(Main.getClass.getClassLoader)))
@@ -238,7 +237,8 @@ class KernelOuputStreamSpec
         Then("the ids should be set to execute_result")
         val message = kernelOutputRelayProbe
           .receiveOne(MaxAkkaTestTimeout).asInstanceOf[KernelMessage]
-        message.ids should equal (Seq(MessageType.Outgoing.Stream.toString.getBytes))
+        
+        message.ids(0).deep should equal (MessageType.Outgoing.Stream.toString.getBytes.deep)
       }
 
       it("should set the message type in the header of the kernel message to an execute_result") {
