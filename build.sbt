@@ -230,6 +230,11 @@ scalacOptions in (ScalaUnidoc, unidoc) ++= Seq(
 libraryDependencies ++= Dependencies.sparkAll.value
 unmanagedResourceDirectories in Compile += { baseDirectory.value / "dist/toree-legal" }
 
+assemblyShadeRules in assembly := Seq(
+  ShadeRule.rename("org.clapper.classutil.**" -> "shadeclapper.@0").inAll,
+  ShadeRule.rename("org.objectweb.asm.**" -> "shadeasm.@0").inAll
+)
+
 test in assembly := {}
 assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
 aggregate in assembly := false
