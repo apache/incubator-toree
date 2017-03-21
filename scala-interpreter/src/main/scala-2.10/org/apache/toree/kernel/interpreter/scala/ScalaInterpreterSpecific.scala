@@ -303,7 +303,7 @@ trait ScalaInterpreterSpecific { this: ScalaInterpreter =>
     taskManager.start()
 
     sparkIMain =
-      newSparkIMain(settings, new JPrintWriter(multiOutputStream, true))
+      newSparkIMain(settings, new JPrintWriter(lastResultOut, true))
 
 
     //logger.debug("Initializing interpreter")

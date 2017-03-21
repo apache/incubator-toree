@@ -57,8 +57,6 @@ class InterpreterActorSpecForIntegration extends TestKit(
 
   private val output = new ByteArrayOutputStream()
   private val interpreter = new ScalaInterpreter {
-    override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
-
     override protected def bindKernelVariable(kernel: KernelLike): Unit = { }
   }
 

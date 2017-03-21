@@ -278,7 +278,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     logger.debug("Initializing task manager")
     taskManager.start()
 
-    iMain = newIMain(settings, new JPrintWriter(multiOutputStream, true))
+    iMain = newIMain(settings, new JPrintWriter(lastResultOut, true))
 
     //logger.debug("Initializing interpreter")
     //iMain.initializeSynchronous()

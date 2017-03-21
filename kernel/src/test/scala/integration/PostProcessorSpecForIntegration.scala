@@ -35,9 +35,7 @@ class PostProcessorSpecForIntegration extends FunSpec with Matchers
   before {
     // TODO: Move instantiation and start of interpreter to a beforeAll
     //       for performance improvements
-    scalaInterpreter = new ScalaInterpreter {
-      override protected val multiOutputStream = MultiOutputStream(List(mock[OutputStream], lastResultOut))
-    }
+    scalaInterpreter = new ScalaInterpreter
 
     scalaInterpreter.init(mock[Kernel])
 
