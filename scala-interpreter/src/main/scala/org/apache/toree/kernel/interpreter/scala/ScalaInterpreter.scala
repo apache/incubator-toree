@@ -29,7 +29,7 @@ import org.apache.spark.repl.Main
 
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.{KernelLike, KernelOptions}
-import org.apache.toree.utils.{MultiOutputStream, TaskManager}
+import org.apache.toree.utils.TaskManager
 import org.slf4j.LoggerFactory
 import org.apache.toree.kernel.BuildInfo
 
@@ -48,7 +48,6 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
    protected val lastResultOut = new ByteArrayOutputStream()
 
-   protected val multiOutputStream = MultiOutputStream(List(lastResultOut))
    private[scala] var taskManager: TaskManager = _
 
   /** Since the ScalaInterpreter can be started without a kernel, we need to ensure that we can compile things.
