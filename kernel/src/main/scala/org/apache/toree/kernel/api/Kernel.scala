@@ -366,8 +366,13 @@ class Kernel (
   // TODO: Think of a better way to test without exposing this
   protected[toree] def createSparkConf(conf: SparkConf) = {
 
-    logger.info("Setting deployMode to client")
-    conf.set("spark.submit.deployMode", "client")
+    if(conf.contains("spark.submit.deployMode")) {
+      logger.info("Utilizing deploy mode: " + conf.get("spark.submit.deployMode"))
+    } else {
+      logger.info("Setting deployMode to client")
+      conf.set("spark.submit.deployMode", "client")
+    }
+
     conf
   }
 
