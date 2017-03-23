@@ -67,11 +67,16 @@ class AddJar
    * @param location The remote location (URL) 
    * @return The name of the remote URL, or an empty string if one does not exist
    */
-  def getFileFromLocation(location: String): String = {
+   def getFileFromLocation(location: String): String = {
     val url = new URL(location)
     val file = url.getFile.split("/")
     if (file.length > 0) {
-        file.last
+        if ( file.last.contains('?') ) {
+          file.last.split('?')(0)
+        }
+        else { 
+          file.last
+        }  
     } else {
         ""
     }
@@ -104,7 +109,7 @@ class AddJar
     val jarName = getFileFromLocation(jarRemoteLocation)
 
     // Ensure the URL actually contains a jar or zip file
-    if (!jarName.endsWith(".jar") && !jarName.endsWith(".zip")) {
+    if (!jarName.contains(".jar") && !jarName.contains(".zip")) {
         throw new IllegalArgumentException(
           s"The jar file $jarName must end in .jar or .zip."
         )
