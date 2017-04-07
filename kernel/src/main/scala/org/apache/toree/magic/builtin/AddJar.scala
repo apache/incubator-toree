@@ -24,20 +24,21 @@ import java.nio.file.{Files, Paths}
 import org.apache.toree.magic._
 import org.apache.toree.magic.builtin.AddJar._
 import org.apache.toree.magic.dependencies._
-import org.apache.toree.utils.{ArgumentParsingSupport, DownloadSupport, LogLike}
+import org.apache.toree.utils.{ArgumentParsingSupport, DownloadSupport, LogLike, FileUtils}
 import com.typesafe.config.Config
 import org.apache.toree.plugins.annotations.Event
 
 object AddJar {
 
   private var jarDir:Option[String] = None
+
   def getJarDir(config: Config): String = {
     jarDir.getOrElse({
       jarDir = Some(
         if(config.hasPath("jar_dir") && Files.exists(Paths.get(config.getString("jar_dir")))) {
           config.getString("jar_dir")
         } else {
-          Files.createTempDirectory("toree_add_jars").toFile.getAbsolutePath
+          FileUtils.createManagedTempDirectory("toree_add_jars").getAbsolutePath
         }
       )
       jarDir.get

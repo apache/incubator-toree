@@ -32,7 +32,7 @@ import org.apache.toree.kernel.protocol.v5.KMBuilder
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
-import org.apache.toree.utils.LogLike
+import org.apache.toree.utils.{LogLike, FileUtils}
 import scala.collection.JavaConverters._
 import org.apache.toree.plugins.AllInterpretersReady
 
@@ -123,7 +123,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
       if(config.hasPath("deps_dir") && Files.exists(Paths.get(config.getString("deps_dir")))) {
         config.getString("deps_dir")
       } else {
-        Files.createTempDirectory("toree_add_deps").toFile.getAbsolutePath
+        FileUtils.createManagedTempDirectory("toree_add_deps").getAbsolutePath
       }
     }
 
