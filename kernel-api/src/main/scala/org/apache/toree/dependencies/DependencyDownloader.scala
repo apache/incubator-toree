@@ -21,6 +21,7 @@ import java.io.{File, PrintStream}
 import java.net.{URI, URL}
 import java.nio.file.Files
 import scala.util.Try
+import org.apache.toree.utils.FileUtils
 
 abstract class DependencyDownloader {
   /**
@@ -134,5 +135,5 @@ object DependencyDownloader {
 
   /** Default download directory for dependencies. */
   val DefaultDownloadDirectory =
-    Files.createTempDirectory("toree-dependency-downloads-").toFile
+    FileUtils.createManagedTempDirectory("toree-dependency-downloads")
 }
