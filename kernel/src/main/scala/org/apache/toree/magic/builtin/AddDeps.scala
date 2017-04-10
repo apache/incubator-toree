@@ -91,7 +91,6 @@ class AddDeps extends LineMagic with IncludeInterpreter
 
       // add the jars to the interpreter and spark context
       interpreter.addJars(urls:_*)
-      //# https://github.com/apache/incubator-toree/blob/master/kernel-api/src/main/scala/org/apache/toree/interpreter/Interpreter.scala
       urls.foreach(url => sparkContext.addJar(url.getPath))
     } else {
       printHelp(printStream, """%AddDeps my.company artifact-id version""")

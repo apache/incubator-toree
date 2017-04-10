@@ -23,29 +23,29 @@ import java.nio.file.Files
 
 object FileUtils {
 
-  val parentTempDir : String = "toree-tmp-dir"
+  val parentTempDir: String = "toree-tmp-dir"
 
-  private def deleteDirRecur(file : File) : Unit ={
+  private def deleteDirRecur(file: File): Unit = {
   	// delete directory recursively
     if(file.isDirectory){
-      	file.listFiles.foreach(deleteDirRecur)
+      file.listFiles.foreach(deleteDirRecur)
     }
     if(file.exists){
-        file.delete
+      file.delete
     }
   }
 
   private def createParentTemp() = {
-  	val dir = Files.createTempDirectory(parentTempDir).toFile
+    val dir = Files.createTempDirectory(parentTempDir).toFile
     sys.addShutdownHook{
     	// addShutdownHook will ensure when JVM exits, the temporary directory 
     	// assoicated with a given kernel would be deleted
-      deleteDirRecur(dir)
+    deleteDirRecur(dir)
 	}
     dir
   }
 
-  lazy val parent : File = createParentTemp()
+  lazy val parent: File = createParentTemp()
 
    /**
    * Create a directory with name specified under the "toree-tmp-dir"
