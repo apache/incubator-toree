@@ -135,5 +135,5 @@ object DependencyDownloader {
 
   /** Default download directory for dependencies. */
   val DefaultDownloadDirectory =
-    FileUtils.createDirUnderTemp("toree-dependency-downloads")
+    FileUtils.createManagedTempDirectory("toree-dependency-downloads")
 }

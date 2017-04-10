@@ -53,7 +53,7 @@ object FileUtils {
    *
    * @param name The name of the directory to be created
    */
-  def createDirUnderTemp(name: String): File = {
+  def createManagedTempDirectory(name: String): File = {
     val dir = new File(parent, name)
     dir.mkdir()
     dir

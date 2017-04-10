@@ -123,7 +123,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
       if(config.hasPath("deps_dir") && Files.exists(Paths.get(config.getString("deps_dir")))) {
         config.getString("deps_dir")
       } else {
-        FileUtils.createDirUnderTemp("toree_add_deps").getAbsolutePath
+        FileUtils.createManagedTempDirectory("toree_add_deps").getAbsolutePath
       }
     }
 

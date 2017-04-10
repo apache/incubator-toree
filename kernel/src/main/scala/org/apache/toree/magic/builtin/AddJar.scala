@@ -38,7 +38,7 @@ object AddJar {
         if(config.hasPath("jar_dir") && Files.exists(Paths.get(config.getString("jar_dir")))) {
           config.getString("jar_dir")
         } else {
-          FileUtils.createDirUnderTemp("toree_add_jars").getAbsolutePath
+          FileUtils.createManagedTempDirectory("toree_add_jars").getAbsolutePath
         }
       )
       jarDir.get
