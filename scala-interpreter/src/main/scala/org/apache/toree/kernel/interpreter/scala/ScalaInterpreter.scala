@@ -20,6 +20,7 @@ package org.apache.toree.kernel.interpreter.scala
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.ExecutionException
 import com.typesafe.config.{Config, ConfigFactory}
+import jupyter.Displayers
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.repl.Main
@@ -30,6 +31,7 @@ import org.slf4j.LoggerFactory
 import org.apache.toree.kernel.BuildInfo
 import org.apache.toree.kernel.protocol.v5.MIMEType
 import scala.annotation.tailrec
+import scala.collection.JavaConverters._
 import scala.concurrent.{Await, Future}
 import scala.language.reflectiveCalls
 import scala.tools.nsc.Settings
@@ -39,6 +41,8 @@ import scala.util.matching.Regex
 
 class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends Interpreter with ScalaInterpreterSpecific {
   import ScalaInterpreter._
+
+  ScalaDisplayers.ensureLoaded()
 
    private var kernel: KernelLike = _
 
@@ -256,7 +260,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
          val (obj, defStr, text) = prepareResult(lastOutput)
          defStr.foreach(kernel.display.content(MIMEType.PlainText, _))
          text.foreach(kernel.display.content(MIMEType.PlainText, _))
-         val output = Map(MIMEType.PlainText -> obj.toString)
+         val output = obj.map(Displayers.display(_).asScala.toMap).getOrElse(Map.empty)
          (result, Left(output))
 
        case Results.Error =>
