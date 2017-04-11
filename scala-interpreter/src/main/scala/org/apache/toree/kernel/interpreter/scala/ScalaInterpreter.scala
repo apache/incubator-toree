@@ -161,28 +161,23 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
       interpretRec(code.trim.split("\n").toList, false, starting)
    }
 
-   def truncateResult(result:String, showType:Boolean =false, noTruncate: Boolean = false): String = {
-     val resultRX="""(?s)(res\d+):\s+(.+)\s+=\s+(.*)""".r
+   def truncateResult(result: String, showType: Boolean = false, noTruncate: Boolean = false): String = {
+     val resultRX = """(?s)(res\d+):\s+(.+)\s+=\s+(.*)""".r
 
      result match {
-       case resultRX(varName,varType,resString) => {
-           var returnStr=resString
-           if (noTruncate)
-           {
-             val r=read(varName)
-             returnStr=r.getOrElse("").toString
-           }
-
-           if (showType)
-             returnStr=varType+" = "+returnStr
-
+       case resultRX(varName,varType,resString) =>
+         var returnStr = resString
+         if (noTruncate) {
+           val r = read(varName)
+           returnStr = r.getOrElse("").toString
+         }
+         if (showType) {
+           returnStr = s"$varType = $returnStr"
+         }
          returnStr
 
-       }
-       case _ => ""
+       case str => str
      }
-
-
    }
 
    protected def interpretRec(lines: List[String], silent: Boolean = false, results: (Results.Result, Either[ExecuteOutput, ExecuteFailure])): (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
