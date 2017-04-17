@@ -18,15 +18,15 @@
 package org.apache.toree.magic.builtin
 
 import java.io.OutputStream
-import java.net.URL
-import java.nio.file.{FileSystems, Files}
-
+import java.net.{URI, URL}
+import java.nio.file.{Files, FileSystems}
 import org.apache.toree.interpreter.Interpreter
-import org.apache.toree.magic.dependencies.{IncludeConfig, IncludeOutputStream, IncludeInterpreter}
+import org.apache.toree.magic.dependencies.{IncludeConfig, IncludeInterpreter, IncludeKernel, IncludeOutputStream}
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.SparkContext
+import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.plugins.PluginManager
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.{FunSpec, Matchers}
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.Matchers._
@@ -34,20 +34,18 @@ import org.mockito.Matchers._
 class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
   describe("AddJar"){
     describe("#execute") {
-      it("should call addJar on the provided SparkContext and addJars on the " +
-         "provided interpreter") {
-        val mockSparkContext = mock[SparkContext]
-        val mockInterpreter = mock[Interpreter]
+      it("should call addJar on the provided kernel") {
+        val mockKernel = mock[KernelLike]
         val mockOutputStream = mock[OutputStream]
         val mockPluginManager = mock[PluginManager]
         val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
-          with IncludeInterpreter
           with IncludeOutputStream
           with IncludeConfig
+          with IncludeKernel
         {
-          override val interpreter: Interpreter = mockInterpreter
+          override val kernel: KernelLike = mockKernel
           override val outputStream: OutputStream = mockOutputStream
           override lazy val pluginManager: PluginManager = mockPluginManager
           override val config = testConfig
@@ -57,8 +55,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
 
         addJarMagic.execute("""http://www.example.com/someJar.jar""")
 
-        verify(mockSparkContext).addJar(anyString())
-        verify(mockInterpreter).addJars(any[URL])
+        verify(mockKernel).addJars(any[URI])
         verify(mockPluginManager, times(0)).loadPlugins(any())
       }
 
@@ -102,19 +99,18 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
       }
 
       it("should use a cached jar if the force option is not provided") {
-        val mockSparkContext = mock[SparkContext]
-        val mockInterpreter = mock[Interpreter]
+        val mockKernel = mock[KernelLike]
         val mockOutputStream = mock[OutputStream]
         var downloadFileCalled = false  // Used to verify that downloadFile
                                         // was or was not called in this test
         val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
-          with IncludeInterpreter
           with IncludeOutputStream
           with IncludeConfig
+          with IncludeKernel
         {
-          override val interpreter: Interpreter = mockInterpreter
+          override val kernel: KernelLike = mockKernel
           override val outputStream: OutputStream = mockOutputStream
           override val config = testConfig
           override def downloadFile(fileUrl: URL, destinationUrl: URL): URL = {
@@ -136,24 +132,22 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         tmpFilePath.toFile.delete()
 
         downloadFileCalled should be (false)
-        verify(mockSparkContext).addJar(anyString())
-        verify(mockInterpreter).addJars(any[URL])
+        verify(mockKernel).addJars(any[URI])
       }
 
       it("should not use a cached jar if the force option is provided") {
-        val mockSparkContext = mock[SparkContext]
-        val mockInterpreter = mock[Interpreter]
+        val mockKernel = mock[KernelLike]
         val mockOutputStream = mock[OutputStream]
         var downloadFileCalled = false  // Used to verify that downloadFile
                                         // was or was not called in this test
         val testConfig = ConfigFactory.load()
 
         val addJarMagic = new AddJar
-          with IncludeInterpreter
           with IncludeOutputStream
           with IncludeConfig
+          with IncludeKernel
         {
-          override val interpreter: Interpreter = mockInterpreter
+          override val kernel: KernelLike = mockKernel
           override val outputStream: OutputStream = mockOutputStream
           override val config = testConfig
           override def downloadFile(fileUrl: URL, destinationUrl: URL): URL = {
@@ -175,8 +169,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         tmpFilePath.toFile.delete()
 
         downloadFileCalled should be (true)
-        verify(mockSparkContext).addJar(anyString())
-        verify(mockInterpreter).addJars(any[URL])
+        verify(mockKernel).addJars(any[URI])
       }
 
       it("should add magic jar to magicloader and not to interpreter and spark"+
