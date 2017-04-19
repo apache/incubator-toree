@@ -88,7 +88,8 @@ class CoursierDependencyDownloader extends DependencyDownloader {
         module = Module(organization = groupId, name = artifactId),
         version = version,
         transitive = transitive,
-        exclusions = exclusions // NOTE: Source/Javadoc not downloaded by default
+        exclusions = exclusions, // NOTE: Source/Javadoc not downloaded by default
+        configuration = "default"
       )
     ))
 
