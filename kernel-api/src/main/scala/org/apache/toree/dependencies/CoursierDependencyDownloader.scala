@@ -20,16 +20,14 @@ import java.io.{File, FileInputStream, PrintStream}
 import java.net.{URI, URL}
 import java.util.Properties
 import java.util.concurrent.ConcurrentHashMap
-
 import coursier.core.Authentication
 import coursier.Cache.Logger
 import coursier.Dependency
 import coursier.core.Repository
-import coursier.core.Resolution.ModuleVersion
 import coursier.ivy.{IvyRepository, IvyXml}
 import coursier.maven.MavenRepository
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
-
+import scala.util.Try
 import scalaz.\/
 import scalaz.concurrent.Task
 
@@ -117,7 +115,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     val resolution = start.process.run(fetch).unsafePerformSync
 
     // Report any resolution errors
-    val errors: Seq[(ModuleVersion, Seq[String])] = resolution.metadataErrors
+    val errors: Seq[((Module, String), Seq[String])] = resolution.metadataErrors
     errors.foreach { case (d, e) =>
       printStream.println(s"-> Failed to resolve ${d._1.toString()}:${d._2}")
       e.foreach(s => printStream.println(s"    -> $s"))
@@ -313,10 +311,11 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    * @param repositories The repositories to convert
    * @return The resulting URIs
    */
-  private def repositoriesToURIs(repositories: Seq[Repository]) = repositories.map {
-    case ivy: IvyRepository => ivy.pattern.string
-    case maven: MavenRepository => maven.root
-  }.map(new URI(_))
+  private def repositoriesToURIs(repositories: Seq[Repository]) =
+    repositories.map {
+      case ivy: IvyRepository => ivy.pattern.string
+      case maven: MavenRepository => maven.root
+    }.map(s => Try(new URI(s))).filter(_.isSuccess).map(_.get)
 
   /** Creates new Ivy2 local repository using base home URI. */
   private def ivy2Local(ivy2HomeUri: URI) = IvyRepository.parse(
