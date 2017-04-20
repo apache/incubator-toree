@@ -1,5 +1,6 @@
 target
 dist
+etc/legal
 .git
 .idea
 .vagrant
@@ -8,7 +9,7 @@ examples
 metastore_db
 .ensime/*
 .ensime_cache/*
-LICENSE_extras
-NOTICE_extras
-licenses
-
+derby.log
+etc/tools/apache-rat-0.11.jar
+kernel/lib/mesos-0.18.1-shaded-protobuf.jar
+*-ivy.xml
