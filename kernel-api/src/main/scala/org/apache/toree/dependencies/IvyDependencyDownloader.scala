@@ -91,7 +91,9 @@ class IvyDependencyDownloader(
     ignoreResolutionErrors: Boolean,
     extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean,
-    trace: Boolean
+    trace: Boolean,
+    artifactType: Option[String] = None,
+    artifactClassifier: Option[String] = None
   ): Seq[URI] = {
     // Start building the ivy.xml file
     val ivyFile = File.createTempFile("ivy-custom", ".xml")

@@ -72,7 +72,9 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     ignoreResolutionErrors: Boolean,
     extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean,
-    trace: Boolean
+    trace: Boolean,
+    artifactType: Option[String] = None,
+    artifactClassifier: Option[String] = None
   ): Seq[URI] = {
     assert(localDirectory != null)
     import coursier._
@@ -89,7 +91,11 @@ class CoursierDependencyDownloader extends DependencyDownloader {
         version = version,
         transitive = transitive,
         exclusions = exclusions, // NOTE: Source/Javadoc not downloaded by default
-        configuration = "default"
+        configuration = "default",
+        attributes = Attributes(
+          artifactType.getOrElse(""),
+          artifactClassifier.getOrElse("")
+        )
       )
     ))
 

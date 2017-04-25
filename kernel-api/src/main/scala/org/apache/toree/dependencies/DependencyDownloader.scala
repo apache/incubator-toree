@@ -54,7 +54,9 @@ abstract class DependencyDownloader {
     ignoreResolutionErrors: Boolean = true,
     extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean = false,
-    trace: Boolean = false
+    trace: Boolean = false,
+    artifactType: Option[String] = None,
+    artifactClassifier: Option[String] = None
   ): Seq[URI]
 
   /**

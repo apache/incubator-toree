@@ -60,6 +60,10 @@ class AddDeps extends LineMagic with IncludeInterpreter
     "credential", "Adds a credential file to be used to the list"
   ).withRequiredArg().ofType(classOf[String])
 
+  private val _classifier = parser.accepts(
+    "classifier", "Sets the dependency's classifier"
+  ).withRequiredArg().ofType(classOf[String])
+
   /**
    * Execute a magic representing a line magic.
    *
@@ -86,7 +90,8 @@ class AddDeps extends LineMagic with IncludeInterpreter
         ignoreResolutionErrors  = !_abortOnResolutionErrors,
         extraRepositories       = repositoriesWithCreds,
         verbose                 = _verbose,
-        trace                   = _trace
+        trace                   = _trace,
+        artifactClassifier      = get(_classifier)
       )
 
       // pass the new Jars to the kernel
