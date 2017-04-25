@@ -36,15 +36,16 @@ import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.magic.MagicParser
 import org.apache.toree.kernel.protocol.v5.stream.KernelOutputStream
-import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage, MIMEType}
+import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage, MIMEType, SystemActorType}
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
 import org.apache.toree.utils.LogLike
 import scala.language.dynamics
 import scala.reflect.runtime.universe._
 import scala.util.DynamicVariable
+import org.apache.toree.interpreter.InterpreterTypes.InterpreterShutdownRequest
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Future, Await}
+import scala.concurrent.{Await, Future}
 
 /**
  * Represents the main kernel API to be used for interaction.
@@ -60,7 +61,8 @@ class Kernel (
   private val actorLoader: ActorLoader,
   val interpreterManager: InterpreterManager,
   val comm: CommManager,
-  val pluginManager: PluginManager
+  val pluginManager: PluginManager,
+  requestShutdown: => Unit
 ) extends KernelLike with LogLike {
 
   /**
@@ -292,6 +294,20 @@ class Kernel (
     constructStream(currentInputStream, currentInputKernelMessage, kernelMessage, { kernelMessage =>
       this.factory(parentMessage = kernelMessage).newKernelInputStream()
     })
+  }
+
+  /**
+    * Requests that the kernel shut down.
+    */
+  override def shutdown(): Unit = {
+    // send to the ExecuteRequestRelay, which will include the ask_exit payload in
+    // the response to the current cell.
+    actorLoader.load(SystemActorType.ExecuteRequestRelay) ! InterpreterShutdownRequest
+    import scala.concurrent.ExecutionContext.Implicits.global
+    val shutdownFuture = Future {
+      Thread.sleep(100) // wait for the response to go out before shutting down
+      requestShutdown
+    }
   }
 
   /**

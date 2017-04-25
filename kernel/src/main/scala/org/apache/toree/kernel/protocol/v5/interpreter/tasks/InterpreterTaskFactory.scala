@@ -17,17 +17,18 @@
 
 package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
-import akka.actor.{ActorRefFactory, ActorRef}
+import akka.actor.{ActorRef, ActorRefFactory}
 import org.apache.toree.interpreter.Interpreter
+import org.apache.toree.kernel.api.KernelLike
 
-class InterpreterTaskFactory(interpreter: Interpreter) {
+class InterpreterTaskFactory(kernel: KernelLike, interpreter: Interpreter) {
   /**
    * Creates a new actor representing this specific task.
    * @param actorRefFactory The factory used to task actor will belong
    * @return The ActorRef created for the task
    */
   def ExecuteRequestTask(actorRefFactory: ActorRefFactory, name: String): ActorRef =
-    actorRefFactory.actorOf(ExecuteRequestTaskActor.props(interpreter), name)
+    actorRefFactory.actorOf(ExecuteRequestTaskActor.props(kernel, interpreter), name)
 
   /**
    *

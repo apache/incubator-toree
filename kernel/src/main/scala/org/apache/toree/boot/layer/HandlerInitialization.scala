@@ -89,18 +89,18 @@ trait StandardHandlerInitialization extends HandlerInitialization {
       actorSystem, actorLoader, interpreter, kernel, commRegistrar, commStorage, responseMap
     )
     initializeSystemActors(
-      actorSystem, actorLoader, interpreter, pluginManager, magicManager
+      actorSystem, actorLoader, kernel, interpreter, pluginManager, magicManager
     )
   }
 
   private def initializeSystemActors(
     actorSystem: ActorSystem, actorLoader: ActorLoader,
-    interpreter: Interpreter, pluginManager: PluginManager,
-    magicManager: MagicManager
+    kernel: Kernel, interpreter: Interpreter,
+    pluginManager: PluginManager, magicManager: MagicManager
   ): Unit = {
     logger.debug("Creating interpreter actor")
     val interpreterActor = actorSystem.actorOf(
-      Props(classOf[InterpreterActor], new InterpreterTaskFactory(interpreter)),
+      Props(classOf[InterpreterActor], new InterpreterTaskFactory(kernel, interpreter)),
       name = SystemActorType.Interpreter.toString
     )
 

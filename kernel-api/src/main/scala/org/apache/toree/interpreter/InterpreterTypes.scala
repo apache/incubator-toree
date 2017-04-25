@@ -25,4 +25,6 @@ object InterpreterTypes {
    * Represents the output from an interpret execution.
    */
   type ExecuteOutput = Map[String, String]
+
+  case class InterpreterShutdownRequest()
 }

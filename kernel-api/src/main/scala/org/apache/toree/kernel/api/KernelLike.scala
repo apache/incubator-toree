@@ -91,6 +91,11 @@ trait KernelLike {
   def in: InputStream
 
   /**
+    * Requests that the kernel shut down.
+    */
+  def shutdown(): Unit
+
+  /**
    * Represents data to be shared using the kernel as the middleman.
    *
    * @note Using Java structure to enable other languages to have easy access!

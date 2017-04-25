@@ -99,7 +99,8 @@ class KernelBootstrap(config: Config) extends LogLike {
       magicManager, pluginManager, responseMap) =
       initializeComponents(
         config      = config,
-        actorLoader = actorLoader
+        actorLoader = actorLoader,
+        requestShutdown = shutdown()
       )
     this.interpreters ++= Seq(interpreter)
 
