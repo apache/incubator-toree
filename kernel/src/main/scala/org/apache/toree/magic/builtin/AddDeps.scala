@@ -60,6 +60,10 @@ class AddDeps extends LineMagic with IncludeInterpreter
     "credential", "Adds a credential file to be used to the list"
   ).withRequiredArg().ofType(classOf[String])
 
+  private val _configuration = parser.accepts(
+    "ivy-configuration", "Sets the Ivy configuration for the dependency; defaults to \"default\""
+  ).withRequiredArg().ofType(classOf[String])
+
   private val _classifier = parser.accepts(
     "classifier", "Sets the dependency's classifier"
   ).withRequiredArg().ofType(classOf[String])
@@ -91,6 +95,7 @@ class AddDeps extends LineMagic with IncludeInterpreter
         extraRepositories       = repositoriesWithCreds,
         verbose                 = _verbose,
         trace                   = _trace,
+        configuration           = get(_configuration),
         artifactClassifier      = get(_classifier)
       )
 

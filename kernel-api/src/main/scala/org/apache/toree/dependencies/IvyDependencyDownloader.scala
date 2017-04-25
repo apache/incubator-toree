@@ -92,6 +92,7 @@ class IvyDependencyDownloader(
     extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean,
     trace: Boolean,
+    configuration: Option[String] = None,
     artifactType: Option[String] = None,
     artifactClassifier: Option[String] = None
   ): Seq[URI] = {
