@@ -100,6 +100,10 @@ class CommandLineOptions(args: Seq[String]) {
     "interpreter-plugin"
   ).withRequiredArg().ofType(classOf[String])
 
+  private val _idle_timeout = parser.accepts(
+    "idle-timeout"
+  ).withRequiredArg().ofType(classOf[String])
+
   private val options = parser.parse(args.map(_.trim): _*)
 
   /*
@@ -156,8 +160,8 @@ class CommandLineOptions(args: Seq[String]) {
       "default_repositories" -> getAll(_default_repositories).map(_.asJava)
         .flatMap(list => if (list.isEmpty) None else Some(list)),
       "default_repository_credentials" -> getAll(_default_repository_credentials).map(_.asJava)
-          .flatMap(list => if (list.isEmpty) None else Some(list))
-
+          .flatMap(list => if (list.isEmpty) None else Some(list)),
+      "idle_timeout" -> get(_idle_timeout)
     ).flatMap(removeEmptyOptions).asInstanceOf[Map[String, AnyRef]].asJava)
 
     commandLineConfig.withFallback(profileConfig).withFallback(ConfigFactory.load)

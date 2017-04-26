@@ -50,7 +50,9 @@ class ExecuteRequestTaskActor(
       Some(global.ScheduledTaskManager.instance.addTask(timeInterval = 30000, task = {
         val now = System.currentTimeMillis
         if (!interpreterRunning && (System.currentTimeMillis - lastExecuteRequest > timeoutMs)) {
-          logger.info(s"No execution requests in ${timeoutMs / 1000} seconds, shutting down.")
+          val msg = s"No execution requests in ${timeoutMs / 1000} seconds, shutting down."
+          println(msg)
+          logger.info(msg)
           kernel.shutdown()
         }
       }))
