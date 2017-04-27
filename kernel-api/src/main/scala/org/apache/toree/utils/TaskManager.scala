@@ -18,15 +18,12 @@
 package org.apache.toree.utils
 
 import java.util.concurrent.atomic.AtomicInteger
-
 import org.slf4j.LoggerFactory
-
-import scala.concurrent.{Promise, Future}
+import scala.concurrent.{Future, Promise}
 import java.util.concurrent._
-
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import org.apache.toree.security.KernelSecurityManager._
 import TaskManager._
-
 import scala.util.Try
 
 /**
@@ -49,16 +46,6 @@ class TaskManager(
   private val keepAliveTime: Long = DefaultKeepAliveTime
 ) {
   protected val logger = LoggerFactory.getLogger(this.getClass.getName)
-
-  private class TaskManagerThreadFactory extends ThreadFactory {
-    override def newThread(r: Runnable): Thread = {
-      val thread = new Thread(threadGroup, r)
-
-      logger.trace(s"Creating new thread named ${thread.getName}!")
-
-      thread
-    }
-  }
 
   private[utils] class ScalingThreadPoolExecutor extends ThreadPoolExecutor(
     minimumWorkers,
@@ -111,7 +98,14 @@ class TaskManager(
     }
   }
 
-  private val taskManagerThreadFactory = new TaskManagerThreadFactory
+  private val taskManagerThreadFactory = new ThreadFactoryBuilder()
+    .setThreadFactory(new ThreadFactory {
+      override def newThread(r: Runnable): Thread = new Thread(threadGroup, r)
+    })
+    .setDaemon(true)
+    .setNameFormat("task-manager-%d")
+    .build
+
   private val taskQueue = new ArrayBlockingQueue[Runnable](maxTasks)
 
   @volatile
