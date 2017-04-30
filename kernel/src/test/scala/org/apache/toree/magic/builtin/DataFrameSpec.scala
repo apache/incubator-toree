@@ -47,7 +47,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         val message: Either[ExecuteOutput, ExecuteFailure] = Right(mock[ExecuteAborted])
         val code = "code"
         when(interpreter.interpret(code)).thenReturn((Results.Aborted, message))
-        val output = magic.execute(code)
+        val output = magic.execute(code).asMap
         output.contains(MIMEType.PlainText) should be(true)
         output(MIMEType.PlainText) should be(DataFrameResponses.ErrorMessage(
           "html",
@@ -63,7 +63,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         val message: Either[ExecuteOutput, ExecuteFailure] = Right(mockExecuteError)
         val code = "code"
         when(interpreter.interpret(code)).thenReturn((Results.Error, message))
-        val output = magic.execute(code)
+        val output = magic.execute(code).asMap
         output.contains(MIMEType.PlainText) should be(true)
         output(MIMEType.PlainText) should be(DataFrameResponses.ErrorMessage(
           "html",
@@ -79,7 +79,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         val message: Either[ExecuteOutput, ExecuteFailure] = Right(mockExecuteError )
         val code = "code"
         when(interpreter.interpret(code)).thenReturn((Results.Error, message))
-        val output = magic.execute(code)
+        val output = magic.execute(code).asMap
         output.contains(MIMEType.PlainText) should be(true)
         output(MIMEType.PlainText) should be(DataFrameResponses.ErrorMessage(
           "html",
@@ -90,7 +90,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
       it("should return a plain text message with help when there are no args"){
         val (magic, _, _) = createMocks
         val code = ""
-        val output = magic.execute(code)
+        val output = magic.execute(code).asMap
         output.contains(MIMEType.PlainText) should be(true)
         output(MIMEType.PlainText).contains(DataFrameResponses.Usage) should be(true)
       }
@@ -98,7 +98,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
       it("should return a json message when json is the selected output"){
         val (magic, interpreter, converter) = createMocks
         val outputText = "test output"
-        val message: Either[ExecuteOutput, ExecuteFailure] = Left(outputText)
+        val message: Either[ExecuteOutput, ExecuteFailure] = Left(Map("text/plain" -> outputText))
         val mockDataFrame = mock[org.apache.spark.sql.DataFrame]
         val variableName = "variable"
         val executeCode =s"""--output=json
@@ -110,7 +110,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         doReturn(Success(outputText)).when(converter).convert(
           mockDataFrame,"json", 10
         )
-        val output = magic.execute(executeCode)
+        val output = magic.execute(executeCode).asMap
         output.contains(MIMEType.ApplicationJson) should be(true)
         output(MIMEType.ApplicationJson).contains(outputText) should be(true)
       }
@@ -118,7 +118,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
       it("should return an html message when html is the selected output"){
         val (magic, interpreter, converter) = createMocks
         val outputText = "test output"
-        val message: Either[ExecuteOutput, ExecuteFailure] = Left(outputText)
+        val message: Either[ExecuteOutput, ExecuteFailure] = Left(Map("text/plain" -> outputText))
         val mockDataFrame = mock[org.apache.spark.sql.DataFrame]
         val variableName = "variable"
         val executeCode =s"""--output=html
@@ -130,7 +130,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         doReturn(Success(outputText)).when(converter).convert(
           mockDataFrame,"html", 10
         )
-        val output = magic.execute(executeCode)
+        val output = magic.execute(executeCode).asMap
         output.contains(MIMEType.TextHtml) should be(true)
         output(MIMEType.TextHtml).contains(outputText) should be(true)
       }
@@ -138,7 +138,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
       it("should return a csv message when csv is the selected output"){
         val (magic, interpreter, converter) = createMocks
         val outputText = "test output"
-        val message: Either[ExecuteOutput, ExecuteFailure] = Left(outputText)
+        val message: Either[ExecuteOutput, ExecuteFailure] = Left(Map("text/plain" -> outputText))
         val mockDataFrame = mock[org.apache.spark.sql.DataFrame]
         val variableName = "variable"
         val executeCode =s"""--output=csv
@@ -150,7 +150,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         doReturn(Success(outputText)).when(converter).convert(
           mockDataFrame,"csv", 10
         )
-        val output = magic.execute(executeCode)
+        val output = magic.execute(executeCode).asMap
         output.contains(MIMEType.PlainText) should be(true)
         output(MIMEType.PlainText).contains(outputText) should be(true)
       }
@@ -158,7 +158,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
       it("should pass the limit argument to the converter"){
         val (magic, interpreter, converter) = createMocks
         val outputText = "test output"
-        val message: Either[ExecuteOutput, ExecuteFailure] = Left(outputText)
+        val message: Either[ExecuteOutput, ExecuteFailure] = Left(Map("text/plain" -> outputText))
         val mockDataFrame = mock[org.apache.spark.sql.DataFrame]
         val variableName = "variable"
         val executeCode =s"""--output=html --limit=3
@@ -177,7 +177,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
       it("should return a plain text message with help when the converter throws an exception"){
         val (magic, interpreter, converter) = createMocks
         val outputText = "test output"
-        val message: Either[ExecuteOutput, ExecuteFailure] = Left(outputText)
+        val message: Either[ExecuteOutput, ExecuteFailure] = Left(Map("text/plain" -> outputText))
         val mockDataFrame = mock[org.apache.spark.sql.DataFrame]
         val code = "variable"
         when(interpreter.interpret(code)).thenReturn((Results.Success, message))
@@ -186,7 +186,7 @@ class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeA
         doThrow(new RuntimeException()).when(converter).convert(
           mockDataFrame,"html", 10
         )
-        val output = magic.execute(code)
+        val output = magic.execute(code).asMap
         output.contains(MIMEType.PlainText) should be(true)
         output(MIMEType.PlainText).contains(DataFrameResponses.Usage) should be(true)
 

@@ -21,19 +21,16 @@ import java.io.{ByteArrayOutputStream, OutputStream}
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.typesafe.config.ConfigFactory
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.toree.Main
 import org.apache.toree.interpreter._
-import org.apache.toree.kernel.api.KernelLike
+import org.apache.toree.kernel.api.{DisplayMethodsLike, KernelLike}
 import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.interpreter.InterpreterActor
 import org.apache.toree.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
-import org.apache.toree.utils.MultiOutputStream
 import com.typesafe.config.ConfigFactory
-import org.apache.spark.{SparkConf, SparkContext}
+import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import test.utils.UncaughtExceptionSuppression
@@ -60,15 +57,14 @@ class InterpreterActorSpecForIntegration extends TestKit(
     override protected def bindKernelVariable(kernel: KernelLike): Unit = { }
   }
 
-  private val conf = new SparkConf()
-    .setMaster("local[*]")
-    .setAppName("Test Kernel")
-
 
   before {
     output.reset()
     // interpreter.start()
-    interpreter.init(mock[KernelLike])
+    val mockDisplayMethods = mock[DisplayMethodsLike]
+    val mockKernel = mock[KernelLike]
+    doReturn(mockDisplayMethods).when(mockKernel).display
+    interpreter.init(mockKernel)
 
     interpreter.doQuietly({
       //context = new SparkContext(conf) with NoSparkLogging

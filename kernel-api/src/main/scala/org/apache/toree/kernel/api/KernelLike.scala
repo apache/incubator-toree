@@ -23,6 +23,7 @@ import com.typesafe.config.Config
 import org.apache.spark.api.java.JavaSparkContext
 import org.apache.spark.{SparkContext, SparkConf}
 import org.apache.spark.sql.SparkSession
+import org.apache.toree.interpreter.ExecuteOutput
 
 /**
  * Interface for the kernel API. This does not include exposed variables.
@@ -37,7 +38,7 @@ trait KernelLike {
    * @return A tuple containing the result (true/false) and the output as a
    *         string
    */
-  def eval(code: Option[String]): (Boolean, String)
+  def eval(code: Option[String]): (Boolean, ExecuteOutput)
 
   /**
    * Returns a collection of methods that can be used to generate objects

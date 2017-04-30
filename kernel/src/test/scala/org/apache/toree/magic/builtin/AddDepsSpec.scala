@@ -57,7 +57,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         }
 
         val expected = LineMagicOutput
-        val actual = addDepsMagic.execute("notvalid")
+        addDepsMagic.execute("notvalid")
 
         printHelpWasRun should be (true)
         verify(mockKernel, times(0)).addJars(any())
@@ -65,7 +65,6 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
           anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean()
         )
-        actual should be (expected)
       }
 
       it("should set the retrievals transitive to true if provided") {

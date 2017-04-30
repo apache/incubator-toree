@@ -238,7 +238,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      Await.result(futureResultAndExecuteInfo, Duration.Inf)
    }
 
-   protected def interpretMapToCustomResult(future: Future[IR.Result]) = {
+   protected def interpretMapToCustomResult(future: Future[IR.Result]): Future[Results.Result] = {
      import scala.concurrent.ExecutionContext.Implicits.global
      future map {
        case IR.Success             => Results.Success
@@ -249,7 +249,8 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      }
    }
 
-   protected def interpretMapToResultAndOutput(future: Future[Results.Result]) = {
+   protected def interpretMapToResultAndOutput(future: Future[Results.Result]):
+      Future[(Results.Result, Either[Map[String, String], ExecuteError])] = {
      import scala.concurrent.ExecutionContext.Implicits.global
 
      future map {
