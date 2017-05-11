@@ -93,15 +93,19 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      settings = appendClassPath(settings)
 
      start()
-     bindKernelVariable(kernel)
 
      // ensure bindings are defined before allowing user code to run
-     bindSparkSession()
-     bindSparkContext()
-     defineImplicits()
+     bindVariables()
 
      this
    }
+
+  protected def bindVariables(): Unit = {
+    bindKernelVariable(kernel)
+    bindSparkSession()
+    bindSparkContext()
+    defineImplicits()
+  }
 
    protected[scala] def buildClasspath(classLoader: ClassLoader): String = {
 
@@ -367,7 +371,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     doQuietly(interpret(code))
   }
 
-   override def classLoader: ClassLoader = _runtimeClassloader
+  override def classLoader: ClassLoader = _runtimeClassloader
 
   /**
     * Returns the language metadata for syntax highlighting
