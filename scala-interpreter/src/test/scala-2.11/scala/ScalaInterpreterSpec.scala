@@ -19,15 +19,16 @@ package org.apache.toree.kernel.interpreter.scala
 
 import java.io.{InputStream, OutputStream}
 import java.net.{URL, URLClassLoader}
-
+import org.apache.spark.SparkContext
+import org.apache.spark.sql.SparkSession
 import org.apache.toree.interpreter.Results.Result
 import org.apache.toree.interpreter._
+import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.utils.TaskManager
 import org.mockito.Matchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
-
 import scala.concurrent.Future
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.{IMain, IR, JPrintWriter}
@@ -41,6 +42,9 @@ class ScalaInterpreterSpec extends FunSpec
   private var mockSparkIMain: IMain                  = _
   private var mockTaskManager: TaskManager                = _
   private var mockSettings: Settings                      = _
+  private var mockKernel: KernelLike                      = _
+  private var mockSparkSession: SparkSession              = _
+  private var mockSparkContext: SparkContext              = _
 
   trait StubbedUpdatePrintStreams extends Interpreter {
     override def updatePrintStreams(
@@ -91,6 +95,8 @@ class ScalaInterpreterSpec extends FunSpec
     override def newTaskManager(): TaskManager = mockTaskManager
     override def newSettings(args: List[String]): Settings = mockSettings
 
+    override protected def kernel: KernelLike = mockKernel
+
     // mocking out these
     override protected def reinitializeSymbols(): Unit = {}
     override protected def refreshDefinitions(): Unit = {}
@@ -110,6 +116,12 @@ class ScalaInterpreterSpec extends FunSpec
     doReturn(mockSettingsClasspath).when(mockSettings).classpath
     doNothing().when(mockSettings).embeddedDefaults(any[ClassLoader])
 
+    mockKernel = mock[KernelLike]
+    mockSparkSession = mock[SparkSession]
+    mockSparkContext = mock[SparkContext]
+    doReturn(mockSparkSession).when(mockKernel).sparkSession
+    doReturn(mockSparkContext).when(mockKernel).sparkContext
+
     interpreter = new StubbedStartInterpreter
 
     interpreterNoPrintStreams =
@@ -120,6 +132,9 @@ class ScalaInterpreterSpec extends FunSpec
     mockSparkIMain  = null
     mockTaskManager = null
     mockSettings    = null
+    mockKernel      = null
+    mockSparkSession = null
+    mockSparkContext = null
     interpreter     = null
   }
 
@@ -193,12 +208,29 @@ class ScalaInterpreterSpec extends FunSpec
         }
       }
 
-      it("should call restart() on the task manager") {
+      it("should call restart() on the task manager and cancelAllJobs on SparkContext") {
+        interpreterNoPrintStreams.start()
+
+        // cancelAllJobs still leaves the task running
+        doReturn(true).when(mockTaskManager).isExecutingTask
+
+        interpreterNoPrintStreams.interrupt()
+
+        // restart is called
+        verify(mockSparkContext).cancelAllJobs()
+        verify(mockTaskManager).restart()
+      }
+
+      it("should only call cancelAllJobs and not restart if task execution ends") {
         interpreterNoPrintStreams.start()
 
         interpreterNoPrintStreams.interrupt()
 
-        verify(mockTaskManager).restart()
+        // Spark jobs are cancelled
+        verify(mockSparkContext).cancelAllJobs()
+        // The task manager is not executing, so it is not restarted
+        verify(mockTaskManager, atLeastOnce).isExecutingTask
+        verifyNoMoreInteractions(mockSparkContext)
       }
     }
 
