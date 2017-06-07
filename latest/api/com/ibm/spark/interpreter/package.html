@@ -1,0 +1,305 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>interpreter - com.ibm.spark.interpreter</title>
+          <meta name="description" content="interpreter - com.ibm.spark.interpreter" />
+          <meta name="keywords" content="interpreter com.ibm.spark.interpreter" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../index.html';
+            var hash = 'com.ibm.spark.interpreter.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.ibm">ibm</a>.<a href="../package.html" class="extype" name="com.ibm.spark">spark</a></p>
+        <h1>interpreter</h1>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">interpreter</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="com.ibm.spark.interpreter"><span>interpreter</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show all</span></li>
+            </ol>
+            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="com.ibm.spark.interpreter.ExecuteAborted" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteAbortedextendsExecuteFailure"></a>
+      <a id="ExecuteAborted:ExecuteAborted"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteAborted.html"><span class="name">ExecuteAborted</span></a><span class="result"> extends <a href="ExecuteFailure.html" class="extype" name="com.ibm.spark.interpreter.ExecuteFailure">ExecuteFailure</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Represents an aborted execution.</p>
+    </li><li name="com.ibm.spark.interpreter.ExecuteError" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteErrorextendsExecuteFailurewithProductwithSerializable"></a>
+      <a id="ExecuteError:ExecuteError"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteError.html"><span class="name">ExecuteError</span></a><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="value">value: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="stackTrace">stackTrace: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result"> extends <a href="ExecuteFailure.html" class="extype" name="com.ibm.spark.interpreter.ExecuteFailure">ExecuteFailure</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Represents an error resulting from interpret execution.</p>
+    </li><li name="com.ibm.spark.interpreter.ExecuteFailure" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ExecuteFailureextendsAnyRef"></a>
+      <a id="ExecuteFailure:ExecuteFailure"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ExecuteFailure.html"><span class="name">ExecuteFailure</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Represents a generic failure in execution.</p>
+    </li><li name="com.ibm.spark.interpreter.ExecuteOutput" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExecuteOutput=String"></a>
+      <a id="ExecuteOutput:ExecuteOutput"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">type</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ExecuteOutput</span><span class="result"> = <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4>
+      <p class="shortcomment cmt">Represents the output from an interpret execution.</p>
+    </li><li name="com.ibm.spark.interpreter.Interpreter" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="InterpreterextendsAnyRef"></a>
+      <a id="Interpreter:Interpreter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="Interpreter.html"><span class="name">Interpreter</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.interpreter.ScalaInterpreter" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ScalaInterpreterextendsInterpreter"></a>
+      <a id="ScalaInterpreter:ScalaInterpreter"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ScalaInterpreter.html"><span class="name">ScalaInterpreter</span></a><span class="result"> extends <a href="Interpreter.html" class="extype" name="com.ibm.spark.interpreter.Interpreter">Interpreter</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.interpreter.SettingsProducerLike" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="SettingsProducerLikeextendsAnyRef"></a>
+      <a id="SettingsProducerLike:SettingsProducerLike"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="SettingsProducerLike.html"><span class="name">SettingsProducerLike</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.interpreter.SparkIMainProducerLike" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="SparkIMainProducerLikeextendsAnyRef"></a>
+      <a id="SparkIMainProducerLike:SparkIMainProducerLike"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="SparkIMainProducerLike.html"><span class="name">SparkIMainProducerLike</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.interpreter.StandardSettingsProducer" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="StandardSettingsProducerextendsSettingsProducerLike"></a>
+      <a id="StandardSettingsProducer:StandardSettingsProducer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="StandardSettingsProducer.html"><span class="name">StandardSettingsProducer</span></a><span class="result"> extends <a href="SettingsProducerLike.html" class="extype" name="com.ibm.spark.interpreter.SettingsProducerLike">SettingsProducerLike</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.interpreter.StandardSparkIMainProducer" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="StandardSparkIMainProducerextendsSparkIMainProducerLike"></a>
+      <a id="StandardSparkIMainProducer:StandardSparkIMainProducer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="StandardSparkIMainProducer.html"><span class="name">StandardSparkIMainProducer</span></a><span class="result"> extends <a href="SparkIMainProducerLike.html" class="extype" name="com.ibm.spark.interpreter.SparkIMainProducerLike">SparkIMainProducerLike</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.interpreter.StandardTaskManagerProducer" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="StandardTaskManagerProducerextendsTaskManagerProducerLike"></a>
+      <a id="StandardTaskManagerProducer:StandardTaskManagerProducer"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="StandardTaskManagerProducer.html"><span class="name">StandardTaskManagerProducer</span></a><span class="result"> extends <a href="TaskManagerProducerLike.html" class="extype" name="com.ibm.spark.interpreter.TaskManagerProducerLike">TaskManagerProducerLike</a></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.interpreter.TaskManagerProducerLike" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="TaskManagerProducerLikeextendsAnyRef"></a>
+      <a id="TaskManagerProducerLike:TaskManagerProducerLike"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="TaskManagerProducerLike.html"><span class="name">TaskManagerProducerLike</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="com.ibm.spark.interpreter.Results" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Results"></a>
+      <a id="Results:Results"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Results$.html"><span class="name">Results</span></a>
+      </span>
+      </h4>
+      <p class="comment cmt">Represents interpreter results, mostly taken from the
+tools.</p>
+    </li><li name="com.ibm.spark.interpreter.imports" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="imports"></a>
+      <a id="imports:imports"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="imports/package.html"><span class="name">imports</span></a>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../../lib/template.js"></script>
+    </body>
+      </html>

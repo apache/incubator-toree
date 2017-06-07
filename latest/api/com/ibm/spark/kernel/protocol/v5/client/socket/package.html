@@ -1,0 +1,252 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+        <head>
+          <title>socket - com.ibm.spark.kernel.protocol.v5.client.socket</title>
+          <meta name="description" content="socket - com.ibm.spark.kernel.protocol.v5.client.socket" />
+          <meta name="keywords" content="socket com.ibm.spark.kernel.protocol.v5.client.socket" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../../../../index.html';
+            var hash = 'com.ibm.spark.kernel.protocol.v5.client.socket.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img src="../../../../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../../../../package.html" class="extype" name="com">com</a>.<a href="../../../../../../package.html" class="extype" name="com.ibm">ibm</a>.<a href="../../../../../package.html" class="extype" name="com.ibm.spark">spark</a>.<a href="../../../../package.html" class="extype" name="com.ibm.spark.kernel">kernel</a>.<a href="../../../package.html" class="extype" name="com.ibm.spark.kernel.protocol">protocol</a>.<a href="../../package.html" class="extype" name="com.ibm.spark.kernel.protocol.v5">v5</a>.<a href="../package.html" class="extype" name="com.ibm.spark.kernel.protocol.v5.client">client</a></p>
+        <h1>socket</h1>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">socket</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="com.ibm.spark.kernel.protocol.v5.client.socket.HeartbeatClient" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HeartbeatClientextendsActorwithLogLike"></a>
+      <a id="HeartbeatClient:HeartbeatClient"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="HeartbeatClient.html"><span class="name">HeartbeatClient</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="../../../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">The client endpoint for heartbeat messages specified in the IPython Kernel
+Spec.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.IOPubClient" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="IOPubClientextendsActorwithLogLike"></a>
+      <a id="IOPubClient:IOPubClient"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="IOPubClient.html"><span class="name">IOPubClient</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="../../../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">The client endpoint for IOPub messages specified in the IPython Kernel Spec</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.ShellClient" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ShellClientextendsActorwithLogLike"></a>
+      <a id="ShellClient:ShellClient"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ShellClient.html"><span class="name">ShellClient</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="../../../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">The client endpoint for Shell messages specified in the IPython Kernel Spec</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.SocketConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SocketConfigextendsProductwithSerializable"></a>
+      <a id="SocketConfig:SocketConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="SocketConfig.html"><span class="name">SocketConfig</span></a><span class="params">(<span name="stdin_port">stdin_port: <span class="extype" name="scala.Int">Int</span></span>, <span name="control_port">control_port: <span class="extype" name="scala.Int">Int</span></span>, <span name="hb_port">hb_port: <span class="extype" name="scala.Int">Int</span></span>, <span name="shell_port">shell_port: <span class="extype" name="scala.Int">Int</span></span>, <span name="iopub_port">iopub_port: <span class="extype" name="scala.Int">Int</span></span>, <span name="ip">ip: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="transport">transport: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="signature_scheme">signature_scheme: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="key">key: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.SocketConnection" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SocketConnectionextendsAnyRef"></a>
+      <a id="SocketConnection:SocketConnection"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="SocketConnection.html"><span class="name">SocketConnection</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">Represent a connection string for a socket</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.SocketFactory" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SocketFactoryextendsAnyRef"></a>
+      <a id="SocketFactory:SocketFactory"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="SocketFactory.html"><span class="name">SocketFactory</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      <p class="comment cmt">A Factor class to provide various socket connections for IPython Kernel Spec.</p>
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.StdinClient" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StdinClientextendsActorwithLogLike"></a>
+      <a id="StdinClient:StdinClient"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="StdinClient.html"><span class="name">StdinClient</span></a><span class="result"> extends <span class="extype" name="akka.actor.Actor">Actor</span> with <a href="../../../../../utils/LogLike.html" class="extype" name="com.ibm.spark.utils.LogLike">LogLike</a></span>
+      </span>
+      </h4>
+      <p class="comment cmt">The client endpoint for Stdin messages specified in the IPython Kernel Spec</p>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="com.ibm.spark.kernel.protocol.v5.client.socket.HeartbeatMessage" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="HeartbeatMessage"></a>
+      <a id="HeartbeatMessage:HeartbeatMessage"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="HeartbeatMessage$.html"><span class="name">HeartbeatMessage</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.SocketConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SocketConfig"></a>
+      <a id="SocketConfig:SocketConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="SocketConfig$.html"><span class="name">SocketConfig</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.SocketConnection" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SocketConnection"></a>
+      <a id="SocketConnection:SocketConnection"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="SocketConnection$.html"><span class="name">SocketConnection</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.SocketFactory" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SocketFactory"></a>
+      <a id="SocketFactory:SocketFactory"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="SocketFactory$.html"><span class="name">SocketFactory</span></a>
+      </span>
+      </h4>
+      
+    </li><li name="com.ibm.spark.kernel.protocol.v5.client.socket.StdinClient" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="StdinClient"></a>
+      <a id="StdinClient:StdinClient"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="StdinClient$.html"><span class="name">StdinClient</span></a>
+      </span>
+      </h4>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../../../../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../../../../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../../../../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../../../../../../lib/template.js"></script>
+    </body>
+      </html>

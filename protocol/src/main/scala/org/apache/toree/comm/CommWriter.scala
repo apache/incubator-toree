@@ -17,7 +17,6 @@
 
 package org.apache.toree.comm
 
-import org.apache.toree.annotations.Experimental
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
@@ -30,7 +29,6 @@ import java.io.Writer
  * @param commId The comm id associated with this writer (defaults to a
  *               random UUID)
  */
-@Experimental
 abstract class CommWriter(
   private[comm] val commId: UUID = java.util.UUID.randomUUID().toString
 ) extends Writer {
