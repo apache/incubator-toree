@@ -22,7 +22,6 @@ import org.apache.toree.kernel.protocol.v5._
 
 import scala.util.Try
 
-@Experimental
 object CommCallbacks {
   type OpenCallback = (CommWriter, UUID, String, MsgData) => Unit
   type MsgCallback = (CommWriter, UUID, MsgData) => Unit
@@ -39,7 +38,6 @@ import org.apache.toree.comm.CommCallbacks._
  * @param msgCallbacks The sequence of msg callbacks
  * @param closeCallbacks The sequence of close callbacks
  */
-@Experimental
 class CommCallbacks(
   val openCallbacks: Seq[CommCallbacks.OpenCallback] = Nil,
   val msgCallbacks: Seq[CommCallbacks.MsgCallback] = Nil,

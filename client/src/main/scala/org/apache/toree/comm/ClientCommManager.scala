@@ -29,7 +29,6 @@ import org.apache.toree.kernel.protocol.v5.{KMBuilder, UUID}
  * @param kmBuilder The KMBuilder to use with the ClientCommWriter
  * @param commRegistrar The registrar to use for callback registration
  */
-@Experimental
 class ClientCommManager(
   private val actorLoader: ActorLoader,
   private val kmBuilder: KMBuilder,
