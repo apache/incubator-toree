@@ -17,7 +17,6 @@
 
 package org.apache.toree.comm
 
-import org.apache.toree.annotations.Experimental
 import org.apache.toree.kernel.protocol.v5
 
 import scala.collection.immutable
@@ -28,7 +27,6 @@ import scala.collection.immutable
  * @param callbackStorage The structure used to connect targets with callbacks
  * @param linkStorage The structure used to connect targets to specific ids
  */
-@Experimental
 class CommStorage(
   private val callbackStorage: collection.mutable.Map[String, CommCallbacks] =
     new collection.mutable.HashMap[String, CommCallbacks](),
