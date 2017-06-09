@@ -47,7 +47,9 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
                 ds.agg(sum($"bar")).collect.head(0)"""), 
           'result': '3'
         },
-        {'code': '%showtypes on\n1', 'result': 'Int = 1'},
+        # showtypes controls info displayed to stdout, return values are
+        # handled by Jupyter displayers.
+        {'code': '%showtypes on\n1', 'result': '1'},
         {'code': '%showtypes off\n1', 'result': '1'}
     ]
 
