@@ -87,7 +87,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
         val interpreterActor =
           system.actorOf(Props(
             classOf[InterpreterActor],
-            new InterpreterTaskFactory(interpreter)
+            new InterpreterTaskFactory(mock[KernelLike], interpreter)
           ))
 
         val executeRequest = ExecuteRequest(
@@ -110,7 +110,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
         val interpreterActor =
           system.actorOf(Props(
             classOf[InterpreterActor],
-            new InterpreterTaskFactory(interpreter)
+            new InterpreterTaskFactory(mock[KernelLike], interpreter)
           ))
 
         val executeRequest = ExecuteRequest(
