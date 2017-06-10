@@ -18,7 +18,6 @@
 package org.apache.toree.kernel.interpreter.scala
 
 import java.io.ByteArrayOutputStream
-import java.nio.charset.Charset
 import java.util.concurrent.{ExecutionException, TimeoutException, TimeUnit}
 import com.typesafe.config.{Config, ConfigFactory}
 import jupyter.Displayers
