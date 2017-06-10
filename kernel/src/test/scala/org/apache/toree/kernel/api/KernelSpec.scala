@@ -77,7 +77,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
 
     kernel = new Kernel(
       mockConfig, mockActorLoader, mockInterpreterManager, mockCommManager,
-      mockPluginManager
+      mockPluginManager, ()
     )
 
     spyKernel = spy(kernel)
