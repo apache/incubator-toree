@@ -18,14 +18,14 @@
 package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
 import java.io.OutputStream
-
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.typesafe.config.ConfigFactory
 import org.apache.toree.interpreter._
+import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
-import org.mockito.Matchers.{anyBoolean, anyString, anyObject}
+import org.mockito.Matchers.{anyBoolean, anyObject, anyString}
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
@@ -56,6 +56,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         val executeRequestTask =
           system.actorOf(Props(
             classOf[ExecuteRequestTaskActor],
+            mock[KernelLike],
             mockInterpreter
           ))
 
@@ -82,6 +83,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         val executeRequestTask =
           system.actorOf(Props(
             classOf[ExecuteRequestTaskActor],
+            mock[KernelLike],
             mockInterpreter
           ))
 
@@ -108,6 +110,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         val executeRequestTask =
           system.actorOf(Props(
             classOf[ExecuteRequestTaskActor],
+            mock[KernelLike],
             mockInterpreter
           ))
 
@@ -134,6 +137,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         val executeRequestTask =
           system.actorOf(Props(
             classOf[ExecuteRequestTaskActor],
+            mock[KernelLike],
             mockInterpreter
           ))
 
@@ -160,6 +164,7 @@ class ExecuteRequestTaskActorSpec extends TestKit(
         val executeRequestTask =
           system.actorOf(Props(
             classOf[ExecuteRequestTaskActor],
+            mock[KernelLike],
             mockInterpreter
           ))
 
