@@ -33,6 +33,8 @@ import org.apache.toree.magic.MagicOutput
 
 object ScalaDisplayers {
 
+  // This method is called to ensure this class is loaded. When loaded, the display methods below
+  // are registered with jupyter.Displayers and will get used to display Scala and Java objects.
   def ensureLoaded(): Unit = ()
 
   private def toJava(body: => Map[String, String]): util.Map[String, String] = {
