@@ -45,7 +45,7 @@ class ExecuteRequestTaskActor(
   @volatile private var lastExecuteRequest: Long = System.currentTimeMillis
 
   override def preStart(): Unit = {
-    shutdownMonitorTaskId = if (kernel.config.hasPath("idle_timeout")) {
+    shutdownMonitorTaskId = if (kernel.config != null && kernel.config.hasPath("idle_timeout")) {
       val timeoutMs = kernel.config.getDuration("idle_timeout", TimeUnit.MILLISECONDS)
       Some(global.ScheduledTaskManager.instance.addTask(timeInterval = 30000, task = {
         val now = System.currentTimeMillis
