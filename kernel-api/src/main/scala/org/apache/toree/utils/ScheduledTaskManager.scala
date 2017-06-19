@@ -20,8 +20,8 @@ package org.apache.toree.utils
 import scala.language.existentials
 import java.util.concurrent._
 import java.util.UUID
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import ScheduledTaskManager._
-
 import scala.util.Try
 
 /**
@@ -38,7 +38,11 @@ class ScheduledTaskManager(
   private val defaultExecutionDelay: Long = DefaultExecutionDelay,
   private val defaultTimeInterval: Long = DefaultTimeInterval
 ) {
-  private[utils] val _scheduler = new ScheduledThreadPoolExecutor(totalThreads)
+  private[utils] val _scheduler = new ScheduledThreadPoolExecutor(
+    totalThreads, new ThreadFactoryBuilder()
+      .setDaemon(true)
+      .setNameFormat("scheduled-task-manager-%d")
+      .build())
   _scheduler.setRemoveOnCancelPolicy(true)
 
   private val _taskMap = new ConcurrentHashMap[String, ScheduledFuture[_]]()

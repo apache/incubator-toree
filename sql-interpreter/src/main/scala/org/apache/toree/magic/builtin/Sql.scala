@@ -18,8 +18,7 @@ package org.apache.toree.magic.builtin
 
 import org.apache.toree.interpreter.{ExecuteError, ExecuteAborted}
 import org.apache.toree.kernel.interpreter.sql.{SqlInterpreter, SqlException}
-import org.apache.toree.kernel.protocol.v5.MIMEType
-import org.apache.toree.magic.{CellMagicOutput, CellMagic}
+import org.apache.toree.magic.{MagicOutput, CellMagic}
 import org.apache.toree.magic.dependencies.IncludeKernel
 import org.apache.toree.plugins.annotations.Event
 
@@ -29,7 +28,7 @@ import org.apache.toree.plugins.annotations.Event
 class Sql extends CellMagic with IncludeKernel {
 
   @Event(name = "sql")
-  override def execute(code: String): CellMagicOutput = {
+  override def execute(code: String): MagicOutput = {
     val sparkR = kernel.interpreter("SQL")
 
     if (sparkR.isEmpty || sparkR.get == null)
@@ -40,7 +39,7 @@ class Sql extends CellMagic with IncludeKernel {
         val (_, output) = sparkRInterpreter.interpret(code)
         output match {
           case Left(executeOutput) =>
-            CellMagicOutput(MIMEType.PlainText -> executeOutput)
+            MagicOutput(executeOutput.toSeq:_*)
           case Right(executeFailure) => executeFailure match {
             case executeAborted: ExecuteAborted =>
               throw new SqlException("SQL code was aborted!")

@@ -65,6 +65,9 @@ class KernelInputStreamSpec
     // set of data
     doReturn(system.actorSelection(fakeInputOutputHandlerActor.path.toString))
       .when(mockActorLoader).load(MessageType.Incoming.InputReply)
+    // Allow time for the actors to start. This avoids read() hanging forever
+    // when running tests in gradle.
+    Thread.sleep(100)
   }
 
   describe("KernelInputStream") {

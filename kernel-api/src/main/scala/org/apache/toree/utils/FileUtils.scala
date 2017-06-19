@@ -26,7 +26,7 @@ object FileUtils {
   val parentTempDir: String = "toree-tmp-dir"
 
   private def deleteDirRecur(file: File): Unit = {
-  	// delete directory recursively
+    // delete directory recursively
     if(file.isDirectory){
       file.listFiles.foreach(deleteDirRecur)
     }
@@ -38,21 +38,21 @@ object FileUtils {
   private def createParentTemp() = {
     val dir = Files.createTempDirectory(parentTempDir).toFile
     sys.addShutdownHook{
-    	// addShutdownHook will ensure when JVM exits, the temporary directory 
-    	// assoicated with a given kernel would be deleted
-    deleteDirRecur(dir)
-	}
+      // addShutdownHook will ensure when JVM exits, the temporary directory
+      // assoicated with a given kernel would be deleted
+      deleteDirRecur(dir)
+    }
     dir
   }
 
-  lazy val parent: File = createParentTemp()
+  private lazy val parent: File = createParentTemp()
 
-   /**
-   * Create a directory with name specified under the "toree-tmp-dir"
-   * that created by Files.createTempDirectory
-   *
-   * @param name The name of the directory to be created
-   */
+  /**
+    * Create a directory with name specified under the "toree-tmp-dir"
+    * that created by Files.createTempDirectory
+    *
+    * @param name The name of the directory to be created
+    */
   def createManagedTempDirectory(name: String): File = {
     val dir = new File(parent, name)
     dir.mkdir()

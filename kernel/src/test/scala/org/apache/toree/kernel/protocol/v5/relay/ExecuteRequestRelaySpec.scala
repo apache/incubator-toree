@@ -18,13 +18,14 @@
 package org.apache.toree.kernel.protocol.v5.relay
 
 import java.io.OutputStream
+import java.util.concurrent.TimeUnit
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
-import org.apache.toree.kernel.protocol.v5.magic.{MagicParser, PostProcessor}
+import org.apache.toree.kernel.protocol.v5.magic.MagicParser
 import com.typesafe.config.ConfigFactory
 import org.apache.toree.plugins.PluginManager
 import org.apache.toree.plugins.dependencies.DependencyManager
@@ -32,6 +33,7 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import test.utils.MaxAkkaTestTimeout
+import scala.concurrent.duration.Duration
 
 object ExecuteRequestRelaySpec {
   val config = """
@@ -67,7 +69,6 @@ class ExecuteRequestRelaySpec extends TestKit(
         val executeRequest =
           ExecuteRequest("%myMagic", false, true, UserExpressions(), true)
 
-        val mockPostProcessor = mock[PostProcessor]
         val mockPluginManager = mock[PluginManager]
         val mockDependencyManager = mock[DependencyManager]
         doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
@@ -78,7 +79,7 @@ class ExecuteRequestRelaySpec extends TestKit(
 
         val executeRequestRelay = system.actorOf(Props(
           classOf[ExecuteRequestRelay], mockActorLoader,
-          mockPluginManager, mockMagicParser, mockPostProcessor
+          mockPluginManager, mockMagicParser
         ))
 
         // Send the message to the ExecuteRequestRelay
@@ -88,7 +89,7 @@ class ExecuteRequestRelaySpec extends TestKit(
         // Expected does not actually match real return of magic, which
         // is a tuple of ExecuteReply and ExecuteResult
         val expected = new ExecuteAborted()
-        interpreterActorProbe.expectMsgClass(
+        interpreterActorProbe.expectMsgClass(max = Duration(5, TimeUnit.SECONDS),
           classOf[(ExecuteRequest, KernelMessage, OutputStream)]
         )
 
@@ -105,7 +106,6 @@ class ExecuteRequestRelaySpec extends TestKit(
         val executeRequest =
           ExecuteRequest("%myMagic", false, true, UserExpressions(), true)
 
-        val mockPostProcessor = mock[PostProcessor]
         val mockPluginManager = mock[PluginManager]
         val mockDependencyManager = mock[DependencyManager]
         doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
@@ -116,7 +116,7 @@ class ExecuteRequestRelaySpec extends TestKit(
 
         val executeRequestRelay = system.actorOf(Props(
           classOf[ExecuteRequestRelay], mockActorLoader,
-          mockPluginManager, mockMagicParser, mockPostProcessor
+          mockPluginManager, mockMagicParser
         ))
 
         // Send the message to the ExecuteRequestRelay
@@ -145,13 +145,10 @@ class ExecuteRequestRelaySpec extends TestKit(
 
       it("should return an (ExecuteReply, ExecuteResult) on interpreter " +
          "success") {
-        val expected = "SOME OTHER VALUE"
+        val expected = Map(MIMEType.PlainText -> "SOME OTHER VALUE")
         val executeRequest =
           ExecuteRequest("notAMagic", false, true, UserExpressions(), true)
 
-        val mockPostProcessor = mock[PostProcessor]
-        doReturn(Data(MIMEType.PlainText -> expected))
-          .when(mockPostProcessor).process(expected)
         val mockPluginManager = mock[PluginManager]
         val mockDependencyManager = mock[DependencyManager]
         doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
@@ -162,7 +159,7 @@ class ExecuteRequestRelaySpec extends TestKit(
 
         val executeRequestRelay = system.actorOf(Props(
           classOf[ExecuteRequestRelay], mockActorLoader,
-          mockPluginManager, mockMagicParser, mockPostProcessor
+          mockPluginManager, mockMagicParser
         ))
 
         // Send the message to the ExecuteRequestRelay
@@ -183,7 +180,7 @@ class ExecuteRequestRelaySpec extends TestKit(
           MaxAkkaTestTimeout,
           (
             ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
-            ExecuteResult(1, Data(MIMEType.PlainText -> expected), Metadata())
+            ExecuteResult(1, expected, Metadata())
           )
         )
       }

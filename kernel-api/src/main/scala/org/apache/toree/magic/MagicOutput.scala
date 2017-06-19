@@ -15,20 +15,11 @@
  *  limitations under the License
  */
 
-package org.apache.toree.magic.dependencies
+package org.apache.toree.magic
 
-import org.apache.spark.SparkContext
-import org.apache.toree.magic.Magic
-import org.apache.toree.plugins.Plugin
-import org.apache.toree.plugins.annotations.{Event, Init}
-
-trait IncludeSparkContext extends Plugin {
-  this: Magic =>
-
-  @Event(name = "sparkReady") protected def sparkReady(
-    newSparkContext: SparkContext
-  ) = _sparkContext = newSparkContext
-
-  private var _sparkContext: SparkContext = _
-  def sparkContext: SparkContext = _sparkContext
+/**
+ * Represents the output of a magic execution.
+ */
+case class MagicOutput(data: (String, String)*) {
+  lazy val asMap: Map[String, String] = Map(data:_*)
 }

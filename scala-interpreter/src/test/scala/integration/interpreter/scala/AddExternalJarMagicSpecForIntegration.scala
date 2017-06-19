@@ -75,7 +75,7 @@ class AddExternalJarMagicSpecForIntegration
         // Should now run
         interpreter.interpret(
           """println(new TestClass().sayHello("Chip"))"""
-        ) should be ((Results.Success, Left("")))
+        ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("Hello, Chip\n")
       }
 
@@ -96,7 +96,7 @@ class AddExternalJarMagicSpecForIntegration
         // Should now run
         interpreter.interpret(
           """println(new TestClass().runMe())"""
-        ) should be ((Results.Success, Left("")))
+        ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("You ran me!\n")
       }
 
@@ -129,13 +129,13 @@ class AddExternalJarMagicSpecForIntegration
         // Should now run
         interpreter.interpret(
           """println(new com.ibm.testjar.TestClass().sayHello("Chip"))"""
-        ) should be ((Results.Success, Left("")))
+        ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("Hello, Chip\n")
         outputResult.reset()
 
         interpreter.interpret(
           """println(new com.ibm.testjar2.TestClass().CallMe())"""
-        ) should be ((Results.Success, Left("")))
+        ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("3\n")
       }
 
@@ -169,13 +169,13 @@ class AddExternalJarMagicSpecForIntegration
         // Should now run
         interpreter.interpret(
           """println(new com.ibm.testjar.TestClass().sayHello("Chip"))"""
-        ) should be ((Results.Success, Left("")))
+        ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("Hello, Chip\n")
         outputResult.reset()
 
         interpreter.interpret(
           """println(new com.ibm.testjar2.TestClass().CallMe())"""
-        ) should be ((Results.Success, Left("")))
+        ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("3\n")
       }
 

@@ -19,7 +19,6 @@ package org.apache.toree.kernel.interpreter.scala
 
 import java.io._
 import java.net.URL
-import java.nio.file.Files
 
 import org.apache.toree.global.StreamState
 import org.apache.toree.interpreter.InterpreterTypes.ExecuteOutput
@@ -405,66 +404,43 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     exceptionHack.lastException = null
   }
 
-  protected def interpretMapToResultAndExecuteInfo(
-    future: Future[(Results.Result, String)]
-  ): Future[(Results.Result, Either[ExecuteOutput, ExecuteFailure])] = {
-    import scala.concurrent.ExecutionContext.Implicits.global
-    future map {
-      case (Results.Success, output)    => (Results.Success, Left(output))
-      case (Results.Incomplete, output) => (Results.Incomplete, Left(output))
-      case (Results.Aborted, output)    => (Results.Aborted, Right(null))
-      case (Results.Error, output)      =>
-        val ex = Some(retrieveLastException)
-        (
-          Results.Error,
-          Right(
-            interpretConstructExecuteError(
-              ex,
-              output
-            )
-          )
-        )
-    }
-  }
+  protected def interpretConstructExecuteError(output: String) = {
+    Option(retrieveLastException) match {
+      // Runtime error
+      case Some(e) =>
+        val ex = e.asInstanceOf[Throwable]
+        clearLastException()
 
-  protected def interpretConstructExecuteError(
-    value: Option[AnyRef],
-    output: String
-  ) = value match {
-    // Runtime error
-    case Some(e) if e != null =>
-      val ex = e.asInstanceOf[Throwable]
-      clearLastException()
+        // The scala REPL does a pretty good job of returning us a stack trace that is free from all the bits that the
+        // interpreter uses before it.
+        //
+        // The REPL emits its message as something like this, so trim off the first and last element
+        //
+        //    java.lang.ArithmeticException: / by zero
+        //    at failure(<console>:17)
+        //    at call_failure(<console>:19)
+        //    ... 40 elided
 
-      // The scala REPL does a pretty good job of returning us a stack trace that is free from all the bits that the
-      // interpreter uses before it.
-      //
-      // The REPL emits its message as something like this, so trim off the first and last element
-      //
-      //    java.lang.ArithmeticException: / by zero
-      //    at failure(<console>:17)
-      //    at call_failure(<console>:19)
-      //    ... 40 elided
+        val formattedException = output.split("\n")
 
-      val formattedException = output.split("\n")
-
-      ExecuteError(
-        ex.getClass.getName,
-        ex.getLocalizedMessage,
-        formattedException.slice(1, formattedException.size - 1).toList
-      )
-    // Compile time error, need to check internal reporter
-    case _ =>
-      if (iMain.reporter.hasErrors)
-      // TODO: This wrapper is not needed when just getting compile
-      // error that we are not parsing... maybe have it be purely
-      // output and have the error check this?
         ExecuteError(
-          "Compile Error", output, List()
+          ex.getClass.getName,
+          ex.getLocalizedMessage,
+          formattedException.slice(1, formattedException.size - 1).toList
         )
-      else
+      // Compile time error, need to check internal reporter
+      case _ =>
+        if (iMain.reporter.hasErrors)
+        // TODO: This wrapper is not needed when just getting compile
+        // error that we are not parsing... maybe have it be purely
+        // output and have the error check this?
+          ExecuteError(
+            "Compile Error", output, List()
+          )
+        else
         // May as capture the output here.  Could be useful
-        ExecuteError("Unknown Error", output, List())
+          ExecuteError("Unknown Error", output, List())
+    }
   }
 }
 

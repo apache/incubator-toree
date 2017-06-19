@@ -74,7 +74,8 @@ testOptions in (ThisBuild, Test) += Tests.Argument("-oDF")
 // Build-wide dependencies
 resolvers in ThisBuild  ++= Seq(
   "Apache Snapshots" at "http://repository.apache.org/snapshots/",
-  "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
+  "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
+  "Jitpack" at "https://jitpack.io"
 )
 updateOptions in ThisBuild := updateOptions.value.withCachedResolution(true)
 libraryDependencies in ThisBuild ++= Seq(
