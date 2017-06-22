@@ -127,6 +127,14 @@ class IvyDependencyDownloader(
       scalaCompilerArtifactId, new RegexpPatternMatcher(), null
     )
 
+    val scalaLangModuleId = new ModuleId("org.scala-lang.modules", "*")
+    val scalaLangArtifactId = new ArtifactId(
+      scalaLangModuleId, "*", "*", "*"
+    )
+    val scalaLangExclusion = new DefaultExcludeRule(
+      scalaLangArtifactId, new RegexpPatternMatcher(), null
+    )
+
     // Create our dependency descriptor
     val dependencyDescriptor = new DefaultDependencyDescriptor(
       md, ModuleRevisionId.newInstance(groupId, artifactId, version),
@@ -139,6 +147,7 @@ class IvyDependencyDownloader(
     md.addExcludeRule(sourcesExclusion)
     md.addExcludeRule(javadocExclusion)
     md.addExcludeRule(scalaCompilerExclusion)
+    md.addExcludeRule(scalaLangExclusion)
 
     // Exclude our base dependencies if marked to do so
     if (excludeBaseDependencies) {

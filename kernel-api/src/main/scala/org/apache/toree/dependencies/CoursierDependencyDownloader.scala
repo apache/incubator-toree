@@ -84,7 +84,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     // Grab exclusions using base dependencies (always exclude scala lang)
     val exclusions: Set[(String, String)] = (if (excludeBaseDependencies) {
       getBaseDependencies.map(_.module).map(m => (m.organization, m.name))
-    } else Nil).toSet ++ Set(("org.scala-lang", "*"))
+    } else Nil).toSet ++ Set(("org.scala-lang", "*"), ("org.scala-lang.modules", "*"))
 
     // Mark dependency that we want to download
     val start = Resolution(Set(
