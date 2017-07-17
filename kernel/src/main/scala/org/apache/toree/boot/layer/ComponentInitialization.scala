@@ -18,11 +18,12 @@
 package org.apache.toree.boot.layer
 
 import java.io.File
-import java.net.URL
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.ConcurrentHashMap
+
 import akka.actor.ActorRef
 import com.typesafe.config.Config
+
 import org.apache.spark.SparkConf
 import org.apache.toree.comm.{CommManager, CommRegistrar, CommStorage, KernelCommManager}
 import org.apache.toree.dependencies.{CoursierDependencyDownloader, Credentials, DependencyDownloader}
@@ -32,8 +33,9 @@ import org.apache.toree.kernel.protocol.v5.KMBuilder
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
-import org.apache.toree.utils.{LogLike, FileUtils}
+import org.apache.toree.utils.{FileUtils, LogLike, SparkUtils}
 import scala.collection.JavaConverters._
+
 import org.apache.toree.plugins.AllInterpretersReady
 
 /**
@@ -82,6 +84,8 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
     initializePlugins(config, pluginManager)
 
+    initializeSparkContext(config, kernel)
+
     interpreterManager.initializeInterpreters(kernel)
     
     pluginManager.fireEvent(AllInterpretersReady)
@@ -91,6 +95,18 @@ trait StandardComponentInitialization extends ComponentInitialization {
     (commStorage, commRegistrar, commManager,
       interpreterManager.defaultInterpreter.get, kernel,
       dependencyDownloader, kernel.magics, pluginManager, responseMap)
+
+  }
+
+  def initializeSparkContext(config:Config, kernel:Kernel) = {
+    // TOREE:425 Spark cluster mode requires a context to be initialized before
+    // it register the application as Running
+    if ( SparkUtils.isSparkClusterMode(kernel.sparkConf) ) {
+      if (kernel.sparkConf.get("spark.submit.deployMode").equalsIgnoreCase("cluster")) {
+        logger.info("Initializing Spark Context in cluster mode:")
+        logger.info("Spark Version: " + kernel.sparkSession.sparkContext.version)
+      }
+    }
 
   }
 
