@@ -20,8 +20,11 @@ package org.apache.toree.kernel.api
 import java.io.{InputStream, PrintStream}
 import java.net.URI
 import java.util.concurrent.{ConcurrentHashMap, TimeUnit, TimeoutException}
+
 import scala.collection.mutable
+
 import com.typesafe.config.Config
+
 import org.apache.spark.api.java.JavaSparkContext
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}
@@ -39,12 +42,12 @@ import org.apache.toree.kernel.protocol.v5.stream.KernelOutputStream
 import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage, MIMEType}
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
-import org.apache.toree.utils.LogLike
+import org.apache.toree.utils.{LogLike, SparkUtils}
 import scala.language.dynamics
 import scala.reflect.runtime.universe._
 import scala.util.DynamicVariable
 import scala.concurrent.duration.Duration
-import scala.concurrent.{Future, Await}
+import scala.concurrent.{Await, Future}
 
 /**
  * Represents the main kernel API to be used for interaction.
@@ -414,13 +417,15 @@ class Kernel (
           Await.result(sessionFuture, Duration(100, TimeUnit.MILLISECONDS))
         } catch {
           case timeout: TimeoutException =>
-            // getting the session is taking a long time, so assume that Spark
-            // is starting and print a message
-            display.content(
-              MIMEType.PlainText, "Waiting for a Spark session to start...")
+            // in cluster mode, the sparkContext is forced to initialize
+            if (SparkUtils.isSparkClusterMode(defaultSparkConf) == false) {
+              // getting the session is taking a long time, so assume that Spark
+              // is starting and print a message
+              display.content(
+                MIMEType.PlainText, "Waiting for a Spark session to start...")
+            }
             Await.result(sessionFuture, Duration.Inf)
         }
-
       case _ =>
         SparkSession.builder.config(defaultSparkConf).getOrCreate
     }
