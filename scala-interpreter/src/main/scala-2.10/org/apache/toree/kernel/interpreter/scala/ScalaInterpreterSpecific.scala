@@ -61,6 +61,7 @@ trait ScalaInterpreterSpecific { this: ScalaInterpreter =>
   ): SparkIMain = {
     val s = new SparkIMain(settings, out)
     s.initializeSynchronous()
+    System.setProperty("spark.repl.class.outputDir", s.getClassOutputDirectory.getAbsolutePath)
     s
   }
 
@@ -288,6 +289,10 @@ trait ScalaInterpreterSpecific { this: ScalaInterpreter =>
     else variable
   }
 
+  protected def initializeIMain() = {
+    sparkIMain = newSparkIMain(settings, new JPrintWriter(lastResultOut, true))
+  }
+
   /**
    * Starts the interpreter, initializing any internal state.
    * You must call init before running this function.
@@ -295,15 +300,12 @@ trait ScalaInterpreterSpecific { this: ScalaInterpreter =>
    * @return A reference to the interpreter
    */
   override def start(): Interpreter = {
-    require(sparkIMain == null && taskManager == null)
+    require(taskManager == null)
 
     taskManager = newTaskManager()
 
     logger.debug("Initializing task manager")
     taskManager.start()
-
-    sparkIMain =
-      newSparkIMain(settings, new JPrintWriter(lastResultOut, true))
 
 
     //logger.debug("Initializing interpreter")
