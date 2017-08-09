@@ -25,6 +25,7 @@ import coursier.core.Authentication
 import coursier.Cache.Logger
 import coursier.Dependency
 import coursier.core.Repository
+import coursier.core.Resolution.ModuleVersion
 import coursier.ivy.{IvyRepository, IvyXml}
 import coursier.maven.MavenRepository
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
@@ -116,9 +117,9 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     val resolution = start.process.run(fetch).unsafePerformSync
 
     // Report any resolution errors
-    val errors: Seq[(Dependency, Seq[String])] = resolution.errors
+    val errors: Seq[(ModuleVersion, Seq[String])] = resolution.metadataErrors
     errors.foreach { case (d, e) =>
-      printStream.println(s"-> Failed to resolve ${d.module.toString()}:${d.version}")
+      printStream.println(s"-> Failed to resolve ${d._1.toString()}:${d._2}")
       e.foreach(s => printStream.println(s"    -> $s"))
     }
 
