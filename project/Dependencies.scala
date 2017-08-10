@@ -22,9 +22,9 @@ object Dependencies {
 
   // Libraries
 
-  val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.4.17" // Apache v2
-  val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % "2.4.17" // Apache v2
-  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.4.17" // Apache v2
+  val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.4.20" // Apache v2
+  val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % "2.4.20" // Apache v2
+  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.4.20" // Apache v2
 
   val clapper = "org.clapper" %% "classutil" % "1.0.12" // BSD 3-clause license, used for detecting plugins
 
