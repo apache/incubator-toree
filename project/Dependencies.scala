@@ -67,6 +67,8 @@ object Dependencies {
 
   val springCore = "org.springframework" % "spring-core" % "4.1.1.RELEASE"// Apache v2
 
+  val guava = "com.google.guava" % "guava" % "14.0.1" // Apache v2
+
   // Projects
 
   val sparkAll = Def.setting{
