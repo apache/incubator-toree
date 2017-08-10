@@ -18,7 +18,8 @@
 package org.apache.toree.kernel.interpreter.scala
 
 import java.io.ByteArrayOutputStream
-import java.util.concurrent.ExecutionException
+import java.nio.charset.Charset
+import java.util.concurrent.{ExecutionException, TimeoutException, TimeUnit}
 import com.typesafe.config.{Config, ConfigFactory}
 import jupyter.Displayers
 import org.apache.spark.SparkContext
@@ -38,13 +39,16 @@ import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.{IR, OutputStream}
 import scala.tools.nsc.util.ClassPath
 import scala.util.matching.Regex
+import scala.concurrent.duration.Duration
 
 class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends Interpreter with ScalaInterpreterSpecific {
   import ScalaInterpreter._
 
   ScalaDisplayers.ensureLoaded()
 
-   private var kernel: KernelLike = _
+  protected var _kernel: KernelLike = _
+
+  protected def kernel: KernelLike = _kernel
 
    protected val logger = LoggerFactory.getLogger(this.getClass.getName)
 
@@ -83,7 +87,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     * @return The newly initialized interpreter
     */
    override def init(kernel: KernelLike): Interpreter = {
-     this.kernel = kernel
+     this._kernel = kernel
      val args = interpreterArgs(kernel)
      settings = newSettings(args)
      settings = appendClassPath(settings)
@@ -154,8 +158,25 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    override def interrupt(): Interpreter = {
      require(taskManager != null)
 
-     // Force dumping of current task (begin processing new tasks)
-     taskManager.restart()
+     // TODO: use SparkContext.setJobGroup to avoid killing all jobs
+     kernel.sparkContext.cancelAllJobs()
+
+     // give the task 100ms to complete before restarting the task manager
+     import scala.concurrent.ExecutionContext.Implicits.global
+     val finishedFuture = Future {
+       while (taskManager.isExecutingTask) {
+         Thread.sleep(10)
+       }
+     }
+
+     try {
+       Await.result(finishedFuture, Duration(100, TimeUnit.MILLISECONDS))
+       // Await returned, no need to interrupt tasks.
+     } catch {
+       case timeout: TimeoutException =>
+         // Force dumping of current task (begin processing new tasks)
+         taskManager.restart()
+     }
 
      this
    }

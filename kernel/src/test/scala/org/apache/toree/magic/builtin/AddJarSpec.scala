@@ -91,7 +91,8 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
 
         url = """http://www.example.com/remotecontent?filepath=/path/to/someJar.jar"""
         jarName = addJarMagic.getFileFromLocation(url)
-        assert(jarName == "someJar.jar")
+        // File names come from the path, not from the query fragment
+        assert(jarName == "remotecontent")
 
         url = """http://www.example.com/"""
         jarName = addJarMagic.getFileFromLocation(url)
