@@ -43,7 +43,7 @@ MIT license
 
 Direct dependencies
 
-   net.sf.jopt-simple:jopt-simple:4.6 -> https://pholser.github.io/jopt-simple/license.html and licenses/LICENSE-jopt-simple.txt
+   net.sf.jopt-simple:jopt-simple:4.9 -> https://pholser.github.io/jopt-simple/license.html and licenses/LICENSE-jopt-simple.txt
    org.slf4j:slf4j-api:1.7.5 -> http://www.slf4j.org/license.html and licenses/LICENSE-slf4j.txt
    org.slf4j:slf4j-api:1.7.1 -> http://www.slf4j.org/license.html and licenses/LICENSE-slf4j.txt
 

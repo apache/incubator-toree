@@ -43,7 +43,7 @@ object Dependencies {
 
   val jeroMq = "org.zeromq" % "jeromq" % "0.3.6" // MPL v2
 
-  val joptSimple = "net.sf.jopt-simple" % "jopt-simple" % "4.6" // MIT
+  val joptSimple = "net.sf.jopt-simple" % "jopt-simple" % "4.9" // MIT
 
   val mockito = "org.mockito" % "mockito-all" % "1.10.19" // MIT
 
