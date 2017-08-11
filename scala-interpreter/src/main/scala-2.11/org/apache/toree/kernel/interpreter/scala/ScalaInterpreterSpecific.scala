@@ -21,11 +21,9 @@ import java.io._
 import java.net.URL
 
 import org.apache.toree.global.StreamState
-import org.apache.toree.interpreter.InterpreterTypes.ExecuteOutput
 import org.apache.toree.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
-import org.apache.toree.interpreter.{ExecuteError, ExecuteFailure, Interpreter, Results}
-
-import scala.tools.nsc.interpreter.{InputStream => _, OutputStream => _, _}
+import org.apache.toree.interpreter.{ExecuteError, Interpreter}
+import scala.tools.nsc.interpreter._
 import scala.concurrent.Future
 import scala.tools.nsc.{Global, Settings, util}
 import scala.util.Try
@@ -107,23 +105,14 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
    * @param jars The list of jar locations
    */
   override def addJars(jars: URL*): Unit = {
-    //jars.foreach(_runtimeClassloader.addJar)
-
-    // Enable Scala class support
-    reinitializeSymbols()
-
-//    jars.foreach(_runtimeClassloader.addJar)
-//    updateCompilerClassPath(jars : _*)
-
-
-    iMain.addUrlsToClassPath(jars: _*)
-//    iMain.
-//    _runtimeClassloader =
-
-    // Refresh all of our variables
+    iMain.addUrlsToClassPath(jars:_*)
+    // the Scala interpreter will invalidate definitions for any package defined in
+    // the new Jars. This can easily include org.* and make the kernel inaccessible
+    // because it is bound using the previous package definition. To avoid problems,
+    // it is necessary to refresh variable definitions to use the new packages and
+    // to rebind the global definitions.
     refreshDefinitions()
-
-
+    bindVariables()
   }
 
   /**
@@ -367,6 +356,8 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
       List(
         "-Yrepl-class-based",
         "-Yrepl-outdir", s"$dir"
+        // useful for debugging compiler classpath or package issues
+        // "-uniqid", "-explaintypes", "-usejavacp", "-Ylog-classpath"
     ), processAll = true)
     s
   }
