@@ -123,9 +123,9 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     val resolution = start.process.run(fetch).unsafePerformSync
 
     // Report any resolution errors
-    val errors: Seq[(Dependency, Seq[String])] = resolution.errors
-    errors.foreach { case (dep, e) =>
-      printStream.println(s"-> Failed to resolve ${dep.module}:${dep.version}")
+    val errors: Seq[((Module, String), Seq[String])] = resolution.metadataErrors
+    errors.foreach { case ((module, version), e) =>
+      printStream.println(s"-> Failed to resolve ${module.toString()}:$version")
       e.foreach(s => printStream.println(s"    -> $s"))
     }
 
