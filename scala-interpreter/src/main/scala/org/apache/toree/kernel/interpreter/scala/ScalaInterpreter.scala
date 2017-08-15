@@ -334,7 +334,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      doQuietly {
        // TODO: This only adds the context to the main interpreter AND
        //       is limited to the Scala interpreter interface
-       logger.debug(s"Binding SQLContext into interpreter as $bindName")
+       logger.debug(s"Binding SparkSession into interpreter as $bindName")
 
       interpret(s"""def ${bindName}: ${classOf[SparkSession].getName} = kernel.sparkSession""")
 
