@@ -16,9 +16,9 @@
  */
 fork in Test := true
 libraryDependencies ++= Dependencies.sparkAll.value
+libraryDependencies += Dependencies.guava
 
 //
 // TEST DEPENDENCIES
 //
 libraryDependencies += Dependencies.akkaTestkit % "test"
-

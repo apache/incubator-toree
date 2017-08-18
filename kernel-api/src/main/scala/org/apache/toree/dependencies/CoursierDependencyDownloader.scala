@@ -20,7 +20,6 @@ import java.io.{File, FileInputStream, PrintStream}
 import java.net.{URI, URL}
 import java.util.Properties
 import java.util.concurrent.ConcurrentHashMap
-
 import coursier.core.Authentication
 import coursier.Cache.Logger
 import coursier.Dependency
@@ -29,7 +28,7 @@ import coursier.core.Resolution.ModuleVersion
 import coursier.ivy.{IvyRepository, IvyXml}
 import coursier.maven.MavenRepository
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
-
+import scala.util.Try
 import scalaz.\/
 import scalaz.concurrent.Task
 
@@ -74,7 +73,10 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     ignoreResolutionErrors: Boolean,
     extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean,
-    trace: Boolean
+    trace: Boolean,
+    configuration: Option[String] = None,
+    artifactType: Option[String] = None,
+    artifactClassifier: Option[String] = None
   ): Seq[URI] = {
     assert(localDirectory != null)
     import coursier._
@@ -90,7 +92,12 @@ class CoursierDependencyDownloader extends DependencyDownloader {
         module = Module(organization = groupId, name = artifactId),
         version = version,
         transitive = transitive,
-        exclusions = exclusions // NOTE: Source/Javadoc not downloaded by default
+        exclusions = exclusions, // NOTE: Source/Javadoc not downloaded by default
+        configuration = configuration.getOrElse("default"),
+        attributes = Attributes(
+          artifactType.getOrElse(""),
+          artifactClassifier.getOrElse("")
+        )
       )
     ))
 
@@ -118,8 +125,8 @@ class CoursierDependencyDownloader extends DependencyDownloader {
 
     // Report any resolution errors
     val errors: Seq[(ModuleVersion, Seq[String])] = resolution.metadataErrors
-    errors.foreach { case (d, e) =>
-      printStream.println(s"-> Failed to resolve ${d._1.toString()}:${d._2}")
+    errors.foreach { case (dep, e) =>
+      printStream.println(s"-> Failed to resolve ${dep._1.toString()}:${dep._2}")
       e.foreach(s => printStream.println(s"    -> $s"))
     }
 
@@ -313,10 +320,11 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    * @param repositories The repositories to convert
    * @return The resulting URIs
    */
-  private def repositoriesToURIs(repositories: Seq[Repository]) = repositories.map {
-    case ivy: IvyRepository => ivy.pattern.string
-    case maven: MavenRepository => maven.root
-  }.map(new URI(_))
+  private def repositoriesToURIs(repositories: Seq[Repository]) =
+    repositories.map {
+      case ivy: IvyRepository => ivy.pattern.string
+      case maven: MavenRepository => maven.root
+    }.map(s => Try(new URI(s))).filter(_.isSuccess).map(_.get)
 
   /** Creates new Ivy2 local repository using base home URI. */
   private def ivy2Local(ivy2HomeUri: URI) = IvyRepository.parse(

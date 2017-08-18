@@ -18,7 +18,6 @@
 package org.apache.toree.kernel.interpreter.scala
 
 import java.io.ByteArrayOutputStream
-import java.nio.charset.Charset
 import java.util.concurrent.{ExecutionException, TimeoutException, TimeUnit}
 import com.typesafe.config.{Config, ConfigFactory}
 import jupyter.Displayers
@@ -93,15 +92,19 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      settings = appendClassPath(settings)
 
      start()
-     bindKernelVariable(kernel)
 
      // ensure bindings are defined before allowing user code to run
-     bindSparkSession()
-     bindSparkContext()
-     defineImplicits()
+     bindVariables()
 
      this
    }
+
+  protected def bindVariables(): Unit = {
+    bindKernelVariable(kernel)
+    bindSparkSession()
+    bindSparkContext()
+    defineImplicits()
+  }
 
    protected[scala] def buildClasspath(classLoader: ClassLoader): String = {
 
@@ -331,7 +334,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      doQuietly {
        // TODO: This only adds the context to the main interpreter AND
        //       is limited to the Scala interpreter interface
-       logger.debug(s"Binding SQLContext into interpreter as $bindName")
+       logger.debug(s"Binding SparkSession into interpreter as $bindName")
 
       interpret(s"""def ${bindName}: ${classOf[SparkSession].getName} = kernel.sparkSession""")
 
@@ -367,7 +370,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     doQuietly(interpret(code))
   }
 
-   override def classLoader: ClassLoader = _runtimeClassloader
+  override def classLoader: ClassLoader = _runtimeClassloader
 
   /**
     * Returns the language metadata for syntax highlighting
