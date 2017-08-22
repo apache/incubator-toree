@@ -27,11 +27,13 @@ object FileUtils {
 
   private def deleteDirRecur(file: File): Unit = {
     // delete directory recursively
-    if(file.isDirectory){
-      file.listFiles.foreach(deleteDirRecur)
-    }
-    if(file.exists){
-      file.delete
+    if (file != null){
+      if(file.isDirectory){
+        file.listFiles.foreach(deleteDirRecur)
+      }
+      if(file.exists){
+        file.delete
+      }
     }
   }
 
