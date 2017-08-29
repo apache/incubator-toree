@@ -89,4 +89,17 @@ class PySparkProcess(
       "PYTHONPATH" -> updatedPythonPath
     )
   }
+
+  override protected def copyResourceToTmp(resource: String): String = {
+    val destination = super.copyResourceToTmp(resource)
+    if (System.getProperty("os.name").equals("z/OS")){
+        tagPySparkResource(destination)
+    }
+    destination 
+  }
+
+  private def tagPySparkResource(destPath: String): Unit = {
+      val exitCode = Seq("chtag", "-t", "-c", "ISO8859-1", destPath).!
+      if (exitCode != 0) logger.warn("PySpark resource was not tagged correctly.")
+  }
 }
