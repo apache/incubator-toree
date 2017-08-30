@@ -24,6 +24,7 @@ import org.apache.commons.exec._
 import org.apache.commons.io.IOUtils
 import org.apache.spark.SparkContext
 import org.slf4j.LoggerFactory
+import sys.process._
 
 /**
  * Represents the Python process used to evaluate PySpark code.
