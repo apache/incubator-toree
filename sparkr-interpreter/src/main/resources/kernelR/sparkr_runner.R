@@ -60,9 +60,10 @@ sparkR.connect <- function() {
   print(c("ExistingPort:", existingPort))
 
   # Connect to the backend service
+  connectionTimeout <- as.numeric(Sys.getenv("SPARKR_BACKEND_CONNECTION_TIMEOUT", "6000"))
   .sparkREnv$backendPort <- backendPort
   tryCatch({
-    SparkR:::connectBackend("localhost", backendPort)
+    SparkR:::connectBackend("localhost", backendPort, connectionTimeout)
   }, error = function(err) {
     stop("Failed to connect JVM: ", err)
   })
