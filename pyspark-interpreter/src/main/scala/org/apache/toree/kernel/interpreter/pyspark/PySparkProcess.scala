@@ -24,6 +24,7 @@ import org.apache.commons.exec._
 import org.apache.commons.io.IOUtils
 import org.apache.spark.SparkContext
 import org.slf4j.LoggerFactory
+import sys.process._
 
 /**
  * Represents the Python process used to evaluate PySpark code.
@@ -88,5 +89,18 @@ class PySparkProcess(
       "SPARK_HOME" -> baseSparkHome,
       "PYTHONPATH" -> updatedPythonPath
     )
+  }
+
+  override protected def copyResourceToTmp(resource: String): String = {
+    val destination = super.copyResourceToTmp(resource)
+    if (System.getProperty("os.name").equals("z/OS")){
+        tagPySparkResource(destination)
+    }
+    destination 
+  }
+
+  private def tagPySparkResource(destPath: String): Unit = {
+      val exitCode = Seq("chtag", "-t", "-c", "ISO8859-1", destPath).!
+      if (exitCode != 0) logger.warn("PySpark resource was not tagged correctly.")
   }
 }
