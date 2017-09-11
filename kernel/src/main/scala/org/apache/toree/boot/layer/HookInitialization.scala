@@ -89,6 +89,29 @@ trait StandardHookInitialization extends HookInitialization {
         }
       }
     })
+    // Define handler for alternate signal that will be fired in cases where
+    // the caller is in a background process in order to interrupt
+    // cell operations - since SIGINT doesn't propagate in those cases.
+    // Like INT above except we don't need to deal with shutdown in
+    // repeated situations.
+    val altSigint = System.getenv("TOREE_ALTERNATE_SIGINT")
+    if (altSigint != null) {
+      try {
+        Signal.handle(new Signal(altSigint), new SignalHandler() {
+
+            def handle(sig: Signal) = {
+              logger.info("Resetting code execution due to interrupt!")
+              interpreter.interrupt()
+
+              // TODO: Cancel group representing current code execution
+              //sparkContext.cancelJobGroup()
+            }
+        })
+      } catch {
+        case e:Exception => logger.warn("Error occurred establishing alternate signal handler " +
+          "(TOREE_ALTERNATE_SIGINT = " + altSigint + ").  Error: " + e.getMessage )
+      }
+    }
   }
 
   private def registerShutdownHook(): Unit = {
