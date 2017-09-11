@@ -94,7 +94,8 @@ class IvyDependencyDownloader(
     trace: Boolean,
     configuration: Option[String] = None,
     artifactType: Option[String] = None,
-    artifactClassifier: Option[String] = None
+    artifactClassifier: Option[String] = None,
+    excludes: Set[(String,String)] = Set.empty
   ): Seq[URI] = {
     // Start building the ivy.xml file
     val ivyFile = File.createTempFile("ivy-custom", ".xml")
@@ -127,6 +128,7 @@ class IvyDependencyDownloader(
       scalaCompilerArtifactId, new RegexpPatternMatcher(), null
     )
 
+
     val scalaLangModuleId = new ModuleId("org.scala-lang.modules", "*")
     val scalaLangArtifactId = new ArtifactId(
       scalaLangModuleId, "*", "*", "*"
@@ -148,6 +150,14 @@ class IvyDependencyDownloader(
     md.addExcludeRule(javadocExclusion)
     md.addExcludeRule(scalaCompilerExclusion)
     md.addExcludeRule(scalaLangExclusion)
+
+
+    excludes.foreach(x => {
+      val moduleId = new ModuleId(x._1,x._2);
+      val artifactId = new ArtifactId(moduleId,"*","*","*");
+      val exclusion = new DefaultExcludeRule(artifactId, new RegexpPatternMatcher(), null);
+      md.addExcludeRule(exclusion);
+    })
 
     // Exclude our base dependencies if marked to do so
     if (excludeBaseDependencies) {

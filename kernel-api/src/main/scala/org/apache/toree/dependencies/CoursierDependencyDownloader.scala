@@ -76,7 +76,8 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     trace: Boolean,
     configuration: Option[String] = None,
     artifactType: Option[String] = None,
-    artifactClassifier: Option[String] = None
+    artifactClassifier: Option[String] = None,
+    excludes: Set[(String,String)] = Set.empty
   ): Seq[URI] = {
     assert(localDirectory != null)
     import coursier._
@@ -84,7 +85,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     // Grab exclusions using base dependencies (always exclude scala lang)
     val exclusions: Set[(String, String)] = (if (excludeBaseDependencies) {
       getBaseDependencies.map(_.module).map(m => (m.organization, m.name))
-    } else Nil).toSet ++ Set(("org.scala-lang", "*"), ("org.scala-lang.modules", "*"))
+    } else Nil).toSet ++ Set(("org.scala-lang", "*"), ("org.scala-lang.modules", "*")) ++ excludes
 
     // Mark dependency that we want to download
     val start = Resolution(Set(
