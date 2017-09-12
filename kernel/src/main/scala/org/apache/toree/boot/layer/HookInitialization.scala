@@ -69,8 +69,7 @@ trait StandardHookInitialization extends HookInitialization {
     // TODO: Signals are not a good way to handle this since JVM only has the
     // proprietary sun API that is not necessarily available on all platforms
     Signal.handle(new Signal("INT"), new SignalHandler() {
-      private val MaxSignalTime: Long = 3000
-      // 3 seconds
+      private val MaxSignalTime: Long = 3000 // 3 seconds
       var lastSignalReceived: Long = 0
 
       def handle(sig: Signal) = {
@@ -109,8 +108,8 @@ trait StandardHookInitialization extends HookInitialization {
             }
         })
       } catch {
-        case e:Exception => logger.warn("Error occurred establishing alternate signal handler.  Value of " +
-          "TOREE_ALTERNATE_SIGINT is probably bad: " + altSigint + ".  Error: " + e.getMessage )
+        case e:Exception => logger.warn("Error occurred establishing alternate signal handler " +
+          "(TOREE_ALTERNATE_SIGINT = " + altSigint + ").  Error: " + e.getMessage )
       }
     }
   }
