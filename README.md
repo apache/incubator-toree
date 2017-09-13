@@ -3,7 +3,7 @@
 [![Join the chat at https://gitter.im/apache/toree][gitter-badge]][gitter-url]
 [![Binder](http://mybinder.org/badge.svg)](http://mybinder.org/repo/apache/incubator-toree)
 
-Apache Toree
+[Apache Toree][website]
 ============
 The main goal of the Toree is to provide the foundation for interactive applications to connect to and use [Apache Spark][1].
 
@@ -107,7 +107,7 @@ Please note that for the most part, new features will mainly be added to the `ma
 Resources
 =========
 
-We are working on porting our documentation into Apache. For the time being, you can refer to this [Wiki][5] and our [Getting Started][4] guide. You may also visit our [website][website].
+We are currently enhancing our documentation, which is available in our [website][documentation].
 
 [1]: https://spark.apache.org/
 [2]: https://github.com/ibm-et/spark-kernel/wiki/Guide-to-the-Comm-API-of-the-Spark-Kernel-and-Spark-Kernel-Client
@@ -116,6 +116,7 @@ We are working on porting our documentation into Apache. For the time being, you
 [5]: https://github.com/ibm-et/spark-kernel/wiki
 
 [website]: http://toree.apache.org
+[documentation]: http://toree.apache.org/docs/current/user/quick-start/
 [issues]: https://issues.apache.org/jira/browse/TOREE
 [build-badge]: https://travis-ci.org/apache/incubator-toree.svg?branch=master
 [build-url]: https://travis-ci.org/apache/incubator-toree
