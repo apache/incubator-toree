@@ -105,7 +105,7 @@ class ToreeInstall(InstallKernelSpec):
             TOREE_SPARK_OPTS : self.spark_opts,
             TOREE_OPTS : self.toree_opts,
             SPARK_HOME : self.spark_home,
-            PYTHON_PATH : '{0}/python:{0}/python/lib/{1}'.format(self.spark_home, py4j_zip),
+            PYTHON_PATH : '{0}/python:{0}/python/lib/{1}:$PYTHON_PATH'.format(self.spark_home, py4j_zip),
             PYTHON_EXEC : self.python_exec
         }
 
