@@ -165,7 +165,7 @@ class PySparkInterpreter(
       "import sys; print('{s.major}.{s.minor}.{s.micro}'.format(s=sys.version_info))").!!
 
     LanguageInfo(
-      "python",
+      pythonExecutable,
       version = version,
       fileExtension = Some(".py"),
       pygmentsLexer = Some("python"),
