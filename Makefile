@@ -244,32 +244,32 @@ publish-pip: sign-pip
 ################################################################################
 # BIN PACKAGE
 ################################################################################
-dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz: dist/toree
+dist/toree-bin/toree-$(VERSION)-bin.tar.gz: dist/toree
 	@mkdir -p dist/toree-bin
-	@(cd dist; tar -cvzf toree-bin/toree-$(VERSION)-binary-release.tar.gz toree)
+	@(cd dist; tar -cvzf toree-bin/toree-$(VERSION)-bin.tar.gz toree)
 
-bin-release: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+bin-release: dist/toree-bin/toree-$(VERSION)-bin.tar.gz
 
-dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
-	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz
+dist/toree-bin/toree-$(VERSION)-bin.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-bin.tar.gz.asc dist/toree-bin/toree-$(VERSION)-bin.tar.gz.sha: dist/toree-bin/toree-$(VERSION)-bin.tar.gz
+	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-bin/toree-$(VERSION)-bin.tar.gz
 
-sign-bin: dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.asc dist/toree-bin/toree-$(VERSION)-binary-release.tar.gz.sha
+sign-bin: dist/toree-bin/toree-$(VERSION)-bin.tar.gz.md5 dist/toree-bin/toree-$(VERSION)-bin.tar.gz.asc dist/toree-bin/toree-$(VERSION)-bin.tar.gz.sha
 
 publish-bin:
 
 ################################################################################
 # SRC PACKAGE
 ################################################################################
-dist/toree-src/toree-$(VERSION)-source-release.tar.gz:
+dist/toree-src/toree-$(VERSION)-src.tar.gz:
 	@mkdir -p dist/toree-src
-	@tar -X 'etc/.src-release-ignore' -cvzf dist/toree-src/toree-$(VERSION)-source-release.tar.gz .
+	@tar -X 'etc/.src-release-ignore' -cvzf dist/toree-src/toree-$(VERSION)-src.tar.gz .
 
-src-release: dist/toree-src/toree-$(VERSION)-source-release.tar.gz
+src-release: dist/toree-src/toree-$(VERSION)-src.tar.gz
 
-dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha: dist/toree-src/toree-$(VERSION)-source-release.tar.gz
-	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-src/toree-$(VERSION)-source-release.tar.gz
+dist/toree-src/toree-$(VERSION)-src.tar.gz.md5 dist/toree-src/toree-$(VERSION)-src.tar.gz.asc dist/toree-src/toree-$(VERSION)-src.tar.gz.sha: dist/toree-src/toree-$(VERSION)-src.tar.gz
+	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-src/toree-$(VERSION)-src.tar.gz
 
-sign-src: dist/toree-src/toree-$(VERSION)-source-release.tar.gz.md5 dist/toree-src/toree-$(VERSION)-source-release.tar.gz.asc dist/toree-src/toree-$(VERSION)-source-release.tar.gz.sha
+sign-src: dist/toree-src/toree-$(VERSION)-src.tar.gz.md5 dist/toree-src/toree-$(VERSION)-src.tar.gz.asc dist/toree-src/toree-$(VERSION)-src.tar.gz.sha
 
 publish-src:
 
