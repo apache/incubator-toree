@@ -32,7 +32,7 @@ DESCRIPTION
 .*json
 .*\.md5
 .*\.asc
-.*\.sha
+.*\.sha512
 NOTICE_extras
 LICENSE_extras
 
