@@ -35,7 +35,7 @@ if [[ -f "${file_to_sign}"  ]]; then
 		echo "Generating signature and sums for ${file_to_sign}"
 		echo ${GPG_PASSWORD} | ${GPG} --passphrase-fd 0 --armor --output "${file_to_sign}.asc" --detach-sig "${file_to_sign}"
 		echo ${GPG_PASSWORD} | ${GPG} --passphrase-fd 0 --print-md MD5 "${file_to_sign}" >  "${file_to_sign}.md5"
-		echo ${GPG_PASSWORD} | ${GPG} --passphrase-fd 0 --print-md SHA512 "${file_to_sign}" >  "${file_to_sign}.sha"
+		echo ${GPG_PASSWORD} | ${GPG} --passphrase-fd 0 --print-md SHA512 "${file_to_sign}" >  "${file_to_sign}.sha512"
 		exit 0
 else
 	echo "ERROR: File ${file_to_sign} does not exist"
