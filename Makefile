@@ -247,8 +247,10 @@ publish-pip: sign-pip
 # BIN PACKAGE
 ################################################################################
 dist/toree-bin/toree-$(VERSION)-bin.tar.gz: dist/toree
+	@ln -s toree dist/toree-$(VERSION)
 	@mkdir -p dist/toree-bin
-	@(cd dist; tar -cvzf toree-bin/toree-$(VERSION)-bin.tar.gz toree)
+	@(cd dist; tar -cvzhf toree-bin/toree-$(VERSION)-bin.tar.gz toree-$(VERSION))
+	@rm dist/toree-$(VERSION)
 
 bin-release: dist/toree-bin/toree-$(VERSION)-bin.tar.gz
 
@@ -264,7 +266,7 @@ publish-bin:
 ################################################################################
 dist/toree-src/toree-$(VERSION)-src.tar.gz:
 	@mkdir -p dist/toree-src
-	@tar -X 'etc/.src-release-ignore' -cvzf dist/toree-src/toree-$(VERSION)-src.tar.gz .
+	@git archive HEAD --prefix toree-$(VERSION)-src/ -o dist/toree-src/toree-$(VERSION)-src.tar.gz
 
 src-release: dist/toree-src/toree-$(VERSION)-src.tar.gz
 
