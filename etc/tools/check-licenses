@@ -48,7 +48,7 @@ acquire_rat_jar () {
   fi
 }
 
-# Go to the Spark project root directory
+# Go to the Toree project root directory
 FWDIR="$(cd "`dirname "$0"`"/../../; pwd)"
 cd "$FWDIR"
 
@@ -58,7 +58,7 @@ else
     declare java_cmd=java
 fi
 
-export RAT_VERSION=0.11
+export RAT_VERSION=0.12
 export rat_jar="$FWDIR"/etc/tools/apache-rat-${RAT_VERSION}.jar
 mkdir -p "$FWDIR"etc/tools/
 
