@@ -19,7 +19,19 @@
 
 # RELEASE_NOTES
 
-## 0.1.0-incubating (2016-xx-xx)
+## 0.2.0-incubating (2017.11)
+
+* Support Apache Spark 2.x codebase including Spark 2.2.0
+* Enable Toree to run in Yarn cluster mode
+* Create spark context lazily to avoid long startup times for the kernel
+* Properly cleanup of temporary files/directories upon kernel shutdown
+* %AddJAR now supports HDFS file format
+* %AddDEP now defaults to default configuration
+* Cell Interrupt now cancel running Spark jobs and works in background process
+* Interpreters now have the ability to send results other than text/plain
+
+
+## 0.1.0-incubating (2017.03)
 
 This is the first release of Toree since it joined Apache as an incubator project on December 2nd, 2015.
 
