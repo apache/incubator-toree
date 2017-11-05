@@ -41,7 +41,6 @@ LICENSE_extras
 .*ivy.xml
 \.example-image
 \.ensime
-\.jvmopts
 db.lck
 VERSION
 PKG-INFO
