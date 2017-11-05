@@ -60,14 +60,16 @@ ENV_OPTS:=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) VERSION=$(VERSION) IS_SNA
 ASSEMBLY_JAR:=toree-assembly-$(VERSION)$(SNAPSHOT).jar
 
 help:
-	@echo '			audit - run audit tools against the source code'
-	@echo '			clean - clean build files'
-	@echo '				dev - starts ipython'
-	@echo '			 dist - build a directory with contents to package'
-	@echo '			build - builds assembly'
-	@echo '			 test - run all units'
-	@echo '		release - creates packaged distribution'
-	@echo '		jupyter - starts a Jupyter Notebook with Toree installed'
+	@echo '	'
+	@echo '	audit - run audit tools against the source code'
+	@echo '	clean - clean build files'
+	@echo '	dev - starts ipython'
+	@echo '	dist - build a directory with contents to package'
+	@echo '	build - builds assembly'
+	@echo '	test - run all units'
+	@echo '	release - creates packaged distribution'
+	@echo '	jupyter - starts a Jupyter Notebook with Toree installed'
+	@echo '	'
 
 build-info:
 	@echo '$(ENV_OPTS) $(VERSION)'
