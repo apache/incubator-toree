@@ -22,9 +22,17 @@ object Dependencies {
 
   // Libraries
 
-  val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.4.20" // Apache v2
-  val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % "2.4.20" // Apache v2
-  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.4.20" // Apache v2
+  val akkaVersion = Def.setting {
+    scalaVersion.value match {
+      case version if version.startsWith("2.11") => "2.4.20"
+      case version if version.startsWith("2.10") => "2.3.16"
+      case version @ _ => throw new RuntimeException("Unable to choose Akka version for Scala " + version)
+    }
+  }
+
+  val akkaActor = Def.setting { "com.typesafe.akka" %% "akka-actor" % akkaVersion.value } // Apache v2
+  val akkaSlf4j = Def.setting { "com.typesafe.akka" %% "akka-slf4j" % akkaVersion.value } // Apache v2
+  val akkaTestkit = Def.setting { "com.typesafe.akka" %% "akka-testkit" % akkaVersion.value } // Apache v2
 
   val clapper = "org.clapper" %% "classutil" % "1.0.12" // BSD 3-clause license, used for detecting plugins
 
