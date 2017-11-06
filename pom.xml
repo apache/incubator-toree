@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <prerequisites>
+    <maven>2.2.1</maven>
+  </prerequisites>
+
+  <parent>
+    <groupId>org.apache</groupId>
+    <artifactId>apache</artifactId>
+    <version>10</version>
+  </parent>
+
+  <groupId>org.apache.toree</groupId>
+  <artifactId>toree</artifactId>
+  <version>0.1.0</version>
+  <packaging>pom</packaging>
+
+  <name>Apache Toree RAT Check</name>
+  <url>http://avro.apache.org</url>
+
+  <properties>
+    <!-- dependency plugin versions -->
+    <apache-rat-tasks.version>0.7</apache-rat-tasks.version>
+    <rat.version>0.9</rat.version>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>${rat.version}</version>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <excludeSubProjects>false</excludeSubProjects>
+          <excludes>
+            <!-- version control files -->
+            <!-- may not be in the root folder if using git-svn -->
+            <exclude>**/.git/**</exclude>
+            <exclude>**/.gitignore</exclude>
+            <exclude>**/.src-release-ignore</exclude>
+            <!-- build or test files (some are generated files that we commit as-is for testing purposes) -->
+            <exclude>**/*.log</exclude>
+            <exclude>build/**</exclude>
+            <exclude>doc/build/**</exclude>
+            <!-- data and schema files -->
+            <exclude>**/*.json</exclude> <!-- does not allow comments -->
+            <exclude>**/*.ipynb</exclude> <!-- does not allow comments -->
+            <!-- IDE settings and files -->
+            <exclude>**/.classpath</exclude>
+            <exclude>**/.project</exclude>
+            <exclude>**/.settings/**</exclude>
+            <exclude>**/.idea/**</exclude>
+            <exclude>**/*.iml</exclude>
+            <!-- build-related files -->
+            <exclude>**/MANIFEST.in</exclude>
+            <exclude>**/dependency-reduced-pom.xml</exclude>
+            <!-- License files -->
+            <exclude>etc/legal/licenses/*.txt</exclude>
+            <exclude>etc/legal/LICENSE_extras</exclude>
+            <exclude>etc/legal/NOTICE_extras</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
