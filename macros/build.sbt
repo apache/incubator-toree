@@ -16,10 +16,3 @@
  */
 // Do not export a jar for this or publish anything (should serve just as a pre-processor)
 libraryDependencies += Dependencies.scalaReflect.value
-
-libraryDependencies ++= (
-  if (scalaVersion.value.startsWith("2.10"))
-    List("org.scalamacros" %% "quasiquotes" % "2.1.0")
-  else
-    Nil
-)

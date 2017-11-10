@@ -39,7 +39,8 @@ The main supported language is `Scala`, but it is also capable of processing bot
 
 Try It
 ======
-A version of Toree is deployed as part of the [Try Jupyter!][try-jupyter] site. Select `Scala 2.10.4 (Spark 1.4.1)` under the `New` dropdown. Note that this version only supports `Scala`.
+A version of Toree is deployed as part of the [Try Jupyter!][try-jupyter] site. Select `Apache Toree - Scala` under
+the `New` dropdown. Note that this version only supports `Scala`.
 
 Develop
 =======
