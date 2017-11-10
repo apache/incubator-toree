@@ -75,7 +75,8 @@ testOptions in (ThisBuild, Test) += Tests.Argument("-oDF")
 resolvers in ThisBuild  ++= Seq(
   "Apache Snapshots" at "http://repository.apache.org/snapshots/",
   "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
-  "Jitpack" at "https://jitpack.io"
+  "Jitpack" at "https://jitpack.io",
+  "bintray-sbt-plugins" at "http://dl.bintray.com/sbt/sbt-plugin-releases"
 )
 updateOptions in ThisBuild := updateOptions.value.withCachedResolution(true)
 libraryDependencies in ThisBuild ++= Seq(
