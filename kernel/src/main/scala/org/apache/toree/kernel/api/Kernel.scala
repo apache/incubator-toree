@@ -392,6 +392,17 @@ class Kernel (
     sparkContext
   }
 
+  // TODO: Exposed for testing purposes.
+  protected[toree] def getSparkContextInitializationTimeout: Long = {
+    val timeout:Long = config.getDuration("spark_context_intialization_timeout", TimeUnit.MILLISECONDS)
+    if (timeout <= 0) {
+      val clOptionName = "spark-context-intialization-timeout"
+      throw new RuntimeException(s"--$clOptionName: Invalid timeout of '$timeout' milliseconds specified. " +
+        s"Must specify a positive value.")
+    }
+    timeout
+  }
+
   override def interpreter(name: String): Option[Interpreter] = {
     interpreterManager.interpreters.get(name)
   }
@@ -401,17 +412,19 @@ class Kernel (
   override def sparkSession: SparkSession = {
     defaultSparkConf.getOption("spark.master") match {
       case Some(master) if !master.contains("local") =>
-        // when connecting to a remote cluster, the first call to getOrCreate
+        // When connecting to a remote cluster, the first call to getOrCreate
         // may create a session and take a long time, so this starts a future
-        // to get the session. if it take longer than 100 ms, then print a
-        // message to the user that Spark is starting.
+        // to get the session. If it take longer than specified timeout, then
+        // print a message to the user that Spark is starting. Note, the
+        // default timeout is 100ms and it is specified in reference.conf.
         import scala.concurrent.ExecutionContext.Implicits.global
         val sessionFuture = Future {
           SparkSession.builder.config(defaultSparkConf).getOrCreate
         }
 
         try {
-          Await.result(sessionFuture, Duration(100, TimeUnit.MILLISECONDS))
+          val timeout = getSparkContextInitializationTimeout
+          Await.result(sessionFuture, Duration(timeout, TimeUnit.MILLISECONDS))
         } catch {
           case timeout: TimeoutException =>
             // getting the session is taking a long time, so assume that Spark
