@@ -19,9 +19,7 @@ package org.apache.toree.boot
 
 import java.io.{File, OutputStream}
 
-import org.apache.toree.utils.KeyValuePairUtils
 import com.typesafe.config.{Config, ConfigFactory}
-import joptsimple.util.KeyValuePair
 import joptsimple.{OptionParser, OptionSpec}
 
 import scala.collection.JavaConverters._
@@ -100,6 +98,13 @@ class CommandLineOptions(args: Seq[String]) {
     "interpreter-plugin"
   ).withRequiredArg().ofType(classOf[String])
 
+  private val _spark_context_intialization_timeout = parser.accepts(
+    "spark-context-intialization-timeout",
+    "The time (in milliseconds) allowed for creation of the spark context. " +
+      "Failure to create a context in this time could result in duplicate initialization messages. " +
+      "The default value is 100 milliseconds."
+  ).withRequiredArg().ofType(classOf[Long])
+
   private val options = parser.parse(args.map(_.trim): _*)
 
   /*
@@ -149,6 +154,7 @@ class CommandLineOptions(args: Seq[String]) {
       "magic_urls" -> getAll(_magic_url).map(_.asJava)
         .flatMap(list => if (list.isEmpty) None else Some(list)),
       "max_interpreter_threads" -> get(_max_interpreter_threads),
+      "spark_context_intialization_timeout" -> get(_spark_context_intialization_timeout),
       "jar_dir" -> get(_jar_dir),
       "default_interpreter" -> get(_default_interpreter),
       "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false)),

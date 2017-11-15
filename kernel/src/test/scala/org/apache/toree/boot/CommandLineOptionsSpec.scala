@@ -37,7 +37,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
 
         val actual = options.toConfig.getInt("max_interpreter_threads")
 
-        actual should be (expected)
+        actual should be(expected)
       }
     }
 
@@ -45,7 +45,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       it("should set the help flag to true") {
         val options = new CommandLineOptions("--help" :: Nil)
 
-        options.help should be (true)
+        options.help should be(true)
       }
     }
 
@@ -53,7 +53,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       it("should set the help flag to true") {
         val options = new CommandLineOptions("-h" :: Nil)
 
-        options.help should be (true)
+        options.help should be(true)
       }
     }
 
@@ -61,7 +61,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       it("should set the help flag to false") {
         val options = new CommandLineOptions(Nil)
 
-        options.help should be (false)
+        options.help should be(false)
       }
     }
 
@@ -69,7 +69,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       it("should set the version flag to true") {
         val options = new CommandLineOptions("--version" :: Nil)
 
-        options.version should be (true)
+        options.version should be(true)
       }
     }
 
@@ -77,7 +77,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       it("should set the version flag to true") {
         val options = new CommandLineOptions("-v" :: Nil)
 
-        options.version should be (true)
+        options.version should be(true)
       }
     }
 
@@ -85,7 +85,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       it("should set the version flag to false") {
         val options = new CommandLineOptions(Nil)
 
-        options.version should be (false)
+        options.version should be(false)
       }
     }
 
@@ -100,7 +100,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
         it("should include values specified in file") {
 
           val pathToProfileFixture: String = new File(getClass.getResource("/fixtures/profile.json").toURI).getAbsolutePath
-          val options = new CommandLineOptions(Seq("--profile="+pathToProfileFixture))
+          val options = new CommandLineOptions(Seq("--profile=" + pathToProfileFixture))
 
           val config: Config = options.toConfig
 
@@ -114,7 +114,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       }
     }
 
-    describe("when received --<protocol port name>=<value>"){
+    describe("when received --<protocol port name>=<value>") {
       it("should error if value is not set") {
         intercept[OptionException] {
           new CommandLineOptions(Seq("--stdin-port"))
@@ -156,7 +156,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       }
     }
 
-    describe("when received --profile and --<protocol port name>=<value>"){
+    describe("when received --profile and --<protocol port name>=<value>") {
       describe("#toConfig") {
         it("should return config with <protocol port> argument value") {
 
@@ -175,7 +175,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
 
     }
 
-    describe("when no arguments are received"){
+    describe("when no arguments are received") {
       describe("#toConfig") {
         it("should read default value set in reference.conf") {
 
@@ -186,41 +186,42 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
           config.getInt("shell_port") should be(40544)
           config.getInt("iopub_port") should be(43462)
           config.getInt("control_port") should be(44808)
-          config.getInt("max_interpreter_threads") should be (4)
+          config.getInt("max_interpreter_threads") should be(4)
+          config.getInt("spark_context_intialization_timeout") should be(100)
         }
       }
     }
 
-    describe("when using -- to separate interpreter arguments"){
+    describe("when using -- to separate interpreter arguments") {
       describe("#toConfig") {
         it("should return interpreter_args config property when there are args before --") {
 
           val options = new CommandLineOptions(List("--stdin-port", "99999", "--shell-port", "88888", "--", "someArg1", "someArg2", "someArg3"))
 
-          val config: Config = options .toConfig
+          val config: Config = options.toConfig
 
           config.entrySet() should not be ('empty)
-          config.getStringList("interpreter_args").asScala should be (List("someArg1", "someArg2", "someArg3"))
+          config.getStringList("interpreter_args").asScala should be(List("someArg1", "someArg2", "someArg3"))
         }
 
         it("should return interpreter_args config property when args is at the beginning") {
 
           val options = new CommandLineOptions(List("--", "someArg1", "someArg2", "someArg3"))
 
-          val config: Config = options .toConfig
+          val config: Config = options.toConfig
 
           config.entrySet() should not be ('empty)
-          config.getStringList("interpreter_args").asScala should be (List("someArg1", "someArg2", "someArg3"))
+          config.getStringList("interpreter_args").asScala should be(List("someArg1", "someArg2", "someArg3"))
         }
 
         it("should return interpreter_args config property as empty list when there is nothing after --") {
 
           val options = new CommandLineOptions(List("--stdin-port", "99999", "--shell-port", "88888", "--"))
 
-          val config: Config = options .toConfig
+          val config: Config = options.toConfig
 
           config.entrySet() should not be ('empty)
-          config.getStringList("interpreter_args").asScala should be ('empty)
+          config.getStringList("interpreter_args").asScala should be('empty)
         }
       }
     }
@@ -262,7 +263,7 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
         val config: Config = options.toConfig
 
         config.getList("magic_urls").unwrapped.asScala should
-          be (Seq(url1, url2))
+          be(Seq(url1, url2))
       }
     }
 
@@ -281,6 +282,78 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
 
       }
     }
-  }
 
+    describe("when dealing with --spark-context-intialization-timeout") {
+      val key = "spark_context_intialization_timeout"
+
+      it("when none of the options are specified, it should default to 100") {
+        val options = new CommandLineOptions(Nil)
+        val config: Config = options.toConfig
+        config.getInt(key) should be(100)
+      }
+
+      it("when other options are specified, it should default to 100") {
+        val options = new CommandLineOptions(Seq(
+          "--interpreter-plugin",
+          "dummy:test.utils.DummyInterpreter"
+        ))
+        val config: Config = options.toConfig
+        config.getInt(key) should be(100)
+      }
+
+      it("when the options is specified, it should return the specified value") {
+        val options = new CommandLineOptions(List(
+          "--stdin-port", "99999",
+          "--shell-port", "88888",
+          "--iopub-port", "77777",
+          "--control-port", "55555",
+          "--heartbeat-port", "44444",
+          "--spark-context-intialization-timeout", "30000"
+        ))
+        val config: Config = options.toConfig
+        config.getInt(key) should be(30000)
+      }
+
+      it("when a negative value is specified, it should return the specified value") {
+        val options = new CommandLineOptions(List(
+          "--stdin-port", "99999",
+          "--shell-port", "88888",
+          "--iopub-port", "77777",
+          "--control-port", "55555",
+          "--heartbeat-port", "44444",
+          "--spark-context-intialization-timeout", "-1"
+        ))
+        val config: Config = options.toConfig
+        config.getInt(key) should be(-1)
+      }
+
+      it("when an invalid value is specified, an exception must be thrown") {
+        intercept [OptionException] {
+          val options = new CommandLineOptions(List(
+            "--stdin-port", "99999",
+            "--shell-port", "88888",
+            "--iopub-port", "77777",
+            "--control-port", "55555",
+            "--heartbeat-port", "44444",
+            "--spark-context-intialization-timeout", "foo"
+          ))
+          val config: Config = options.toConfig
+        }
+      }
+
+      it("when a value is not specified, an exception must be thrown") {
+        intercept [OptionException] {
+          val options = new CommandLineOptions(List(
+            "--stdin-port", "99999",
+            "--shell-port", "88888",
+            "--iopub-port", "77777",
+            "--control-port", "55555",
+            "--heartbeat-port", "44444",
+            "--spark-context-intialization-timeout", ""
+          ))
+          val config: Config = options.toConfig
+        }
+      }
+    }
+  }
 }
