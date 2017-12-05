@@ -21,17 +21,17 @@ import org.apache.spark.sql.{Dataset, Row}
 import org.apache.toree.plugins.Plugin
 import play.api.libs.json.{JsObject, Json}
 
-import scala.util.{Failure, Try}
+import scala.util.Try
 import org.apache.toree.plugins.annotations.Init
+
+import DataFrameConverter._
 
 class DataFrameConverter extends Plugin with LogLike {
   @Init def init() = {
     register(this)
   }
 
-  def convert(
-     df: Dataset[Row], outputType: String, limit: Int = 10
-  ): Try[String] = {
+  def convert(df: Dataset[Row], outputType: String, limit: Int = 10): Try[String] = {
     Try(
       outputType.toLowerCase() match {
         case "html" =>
@@ -45,14 +45,13 @@ class DataFrameConverter extends Plugin with LogLike {
   }
 
   private def convertToHtml(df: Dataset[Row], limit: Int = 10): String = {
-      import df.sqlContext.implicits._
       val columnFields = df.schema.fieldNames.map(columnName => {
         s"<th>${columnName}</th>"
       }).reduce(_ + _)
       val columns = s"<tr>${columnFields}</tr>"
       val rows = df.rdd.map(row => {
         val fieldValues = row.toSeq.map(field => {
-         s"<td>${field.toString}</td>"
+         s"<td>${fieldToString(field)}</td>"
         }).reduce(_ + _)
         s"<tr>${fieldValues}</tr>"
       }).take(limit).reduce(_ + _)
@@ -60,10 +59,9 @@ class DataFrameConverter extends Plugin with LogLike {
   }
 
   private def convertToJson(df: Dataset[Row], limit: Int = 10): String = {
-    import df.sqlContext.implicits._
     val schema = Json.toJson(df.schema.fieldNames)
     val transformed = df.rdd.map(row =>
-      row.toSeq.map(_.toString).toArray)
+      row.toSeq.map(fieldToString).toArray)
     val rows = transformed.take(limit)
     JsObject(Seq(
       "columns" -> schema,
@@ -72,11 +70,22 @@ class DataFrameConverter extends Plugin with LogLike {
   }
 
   private def convertToCsv(df: Dataset[Row], limit: Int = 10): String = {
-      import df.sqlContext.implicits._
       val headers = df.schema.fieldNames.reduce(_ + "," + _)
       val rows = df.rdd.map(row => {
-        row.toSeq.map(field => field.toString).reduce(_ + "," + _)
+        row.toSeq.map(fieldToString).reduce(_ + "," + _)
       }).take(limit).reduce(_ + "\n" + _)
       s"${headers}\n${rows}"
   }
+
+}
+
+object DataFrameConverter {
+
+  def fieldToString(any: Any): String =
+    any match {
+      case null => "null"
+      case seq: Seq[_] => seq.mkString("[", ", ", "]")
+      case _ => any.toString
+    }
+
 }
