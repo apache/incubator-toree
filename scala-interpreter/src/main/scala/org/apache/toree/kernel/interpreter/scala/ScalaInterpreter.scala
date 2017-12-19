@@ -18,7 +18,8 @@
 package org.apache.toree.kernel.interpreter.scala
 
 import java.io.ByteArrayOutputStream
-import java.util.concurrent.{ExecutionException, TimeoutException, TimeUnit}
+import java.util.concurrent.{ExecutionException, TimeUnit, TimeoutException}
+
 import com.typesafe.config.{Config, ConfigFactory}
 import jupyter.Displayers
 import org.apache.spark.SparkContext
@@ -30,6 +31,7 @@ import org.apache.toree.utils.TaskManager
 import org.slf4j.LoggerFactory
 import org.apache.toree.kernel.BuildInfo
 import org.apache.toree.kernel.protocol.v5.MIMEType
+
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 import scala.concurrent.{Await, Future}
@@ -66,9 +68,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     settings
   }
 
-  protected var settings: Settings = newSettings(List())
-  settings = appendClassPath(settings)
-
+  protected var settings: Settings = _
 
   private val maxInterpreterThreads: Int = {
      if(config.hasPath("max_interpreter_threads"))
@@ -98,6 +98,33 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
      this
    }
+
+  /**
+   * Start initialization with only the given config
+   *
+   * @return this partially initialized scalaInterpreter
+   */
+  def startInit(): ScalaInterpreter = {
+    import scala.collection.JavaConverters._
+    val args = config.getStringList("interpreter_args").asScala.toList
+    settings = newSettings(args)
+    settings = appendClassPath(settings)
+
+    start()
+  }
+
+
+  /**
+   * Finish initializing this interpreter with the kernel.
+   *
+   * @param kernel the kernel
+   * @return this fully initialized scalaInterpreter
+   */
+  def finishInit(kernel: KernelLike): ScalaInterpreter = {
+    this._kernel = kernel
+    bindVariables()
+    this
+  }
 
   protected def bindVariables(): Unit = {
     bindKernelVariable(kernel)

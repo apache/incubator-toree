@@ -28,6 +28,7 @@ import org.apache.toree.comm.{CommManager, CommRegistrar, CommStorage, KernelCom
 import org.apache.toree.dependencies.{CoursierDependencyDownloader, Credentials, DependencyDownloader}
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.Kernel
+import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 import org.apache.toree.kernel.protocol.v5.KMBuilder
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.magic.MagicManager
@@ -36,22 +37,39 @@ import org.apache.toree.utils.{LogLike, FileUtils}
 import scala.collection.JavaConverters._
 import org.apache.toree.plugins.AllInterpretersReady
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
  * Represents the component initialization. All component-related pieces of the
  * kernel (non-actors) should be created here. Limited items should be exposed.
  */
 trait ComponentInitialization {
+
+  /**
+   * Start initializing slow components, specifically the scala interpreter. These are broken out so we
+   * can start them as early as possible.
+   *
+   * @param config the config used for initialization
+   */
+  def initializeSlowComponents(config: Config): (InterpreterManager, Option[Future[ScalaInterpreter]])
+
   /**
    * Initializes and registers all components (not needed by bare init).
    *
    * @param config The config used for initialization
    * @param actorLoader The actor loader to use for some initialization
+   * @param interpreterManager the interpreterManager
+   * @param maybeEventualScalaInterp  a future that will hold the Scala Interpreter when its ready
    */
   def initializeComponents(
-    config: Config, actorLoader: ActorLoader
+      config: Config,
+      actorLoader: ActorLoader,
+      interpreterManager: InterpreterManager,
+      maybeEventualScalaInterp: Option[Future[ScalaInterpreter]]
   ): (CommStorage, CommRegistrar, CommManager, Interpreter,
     Kernel, DependencyDownloader, MagicManager, PluginManager,
-    collection.mutable.Map[String, ActorRef])
+    collection.mutable.Map[String, ActorRef], Option[Future[ScalaInterpreter]])
 }
 
 /**
@@ -61,28 +79,53 @@ trait StandardComponentInitialization extends ComponentInitialization {
   this: LogLike =>
 
   /**
+   * Start initializing slow components, specifically the scala interpreter. These are broken out so we
+   * can start them as early as possible.
+   *
+   * @param config the config used for initialization
+   */
+  def initializeSlowComponents(config: Config): (InterpreterManager, Option[Future[ScalaInterpreter]]) = {
+    val interpreterManager= InterpreterManager(config)
+    val optionScalaInterp = interpreterManager.scalaInterpreter
+    val futureScalaInterp = optionScalaInterp.map { scalaInterp =>
+      Future(scalaInterp.startInit())
+    }
+
+    (interpreterManager, futureScalaInterp)
+  }
+
+
+  /**
    * Initializes and registers all components (not needed by bare init).
    *
    * @param config The config used for initialization
    * @param actorLoader The actor loader to use for some initialization
+   * @param interpreterManager the interpreterManager
+   * @param maybeEventualScalaInterp  a future that will hold the Scala Interpreter when its ready
    */
   def initializeComponents(
-    config: Config, actorLoader: ActorLoader
+      config: Config,
+      actorLoader: ActorLoader,
+      interpreterManager: InterpreterManager,
+      maybeEventualScalaInterp: Option[Future[ScalaInterpreter]]
   ) = {
     val (commStorage, commRegistrar, commManager) =
       initializeCommObjects(actorLoader)
-
-    val interpreterManager =  InterpreterManager(config)
-    interpreterManager.interpreters foreach(println)
 
     val dependencyDownloader = initializeDependencyDownloader(config)
     val pluginManager = createPluginManager(config, interpreterManager, dependencyDownloader)
 
     val kernel = initializeKernel(config, actorLoader, interpreterManager, commManager, pluginManager)
 
+    val updatedScalaInterp: Option[Future[ScalaInterpreter]] = maybeEventualScalaInterp.map { futureScalaInterp =>
+      futureScalaInterp.map { scalaInterp =>
+        scalaInterp.finishInit(kernel)
+      }
+    }
+
     initializePlugins(config, pluginManager)
 
-    interpreterManager.initializeInterpreters(kernel)
+    interpreterManager.initializeRegularInterpreters(kernel)
     
     pluginManager.fireEvent(AllInterpretersReady)
 
@@ -90,7 +133,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
     (commStorage, commRegistrar, commManager,
       interpreterManager.defaultInterpreter.get, kernel,
-      dependencyDownloader, kernel.magics, pluginManager, responseMap)
+      dependencyDownloader, kernel.magics, pluginManager, responseMap, updatedScalaInterp)
 
   }
 
