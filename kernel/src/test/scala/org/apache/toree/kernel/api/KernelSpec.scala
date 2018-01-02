@@ -18,6 +18,7 @@
 package org.apache.toree.kernel.api
 
 import java.io.{InputStream, PrintStream}
+import java.util.concurrent.TimeUnit
 
 import com.typesafe.config.Config
 import org.apache.spark.{SparkConf, SparkContext}
@@ -103,7 +104,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
       }
 
       it("should return error on None") {
-        kernel eval None should be ((false, Map("text/plain" -> "Error!")))
+        kernel eval None should be((false, Map("text/plain" -> "Error!")))
       }
     }
 
@@ -119,7 +120,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
           new KernelMessage(Nil, "", mock[Header], mock[ParentHeader],
             mock[Metadata], "")
         )
-        kernel.out shouldBe a [PrintStream]
+        kernel.out shouldBe a[PrintStream]
       }
     }
 
@@ -137,7 +138,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
         )
 
         // TODO: Access the underlying streamType field to assert stderr?
-        kernel.err shouldBe a [PrintStream]
+        kernel.err shouldBe a[PrintStream]
       }
     }
 
@@ -154,7 +155,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
             mock[Metadata], "")
         )
 
-        kernel.in shouldBe a [InputStream]
+        kernel.in shouldBe a[InputStream]
       }
     }
 
@@ -171,7 +172,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
             mock[Metadata], "")
         )
 
-        kernel.stream shouldBe a [StreamMethods]
+        kernel.stream shouldBe a[StreamMethods]
       }
     }
 
@@ -188,7 +189,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
             mock[Metadata], "")
         )
 
-        kernel.display shouldBe a [DisplayMethods]
+        kernel.display shouldBe a[DisplayMethods]
       }
     }
 
@@ -200,7 +201,35 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
 
         val sparkConf = kernel.createSparkConf(new SparkConf().setMaster(expected))
 
-        sparkConf.get("spark.master") should be (expected)
+        sparkConf.get("spark.master") should be(expected)
+      }
+    }
+
+    describe("when spark-context-initialization-timeout is a valid value") {
+
+      it("should use the specified timeout to initialize spark context") {
+        val expectedTimeout: Long = 30000
+        doReturn(expectedTimeout).when(mockConfig).getDuration("spark_context_intialization_timeout", TimeUnit.MILLISECONDS)
+
+        kernel.getSparkContextInitializationTimeout should be(expectedTimeout)
+      }
+
+      it("should throw an exception when negative value is specified as timeout") {
+        intercept[RuntimeException] {
+          val timeout: Long = -30000
+          doReturn(timeout).when(mockConfig).getDuration("spark_context_intialization_timeout", TimeUnit.MILLISECONDS)
+
+          kernel.getSparkContextInitializationTimeout
+        }
+      }
+
+      it("should throw an exception when zero is specified as timeout") {
+        intercept[RuntimeException] {
+          val timeout: Long = 0
+          doReturn(timeout).when(mockConfig).getDuration("spark_context_intialization_timeout", TimeUnit.MILLISECONDS)
+
+          kernel.getSparkContextInitializationTimeout
+        }
       }
     }
   }
