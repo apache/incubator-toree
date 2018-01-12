@@ -105,6 +105,12 @@ class CommandLineOptions(args: Seq[String]) {
       "The default value is 100 milliseconds."
   ).withRequiredArg().ofType(classOf[Long])
 
+  private val _alternate_sigint = parser.accepts(
+    "alternate-sigint",
+    "Specifies the signal to use instead of SIGINT for interrupting a long-running cell. " +
+      "The value is a string and does not include the SIG prefix. Use of USR2 is recommended."
+  ).withRequiredArg().ofType(classOf[String])
+
   private val options = parser.parse(args.map(_.trim): _*)
 
   /*
@@ -155,6 +161,7 @@ class CommandLineOptions(args: Seq[String]) {
         .flatMap(list => if (list.isEmpty) None else Some(list)),
       "max_interpreter_threads" -> get(_max_interpreter_threads),
       "spark_context_intialization_timeout" -> get(_spark_context_intialization_timeout),
+      "alternate_sigint" -> get(_alternate_sigint),
       "jar_dir" -> get(_jar_dir),
       "default_interpreter" -> get(_default_interpreter),
       "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false)),
