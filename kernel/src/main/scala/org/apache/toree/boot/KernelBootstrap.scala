@@ -120,6 +120,7 @@ class KernelBootstrap(config: Config) extends LogLike {
 
     // Initialize our non-shutdown hooks that handle various JVM events
     initializeHooks(
+      config = config,
       interpreter = interpreter
     )
 
