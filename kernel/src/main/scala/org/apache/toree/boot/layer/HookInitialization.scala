@@ -21,6 +21,8 @@ import org.apache.toree.boot.KernelBootstrap
 import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.utils.LogLike
 
+import com.typesafe.config.Config
+
 /**
  * Represents the hook (interrupt/shutdown) initialization. All JVM-related
  * hooks should be constructed here.
@@ -29,9 +31,10 @@ trait HookInitialization {
   /**
    * Initializes and registers all hooks except shutdown.
    *
+   * @param config The main config
    * @param interpreter The main interpreter
    */
-  def initializeHooks(interpreter: Interpreter): Unit
+  def initializeHooks(config: Config, interpreter: Interpreter): Unit
 
   /**
    * Initializes the shutdown hook.
@@ -48,10 +51,11 @@ trait StandardHookInitialization extends HookInitialization {
   /**
    * Initializes and registers all hooks.
    *
+   * @param config The main config
    * @param interpreter The main interpreter
    */
-  def initializeHooks(interpreter: Interpreter): Unit = {
-    registerInterruptHook(interpreter)
+  def initializeHooks(config: Config, interpreter: Interpreter): Unit = {
+    registerInterruptHook(config, interpreter)
   }
 
   /**
@@ -61,7 +65,7 @@ trait StandardHookInitialization extends HookInitialization {
     registerShutdownHook()
   }
 
-  private def registerInterruptHook(interpreter: Interpreter): Unit = {
+  private def registerInterruptHook(config: Config, interpreter: Interpreter): Unit = {
     val self = this
 
     import sun.misc.{Signal, SignalHandler}
@@ -94,8 +98,10 @@ trait StandardHookInitialization extends HookInitialization {
     // cell operations - since SIGINT doesn't propagate in those cases.
     // Like INT above except we don't need to deal with shutdown in
     // repeated situations.
-    val altSigint = System.getenv("TOREE_ALTERNATE_SIGINT")
-    if (altSigint != null) {
+    val altSigintOption = "alternate_sigint"
+    if (config.hasPath(altSigintOption)) {
+      val altSigint = config.getString(altSigintOption)
+
       try {
         Signal.handle(new Signal(altSigint), new SignalHandler() {
 
@@ -109,7 +115,7 @@ trait StandardHookInitialization extends HookInitialization {
         })
       } catch {
         case e:Exception => logger.warn("Error occurred establishing alternate signal handler " +
-          "(TOREE_ALTERNATE_SIGINT = " + altSigint + ").  Error: " + e.getMessage )
+          "(--alternate-sigint = " + altSigint + ").  Error: " + e.getMessage )
       }
     }
   }

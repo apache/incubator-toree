@@ -355,5 +355,34 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
         }
       }
     }
+
+    describe("when dealing with --alternate-sigint") {
+      val key = "alternate_sigint"
+
+      it("when option is not specified, Config.hasPath method must return false") {
+        val options = new CommandLineOptions(Nil)
+        val config: Config = options.toConfig
+        config.hasPath(key) should be(false)
+      }
+
+      it("when option is specified, the value must be returned") {
+        val options = new CommandLineOptions(List(
+          "--alternate-sigint", "foo"
+        ))
+        val config: Config = options.toConfig
+        config.getString(key) should be("foo")
+      }
+
+      it("when a value is not specified, an exception must be thrown") {
+        intercept[OptionException] {
+          val options = new CommandLineOptions(List(
+            "--alternate-sigint"
+          ))
+          val config: Config = options.toConfig
+        }
+      }
+
+    }
+
   }
 }
