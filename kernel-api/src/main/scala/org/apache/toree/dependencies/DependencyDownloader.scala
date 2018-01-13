@@ -23,6 +23,8 @@ import java.nio.file.Files
 import scala.util.Try
 import org.apache.toree.utils.FileUtils
 
+case class DependencyExclude(groupId: String, artifactId: String, version: String);
+
 abstract class DependencyDownloader {
   /**
    * Retrieves the dependency and all of its dependencies as jars.
@@ -57,7 +59,8 @@ abstract class DependencyDownloader {
     trace: Boolean = false,
     configuration: Option[String] = None,
     artifactType: Option[String] = None,
-    artifactClassifier: Option[String] = None
+    artifactClassifier: Option[String] = None,
+    excludes: Set[(String,String)] = Set.empty
   ): Seq[URI]
 
   /**
