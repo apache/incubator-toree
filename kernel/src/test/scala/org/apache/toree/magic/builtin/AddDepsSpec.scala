@@ -64,7 +64,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         verify(mockDownloader, times(0)).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
           anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean(),
-          any[Option[String]], any[Option[String]], any[Option[String]]
+          any[Option[String]], any[Option[String]], any[Option[String]], any[Set[(String,String)]]
         )
       }
 
@@ -73,7 +73,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
           anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean(),
-          any[Option[String]], any[Option[String]], any[Option[String]]
+          any[Option[String]], any[Option[String]], any[Option[String]], any[Set[(String,String)]]
         )
 
         val addDepsMagic = new AddDeps
@@ -100,7 +100,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
           anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean(),
-          any[Option[String]], any[Option[String]], any[Option[String]]
+          any[Option[String]], any[Option[String]], any[Option[String]], any[Set[(String,String)]]
         )
 
         val addDepsMagic = new AddDeps
@@ -127,7 +127,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
         doReturn(Nil).when(mockDependencyDownloader).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
           anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean(),
-          any[Option[String]], any[Option[String]], any[Option[String]]
+          any[Option[String]], any[Option[String]], any[Option[String]], any[Set[(String,String)]]
         )
         val mockKernel = mock[KernelLike]
 

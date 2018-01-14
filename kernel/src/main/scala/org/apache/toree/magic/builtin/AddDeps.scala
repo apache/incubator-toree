@@ -52,6 +52,8 @@ class AddDeps extends LineMagic with IncludeInterpreter
     "abort-on-resolution-errors", "Abort (no downloads) when resolution fails"
   )
 
+  private val _exclude = parser.accepts("exclude", "exclude dependency").withRequiredArg().ofType(classOf[String])
+
   private val _repository = parser.accepts(
     "repository", "Adds an additional repository to available list"
   ).withRequiredArg().ofType(classOf[String])
@@ -81,6 +83,15 @@ class AddDeps extends LineMagic with IncludeInterpreter
 
     val repository = getAll(_repository).getOrElse(Nil)
     val credentials = getAll(_credentials).getOrElse(Nil)
+    val excludes = getAll(_exclude).getOrElse(Nil)
+
+    val excludesSet = excludes.map((x: String) => {
+      if (x.contains(":")) {
+        (x.split(":")(0), x.split(":")(1))
+      } else {
+        (x, "*")
+      }
+    }: (String, String)).toSet
 
     val repositoriesWithCreds = dependencyDownloader.resolveRepositoriesAndCredentials(repository, credentials)
 
@@ -95,6 +106,7 @@ class AddDeps extends LineMagic with IncludeInterpreter
         extraRepositories       = repositoriesWithCreds,
         verbose                 = _verbose,
         trace                   = _trace,
+        excludes                = excludesSet,
         configuration           = get(_configuration),
         artifactClassifier      = get(_classifier)
       )
