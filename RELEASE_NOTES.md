@@ -19,7 +19,7 @@
 
 # RELEASE_NOTES
 
-## 0.2.0-incubating (2017.11)
+## 0.2.0-incubating (2018.01)
 
 * Support Apache Spark 2.x codebase including Spark 2.2.0
 * Enable Toree to run in Yarn cluster mode
@@ -35,7 +35,7 @@
 
 This is the first release of Toree since it joined Apache as an incubator project on December 2nd, 2015.
 
-As part of moving to Apache, the original codebase from [SparkKernel](https://github.com/ibm-et/spark-kernel) has 
+As part of moving to Apache, the original codebase from [SparkKernel](https://github.com/ibm-et/spark-kernel) has
 been renamed, repackaged and improved in a variety of areas. It is also important to note that the version has been
 reset back to `0.1.0` in favor or the version scheme used in the old project.
 
