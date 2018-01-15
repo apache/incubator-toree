@@ -17,7 +17,7 @@
 
 .PHONY: help clean clean-dist build dev test system-test test-travis release pip-release bin-release dev-binder .binder-image audit audit-licenses
 
-BASE_VERSION?=0.2.0.dev1
+BASE_VERSION?=0.2.0
 VERSION=$(BASE_VERSION)-incubating
 COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
 ifeq (, $(findstring dev, $(VERSION)))
@@ -27,7 +27,7 @@ IS_SNAPSHOT?=true
 SNAPSHOT:=-SNAPSHOT
 endif
 
-APACHE_SPARK_VERSION?=2.0.0
+APACHE_SPARK_VERSION?=2.2.0
 SCALA_VERSION?=2.11
 IMAGE?=jupyter/all-spark-notebook:228ae7a44e0c
 EXAMPLE_IMAGE?=apache/toree-examples
