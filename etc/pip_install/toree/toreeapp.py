@@ -18,6 +18,7 @@
 import os
 import os.path
 import json
+import shlex
 from os import listdir
 from traitlets import Unicode, Dict, Set
 from jupyter_client.kernelspecapp  import InstallKernelSpec
@@ -48,6 +49,7 @@ class ToreeInstall(InstallKernelSpec):
     jupyter toree install
     jupyter toree install --spark_home=/spark/home/dir
     jupyter toree install --spark_opts='--master=local[4]'
+    jupyter toree install --kernel_opts='-- -Xmax-classfile-name 170'
     jupyter toree install --kernel_name=toree_special
     jupyter toree install --toree_opts='--nosparkcontext'
     jupyter toree install --interpreters=PySpark,SQL
@@ -69,6 +71,9 @@ class ToreeInstall(InstallKernelSpec):
     spark_opts = Unicode('', config=True,
         help='''Specify command line arguments to proxy for spark config.'''
     )
+    kernel_opts = Unicode('', config=True,
+        help='''Specify command line arguments to pass to the interpreter'''
+    )
     python_exec = Unicode('python', config=True,
         help='''Specify the python executable. Defaults to "python"'''
     )
@@ -77,6 +82,7 @@ class ToreeInstall(InstallKernelSpec):
         'spark_home': 'ToreeInstall.spark_home',
         'toree_opts': 'ToreeInstall.toree_opts',
         'spark_opts': 'ToreeInstall.spark_opts',
+        'kernel_opts': 'ToreeInstall.kernel_opts',
         'interpreters' : 'ToreeInstall.interpreters',
         'python_exec' : 'ToreeInstall.python_exec'
     }
@@ -97,7 +103,8 @@ class ToreeInstall(InstallKernelSpec):
         interpreter_lang = INTERPRETER_LANGUAGES[interpreter]
         kernel_spec.display_name = '{} - {}'.format(self.kernel_name, interpreter)
         kernel_spec.language = interpreter_lang
-        kernel_spec.argv = [os.path.join(location, 'bin', 'run.sh'), '--profile', '{connection_file}']
+        kernel_spec.argv = [os.path.join(location, 'bin', 'run.sh'), '--profile', '{connection_file}'] + \
+            shlex.split(self.kernel_opts)
         kernel_spec.env = {
             DEFAULT_INTERPRETER : interpreter,
             # The SPARK_OPTS values are stored in TOREE_SPARK_OPTS to allow the two values to be merged when kernels
