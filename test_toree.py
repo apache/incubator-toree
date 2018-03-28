@@ -72,7 +72,7 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
     ]
 
     test_statements_stdout = [
-        {'code': '%AddJar http://0.0.0.0:8000/TestJar.jar'},
+        {'code': '%AddJar http://home.apache.org/~lresende/toree/TestJar.jar'},
         {'code': 'import com.ibm.testjar.TestClass\nprintln(new TestClass().sayHello("Person"))', 'result': 'Hello, Person\n'}
     ]
 

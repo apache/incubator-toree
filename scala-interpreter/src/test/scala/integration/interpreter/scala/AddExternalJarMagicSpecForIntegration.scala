@@ -17,14 +17,15 @@
 
 package integration.interpreter.scala
 
-import java.io.{ByteArrayOutputStream, OutputStream}
+import java.io.{ByteArrayOutputStream, File}
+import java.net.URL
 
+import org.apache.spark.toree.test.utils.JarUtils
 import org.apache.toree.annotations.SbtForked
 import org.apache.toree.global.StreamState
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
-import org.apache.toree.utils.{MultiOutputStream, TaskManager}
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 
@@ -35,6 +36,8 @@ class AddExternalJarMagicSpecForIntegration
 
   private val outputResult = new ByteArrayOutputStream()
   private var interpreter: Interpreter = _
+  private var tempdir: File = _
+
 
   before {
     interpreter = new ScalaInterpreter {
@@ -44,6 +47,8 @@ class AddExternalJarMagicSpecForIntegration
     interpreter.init(mock[KernelLike])
 
     StreamState.setStreams(outputStream = outputResult)
+
+    tempdir = JarUtils.createTemporaryDir()
   }
 
   after {
@@ -53,108 +58,109 @@ class AddExternalJarMagicSpecForIntegration
 
   describe("ScalaInterpreter") {
     describe("#addJars") {
-      it("should be able to load an external jar") {
-        val testJarUrl = this.getClass.getClassLoader.getResource("TestJar.jar")
+      it("should do something") {
+        interpreter.interpret("1+1")
+      }
 
-        //
-        // NOTE: This can be done with any jar. I have tested it previously by
-        //       downloading jgoodies, placing it in /tmp/... and loading it.
-        //
+      it("should be able to load Java jars") {
+        val testJar1Url =
+          JarUtils.createDummyJar(tempdir.toString, "test1", "TestClass")
 
-        // Should fail since jar was not added to paths
+        // Should fail since jars were not added to paths
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (Results.Error)
+          "import test1.TestClass")._1 should be (Results.Error)
 
-        // Add jar to paths
-        interpreter.addJars(testJarUrl)
+        // Add jars to paths
+        interpreter.addJars(testJar1Url)
 
         // Should now succeed
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (Results.Success)
+          "import test1.TestClass")._1 should be (Results.Success)
 
         // Should now run
         interpreter.interpret(
-          """println(new TestClass().sayHello("Chip"))"""
+          """println(test1.TestClass.sayHello("Chip"))"""
         ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("Hello, Chip\n")
+        outputResult.reset()
+
+        interpreter.interpret(
+          """println(test1.TestClass.addStuff(2,1))"""
+        ) should be ((Results.Success, Left(Map())))
+        outputResult.toString should be ("3\n")
+        outputResult.reset()
       }
 
       it("should support Scala jars") {
-        val testJarUrl = this.getClass.getClassLoader.getResource("ScalaTestJar.jar")
+        val locationURL = "http://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar"
+        val testJarUrl = JarUtils.downloadJar(tempdir.toString, locationURL)
 
         // Should fail since jar was not added to paths
         interpreter.interpret(
-          "import com.ibm.scalatestjar.TestClass")._1 should be (Results.Error)
+          "import org.scalarules.utils._")._1 should be (Results.Error)
 
         // Add jar to paths
         interpreter.addJars(testJarUrl)
 
         // Should now succeed
         interpreter.interpret(
-          "import com.ibm.scalatestjar.TestClass")._1 should be (Results.Success)
+          "import org.scalarules.utils._")._1 should be (Results.Success)
 
         // Should now run
+        /*
         interpreter.interpret(
           """println(new TestClass().runMe())"""
         ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("You ran me!\n")
+        */
       }
 
       it("should be able to add multiple jars at once") {
         val testJar1Url =
-          this.getClass.getClassLoader.getResource("TestJar.jar")
+          JarUtils.createDummyJar(tempdir.toString, "test1", "TestClass")
         val testJar2Url =
-          this.getClass.getClassLoader.getResource("TestJar2.jar")
-//        val interpreter = new ScalaInterpreter(List(), mock[OutputStream])
-//          with StandardSparkIMainProducer
-//          with StandardTaskManagerProducer
-//          with StandardSettingsProducer
-//        interpreter.start()
+          JarUtils.createDummyJar(tempdir.toString, "test2", "TestClass")
 
         // Should fail since jars were not added to paths
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (Results.Error)
+          "import test1.TestClass")._1 should be (Results.Error)
         interpreter.interpret(
-          "import com.ibm.testjar2.TestClass")._1 should be (Results.Error)
+          "import test2.TestClass")._1 should be (Results.Error)
 
         // Add jars to paths
         interpreter.addJars(testJar1Url, testJar2Url)
 
         // Should now succeed
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (Results.Success)
+          "import test1.TestClass")._1 should be (Results.Success)
         interpreter.interpret(
-          "import com.ibm.testjar2.TestClass")._1 should be (Results.Success)
+          "import test2.TestClass")._1 should be (Results.Success)
 
         // Should now run
         interpreter.interpret(
-          """println(new com.ibm.testjar.TestClass().sayHello("Chip"))"""
+          """println(test1.TestClass.sayHello("Chip"))"""
         ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("Hello, Chip\n")
         outputResult.reset()
 
         interpreter.interpret(
-          """println(new com.ibm.testjar2.TestClass().CallMe())"""
+          """println(test2.TestClass.addStuff(2,1))"""
         ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("3\n")
+        outputResult.reset()
       }
 
       it("should be able to add multiple jars in consecutive calls to addjar") {
         val testJar1Url =
-          this.getClass.getClassLoader.getResource("TestJar.jar")
+          JarUtils.createDummyJar(tempdir.toString, "test1", "TestClass")
         val testJar2Url =
-          this.getClass.getClassLoader.getResource("TestJar2.jar")
-//        val interpreter = new ScalaInterpreter(List(), mock[OutputStream])
-//          with StandardSparkIMainProducer
-//          with StandardTaskManagerProducer
-//          with StandardSettingsProducer
-//        interpreter.start()
+          JarUtils.createDummyJar(tempdir.toString, "test2", "TestClass")
 
         // Should fail since jars were not added to paths
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (Results.Error)
+          "import test1.TestClass")._1 should be (Results.Error)
         interpreter.interpret(
-          "import com.ibm.testjar2.TestClass")._1 should be (Results.Error)
+          "import test2.TestClass")._1 should be (Results.Error)
 
         // Add jars to paths
         interpreter.addJars(testJar1Url)
@@ -162,19 +168,19 @@ class AddExternalJarMagicSpecForIntegration
 
         // Should now succeed
         interpreter.interpret(
-          "import com.ibm.testjar.TestClass")._1 should be (Results.Success)
+          "import test1.TestClass")._1 should be (Results.Success)
         interpreter.interpret(
-          "import com.ibm.testjar2.TestClass")._1 should be (Results.Success)
+          "import test2.TestClass")._1 should be (Results.Success)
 
         // Should now run
         interpreter.interpret(
-          """println(new com.ibm.testjar.TestClass().sayHello("Chip"))"""
+          """println(test1.TestClass.sayHello("Chip"))"""
         ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("Hello, Chip\n")
         outputResult.reset()
 
         interpreter.interpret(
-          """println(new com.ibm.testjar2.TestClass().CallMe())"""
+          """println(test2.TestClass.addStuff(2,1))"""
         ) should be ((Results.Success, Left(Map())))
         outputResult.toString should be ("3\n")
       }

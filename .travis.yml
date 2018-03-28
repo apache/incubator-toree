@@ -43,7 +43,7 @@ cache:
         - $HOME/.sbt/boot/
         - $HOME/.coursier/cache/v1
 
-branches:
-    only:
-        - master
+#branches:
+#    only:
+#        - master
 
