@@ -65,6 +65,8 @@ class KernelBootstrap(config: Config) extends LogLike {
     //      customPrintStream as their initial Console.out value
     //
 
+    val startNanos: Double = System.nanoTime()
+
     // ENSURE THAT WE SET THE RIGHT SPARK PROPERTIES
     val execUri = System.getenv("SPARK_EXECUTOR_URI")
     System.setProperty("spark.repl.class.outputDir", outputDir.getAbsolutePath)
@@ -77,6 +79,9 @@ class KernelBootstrap(config: Config) extends LogLike {
     // Do this first to support shutting down quickly before entire system
     // is ready
     initializeShutdownHook()
+
+    //handle scala interpreter separately because is slow to startup
+    val (interpreterManager, maybeEventualPartialScalaInterpreter) = initializeSlowComponents(config)
 
     // Initialize the bare minimum to report a starting message
     val (actorSystem, actorLoader, kernelMessageRelayActor, statusDispatch) =
@@ -96,10 +101,12 @@ class KernelBootstrap(config: Config) extends LogLike {
     // Initialize components needed elsewhere
     val (commStorage, commRegistrar, commManager, interpreter,
       kernel, dependencyDownloader,
-      magicManager, pluginManager, responseMap) =
+      magicManager, pluginManager, responseMap, maybeEventualReadyScalaInterpreter) =
       initializeComponents(
         config      = config,
-        actorLoader = actorLoader
+        actorLoader = actorLoader,
+        interpreterManager = interpreterManager,
+        maybeEventualScalaInterp = maybeEventualPartialScalaInterpreter
       )
     this.interpreters ++= Seq(interpreter)
 
@@ -127,12 +134,19 @@ class KernelBootstrap(config: Config) extends LogLike {
     logger.debug("Initializing security manager")
     System.setSecurityManager(new KernelSecurityManager)
 
+    //Wait for scala interpreter to finish initializing if it is present
+    maybeEventualReadyScalaInterpreter.map { eventualScalaInterpreter =>
+      Await.ready(eventualScalaInterpreter, Duration.Inf)
+    }
+
     logger.debug("Running postInit for interpreters")
     interpreters foreach {_.postInit()}
 
     logger.info("Marking relay as ready for receiving messages")
     kernelMessageRelayActor ! true
 
+    val endNanos: Double = System.nanoTime()
+    logger.trace(s"Kernel bootstrap took ${(endNanos - startNanos) / 1000000000}s")
     this
   }
 

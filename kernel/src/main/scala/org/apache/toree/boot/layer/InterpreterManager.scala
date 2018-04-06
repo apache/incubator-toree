@@ -20,8 +20,9 @@ package org.apache.toree.boot.layer
 import org.apache.toree.kernel.api.KernelLike
 import com.typesafe.config.Config
 import org.apache.toree.interpreter._
-import scala.collection.JavaConverters._
+import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 
+import scala.collection.JavaConverters._
 import org.slf4j.LoggerFactory
 
 case class InterpreterManager(
@@ -29,6 +30,10 @@ case class InterpreterManager(
   interpreters: Map[String, Interpreter] = Map[String, Interpreter]()
 ) {
 
+  //Scala Interpreter is handled separately
+  def initializeRegularInterpreters(kernel: KernelLike): Unit = interpreters
+    .filterNot { case (name, interp) => name == "Scala" && interp.isInstanceOf[ScalaInterpreter] }
+    .foreach { case (_, interpreter) => interpreter.init(kernel) }
 
   def initializeInterpreters(kernel: KernelLike): Unit = {
     interpreters.values.foreach(interpreter =>
@@ -46,7 +51,14 @@ case class InterpreterManager(
   def defaultInterpreter: Option[Interpreter] = {
     interpreters.get(default)
   }
+
+  /**
+   * returns builtin toree scala interpreter if present.
+   * @return an option containg the scala interpreter if present
+   */
+  def scalaInterpreter: Option[ScalaInterpreter] = interpreters.get("Scala").collect { case s: ScalaInterpreter => s}
 }
+
 
 object InterpreterManager {
 
