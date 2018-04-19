@@ -70,11 +70,11 @@ class CommandLineOptions(args: Seq[String]) {
       .withRequiredArg().ofType(classOf[String])
 
   private val _default_repositories = parser.accepts(
-    "default-repositories", "comma seperated list of additional repositories to resolve"
+    "default-repositories", "comma separated list of additional repositories to resolve"
   ).withRequiredArg().ofType(classOf[String])
 
   private val _default_repository_credentials = parser.accepts(
-    "default-repository-credentials", "comma seperated list of credential files to use"
+    "default-repository-credentials", "comma separated list of credential files to use"
   ).withRequiredArg().ofType(classOf[String])
 
   private val _max_interpreter_threads = parser.accepts(
@@ -94,16 +94,16 @@ class CommandLineOptions(args: Seq[String]) {
   private val _nosparkcontext =
     parser.accepts("nosparkcontext", "kernel should not create a spark context")
 
-  private val _interpreter_plugin = parser.accepts(
-    "interpreter-plugin"
-  ).withRequiredArg().ofType(classOf[String])
-
-  private val _spark_context_intialization_timeout = parser.accepts(
-    "spark-context-intialization-timeout",
+  private val _spark_context_initialization_timeout = parser.accepts(
+    "spark-context-initialization-timeout",
     "The time (in milliseconds) allowed for creation of the spark context. " +
       "Failure to create a context in this time could result in duplicate initialization messages. " +
       "The default value is 100 milliseconds."
   ).withRequiredArg().ofType(classOf[Long])
+
+  private val _interpreter_plugin = parser.accepts(
+    "interpreter-plugin"
+  ).withRequiredArg().ofType(classOf[String])
 
   private val _alternate_sigint = parser.accepts(
     "alternate-sigint",
@@ -160,11 +160,11 @@ class CommandLineOptions(args: Seq[String]) {
       "magic_urls" -> getAll(_magic_url).map(_.asJava)
         .flatMap(list => if (list.isEmpty) None else Some(list)),
       "max_interpreter_threads" -> get(_max_interpreter_threads),
-      "spark_context_intialization_timeout" -> get(_spark_context_intialization_timeout),
       "alternate_sigint" -> get(_alternate_sigint),
       "jar_dir" -> get(_jar_dir),
       "default_interpreter" -> get(_default_interpreter),
       "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false)),
+      "spark_context_initialization_timeout" -> get(_spark_context_initialization_timeout),
       "interpreter_plugins" -> interpreterPlugins,
       "default_repositories" -> getAll(_default_repositories).map(_.asJava)
         .flatMap(list => if (list.isEmpty) None else Some(list)),

@@ -394,9 +394,9 @@ class Kernel (
 
   // TODO: Exposed for testing purposes.
   protected[toree] def getSparkContextInitializationTimeout: Long = {
-    val timeout:Long = config.getDuration("spark_context_intialization_timeout", TimeUnit.MILLISECONDS)
+    val timeout:Long = config.getDuration("spark_context_initialization_timeout", TimeUnit.MILLISECONDS)
     if (timeout <= 0) {
-      val clOptionName = "spark-context-intialization-timeout"
+      val clOptionName = "spark_context_initialization_timeout"
       throw new RuntimeException(s"--$clOptionName: Invalid timeout of '$timeout' milliseconds specified. " +
         s"Must specify a positive value.")
     }
