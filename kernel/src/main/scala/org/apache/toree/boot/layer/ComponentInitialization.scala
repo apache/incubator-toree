@@ -82,6 +82,8 @@ trait StandardComponentInitialization extends ComponentInitialization {
 
     initializePlugins(config, pluginManager)
 
+    initializeSparkContext(config, kernel)
+
     interpreterManager.initializeInterpreters(kernel)
     
     pluginManager.fireEvent(AllInterpretersReady)
@@ -106,6 +108,12 @@ trait StandardComponentInitialization extends ComponentInitialization {
       actorLoader, KMBuilder(), commRegistrar)
 
     (commStorage, commRegistrar, commManager)
+  }
+
+  def initializeSparkContext(config:Config, kernel:Kernel) = {
+    if(config.getString("spark_context_initialization_mode") == "eager") {
+      kernel.sparkSession
+    }
   }
 
   private def initializeDependencyDownloader(config: Config) = {

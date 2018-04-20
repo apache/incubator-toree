@@ -21,6 +21,7 @@ import java.io.{File, OutputStream}
 
 import com.typesafe.config.{Config, ConfigFactory}
 import joptsimple.{OptionParser, OptionSpec}
+import joptsimple.util.RegexMatcher._
 
 import scala.collection.JavaConverters._
 
@@ -94,6 +95,13 @@ class CommandLineOptions(args: Seq[String]) {
   private val _nosparkcontext =
     parser.accepts("nosparkcontext", "kernel should not create a spark context")
 
+  private val _spark_context_initialization_mode = parser.accepts(
+    "spark-context-initialization-mode",
+    "Identify how the Spark context initialization occurs. " +
+      "EAGER initialization will happen during runtime initialization,  " +
+      "LAZY initialization will happen when the context is used for the first time ."
+  ).withRequiredArg().ofType(classOf[String]).withValuesConvertedBy( regex("(lazy)|(eager)")).defaultsTo("lazy")
+
   private val _spark_context_initialization_timeout = parser.accepts(
     "spark-context-initialization-timeout",
     "The time (in milliseconds) allowed for creation of the spark context. " +
@@ -164,6 +172,8 @@ class CommandLineOptions(args: Seq[String]) {
       "jar_dir" -> get(_jar_dir),
       "default_interpreter" -> get(_default_interpreter),
       "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false)),
+      "spark_context_initialization_mode" -> (if( has(_spark_context_initialization_mode))
+        get(_spark_context_initialization_mode) else Some("lazy")),
       "spark_context_initialization_timeout" -> get(_spark_context_initialization_timeout),
       "interpreter_plugins" -> interpreterPlugins,
       "default_repositories" -> getAll(_default_repositories).map(_.asJava)

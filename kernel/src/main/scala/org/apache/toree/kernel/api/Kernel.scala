@@ -410,32 +410,39 @@ class Kernel (
   private lazy val defaultSparkConf: SparkConf = createSparkConf(new SparkConf())
 
   override def sparkSession: SparkSession = {
-    defaultSparkConf.getOption("spark.master") match {
-      case Some(master) if !master.contains("local") =>
-        // When connecting to a remote cluster, the first call to getOrCreate
-        // may create a session and take a long time, so this starts a future
-        // to get the session. If it take longer than specified timeout, then
-        // print a message to the user that Spark is starting. Note, the
-        // default timeout is 100ms and it is specified in reference.conf.
-        import scala.concurrent.ExecutionContext.Implicits.global
-        val sessionFuture = Future {
+
+    if(config.getString("spark_context_initialization_mode") == "eager") {
+      // explicitly enable eager initialization of spark context
+      SparkSession.builder.config(defaultSparkConf).getOrCreate
+    } else {
+      // default lazy initialization of spark context
+      defaultSparkConf.getOption("spark.master") match {
+        case Some(master) if !master.contains("local") =>
+          // When connecting to a remote cluster, the first call to getOrCreate
+          // may create a session and take a long time, so this starts a future
+          // to get the session. If it take longer than specified timeout, then
+          // print a message to the user that Spark is starting. Note, the
+          // default timeout is 100ms and it is specified in reference.conf.
+          import scala.concurrent.ExecutionContext.Implicits.global
+          val sessionFuture = Future {
+            SparkSession.builder.config(defaultSparkConf).getOrCreate
+          }
+
+          try {
+            val timeout = getSparkContextInitializationTimeout
+            Await.result(sessionFuture, Duration(timeout, TimeUnit.MILLISECONDS))
+          } catch {
+            case timeout: TimeoutException =>
+              // getting the session is taking a long time, so assume that Spark
+              // is starting and print a message
+              display.content(
+                MIMEType.PlainText, "Waiting for a Spark session to start...")
+              Await.result(sessionFuture, Duration.Inf)
+          }
+
+        case _ =>
           SparkSession.builder.config(defaultSparkConf).getOrCreate
-        }
-
-        try {
-          val timeout = getSparkContextInitializationTimeout
-          Await.result(sessionFuture, Duration(timeout, TimeUnit.MILLISECONDS))
-        } catch {
-          case timeout: TimeoutException =>
-            // getting the session is taking a long time, so assume that Spark
-            // is starting and print a message
-            display.content(
-              MIMEType.PlainText, "Waiting for a Spark session to start...")
-            Await.result(sessionFuture, Duration.Inf)
-        }
-
-      case _ =>
-        SparkSession.builder.config(defaultSparkConf).getOrCreate
+      }
     }
   }
 

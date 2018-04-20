@@ -356,6 +356,66 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
       }
     }
 
+    describe("when dealing with --spark-context-initialization-mode") {
+      val key = "spark_context_initialization_mode"
+
+      it("when none of the options are specified, it should default to lazy") {
+        val options = new CommandLineOptions(Nil)
+        val config: Config = options.toConfig
+        config.getString(key) should be("lazy")
+      }
+
+      it("when other options are specified, it should default to lazy") {
+        val options = new CommandLineOptions(Seq(
+          "--interpreter-plugin",
+          "dummy:test.utils.DummyInterpreter"
+        ))
+        val config: Config = options.toConfig
+        config.getString(key) should be("lazy")
+      }
+
+      it("when the options is specified, it should return the specified value") {
+        val options = new CommandLineOptions(List(
+          "--stdin-port", "99999",
+          "--shell-port", "88888",
+          "--iopub-port", "77777",
+          "--control-port", "55555",
+          "--heartbeat-port", "44444",
+          "--spark-context-initialization-mode", "eager"
+        ))
+        val config: Config = options.toConfig
+        config.getString(key) should be("eager")
+      }
+
+      it("when an invalid value is specified, an exception must be thrown") {
+        intercept [OptionException] {
+          val options = new CommandLineOptions(List(
+            "--stdin-port", "99999",
+            "--shell-port", "88888",
+            "--iopub-port", "77777",
+            "--control-port", "55555",
+            "--heartbeat-port", "44444",
+            "--spark-context-initialization-mode", "foo"
+          ))
+          val config: Config = options.toConfig
+        }
+      }
+
+      it("when a value is not specified, an exception must be thrown") {
+        intercept [OptionException] {
+          val options = new CommandLineOptions(List(
+            "--stdin-port", "99999",
+            "--shell-port", "88888",
+            "--iopub-port", "77777",
+            "--control-port", "55555",
+            "--heartbeat-port", "44444",
+            "--spark-context-initialization-mode", ""
+          ))
+          val config: Config = options.toConfig
+        }
+      }
+    }
+
     describe("when dealing with --alternate-sigint") {
       val key = "alternate_sigint"
 
