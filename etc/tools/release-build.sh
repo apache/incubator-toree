@@ -38,7 +38,6 @@ to the staging release location.
 
 --release-publish --gitCommitHash="a874b73"
 Publish the maven artifacts of a release to the Apache staging maven repository.
-Note that this will publish both Scala 2.10 and 2.11 artifacts.
 
 OPTIONS
 
@@ -55,12 +54,12 @@ GPG_PASSPHRASE - Passphrase for GPG key used to sign release
 
 EXAMPLES
 
-release-build.sh --release-prepare --releaseVersion="2.0.0" --developmentVersion="2.1.0-SNAPSHOT"
-release-build.sh --release-prepare --releaseVersion="2.0.0" --developmentVersion="2.1.0-SNAPSHOT" --releaseRc="rc1" --tag="v2.0.0"
-release-build.sh --release-prepare --releaseVersion="2.0.0" --developmentVersion="2.1.0-SNAPSHOT" --releaseRc="rc1" --tag="v2.0.0"  --gitCommitHash="a874b73" --dryRun
+release-build.sh --release-prepare --releaseVersion="0.2.0" --developmentVersion="0.3.0.dev1"
+release-build.sh --release-prepare --releaseVersion="0.2.0" --developmentVersion="0.3.0.dev1" --releaseRc="rc1" --tag="v0.2.0-incubating-rc1"
+release-build.sh --release-prepare --releaseVersion="0.2.0" --developmentVersion="0.3.0.dev1" --releaseRc="rc1" --tag="v0.2.0-incubating-rc1"  --gitCommitHash="a874b73" --dryRun
 
 release-build.sh --release-publish --gitCommitHash="a874b73"
-release-build.sh --release-publish --gitTag="v2.0.0rc1"
+release-build.sh --release-publish --gitTag="v0.2.0-incubating-rc1"
 
 EOF
   exit 1
@@ -102,6 +101,7 @@ while [ "${1+defined}" ]; do
       ;;
     --releaseVersion)
       RELEASE_VERSION="${PARTS[1]}"
+      FULL_RELEASE_VERSION="${PARTS[1]}-incubating"
       shift
       ;;
     --developmentVersion)
@@ -169,11 +169,6 @@ if [[ "$RELEASE_PUBLISH" == "true" && "$DRY_RUN" ]]; then
     exit_with_usage
 fi
 
-if [[ "$RELEASE_SNAPSHOT" == "true" && "$DRY_RUN" ]]; then
-    echo "ERROR: --dryRun not supported for --release-publish"
-    exit_with_usage
-fi
-
 # Commit ref to checkout when building
 GIT_REF=${GIT_REF:-master}
 if [[ "$RELEASE_PUBLISH" == "true" && "$GIT_TAG" ]]; then
@@ -190,28 +185,27 @@ if [ -z "$RELEASE_RC" ]; then
 fi
 
 if [ -z "$RELEASE_TAG" ]; then
-  RELEASE_TAG="v$RELEASE_VERSION-incubating-$RELEASE_RC"
+  RELEASE_TAG="v$FULL_RELEASE_VERSION-$RELEASE_RC"
 fi
 
 if [ -z "$RELEASE_STAGING_FOLDER" ]; then
-  RELEASE_STAGING_FOLDER="$RELEASE_VERSION-incubating-$RELEASE_RC"
+  RELEASE_STAGING_FOLDER="$FULL_RELEASE_VERSION-$RELEASE_RC"
 fi
 
-
 RELEASE_STAGING_LOCATION="https://dist.apache.org/repos/dist/dev/incubator/toree/"
-
 
 echo "  "
 echo "-------------------------------------------------------------"
 echo "------- Release preparation with the following parameters ---"
 echo "-------------------------------------------------------------"
-echo "Executing           ==> $GOAL"
-echo "Git reference       ==> $GIT_REF"
-echo "release version     ==> $RELEASE_VERSION"
-echo "development version ==> $DEVELOPMENT_VERSION"
-echo "rc                  ==> $RELEASE_RC"
-echo "tag                 ==> $RELEASE_TAG"
-echo "release staging dir ==> $RELEASE_STAGING_FOLDER"
+echo "Executing            ==> $GOAL"
+echo "Git reference        ==> $GIT_REF"
+echo "Release version      ==> $RELEASE_VERSION"
+echo "Full Release version ==> $FULL_RELEASE_VERSION"
+echo "Development version  ==> $DEVELOPMENT_VERSION"
+echo "RC                   ==> $RELEASE_RC"
+echo "Tag                  ==> $RELEASE_TAG"
+echo "Release staging dir  ==> $RELEASE_STAGING_FOLDER"
 if [ "$DRY_RUN" ]; then
    echo "dry run ?           ==> true"
 fi
@@ -238,18 +232,18 @@ function checkout_code {
 }
 
 if [[ "$RELEASE_PREPARE" == "true" ]]; then
-    echo "Preparing release $RELEASE_VERSION"
+    echo "Preparing release $FULL_RELEASE_VERSION ($RELEASE_VERSION)"
     # Checkout code
     checkout_code
     cd target/toree
 
     # Build and prepare the release
     sed -i .bak "s@^BASE_VERSION.*@BASE_VERSION?=$RELEASE_VERSION@g" Makefile
-    git commit Makefile -m"Prepare release $RELEASE_VERSION"
+    git commit Makefile -m"Prepare release $FULL_RELEASE_VERSION"
     git tag $RELEASE_TAG
     git_tag_hash=`git rev-parse --short HEAD`
     sed -i .bak "s@^BASE_VERSION.*@BASE_VERSION?=$DEVELOPMENT_VERSION@g" Makefile
-    git commit Makefile -m"Prepare for next development iteraction $DEVELOPMENT_VERSION"
+    git commit Makefile -m"Prepare for next development interaction $DEVELOPMENT_VERSION"
     git push
     git push --tags
 
@@ -275,16 +269,12 @@ if [[ "$RELEASE_PREPARE" == "true" ]]; then
         cd "$BASE_DIR/target/svn-toree/$RELEASE_STAGING_FOLDER/toree"
         rm -f *.asc
         for i in *.tar.gz; do gpg --output $i.asc --detach-sig --armor $i; done
-        rm -f *.md5
-        for i in *.tar.gz; do openssl md5 -hex $i | sed 's/MD5(\([^)]*\))= \([0-9a-f]*\)/\2 *\1/' > $i.md5; done
         rm -f *.sha*
         for i in *.tar.gz; do shasum --algorithm 512 $i > $i.sha512; done
 
         cd "$BASE_DIR/target/svn-toree/$RELEASE_STAGING_FOLDER/toree-pip"
         rm -f *.asc
         for i in *.tar.gz; do gpg --output $i.asc --detach-sig --armor $i; done
-        rm -f *.md5
-        for i in *.tar.gz; do openssl md5 -hex $i | sed 's/MD5(\([^)]*\))= \([0-9a-f]*\)/\2 *\1/' > $i.md5; done
         rm -f *.sha*
         for i in *.tar.gz; do shasum --algorithm 512 $i > $i.sha512; done
 
