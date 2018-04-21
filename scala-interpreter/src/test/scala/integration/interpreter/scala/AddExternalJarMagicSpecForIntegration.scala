@@ -91,7 +91,7 @@ class AddExternalJarMagicSpecForIntegration
         outputResult.reset()
       }
 
-      it("should support Scala jars") {
+      ignore("should support Scala jars") {
         val locationURL = "http://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar"
         val testJarUrl = JarUtils.downloadJar(tempdir.toString, locationURL)
 
