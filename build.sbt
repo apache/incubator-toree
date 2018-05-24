@@ -186,7 +186,7 @@ lazy val scalaInterpreter = (project in file("scala-interpreter"))
 */
 lazy val sqlInterpreter = (project in file("sql-interpreter"))
   .settings(name := "toree-sql-interpreter")
-  .dependsOn(plugins, protocol, kernelApi)
+  .dependsOn(plugins, protocol, kernelApi, scalaInterpreter)
 
 /**
 * Project represents the Python interpreter used by the Spark Kernel.
