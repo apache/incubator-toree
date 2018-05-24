@@ -70,7 +70,6 @@ javaOptions in ThisBuild ++= Seq(
 )
 // Add additional test option to show time taken per test
 testOptions in (ThisBuild, Test) += Tests.Argument("-oDF")
-
 // Build-wide dependencies
 resolvers in ThisBuild  ++= Seq(
   "Apache Snapshots" at "http://repository.apache.org/snapshots/",
@@ -186,7 +185,7 @@ lazy val scalaInterpreter = (project in file("scala-interpreter"))
 */
 lazy val sqlInterpreter = (project in file("sql-interpreter"))
   .settings(name := "toree-sql-interpreter")
-  .dependsOn(plugins, protocol, kernelApi)
+  .dependsOn(plugins, protocol, kernelApi, scalaInterpreter)
 
 /**
 * Project represents the Python interpreter used by the Spark Kernel.
