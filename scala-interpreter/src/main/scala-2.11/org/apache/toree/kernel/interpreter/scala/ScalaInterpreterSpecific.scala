@@ -31,7 +31,7 @@ import scala.util.Try
 trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpreter =>
   private val ExecutionExceptionName = "lastException"
 
-  private var iMain: IMain = _
+  private[toree] var iMain: IMain = _
   private var completer: PresentationCompilerCompleter = _
   private val exceptionHack = new ExceptionHack()
 

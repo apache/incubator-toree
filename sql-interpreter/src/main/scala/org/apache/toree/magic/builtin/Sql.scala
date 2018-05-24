@@ -16,9 +16,10 @@
  */
 package org.apache.toree.magic.builtin
 
-import org.apache.toree.interpreter.{ExecuteError, ExecuteAborted}
-import org.apache.toree.kernel.interpreter.sql.{SqlInterpreter, SqlException}
-import org.apache.toree.magic.{MagicOutput, CellMagic}
+import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError}
+import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
+import org.apache.toree.kernel.interpreter.sql.{SqlException, SqlInterpreter}
+import org.apache.toree.magic.{CellMagic, MagicOutput}
 import org.apache.toree.magic.dependencies.IncludeKernel
 import org.apache.toree.plugins.annotations.Event
 
@@ -29,14 +30,22 @@ class Sql extends CellMagic with IncludeKernel {
 
   @Event(name = "sql")
   override def execute(code: String): MagicOutput = {
-    val sparkR = kernel.interpreter("SQL")
+    val sparkSql = kernel.interpreter("SQL")
 
-    if (sparkR.isEmpty || sparkR.get == null)
+    if (sparkSql.isEmpty || sparkSql.get == null)
       throw new SqlException("SQL is not available!")
 
-    sparkR.get match {
-      case sparkRInterpreter: SqlInterpreter =>
-        val (_, output) = sparkRInterpreter.interpret(code)
+    val scala = kernel.interpreter("Scala")
+    val evaluated = if (scala.nonEmpty && scala.get != null) {
+      val scalaInterpreter = scala.get.asInstanceOf[ScalaInterpreter]
+      scalaInterpreter.iMain.eval("s\"" + code.replace("\n", " ") + "\"").asInstanceOf[String]
+    } else {
+      code
+    }
+
+    sparkSql.get match {
+      case sqlInterpreter: SqlInterpreter =>
+        val (_, output) = sqlInterpreter.interpret(evaluated)
         output match {
           case Left(executeOutput) =>
             MagicOutput(executeOutput.toSeq:_*)
