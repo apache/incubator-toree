@@ -29,14 +29,14 @@ class Sql extends CellMagic with IncludeKernel {
 
   @Event(name = "sql")
   override def execute(code: String): MagicOutput = {
-    val sparkR = kernel.interpreter("SQL")
+    val sparkSQL = kernel.interpreter("SQL")
 
-    if (sparkR.isEmpty || sparkR.get == null)
+    if (sparkSQL.isEmpty || sparkSQL.get == null)
       throw new SqlException("SQL is not available!")
 
-    sparkR.get match {
-      case sparkRInterpreter: SqlInterpreter =>
-        val (_, output) = sparkRInterpreter.interpret(code)
+    sparkSQL.get match {
+      case sparkSQLInterpreter: SqlInterpreter =>
+        val (_, output) = sparkSQLInterpreter.interpret(code)
         output match {
           case Left(executeOutput) =>
             MagicOutput(executeOutput.toSeq:_*)

@@ -455,6 +455,7 @@ class ScalaInterpreterSpec extends FunSpec
 
         interpreter.stop()
       }
+
     }
   }
 }
