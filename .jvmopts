@@ -17,7 +17,9 @@
 -Xms1024M
 -Xmx4096M
 -Xss2m
--XX:MaxPermSize=1024M
+-XX:MetaspaceSize=1024m
+-XX:+UseCompressedOops
+-XX:+UseCompressedClassPointers
 -XX:ReservedCodeCacheSize=256M
 -XX:+TieredCompilation
 -XX:+CMSPermGenSweepingEnabled
