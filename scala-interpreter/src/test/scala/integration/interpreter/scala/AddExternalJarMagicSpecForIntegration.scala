@@ -18,7 +18,6 @@
 package integration.interpreter.scala
 
 import java.io.{ByteArrayOutputStream, File}
-import java.net.URL
 
 import org.apache.spark.toree.test.utils.JarUtils
 import org.apache.toree.annotations.SbtForked
@@ -27,9 +26,10 @@ import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.{BeforeAndAfter, FunSpec, Ignore, Matchers}
 
 @SbtForked
+@Ignore
 class AddExternalJarMagicSpecForIntegration
   extends FunSpec with Matchers with MockitoSugar with BeforeAndAfter
 {
