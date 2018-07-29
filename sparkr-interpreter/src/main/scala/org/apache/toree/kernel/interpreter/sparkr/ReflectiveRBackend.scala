@@ -18,7 +18,7 @@ package org.apache.toree.kernel.interpreter.sparkr
 
 /**
  * Provides reflective access into the backend R component that is not
- * publically accessible.
+ * publicly accessible.
  */
 class ReflectiveRBackend {
   private val rBackendClass = Class.forName("org.apache.spark.api.r.RBackend")
