@@ -25,7 +25,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.repl.Main
 import org.apache.toree.interpreter._
-import org.apache.toree.kernel.api.KernelLike
+import org.apache.toree.kernel.api.{KernelLike, KernelOptions}
 import org.apache.toree.utils.TaskManager
 import org.slf4j.LoggerFactory
 import org.apache.toree.kernel.BuildInfo
@@ -221,9 +221,17 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
         }
 
         // suppress interpreter-defined values
-        if (!name.matches("res\\d+")) {
+        if ( defLine.matches("res\\d+(.*)[\\S\\s]") == false &&
+             defLine.matches("""(\w+):\s+([^=]+)\s+=\s*(.*)[\S\s]""") == false ) {
           definitions.append(defLine)
         }
+
+        // show type, except on MagicOutputs
+        if(showType && !vtype.contains("MagicOutput")) {
+          lastResultAsString = defLine
+          lastResult = Some(defLine)
+        }
+
 
       case Definition(defType, name) =>
         lastResultAsString = ""
@@ -282,7 +290,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
          val lastOutput = lastResultOut.toString("UTF-8").trim
          lastResultOut.reset()
 
-         val (obj, defStr, text) = prepareResult(lastOutput)
+         val (obj, defStr, text) = prepareResult(lastOutput, KernelOptions.showTypes, KernelOptions.noTruncation )
          defStr.foreach(kernel.display.content(MIMEType.PlainText, _))
          text.foreach(kernel.display.content(MIMEType.PlainText, _))
          val output = obj.map(Displayers.display(_).asScala.toMap).getOrElse(Map.empty)
