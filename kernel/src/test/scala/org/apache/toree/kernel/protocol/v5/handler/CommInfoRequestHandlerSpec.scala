@@ -47,6 +47,8 @@ class CommInfoRequestHandlerSpec extends TestKit(
   )
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
 
+  var WAIT_TIME = 2.seconds
+
   var mockCommStorage: CommStorage = mock[CommStorage]
 
   val actorLoader: ActorLoader =  mock[ActorLoader]
@@ -72,7 +74,7 @@ class CommInfoRequestHandlerSpec extends TestKit(
       when(mockCommStorage.getCommIdsFromTarget("test.name")).thenReturn(Option(scala.collection.immutable.IndexedSeq("1", "2")))
 
       actor ! kernelMessage
-      val reply = relayProbe.receiveOne(1.seconds).asInstanceOf[KernelMessage]
+      val reply = relayProbe.receiveOne(WAIT_TIME).asInstanceOf[KernelMessage]
       val commInfo = Json.parse(reply.contentString).as[CommInfoReply]
 
       commInfo.comms.size should equal (2)
@@ -91,7 +93,7 @@ class CommInfoRequestHandlerSpec extends TestKit(
     when(mockCommStorage.getCommIdsFromTarget("test.name2")).thenReturn(Option(scala.collection.immutable.IndexedSeq("3", "4")))
 
     actor ! kernelMessage
-    val reply = relayProbe.receiveOne(1.seconds).asInstanceOf[KernelMessage]
+    val reply = relayProbe.receiveOne(WAIT_TIME).asInstanceOf[KernelMessage]
     val commInfo = Json.parse(reply.contentString).as[CommInfoReply]
 
     commInfo.comms.size should equal (4)
@@ -110,7 +112,7 @@ class CommInfoRequestHandlerSpec extends TestKit(
     when(mockCommStorage.getCommIdsFromTarget("test.name")).thenReturn(Option(scala.collection.immutable.IndexedSeq("1", "2")))
 
     actor ! kernelMessage
-    val reply = relayProbe.receiveOne(1.seconds).asInstanceOf[KernelMessage]
+    val reply = relayProbe.receiveOne(WAIT_TIME).asInstanceOf[KernelMessage]
     val commInfo = Json.parse(reply.contentString).as[CommInfoReply]
 
     commInfo.comms.size should equal (0)
