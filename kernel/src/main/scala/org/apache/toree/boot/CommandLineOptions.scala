@@ -93,14 +93,15 @@ class CommandLineOptions(args: Seq[String]) {
       .withRequiredArg().ofType(classOf[String])
 
   private val _nosparkcontext =
-    parser.accepts("nosparkcontext", "kernel should not create a spark context")
+    parser.accepts("nosparkcontext", "Deprecated (see spark-context-initialization-mode). \n Kernel should not create a spark context")
 
   private val _spark_context_initialization_mode = parser.accepts(
     "spark-context-initialization-mode",
     "Identify how the Spark context initialization occurs. " +
+      "NONE will not initialize a Spark Context," +
       "EAGER initialization will happen during runtime initialization,  " +
-      "LAZY initialization will happen when the context is used for the first time ."
-  ).withRequiredArg().ofType(classOf[String]).withValuesConvertedBy( regex("(lazy)|(eager)")).defaultsTo("lazy")
+      "LAZY initialization will happen when the context is used for the first time."
+  ).withRequiredArg().ofType(classOf[String]).withValuesConvertedBy( regex("(none)|(lazy)|(eager)")).defaultsTo("lazy")
 
   private val _spark_context_initialization_timeout = parser.accepts(
     "spark-context-initialization-timeout",
@@ -171,9 +172,10 @@ class CommandLineOptions(args: Seq[String]) {
       "alternate_sigint" -> get(_alternate_sigint),
       "jar_dir" -> get(_jar_dir),
       "default_interpreter" -> get(_default_interpreter),
-      "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false)),
-      "spark_context_initialization_mode" -> (if( has(_spark_context_initialization_mode))
-        get(_spark_context_initialization_mode) else Some("lazy")),
+      // deprecated in favor of spark-context-initialization-mode none
+      // "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false)),
+      "spark_context_initialization_mode" -> (if( has(_spark_context_initialization_mode)) get(_spark_context_initialization_mode)
+        else ( if (has(_nosparkcontext)) Some("none") else Some("lazy"))),
       "spark_context_initialization_timeout" -> get(_spark_context_initialization_timeout),
       "interpreter_plugins" -> interpreterPlugins,
       "default_repositories" -> getAll(_default_repositories).map(_.asJava)
