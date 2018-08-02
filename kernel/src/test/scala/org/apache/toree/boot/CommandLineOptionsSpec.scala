@@ -387,7 +387,20 @@ class CommandLineOptionsSpec extends FunSpec with Matchers {
         config.getString(key) should be("eager")
       }
 
-      it("when an invalid value is specified, an exception must be thrown") {
+      it("when the option nosparkcontext is specified, it should properly set spark-context-initialization-mode to none") {
+          val options = new CommandLineOptions(List(
+            "--stdin-port", "99999",
+            "--shell-port", "88888",
+            "--iopub-port", "77777",
+            "--control-port", "55555",
+            "--heartbeat-port", "44444",
+            "--nosparkcontext", "foo"
+          ))
+          val config: Config = options.toConfig
+          config.getString(key) should be("none")
+        }
+
+        it("when an invalid value is specified, an exception must be thrown") {
         intercept [OptionException] {
           val options = new CommandLineOptions(List(
             "--stdin-port", "99999",
