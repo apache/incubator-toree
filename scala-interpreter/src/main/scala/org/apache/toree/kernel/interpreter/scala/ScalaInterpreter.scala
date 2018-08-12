@@ -25,7 +25,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.repl.Main
 import org.apache.toree.interpreter._
-import org.apache.toree.kernel.api.KernelLike
+import org.apache.toree.kernel.api.{KernelLike, KernelOptions}
 import org.apache.toree.utils.TaskManager
 import org.slf4j.LoggerFactory
 import org.apache.toree.kernel.BuildInfo
@@ -190,8 +190,9 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    }
 
   def prepareResult(interpreterOutput: String,
+                    showOutput: Boolean = true,
                     showType: Boolean = false,
-                    noTruncate: Boolean = false
+                    truncate: Boolean = false
                    ): (Option[AnyRef], Option[String], Option[String]) = {
     if (interpreterOutput.isEmpty) {
       return (None, None, None)
@@ -203,26 +204,45 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     val text = new StringBuilder
 
     interpreterOutput.split("\n").foreach {
-      case NamedResult(name, vtype, value) if read(name).nonEmpty =>
+      case NamedResult(name, vtype, value) =>
         val result = read(name)
+        if (result.nonEmpty) {
 
-        lastResultAsString = result.map(String.valueOf(_)).getOrElse("")
-        lastResult = result
+          lastResultAsString = result.map(String.valueOf(_)).getOrElse("")
+          lastResult = result
 
-        val defLine = (showType, noTruncate) match {
-          case (true, true) =>
-            s"$name: $vtype = $lastResultAsString\n"
-          case (true, false) =>
-            s"$name: $vtype = $value\n"
-          case (false, true) =>
-            s"$name = $lastResultAsString\n"
-          case (false, false) =>
-            s"$name = $value\n"
-        }
 
-        // suppress interpreter-defined values
-        if (!name.matches("res\\d+")) {
-          definitions.append(defLine)
+          // for truncation purposes:
+          // $value has truncated value
+          // $lastResultAsString has full value
+
+          val defLine = (showType, truncate) match {
+            case (true, false) =>
+              s"$name: $vtype = $lastResultAsString\n"
+            case (true, true) =>
+              s"$name: $vtype = $value\n"
+            case (false, false) =>
+              s"$name = $lastResultAsString\n"
+            case (false, true) =>
+              s"$name = $value\n"
+          }
+
+          // suppress interpreter-defined values
+          if ( defLine.matches("res\\d+(.*)[\\S\\s]") == false &&
+            defLine.matches("""(\w+):\s+([^=]+)\s+=\s*(.*)[\S\s]""") == false ) {
+            text.append(defLine)
+          }
+
+          // show type, except on MagicOutputs
+          if(showType && !vtype.contains("MagicOutput")) {
+            lastResultAsString = defLine
+            lastResult = Some(defLine)
+          }
+
+          if(truncate) {
+            lastResultAsString = defLine
+            lastResult = Some(defLine)
+          }
         }
 
       case Definition(defType, name) =>
@@ -240,14 +260,14 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     }
 
     (lastResult,
-     if (definitions.nonEmpty) Some(definitions.toString) else None,
-     if (text.nonEmpty) Some(text.toString) else None)
+     if (definitions.nonEmpty && showOutput) Some(definitions.toString) else None,
+     if (text.nonEmpty && showOutput) Some(text.toString) else None)
   }
 
   protected def interpretBlock(code: String, silent: Boolean = false):
     (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
 
-     logger.trace(s"Interpreting line: $code")
+     println(s"interpretBlock:\n$code")
 
      val futureResult = interpretAddTask(code, silent)
 
@@ -282,7 +302,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
          val lastOutput = lastResultOut.toString("UTF-8").trim
          lastResultOut.reset()
 
-         val (obj, defStr, text) = prepareResult(lastOutput)
+         val (obj, defStr, text) = prepareResult(lastOutput, KernelOptions.showOutput, KernelOptions.showTypes, KernelOptions.truncate)
          defStr.foreach(kernel.display.content(MIMEType.PlainText, _))
          text.foreach(kernel.display.content(MIMEType.PlainText, _))
          val output = obj.map(Displayers.display(_).asScala.toMap).getOrElse(Map.empty)

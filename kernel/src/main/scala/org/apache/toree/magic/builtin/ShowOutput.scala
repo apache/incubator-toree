@@ -16,29 +16,30 @@
  */
 package org.apache.toree.magic.builtin
 
+import java.io.PrintStream
+
+import org.apache.toree.kernel.api.KernelOptions
 import org.apache.toree.magic.LineMagic
 import org.apache.toree.magic.dependencies.IncludeOutputStream
-import java.io.PrintStream
-import org.apache.toree.kernel.api.KernelOptions
 import org.apache.toree.plugins.annotations.Event
 
 
-class ShowTypes extends LineMagic with IncludeOutputStream {
+class ShowOutput extends LineMagic with IncludeOutputStream {
   private def printStream = new PrintStream(outputStream)
 
-  @Event(name = "showtypes")
+  @Event(name = "showoutput")
   override def execute(code: String): Unit = {
     code match {
       case "on" =>
-        printStream.println(s"Types will be printed.")
-        KernelOptions.showTypes = true
+        printStream.println(s"Console output WILL be shown.")
+        KernelOptions.showOutput = true
       case "off" =>
-        printStream.println(s"Types will not be printed.")
-        KernelOptions.showTypes = false
+        printStream.println(s"Console output will NOT be shown.")
+        KernelOptions.showOutput = false
       case "" =>
-        printStream.println(s"ShowTypes is currently ${if (KernelOptions.showTypes) "on" else "off"}.")
+        printStream.println(s"Console output display is currently ${if (KernelOptions.truncate) "on" else "off"}.")
       case other =>
-        printStream.println(s"${other} is not a valid option for the ShowTypes magic.")
+        printStream.println(s"${other} is not a valid option for the ShowOutput magic.")
     }
   }
 }

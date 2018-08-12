@@ -19,5 +19,6 @@ package org.apache.toree.kernel.api
 
 object KernelOptions {
   var showTypes: Boolean = false
-  var noTruncation: Boolean = false
+  var truncate: Boolean = false
+  var showOutput: Boolean = true
 }
