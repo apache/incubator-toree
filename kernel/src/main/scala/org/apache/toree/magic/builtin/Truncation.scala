@@ -31,12 +31,12 @@ class Truncation extends LineMagic with IncludeOutputStream {
     code match {
       case "on" =>
         printStream.println(s"Output WILL be truncated.")
-        KernelOptions.noTruncation = false
+        KernelOptions.truncate = true
       case "off" =>
-        printStream.println(s"Output will NOT be truncated")
-        KernelOptions.noTruncation = true
+        printStream.println(s"Output will NOT be truncated.")
+        KernelOptions.truncate = false
       case "" =>
-        printStream.println(s"Truncation is currently ${if (KernelOptions.noTruncation) "off" else "on"} ")
+        printStream.println(s"Truncation is currently ${if (KernelOptions.truncate) "on" else "off"}.")
       case other =>
         printStream.println(s"${other} is not a valid option for the NoTruncation magic.")
     }

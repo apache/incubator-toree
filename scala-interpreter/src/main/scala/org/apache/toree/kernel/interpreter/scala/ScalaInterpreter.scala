@@ -191,7 +191,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
   def prepareResult(interpreterOutput: String,
                     showType: Boolean = false,
-                    noTruncate: Boolean = false
+                    truncate: Boolean = false
                    ): (Option[AnyRef], Option[String], Option[String]) = {
     if (interpreterOutput.isEmpty) {
       return (None, None, None)
@@ -203,35 +203,46 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     val text = new StringBuilder
 
     interpreterOutput.split("\n").foreach {
-      case NamedResult(name, vtype, value) if read(name).nonEmpty =>
+      case NamedResult(name, vtype, value) =>
         val result = read(name)
+        if (result.nonEmpty) {
 
-        lastResultAsString = result.map(String.valueOf(_)).getOrElse("")
-        lastResult = result
+          lastResultAsString = result.map(String.valueOf(_)).getOrElse("")
+          lastResult = result
 
-        val defLine = (showType, noTruncate) match {
-          case (true, true) =>
-            s"$name: $vtype = $lastResultAsString\n"
-          case (true, false) =>
-            s"$name: $vtype = $value\n"
-          case (false, true) =>
-            s"$name = $lastResultAsString\n"
-          case (false, false) =>
-            s"$name = $value\n"
+
+          // for truncation purposes:
+          // $value has truncated value
+          // $lastResultAsString has full value
+
+          val defLine = (showType, truncate) match {
+            case (true, false) =>
+              s"$name: $vtype = $lastResultAsString\n"
+            case (true, true) =>
+              s"$name: $vtype = $value\n"
+            case (false, false) =>
+              s"$name = $lastResultAsString\n"
+            case (false, true) =>
+              s"$name = $value\n"
+          }
+
+          // suppress interpreter-defined values
+          if ( defLine.matches("res\\d+(.*)[\\S\\s]") == false &&
+            defLine.matches("""(\w+):\s+([^=]+)\s+=\s*(.*)[\S\s]""") == false ) {
+            text.append(defLine)
+          }
+
+          // show type, except on MagicOutputs
+          if(showType && !vtype.contains("MagicOutput")) {
+            lastResultAsString = defLine
+            lastResult = Some(defLine)
+          }
+
+          if(truncate) {
+            lastResultAsString = defLine
+            lastResult = Some(defLine)
+          }
         }
-
-        // suppress interpreter-defined values
-        if ( defLine.matches("res\\d+(.*)[\\S\\s]") == false &&
-             defLine.matches("""(\w+):\s+([^=]+)\s+=\s*(.*)[\S\s]""") == false ) {
-          definitions.append(defLine)
-        }
-
-        // show type, except on MagicOutputs
-        if(showType && !vtype.contains("MagicOutput")) {
-          lastResultAsString = defLine
-          lastResult = Some(defLine)
-        }
-
 
       case Definition(defType, name) =>
         lastResultAsString = ""
@@ -255,7 +266,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
   protected def interpretBlock(code: String, silent: Boolean = false):
     (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
 
-     logger.trace(s"Interpreting line: $code")
+     println(s"interpretBlock:\n$code")
 
      val futureResult = interpretAddTask(code, silent)
 
@@ -290,7 +301,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
          val lastOutput = lastResultOut.toString("UTF-8").trim
          lastResultOut.reset()
 
-         val (obj, defStr, text) = prepareResult(lastOutput, KernelOptions.showTypes, KernelOptions.noTruncation )
+         val (obj, defStr, text) = prepareResult(lastOutput, KernelOptions.showTypes, KernelOptions.truncate )
          defStr.foreach(kernel.display.content(MIMEType.PlainText, _))
          text.foreach(kernel.display.content(MIMEType.PlainText, _))
          val output = obj.map(Displayers.display(_).asScala.toMap).getOrElse(Map.empty)

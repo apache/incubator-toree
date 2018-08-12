@@ -33,10 +33,10 @@ class ShowTypes extends LineMagic with IncludeOutputStream {
         printStream.println(s"Types will be printed.")
         KernelOptions.showTypes = true
       case "off" =>
-        printStream.println(s"Types will not be printed")
+        printStream.println(s"Types will not be printed.")
         KernelOptions.showTypes = false
       case "" =>
-        printStream.println(s"ShowTypes is currently ${if (KernelOptions.showTypes) "on" else "off"} ")
+        printStream.println(s"ShowTypes is currently ${if (KernelOptions.showTypes) "on" else "off"}.")
       case other =>
         printStream.println(s"${other} is not a valid option for the ShowTypes magic.")
     }
