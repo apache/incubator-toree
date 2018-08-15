@@ -19,10 +19,11 @@
 
 # RELEASE_NOTES
 
-## 0.2.0-incubating (2018.01)
+## 0.2.0-incubating (2018.08)
 
-* Support Apache Spark 2.x codebase including Spark 2.2.0
+* Support Apache Spark 2.x codebase including Spark 2.2.2
 * Enable Toree to run in Yarn cluster mode
+* Support configurable alternative interrupt signal via --alternate-sigint command line
 * Create spark context lazily to avoid long startup times for the kernel
 * Properly cleanup of temporary files/directories upon kernel shutdown
 * %AddJAR now supports HDFS file format
