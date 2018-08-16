@@ -49,7 +49,7 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
         },
         # showtypes controls info displayed to stdout, return values are
         # handled by Jupyter displayers.
-        {'code': '%showtypes on\n1', 'result': '1'},
+        {'code': '%showtypes on\n1', 'result': 'Int = 1\n'},
         {'code': '%showtypes off\n1', 'result': '1'}
     ]
 

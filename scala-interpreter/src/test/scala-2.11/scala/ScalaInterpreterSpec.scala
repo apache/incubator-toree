@@ -418,15 +418,20 @@ class ScalaInterpreterSpec extends FunSpec
       it("should truncate result of res result") {
         interpreter.start()
         doReturn(38).when(mockSparkIMain).eval("i")
+        doReturn("ABC").when(mockSparkIMain).eval("s")
         doReturn(Vector(1, 2)).when(mockSparkIMain).eval("res4")
         doReturn("snakes").when(mockSparkIMain).eval("resabc")
 
-        //  Results that match
+        //  Results that match  ==> Result, Definitions, Text
+        //  val i: Int = 38 ==> i: Int = 38
         interpreter.prepareResult("i: Int = 38") should be((Some(38), Some("i = 38\n"), None))
-        interpreter.prepareResult("i: Int = 38",true) should be((Some(38), Some("i: Int = 38\n"), None))
+        interpreter.prepareResult("i: Int = 38",true) should be((Some("i: Int = 38\n"), Some("i: Int = 38\n"), None))
+        // val s = "ABC" ==> s: String = ABC
+        interpreter.prepareResult("s: String = ABC") should be((Some("ABC"), Some("s = ABC\n"), None))
+        interpreter.prepareResult("s: String = ABC",true) should be((Some("s: String = ABC\n"), Some("s: String = ABC\n"), None))
         // resN results are suppressed
-        interpreter.prepareResult("res4: String = \nVector(1\n, 2\n)") should be((Some(Vector(1, 2)), None, None))
-        interpreter.prepareResult("res4: String = \nVector(1\n, 2\n)",true) should be((Some(Vector(1, 2)), None, None))
+        interpreter.prepareResult("res4: String = Vector(1, 2)") should be((Some(Vector(1, 2)), None, None))
+        interpreter.prepareResult("res4: String = Vector(1, 2)",true) should be((Some("String = Vector(1, 2)\n"), None, None))
         // missing variables are None, unmatched lines are returned in text
         interpreter.prepareResult("res123") should be((None, None, Some("res123\n")))
         interpreter.prepareResult("res123: Int = 38") should be((None, None, Some("res123: Int = 38\n")))
