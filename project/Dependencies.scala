@@ -32,7 +32,7 @@ object Dependencies {
 
   val config = "com.typesafe" % "config" % "1.3.0" // Apache v2
 
-  val coursierVersion = "1.0.0-RC10"
+  val coursierVersion = "1.0.3"
   val coursier = "io.get-coursier" %% "coursier" % coursierVersion // Apache v2
   val coursierCache = "io.get-coursier" %% "coursier-cache" % coursierVersion // Apache v2
 
