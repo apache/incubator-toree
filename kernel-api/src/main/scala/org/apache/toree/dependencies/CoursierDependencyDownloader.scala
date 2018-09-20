@@ -252,7 +252,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     override def downloadProgress(url: String, downloaded: Long): Unit = {
       downloadAmount.put(url, downloaded)
 
-      val ratio = downloadAmount(url).toDouble / downloadTotal(url).toDouble
+      val ratio = downloadAmount(url).toDouble / downloadTotal.getOrElse[Long](url, 1).toDouble
       val percent = ratio * 100.0
 
       if (trace) printStream.printf(
