@@ -17,9 +17,10 @@
 
 package org.apache.toree.magic.builtin
 
-import java.io.OutputStream
+import java.io.{File, OutputStream}
 import java.net.{URI, URL}
-import java.nio.file.{Files, FileSystems}
+import java.nio.file.{FileSystems, Files}
+
 import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.magic.dependencies.{IncludeConfig, IncludeInterpreter, IncludeKernel, IncludeOutputStream}
 import com.typesafe.config.ConfigFactory
@@ -49,11 +50,9 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           override val outputStream: OutputStream = mockOutputStream
           override lazy val pluginManager: PluginManager = mockPluginManager
           override val config = testConfig
-          override def downloadFile(fileUrl: URL, destinationUrl: URL): URL =
-            new URL("file://someFile") // Cannot mock URL
         }
 
-        addJarMagic.execute("""http://www.example.com/someJar.jar""")
+        addJarMagic.execute("""http://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
 
         verify(mockKernel).addJars(any[URI])
         verify(mockPluginManager, times(0)).loadPlugins(any())
@@ -73,6 +72,20 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         }
         intercept[IllegalArgumentException] {
           addJarMagic.execute("""http://www.example.com/not_a_jar""")
+        }
+      }
+
+      it("should raise exception if jar file does not exist") {
+        val mockOutputStream = mock[OutputStream]
+
+        val addJarMagic = new AddJar
+          with IncludeOutputStream
+        {
+          override val outputStream: OutputStream = mockOutputStream
+        }
+
+        intercept[IllegalArgumentException] {
+          addJarMagic.execute("""http://ibm.com/this.jar.does.not.exist.jar""")
         }
       }
 
@@ -116,21 +129,11 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           override val config = testConfig
           override def downloadFile(fileUrl: URL, destinationUrl: URL): URL = {
             downloadFileCalled = true
-            new URL("file://someFile") // Cannot mock URL
+            super.downloadFile(fileUrl, destinationUrl)
           }
         }
 
-        // Create a temporary file representing our jar to fake the cache
-        val tmpFilePath = Files.createTempFile(
-          FileSystems.getDefault.getPath(AddJar.getJarDir(testConfig)),
-          "someJar",
-          ".jar"
-        )
-
-        addJarMagic.execute(
-          """http://www.example.com/""" + tmpFilePath.getFileName)
-
-        tmpFilePath.toFile.delete()
+        addJarMagic.execute("""http://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
 
         downloadFileCalled should be (false)
         verify(mockKernel).addJars(any[URI])
@@ -153,28 +156,17 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           override val config = testConfig
           override def downloadFile(fileUrl: URL, destinationUrl: URL): URL = {
             downloadFileCalled = true
-            new URL("file://someFile") // Cannot mock URL
+            super.downloadFile(fileUrl, destinationUrl)
           }
         }
 
-        // Create a temporary file representing our jar to fake the cache
-        val tmpFilePath = Files.createTempFile(
-          FileSystems.getDefault.getPath(AddJar.getJarDir(testConfig)),
-          "someJar",
-          ".jar"
-        )
-
-        addJarMagic.execute(
-          """-f http://www.example.com/""" + tmpFilePath.getFileName)
-
-        tmpFilePath.toFile.delete()
+        addJarMagic.execute("""-f http://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
 
         downloadFileCalled should be (true)
         verify(mockKernel).addJars(any[URI])
       }
 
-      it("should add magic jar to magicloader and not to interpreter and spark"+
-         "context") {
+      it("should add magic jar to magicloader and not to interpreter and spark context") {
         val mockSparkContext = mock[SparkContext]
         val mockInterpreter = mock[Interpreter]
         val mockOutputStream = mock[OutputStream]
@@ -190,12 +182,10 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           override val outputStream: OutputStream = mockOutputStream
           override lazy val pluginManager: PluginManager = mockPluginManager
           override val config = testConfig
-          override def downloadFile(fileUrl: URL, destinationUrl: URL): URL =
-            new URL("file://someFile") // Cannot mock URL
         }
 
         addJarMagic.execute(
-          """--magic http://www.example.com/someJar.jar""")
+          """--magic http://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
 
         verify(mockPluginManager).loadPlugins(any())
         verify(mockSparkContext, times(0)).addJar(anyString())

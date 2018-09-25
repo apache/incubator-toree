@@ -20,6 +20,7 @@ package org.apache.toree.magic.builtin
 import java.io.{File, PrintStream}
 import java.net.{URL, URI}
 import java.nio.file.{Files, Paths}
+import java.util.zip.ZipFile
 import org.apache.toree.magic._
 import org.apache.toree.magic.builtin.AddJar._
 import org.apache.toree.magic.dependencies._
@@ -62,6 +63,23 @@ class AddJar
 
   // Lazy because the outputStream is not provided at construction
   private def printStream = new PrintStream(outputStream)
+
+  /**
+    * Validate jar file structure
+    *
+    * @param jarFile
+    * @return boolean value based on validity of jar
+    */
+  def isValidJar(jarFile: File): Boolean = {
+    try {
+      val jarZip: ZipFile = new ZipFile(jarFile)
+      val entries = jarZip.entries
+      if (entries.hasMoreElements) return true else return false
+    } catch {
+      case _: Throwable => return false
+    }
+  }
+
 
   /**
    * Retrieves file name from a URI.
@@ -149,6 +167,11 @@ class AddJar
       printStream.println(s"Finished download of $jarName")
     } else {
       printStream.println(s"Using cached version of $jarName")
+    }
+
+    // validate jar file
+    if(! isValidJar(fileDownloadLocation)) {
+      throw new IllegalArgumentException(s"Jar '$jarName' is not valid.")
     }
 
     if (_magic) {
