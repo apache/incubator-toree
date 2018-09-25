@@ -190,6 +190,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    }
 
   def prepareResult(interpreterOutput: String,
+                    showOutput: Boolean = true,
                     showType: Boolean = false,
                     noTruncate: Boolean = false
                    ): (Option[AnyRef], Option[String], Option[String]) = {
@@ -257,8 +258,8 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     }
 
     (lastResult,
-     if (definitions.nonEmpty) Some(definitions.toString) else None,
-     if (text.nonEmpty) Some(text.toString) else None)
+     if (definitions.nonEmpty && showOutput) Some(definitions.toString) else None,
+     if (text.nonEmpty && showOutput) Some(text.toString) else None)
   }
 
   protected def interpretBlock(code: String, silent: Boolean = false):
@@ -299,7 +300,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
          val lastOutput = lastResultOut.toString("UTF-8").trim
          lastResultOut.reset()
 
-         val (obj, defStr, text) = prepareResult(lastOutput, KernelOptions.showTypes, KernelOptions.noTruncation )
+         val (obj, defStr, text) = prepareResult(lastOutput, KernelOptions.showOutput, KernelOptions.showTypes, KernelOptions.noTruncation )
          defStr.foreach(kernel.display.content(MIMEType.PlainText, _))
          text.foreach(kernel.display.content(MIMEType.PlainText, _))
          val output = obj.map(Displayers.display(_).asScala.toMap).getOrElse(Map.empty)
