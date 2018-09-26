@@ -190,9 +190,9 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    }
 
   def prepareResult(interpreterOutput: String,
-                    showOutput: Boolean = true,
                     showType: Boolean = false,
-                    noTruncate: Boolean = false
+                    noTruncate: Boolean = false,
+                    showOutput: Boolean = true
                    ): (Option[AnyRef], Option[String], Option[String]) = {
     if (interpreterOutput.isEmpty) {
       return (None, None, None)
@@ -300,7 +300,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
          val lastOutput = lastResultOut.toString("UTF-8").trim
          lastResultOut.reset()
 
-         val (obj, defStr, text) = prepareResult(lastOutput, KernelOptions.showOutput, KernelOptions.showTypes, KernelOptions.noTruncation )
+         val (obj, defStr, text) = prepareResult(lastOutput, KernelOptions.showTypes, KernelOptions.noTruncation, KernelOptions.showOutput )
          defStr.foreach(kernel.display.content(MIMEType.PlainText, _))
          text.foreach(kernel.display.content(MIMEType.PlainText, _))
          val output = obj.map(Displayers.display(_).asScala.toMap).getOrElse(Map.empty)
