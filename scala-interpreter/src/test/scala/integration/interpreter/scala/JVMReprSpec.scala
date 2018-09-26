@@ -68,7 +68,7 @@ class JVMReprSpec extends FunSpec with Matchers with MockitoSugar with BeforeAnd
         outputOrError.left.get should be(Map(MIMETypes.TEXT -> "Some(str)"))
       }
 
-      it("should use the Jupyter REPR API for display representation") {
+      ignore("should use the Jupyter REPR API for display representation") {
         Displayers.register(classOf[DisplayerTest], new Displayer[DisplayerTest] {
           override def display(t: DisplayerTest): util.Map[String, String] = {
             val output = new util.HashMap[String, String]()

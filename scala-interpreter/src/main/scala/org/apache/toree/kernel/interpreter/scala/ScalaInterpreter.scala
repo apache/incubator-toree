@@ -49,13 +49,13 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
   protected def kernel: KernelLike = _kernel
 
-   protected val logger = LoggerFactory.getLogger(this.getClass.getName)
+  protected val logger = LoggerFactory.getLogger(this.getClass.getName)
 
-   protected val _thisClassloader = this.getClass.getClassLoader
+  protected val _thisClassloader = this.getClass.getClassLoader
 
-   protected val lastResultOut = new ByteArrayOutputStream()
+  protected val lastResultOut = new ByteArrayOutputStream()
 
-   private[scala] var taskManager: TaskManager = _
+  private[scala] var taskManager: TaskManager = _
 
   /** Since the ScalaInterpreter can be started without a kernel, we need to ensure that we can compile things.
       Adding in the default classpaths as needed.
@@ -190,9 +190,9 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    }
 
   def prepareResult(interpreterOutput: String,
-                    showType: Boolean = false,
-                    noTruncate: Boolean = false,
-                    showOutput: Boolean = true
+                    showType: Boolean = KernelOptions.showTypes, // false
+                    noTruncate: Boolean = KernelOptions.noTruncation, // false
+                    showOutput: Boolean = KernelOptions.showOutput // true
                    ): (Option[AnyRef], Option[String], Option[String]) = {
     if (interpreterOutput.isEmpty) {
       return (None, None, None)
@@ -205,43 +205,49 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
     interpreterOutput.split("\n").foreach {
       case NamedResult(name, vtype, value) if read(name).nonEmpty =>
+
         val result = read(name)
 
         lastResultAsString = result.map(String.valueOf(_)).getOrElse("")
         lastResult = result
 
-        val defLine = (showType, noTruncate) match {
-          case (true, true) =>
-            s"$name: $vtype = $lastResultAsString\n"
-          case (true, false) =>
-            s"$name: $vtype = $value\n"
-          case (false, true) =>
-            s"$name = $lastResultAsString\n"
-          case (false, false) =>
-            s"$name = $value\n"
-        }
+        // magicOutput should be handled as result to properly
+        // display based on MimeType.
+        if(vtype != "org.apache.toree.magic.MagicOutput") {
+          // default noTruncate = False
+          // %truncation on ==>  noTruncate = false -> display Value
+          // %truncation off ==>  noTruncate = true  -> display lastResultAsString
+          val defLine = (showType, noTruncate) match {
+            case (true, true) =>
+              s"$name: $vtype = $lastResultAsString\n"
+            case (true, false) =>
+              lastResultAsString = value
+              lastResult = Some(value)
+              s"$name: $vtype = $value\n"
+            case (false, true) =>
+              s"$name = $lastResultAsString\n"
+            case (false, false) =>
+              lastResultAsString = value
+              lastResult = Some(value)
+              s"$name = $value\n"
+          }
 
-        // suppress interpreter-defined values
-        if ( defLine.matches("res\\d+(.*)[\\S\\s]") == false ) {
-          definitions.append(defLine)
-        }
+          // suppress interpreter-defined values
+          if ( defLine.matches("res\\d+(.*)[\\S\\s]") == false ) {
+            definitions.append(defLine)
+          }
 
-        // show type, except on MagicOutputs
-        if(showType && !vtype.contains("MagicOutput")) {
-          if (! lastResultAsString.contains(defLine)) {
-            // remove interpreter-defined variable names
+          if(showType) {
             if(defLine.startsWith("res")) {
-              val v = defLine.split("^res\\d+:\\s")(1)
+              val v = defLine.split("^res\\d+(:|=)\\s+")(1)
               lastResultAsString = v
               lastResult = Some(v)
             } else {
               lastResultAsString = defLine
               lastResult = Some(defLine)
             }
-
           }
         }
-
 
       case Definition(defType, name) =>
         lastResultAsString = ""
@@ -261,6 +267,13 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      if (definitions.nonEmpty && showOutput) Some(definitions.toString) else None,
      if (text.nonEmpty && showOutput) Some(text.toString) else None)
   }
+
+
+  implicit def stringToClass[T<:AnyRef](typeName: String, value: String)(implicit classLoader: ClassLoader): Class[T] = {
+    val clazz = Class.forName(typeName, true, classLoader)
+    clazz.asInstanceOf[Class[T]]
+  }
+
 
   protected def interpretBlock(code: String, silent: Boolean = false):
     (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {

@@ -419,33 +419,31 @@ class ScalaInterpreterSpec extends FunSpec
         interpreter.start()
         doReturn(38).when(mockSparkIMain).eval("i")
         doReturn("ABC").when(mockSparkIMain).eval("s")
-        doReturn(Vector(1, 2)).when(mockSparkIMain).eval("res4")
-        doReturn("snakes").when(mockSparkIMain).eval("resabc")
+        doReturn("abc").when(mockSparkIMain).eval("res4")
 
         //  Results that match  ==> Result, Definitions, Text
         //  val i: Int = 38 ==> i: Int = 38
-        interpreter.prepareResult("i: Int = 38") should be((Some(38), Some("i = 38\n"), None))
+        interpreter.prepareResult("i: Int = 38") should be((Some("38"), Some("i = 38\n"), None))
         interpreter.prepareResult("i: Int = 38",true) should be((Some("i: Int = 38\n"), Some("i: Int = 38\n"), None))
         // val s = "ABC" ==> s: String = ABC
         interpreter.prepareResult("s: String = ABC") should be((Some("ABC"), Some("s = ABC\n"), None))
         interpreter.prepareResult("s: String = ABC",true) should be((Some("s: String = ABC\n"), Some("s: String = ABC\n"), None))
         // resN results are suppressed
-        interpreter.prepareResult("res4: String = Vector(1, 2)") should be((Some(Vector(1, 2)), None, None))
-        interpreter.prepareResult("res4: String = Vector(1, 2)",true) should be((Some("String = Vector(1, 2)\n"), None, None))
+        interpreter.prepareResult("res4: String = abc") should be((Some("abc"), None, None))
+        interpreter.prepareResult("res4: String = abc",true) should be((Some("String = abc\n"), None, None))
         // missing variables are None, unmatched lines are returned in text
         interpreter.prepareResult("res123") should be((None, None, Some("res123\n")))
         interpreter.prepareResult("res123: Int = 38") should be((None, None, Some("res123: Int = 38\n")))
-        //  Results that don't match
-        interpreter.prepareResult("resabc: Int = 38") should be((Some("snakes"), Some("resabc = 38\n"), None))
 
         interpreter.stop()
       }
 
       it("should truncate res results that have tuple values") {
+        //val t: (String, Int) = ("hello",1)  ==>  t: (String, Int) = (hello,1)
         interpreter.start()
-        doReturn(("hello", 1)).when(mockSparkIMain).eval("res0")
+        doReturn("(hello, 1)").when(mockSparkIMain).eval("res0")
 
-        interpreter.prepareResult("res0: (String, Int) = (hello,1)") should be((Some(("hello", 1)), None, None))
+        interpreter.prepareResult("res0: (String, Int) = (hello,1)") should be((Some("(hello,1)"), None, None))
 
         interpreter.stop()
       }
@@ -455,7 +453,7 @@ class ScalaInterpreterSpec extends FunSpec
         doReturn(scala.Tuple2).when(mockSparkIMain).eval("res0")
 
         interpreter.prepareResult(
-          "res0: Class[_ <: (String, Int)] = class scala.Tuple2"
+          "res0: Class[_ <: (String, Int)] = class scala.Tuple2", noTruncate = true
         ) should be((Some(scala.Tuple2), None, None))
 
         interpreter.stop()
