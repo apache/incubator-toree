@@ -20,7 +20,7 @@ package org.apache.toree.kernel.protocol
 //import akka.zeromq.ZMQMessage
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.{CompleteRequest, ExecuteRequest}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 
 package object v5Test {
   //  The header for the message
@@ -41,7 +41,7 @@ package object v5Test {
     contentString =  Json.toJson(MockExecuteRequest).toString
   )
   val MockKernelMessageWithBadExecuteRequest = new KernelMessage(
-    Seq[Array[Byte]](), "test message", MockHeader, MockParenHeader, Map[String, String](),
+    Seq[Array[Byte]](), "test message", MockHeader, MockParenHeader, Metadata(),
     """
         {"code" : 124 }
     """
