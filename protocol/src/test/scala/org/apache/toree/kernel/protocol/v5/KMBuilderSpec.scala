@@ -28,7 +28,7 @@ class KMBuilderSpec extends FunSpec with Matchers {
       signature    = "",
       header       = HeaderBuilder.empty,
       parentHeader = HeaderBuilder.empty,
-      metadata     = Metadata(),
+      metadata     = Metadata().empty,
       contentString = ""
     )
     val nonEmptyHeader = Header("1", "user", "2", "msg", "version")
@@ -52,7 +52,7 @@ class KMBuilderSpec extends FunSpec with Matchers {
 
       class KM2 extends KMBuilder {
         override def metadataDefaults : Metadata = {
-          Metadata("foo" -> "bar", "baos" -> "bean")
+          Metadata("foo" -> "123", "abc" -> "1234")
         }
       }
       it("should include default metadata in built message by default") {
@@ -129,7 +129,7 @@ class KMBuilderSpec extends FunSpec with Matchers {
       describe("#withMetadata"){
         it("should produce a KMBuilder with a KernelMessage whose metadata " +
            "contains the given metadata") {
-          val metadata = Metadata("foo" -> "bar", "baos" -> "bean")
+          val metadata = Metadata("foo" -> "123", "abc" -> "1234")
           val builder = KMBuilder().withMetadata(metadata)
           builder.km.metadata should be (metadata)
           val builtKM = builder.build

@@ -17,11 +17,11 @@
 
 package org.apache.toree.kernel.protocol.v5.handler
 import akka.actor.{ActorSelection, ActorSystem, Props}
-import akka.testkit.{TestProbe, ImplicitSender, TestKit}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5.content.KernelInfoReply
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
-import org.apache.toree.kernel.protocol.v5.{SystemActorType, Header, KernelMessage, LanguageInfo}
+import org.apache.toree.kernel.protocol.v5._
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import org.mockito.Matchers.{eq => mockEq}
 import com.typesafe.config.ConfigFactory
@@ -56,7 +56,7 @@ class KernelInfoRequestHandlerSpec extends TestKit(
 
   val header = Header("","","","","")
   val kernelMessage = new KernelMessage(
-    Seq[Array[Byte]](), "test message", header, header, Map[String, String](), "{}"
+    Seq[Array[Byte]](), "test message", header, header, Metadata(), "{}"
   )
 
   describe("Kernel Info Request Handler") {
