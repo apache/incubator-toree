@@ -29,8 +29,18 @@ package object v5 {
   val ParentHeader = Header
 
   // Provide a Metadata type and object representing a map
-  type Metadata = Map[String, String]
-  val Metadata = Map
+  type Metadata = Map[String, JsValue]
+  object Metadata {
+    def apply(kv:(String, String)*):Metadata = {
+      if(kv.isEmpty) {
+        Map.empty
+      } else {
+        kv.toMap.mapValues(v => Json.parse(v))
+      }
+    }
+
+    val empty = Map.empty
+  }
 
   // Provide a Data type and object representing a map
   type Data = Map[MIMEType, String]
