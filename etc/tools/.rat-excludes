@@ -18,9 +18,7 @@
 
 # Files from sparkr which should not be changed
 .lintr
-package-sparkR.sh
 .*md
-.*sparkr-interpreter/src/main/.*
 NAMESPACE
 DESCRIPTION
 .*gitignore

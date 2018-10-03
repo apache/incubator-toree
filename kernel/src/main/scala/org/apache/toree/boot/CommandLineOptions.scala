@@ -204,8 +204,6 @@ class CommandLineOptions(args: Seq[String]) {
   private def interpreterPlugins: Option[java.util.List[String]] = {
     //val defaults = getAll(_default_interpreter_plugin).getOrElse(List())
     //val defaults = List[String](
-    //  "PySpark:org.apache.toree.kernel.interpreter.pyspark.PySparkInterpreter",
-    //  "SparkR:org.apache.toree.kernel.interpreter.sparkr.SparkRInterpreter",
     //  "SQL:org.apache.toree.kernel.interpreter.sql.SqlInterpreter"
     //)
 

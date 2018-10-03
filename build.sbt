@@ -122,10 +122,10 @@ credentials in ThisBuild+= Credentials(Path.userHome / ".ivy2" / ".credentials")
 lazy val root = (project in file("."))
   .settings(name := "toree")
   .aggregate(
-    macros,protocol,plugins,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,pysparkInterpreter,sparkrInterpreter,kernel
+    macros,protocol,plugins,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
   )
   .dependsOn(
-    macros,protocol,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,pysparkInterpreter,sparkrInterpreter,kernel
+    macros,protocol,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
   )
 
 /**
@@ -188,20 +188,6 @@ lazy val sqlInterpreter = (project in file("sql-interpreter"))
   .dependsOn(plugins, protocol, kernelApi, scalaInterpreter)
 
 /**
-* Project represents the Python interpreter used by the Spark Kernel.
-*/
-lazy val pysparkInterpreter = (project in file("pyspark-interpreter"))
-  .settings(name := "toree-pyspark-interpreter")
-  .dependsOn(plugins, protocol, kernelApi)
-
-/**
-* Project represents the R interpreter used by the Spark Kernel.
-*/
-lazy val sparkrInterpreter = (project in file("sparkr-interpreter"))
-  .settings(name := "toree-sparkr-interpreter")
-  .dependsOn(plugins, protocol, kernelApi)
-
-/**
 * Project representing the kernel code for the Spark Kernel backend.
 */
 lazy val kernel = (project in file("kernel"))
@@ -211,9 +197,7 @@ lazy val kernel = (project in file("kernel"))
     protocol % "test->test;compile->compile",
     communication % "test->test;compile->compile",
     kernelApi % "test->test;compile->compile",
-    pysparkInterpreter % "test->test;compile->compile",
     scalaInterpreter % "test->test;compile->compile",
-    sparkrInterpreter % "test->test;compile->compile",
     sqlInterpreter % "test->test;compile->compile"
   )
 
