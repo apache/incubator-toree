@@ -268,13 +268,6 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      if (text.nonEmpty && showOutput) Some(text.toString) else None)
   }
 
-
-  implicit def stringToClass[T<:AnyRef](typeName: String, value: String)(implicit classLoader: ClassLoader): Class[T] = {
-    val clazz = Class.forName(typeName, true, classLoader)
-    clazz.asInstanceOf[Class[T]]
-  }
-
-
   protected def interpretBlock(code: String, silent: Boolean = false):
     (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
 
