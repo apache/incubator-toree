@@ -247,10 +247,19 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
   override def read(variableName: String): Option[AnyRef] = {
     require(iMain != null)
 
-    iMain.eval(variableName) match {
-      case null => None
-      case str: String if str.isEmpty => None
-      case res => Some(res)
+    try {
+      iMain.eval(variableName) match {
+        case null => None
+        case str: String if str.isEmpty => None
+        case res => Some(res)
+      }
+    } catch {
+      // if any error returns None
+      case e: Throwable => {
+        logger.debug(s"Error reading variable name: ${variableName}", e)
+        clearLastException()
+        None
+      }
     }
   }
 
