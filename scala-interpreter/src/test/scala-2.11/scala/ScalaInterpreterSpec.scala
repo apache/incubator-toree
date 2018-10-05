@@ -438,6 +438,21 @@ class ScalaInterpreterSpec extends FunSpec
         interpreter.stop()
       }
 
+      it("should properly handle higher order functions") {
+        interpreter.start()
+        doReturn("myFunction: (x: Int, foo: Int => Int)Int").when(mockSparkIMain).eval("myFunction")
+
+        //  Results that match
+        interpreter.prepareResult("myFunction: (x: Int, foo: Int => Int)Int") should be(
+          (None,
+            Some("myFunction: (x: Int, foo: Int => Int)Int\n"),
+            None))
+
+
+        interpreter.stop()
+
+      }
+
       it("should truncate res results that have tuple values") {
         //val t: (String, Int) = ("hello",1)  ==>  t: (String, Int) = (hello,1)
         interpreter.start()
