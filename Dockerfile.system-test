@@ -34,10 +34,9 @@ RUN apt-get -y update && \
 
 # Installing Spark2
 RUN cd /tmp && \
-        wget -q http://d3kbcqa49mib13.cloudfront.net/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz && \
-        echo "e17d9da4b3ac463ea3ce42289f2a71cefb479d154b1ffd00310c7d7ab207aa2c *spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz" | sha256sum -c - && \
-        tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz -C /usr/local && \
-        rm spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz
+    wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz && \
+    tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz -C /usr/local && \
+    rm spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz
 
 # Overwrite symlink
 RUN cd /usr/local && \
