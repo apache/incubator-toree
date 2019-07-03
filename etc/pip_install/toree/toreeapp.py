@@ -33,6 +33,8 @@ INTERPRETER_LANGUAGES = {
 
 PYTHON_PATH = 'PYTHONPATH'
 SPARK_HOME ='SPARK_HOME'
+HADOOP_CONF_DIR = 'HADOOP_CONF_DIR'
+SPARK_CONF_DIR = 'SPARK_CONF_DIR'
 TOREE_SPARK_OPTS = '__TOREE_SPARK_OPTS__'
 TOREE_OPTS = '__TOREE_OPTS__'
 DEFAULT_INTERPRETER = 'DEFAULT_INTERPRETER'
@@ -54,6 +56,12 @@ class ToreeInstall(InstallKernelSpec):
 
     spark_home = Unicode(os.getenv(SPARK_HOME, '/usr/local/spark'), config=True,
         help='''Specify where the spark files can be found.'''
+    )
+    hadoop_conf_dir = Unicode(os.getenv(HADOOP_CONF_DIR, '/usr/local/hadoop'), config=True,
+        help='''Specify where the hadoop config files can be found.'''
+    )
+    spark_conf_dir = Unicode(os.getenv(SPARK_CONF_DIR, '/usr/local/spark'), config=True,
+        help='''Specify where the spark config files can be found.'''
     )
     kernel_name = Unicode('Apache Toree', config=True,
         help='Install the kernel spec with this name. This is also used as the base of the display name in jupyter.'
@@ -103,6 +111,8 @@ class ToreeInstall(InstallKernelSpec):
             TOREE_SPARK_OPTS : self.spark_opts,
             TOREE_OPTS : self.toree_opts,
             SPARK_HOME : self.spark_home,
+            HADOOP_CONF_DIR : self.hadoop_conf_dir,
+            SPARK_CONF_DIR : self.spark_conf_dir,
             PYTHON_PATH : '{0}/python:{0}/python/lib/{1}'.format(self.spark_home, py4j_zip),
             PYTHON_EXEC : self.python_exec
         }
