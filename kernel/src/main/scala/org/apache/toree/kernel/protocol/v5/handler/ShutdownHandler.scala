@@ -41,6 +41,8 @@ class ShutdownHandler(
   override def process(kernelMessage: KernelMessage): Future[_] = Future {
     logKernelMessageAction("Initiating Shutdown request for", kernelMessage)
 
+    val kernelInfo = SparkKernelInfo
+
     val shutdownReply = ShutdownReply(false)
 
     val replyHeader = Header(
@@ -48,7 +50,7 @@ class ShutdownHandler(
       "",
       java.util.UUID.randomUUID.toString,
       ShutdownReply.toTypeString,
-      "")
+      kernelInfo.protocolVersion)
 
     val kernelResponseMessage = KMBuilder()
       .withIds(kernelMessage.ids)
