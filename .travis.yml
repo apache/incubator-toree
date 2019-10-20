@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+dist: trusty
 language: scala
 scala:
     - "2.11"
@@ -46,4 +47,3 @@ cache:
 #branches:
 #    only:
 #        - master
-
