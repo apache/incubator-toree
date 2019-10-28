@@ -19,7 +19,7 @@ package org.apache.toree.plugins
 import java.io.File
 
 import org.clapper.classutil.{Modifier, ClassFinder}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
 
 import org.mockito.Mockito._

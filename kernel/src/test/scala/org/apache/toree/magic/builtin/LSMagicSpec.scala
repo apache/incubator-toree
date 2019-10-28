@@ -25,7 +25,7 @@ import org.apache.toree.magic.dependencies.{IncludeOutputStream, IncludeInterpre
 import org.apache.toree.magic.{CellMagic, LineMagic}
 import org.apache.spark.SparkContext
 import org.scalatest.{Matchers, FunSpec}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 
 import org.mockito.Mockito._
 import org.mockito.Matchers._

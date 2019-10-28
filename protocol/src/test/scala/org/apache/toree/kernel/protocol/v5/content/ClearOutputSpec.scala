@@ -19,7 +19,6 @@ package org.apache.toree.kernel.protocol.v5.content
 
 
 import org.scalatest.{FunSpec, Matchers}
-import play.api.data.validation.ValidationError
 import play.api.libs.json._
 
 class ClearOutputSpec extends FunSpec with Matchers {
@@ -59,7 +58,7 @@ class ClearOutputSpec extends FunSpec with Matchers {
         val CompleteRequestResults = clearOutputJson.validate[ClearOutput]
 
         CompleteRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ClearOutput) => valid
         ) should be (clearOutput)
       }

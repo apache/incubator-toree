@@ -24,7 +24,7 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.CompleteRequest
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5Test._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers}
 import org.mockito.Mockito._
 import test.utils.MaxAkkaTestTimeout

@@ -21,7 +21,7 @@ import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
 import org.mockito.Matchers._
 import org.mockito.Mockito._

@@ -28,7 +28,7 @@ import org.apache.toree.kernel.protocol.v5Test._
 import org.apache.toree.kernel.protocol.v5.{KernelMessage, SystemActorType}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import com.typesafe.config.ConfigFactory
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
 import org.mockito.Mockito._
 import org.mockito.Matchers._

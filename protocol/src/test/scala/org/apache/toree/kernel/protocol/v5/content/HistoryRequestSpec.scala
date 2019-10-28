@@ -18,7 +18,7 @@
 package org.apache.toree.kernel.protocol.v5.content
 
 import org.scalatest.{FunSpec, Matchers}
-import play.api.data.validation.ValidationError
+import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
 class HistoryRequestSpec extends FunSpec with Matchers {
@@ -66,7 +66,7 @@ class HistoryRequestSpec extends FunSpec with Matchers {
         val CompleteRequestResults = historyRequestJson.validate[HistoryRequest]
 
         CompleteRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: HistoryRequest) => valid
         ) should be (historyRequest)
       }

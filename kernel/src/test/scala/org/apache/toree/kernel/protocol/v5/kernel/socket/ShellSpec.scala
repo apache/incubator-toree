@@ -30,7 +30,7 @@ import Utilities._
 import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 import test.utils.MaxAkkaTestTimeout
 

@@ -20,9 +20,9 @@ package org.apache.toree.utils
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, Row}
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}
-import play.api.libs.json.{JsArray, JsString, Json}
+import play.api.libs.json.{JsArray, JsDefined, JsString, JsValue, Json}
 import test.utils.SparkContextProvider
 
 import scala.collection.mutable
@@ -40,7 +40,7 @@ class DataFrameConverterSpec extends FunSpec with MockitoSugar with Matchers wit
   val mockDataFrame = mock[DataFrame]
   val mockRdd = spark.parallelize(Seq(Row(new mutable.WrappedArray.ofRef(Array("test1", "test2")), 2, null)))
   val mockStruct = mock[StructType]
-  val columns = Seq("foo", "bar").toArray
+  val columns = Array("foo", "bar")
 
   doReturn(mockStruct).when(mockDataFrame).schema
   doReturn(columns).when(mockStruct).fieldNames
@@ -51,10 +51,10 @@ class DataFrameConverterSpec extends FunSpec with MockitoSugar with Matchers wit
       it("should convert to a valid JSON object") {
         val someJson = dataFrameConverter.convert(mockDataFrame, "json")
         val jsValue = Json.parse(someJson.get)
-        jsValue \ "columns" should be (JsArray(Seq(JsString("foo"), JsString("bar"))))
-        jsValue \ "rows" should be (JsArray(Seq(
+        (jsValue \ "columns").as[Array[JsValue]] should contain theSameElementsAs Array(JsString("foo"), JsString("bar"))
+        (jsValue \ "rows").as[Array[JsValue]] should contain theSameElementsAs Array(
           JsArray(Seq(JsString("[test1, test2]"), JsString("2"), JsString("null")))
-        )))
+        )
       }
       it("should convert to csv") {
         val csv = dataFrameConverter.convert(mockDataFrame, "csv").get

@@ -30,7 +30,7 @@ import com.typesafe.config.ConfigFactory
 import org.apache.toree.plugins.PluginManager
 import org.apache.toree.plugins.dependencies.DependencyManager
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import test.utils.MaxAkkaTestTimeout
 import scala.concurrent.duration.Duration

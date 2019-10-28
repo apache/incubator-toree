@@ -26,7 +26,7 @@ import org.mockito.AdditionalMatchers.{not => mockNot}
 import org.mockito.Matchers.{eq => mockEq}
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout

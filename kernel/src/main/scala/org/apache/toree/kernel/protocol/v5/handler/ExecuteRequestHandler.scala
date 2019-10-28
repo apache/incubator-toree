@@ -28,7 +28,7 @@ import org.apache.toree.kernel.protocol.v5.stream.KernelOutputStream
 import org.apache.toree.{global => kernelGlobal}
 import Utilities._
 import org.apache.toree.utils._
-import play.api.data.validation.ValidationError
+import play.api.libs.json.JsonValidationError
 import play.api.libs.json.JsPath
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
@@ -115,7 +115,7 @@ class ExecuteRequestHandler(
       }
     }
 
-    def parseErrorHandler(invalid: Seq[(JsPath, Seq[ValidationError])]) = {
+    def parseErrorHandler(invalid: Seq[(JsPath, Seq[JsonValidationError])]) = {
       val errs = invalid.map (e => s"JSPath ${e._1} has error ${e._2}").toList
       logger.error(s"Validation errors when parsing ExecuteRequest: ${errs}")
       val replyError: ExecuteReply = ExecuteReplyError(

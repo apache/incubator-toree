@@ -23,6 +23,8 @@ import org.apache.toree.magic.{CellMagic, MagicOutput}
 import org.apache.toree.magic.dependencies.IncludeKernel
 import org.apache.toree.plugins.annotations.Event
 
+import scala.tools.nsc.interpreter
+
 /**
  * Represents the magic interface to use the SQL interpreter.
  */
@@ -38,7 +40,7 @@ class Sql extends CellMagic with IncludeKernel {
     val scala = kernel.interpreter("Scala")
     val evaluated = if (scala.nonEmpty && scala.get != null) {
       val scalaInterpreter = scala.get.asInstanceOf[ScalaInterpreter]
-      scalaInterpreter.iMain.eval("s\"" + code.replace("\n", " ") + "\"").asInstanceOf[String]
+      scalaInterpreter.iMain.valueOfTerm("s\"" + code.replace("\n", " ") + "\"").asInstanceOf[String]
     } else {
       code
     }
@@ -48,7 +50,7 @@ class Sql extends CellMagic with IncludeKernel {
         val (_, output) = sqlInterpreter.interpret(evaluated)
         output match {
           case Left(executeOutput) =>
-            MagicOutput(executeOutput.toSeq:_*)
+            MagicOutput(executeOutput.toSeq: _*)
           case Right(executeFailure) => executeFailure match {
             case executeAborted: ExecuteAborted =>
               throw new SqlException("SQL code was aborted!")

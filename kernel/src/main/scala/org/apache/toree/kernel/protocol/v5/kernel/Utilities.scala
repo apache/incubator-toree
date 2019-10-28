@@ -23,7 +23,7 @@ import akka.util.{ByteString, Timeout}
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.utils.LogLike
-import play.api.data.validation.ValidationError
+import play.api.libs.json.JsonValidationError
 import play.api.libs.json.{JsPath, Json, Reads}
 
 import scala.concurrent.duration._
@@ -91,7 +91,7 @@ object Utilities extends LogLike {
   def parseAndHandle[T, U](json: String, reads: Reads[T],
                            handler: T => U) : U = {
     parseAndHandle(json, reads, handler,
-      (invalid: Seq[(JsPath, Seq[ValidationError])]) => {
+      (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => {
         logger.error(s"Could not parse JSON, ${json}")
         throw new Throwable(s"Could not parse JSON, ${json}")
       }
@@ -100,7 +100,7 @@ object Utilities extends LogLike {
 
   def parseAndHandle[T, U](json: String, reads: Reads[T],
                            handler: T => U,
-                           errHandler: Seq[(JsPath, Seq[ValidationError])] => U) : U = {
+                           errHandler: Seq[(JsPath, Seq[JsonValidationError])] => U) : U = {
     Json.parse(json).validate[T](reads).fold(
       errHandler,
       (content: T) => handler(content)

@@ -21,7 +21,7 @@ import org.apache.toree.plugins.dependencies.Dependency
 import org.apache.toree.plugins._
 import org.mockito.Mockito._
 import org.mockito.Matchers.{eq => mockEq, _}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import test.utils
 

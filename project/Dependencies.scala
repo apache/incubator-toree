@@ -26,7 +26,7 @@ object Dependencies {
   val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % "2.4.20" // Apache v2
   val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.4.20" // Apache v2
 
-  val clapper = "org.clapper" %% "classutil" % "1.0.12" // BSD 3-clause license, used for detecting plugins
+  val clapper = "org.clapper" %% "classutil" % "1.5.1" // BSD 3-clause license, used for detecting plugins
 
   val commonsExec = "org.apache.commons" % "commons-exec" % "1.3" // Apache v2
 
@@ -47,13 +47,13 @@ object Dependencies {
 
   val mockito = "org.mockito" % "mockito-all" % "1.10.19" // MIT
 
-  val playJson = "com.typesafe.play" %% "play-json" % "2.3.10" // Apache v2
+  val playJson = "com.typesafe.play" %% "play-json" % "2.7.4" // Apache v2
 
   val scalaCompiler = Def.setting{ "org.scala-lang" % "scala-compiler" % scalaVersion.value } // BSD 3-clause
   val scalaLibrary = Def.setting{ "org.scala-lang" % "scala-library" % scalaVersion.value } // BSD 3-clause
   val scalaReflect = Def.setting{ "org.scala-lang" % "scala-reflect" % scalaVersion.value } // BSD 3-clause
 
-  val scalaTest = "org.scalatest" %% "scalatest" % "2.2.6" // Apache v2
+  val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" // Apache v2
 
   val slf4jApi = "org.slf4j" % "slf4j-api" % "1.7.21" // MIT
 

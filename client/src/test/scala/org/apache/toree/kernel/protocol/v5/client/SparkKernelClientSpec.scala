@@ -26,7 +26,7 @@ import org.apache.toree.kernel.protocol.v5.client.execution.ExecuteRequestTuple
 import scala.concurrent.duration._
 import org.mockito.Mockito._
 import org.mockito.Matchers.{eq => mockEq, _}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 
 class SparkKernelClientSpec

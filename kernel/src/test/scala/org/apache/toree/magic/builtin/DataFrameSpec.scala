@@ -23,7 +23,7 @@ import org.apache.toree.magic.dependencies.IncludeKernelInterpreter
 import org.apache.toree.utils.DataFrameConverter
 import org.mockito.Matchers.{anyString, eq => mockEq, _}
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 
 import scala.util.Success

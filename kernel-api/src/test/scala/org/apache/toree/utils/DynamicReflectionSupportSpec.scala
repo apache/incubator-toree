@@ -21,7 +21,7 @@ import java.io.OutputStream
 
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{GivenWhenThen, BeforeAndAfter, FunSpec, Matchers}
 
 class DynamicReflectionSupportSpec

@@ -21,7 +21,7 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.KernelMessage
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers}
 import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout

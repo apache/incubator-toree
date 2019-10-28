@@ -27,13 +27,13 @@ IS_SNAPSHOT?=true
 SNAPSHOT:=-SNAPSHOT
 endif
 
-APACHE_SPARK_VERSION?=2.2.2
-SCALA_VERSION?=2.11
+APACHE_SPARK_VERSION?=2.4.4
+SCALA_VERSION?=2.12
 IMAGE?=jupyter/all-spark-notebook:228ae7a44e0c
 EXAMPLE_IMAGE?=apache/toree-examples
 SYSTEM_TEST_IMAGE?=apache/toree-systemtest
 GPG?=gpg
-GPG_PASSWORD?=
+GPG_PASSWORD?=sl
 BINDER_IMAGE?=apache/toree-binder
 DOCKER_WORKDIR?=/srv/toree
 DOCKER_ARGS?=

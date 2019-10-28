@@ -21,7 +21,7 @@ import java.util.UUID
 
 import org.apache.toree.comm.CommCallbacks.{CloseCallback, MsgCallback, OpenCallback}
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 
 class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar

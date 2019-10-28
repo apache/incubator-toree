@@ -27,7 +27,7 @@ import org.apache.toree.kernel.api.{DisplayMethodsLike, KernelLike}
 import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 import org.mockito.Mockito.doReturn
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import scala.util.Random
 
 class JVMReprSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfter {

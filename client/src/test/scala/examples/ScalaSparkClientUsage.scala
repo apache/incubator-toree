@@ -142,7 +142,7 @@ object ScalaSparkClientUsage extends App {
     y <- yPromise.future
   } yield (complexMath(x, y))
 
-  resultPromise.onSuccess {case x => println(s"Added result is ${x}") }
+  resultPromise.onComplete { x => println(s"Added result is ${x}") }
   //  Added result is 24
 
   //  Sleep so output does not overlap

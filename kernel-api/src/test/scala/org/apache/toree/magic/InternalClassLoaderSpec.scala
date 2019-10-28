@@ -18,7 +18,7 @@
 package org.apache.toree.magic
 
 import org.scalatest.{Matchers, FunSpec}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 
 class InternalClassLoaderSpec extends FunSpec with Matchers with MockitoSugar {
 

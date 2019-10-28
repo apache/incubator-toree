@@ -27,7 +27,7 @@ import org.apache.toree.kernel.protocol.v5.{Header, KernelMessage, Metadata, Sys
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import org.mockito.Matchers.{eq => mockEq}
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 import play.api.libs.json.Json
 

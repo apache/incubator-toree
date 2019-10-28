@@ -17,7 +17,7 @@
 
 package org.apache.toree.magic.builtin
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpec, Matchers}
 import org.apache.toree.magic.CellMagicOutput
 import org.apache.toree.kernel.protocol.v5.MIMEType

@@ -20,7 +20,7 @@ package org.apache.toree.kernel.protocol.v5.kernel.socket
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{FunSpec, Matchers}
 import org.slf4j.LoggerFactory
-import play.api.data.validation.ValidationError
+import play.api.libs.json.JsonValidationError
 import play.api.libs.json.{JsPath, JsValue, Json}
 
 class SocketConfigSpec extends FunSpec with Matchers {
@@ -70,7 +70,7 @@ class SocketConfigSpec extends FunSpec with Matchers {
         val CompleteRequestResults = socketConfigJson.validate[SocketConfig]
 
         CompleteRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: SocketConfig) => valid
         ) should be (socketConfig)
       }

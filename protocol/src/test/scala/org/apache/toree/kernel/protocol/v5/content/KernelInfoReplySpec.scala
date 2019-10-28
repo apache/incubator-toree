@@ -19,7 +19,7 @@ package org.apache.toree.kernel.protocol.v5.content
 
 import org.apache.toree.kernel.protocol.v5.LanguageInfo
 import org.scalatest.{FunSpec, Matchers}
-import play.api.data.validation.ValidationError
+import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
 class KernelInfoReplySpec extends FunSpec with Matchers {
@@ -63,7 +63,7 @@ class KernelInfoReplySpec extends FunSpec with Matchers {
         val kernelInfoReplyResults = kernelInfoReplyJson.validate[KernelInfoReply]
 
         kernelInfoReplyResults.fold(
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: KernelInfoReply) => valid
         ) should be (kernelInfoReply)
       }

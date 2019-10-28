@@ -17,7 +17,7 @@
 package org.apache.toree.communication.socket
 
 import org.scalatest.concurrent.Eventually
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.time.{Milliseconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 import org.zeromq.ZMQ

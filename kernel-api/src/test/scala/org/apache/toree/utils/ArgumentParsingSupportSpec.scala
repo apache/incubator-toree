@@ -19,7 +19,7 @@ package org.apache.toree.utils
 
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
 import joptsimple.{OptionSet, OptionSpec, OptionParser}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 
 import org.mockito.Mockito._
 import org.mockito.Matchers._

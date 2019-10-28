@@ -20,7 +20,7 @@ import java.lang.reflect.Method
 
 import org.apache.toree.plugins.annotations._
 import org.apache.toree.plugins.dependencies.DependencyManager
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
 import org.mockito.Mockito._
 import org.mockito.Matchers.{eq => mockEq, _}

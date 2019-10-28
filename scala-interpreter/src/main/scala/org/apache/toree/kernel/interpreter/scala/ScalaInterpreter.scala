@@ -193,12 +193,12 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
                     showType: Boolean = KernelOptions.showTypes, // false
                     noTruncate: Boolean = KernelOptions.noTruncation, // false
                     showOutput: Boolean = KernelOptions.showOutput // true
-                   ): (Option[AnyRef], Option[String], Option[String]) = {
+                   ): (Option[Any], Option[String], Option[String]) = {
     if (interpreterOutput.isEmpty) {
       return (None, None, None)
     }
 
-    var lastResult = Option.empty[AnyRef]
+    var lastResult = Option.empty[Any]
     var lastResultAsString = ""
     val definitions = new StringBuilder
     val text = new StringBuilder
