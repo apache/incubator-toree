@@ -40,9 +40,7 @@ object KernelSecurityManager {
    * Used to indicate which permissions to check. Only checks if the permission
    * is found in the keys and the value for that permission is true.
    */
-  private val permissionsToCheck: Map[String, Boolean] = HashMap(
-    "modifyThreadGroup" -> true
-  )
+  private val permissionsToCheck: Map[String, Boolean] = HashMap()
 
   /**
    * Checks whether the permission with the provided name is listed to be
@@ -105,42 +103,30 @@ class KernelSecurityManager extends SecurityManager {
       super.checkPermission(perm)
   }
 
-  override def getThreadGroup: ThreadGroup = {
-    val currentGroup = Thread.currentThread().getThreadGroup
+  def _isRestrictedGroup(): Boolean = {
+    // Returns true if this thread group is derived from the restricted group so as to
+    // prevent System.exit(0) from sub-threads running in a different group.
+    var isRestricted = false
+    var currentGroup = Thread.currentThread().getThreadGroup
 
-    // For restricted groups, we can only catch them in the checkAccess if we
-    // set the current group as the parent (to make sure all groups have a
-    // consistent name)
-    if (currentGroup.getName == RestrictedGroupName) {
-      new ThreadGroup(currentGroup, currentGroup.getName)
-    } else {
-      super.getThreadGroup
+    while ( currentGroup != null && !isRestricted ) {
+      if ( currentGroup.getName == RestrictedGroupName )
+        isRestricted = true
+      else
+        currentGroup = currentGroup.getParent
     }
-  }
-
-  override def checkAccess(g: ThreadGroup): Unit = {
-    //super.checkAccess(g)
-    if (g == null) return
-
-    val parentGroup = g.getParent
-
-    if (parentGroup != null &&
-      parentGroup.getName == RestrictedGroupName &&
-      g.getName != RestrictedGroupName)
-      throw new SecurityException("Not allowed to modify ThreadGroups!")
+    isRestricted
   }
 
   override def checkExit(status: Int): Unit = {
-    val currentGroup = Thread.currentThread().getThreadGroup
-
-    // Exit will be denied if this thread is in the restricted group AND the restricted
+    // Exit will be denied if this thread is derived from the restricted group AND the restricted
     // exit thread-local has not been enabled.  This will only happen when the request
     // came from jupyter via a (cell) execution_request indicating the cell is attempting
     // an exit call.  Proper notebook shutdown requests will go through the ShutdownHandler
     // where restricted exits are enabled and SIGINT (ctrl-c) requests are not performed
     // via the restricted group and thus allowed.
     //
-    if (currentGroup.getName == RestrictedGroupName ) {
+    if ( _isRestrictedGroup() ) {
       val isRestrictedExitEnabled:Option[Boolean] = Some(tlEnableRestrictedExit.get())
 
       if ( !isRestrictedExitEnabled.getOrElse(false) ) {
