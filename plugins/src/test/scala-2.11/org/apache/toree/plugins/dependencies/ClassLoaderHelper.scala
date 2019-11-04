@@ -17,7 +17,9 @@
 package org.apache.toree.plugins.dependencies
 
 import java.net.URL
-import java.lang.{ ClassLoader => JClassLoader }
+import java.lang.{ClassLoader => JClassLoader}
+
+import scala.reflect.internal.util.ScalaClassLoader
 
 
 /**
@@ -25,7 +27,7 @@ import java.lang.{ ClassLoader => JClassLoader }
   */
 object ClassLoaderHelper {
 
-  def URLClassLoader(urls: Seq[URL], parent: JClassLoader) = {
+  def URLClassLoader(urls: Seq[URL], parent: JClassLoader): ScalaClassLoader.URLClassLoader = {
     new scala.reflect.internal.util.ScalaClassLoader.URLClassLoader(urls, parent)
   }
 }
