@@ -23,7 +23,7 @@ FROM jupyter/all-spark-notebook:d4cbf2f80a2a
 USER root
 
 # Spark dependencies
-ENV APACHE_SPARK_VERSION 2.3.3
+ENV APACHE_SPARK_VERSION 2.3.4
 
 RUN apt-get -y update && \
     apt-get install -y --no-install-recommends openjdk-8-jre-headless && \

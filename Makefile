@@ -27,7 +27,7 @@ IS_SNAPSHOT?=true
 SNAPSHOT:=-SNAPSHOT
 endif
 
-APACHE_SPARK_VERSION?=2.2.2
+APACHE_SPARK_VERSION?=2.3.4
 SCALA_VERSION?=2.11
 IMAGE?=jupyter/all-spark-notebook:228ae7a44e0c
 EXAMPLE_IMAGE?=apache/toree-examples
