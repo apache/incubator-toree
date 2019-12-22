@@ -81,6 +81,7 @@ clean: VM_WORKDIR=/src/toree-kernel
 clean: clean-dist
 	$(call RUN,$(ENV_OPTS) sbt clean)
 	rm -r `find . -name target -type d`
+	-rm -r `find . -name .ipynb_checkpoints -type d`
 
 .example-image: EXTRA_CMD?=printf "deb http://cran.rstudio.com/bin/linux/debian jessie-cran3/" >> /etc/apt/sources.list; apt-key adv --keyserver keys.gnupg.net --recv-key 381BA480; apt-get update; pip install jupyter_declarativewidgets==0.4.4; jupyter declarativewidgets install --user; jupyter declarativewidgets activate; pip install jupyter_dashboards; jupyter dashboards install --user; jupyter dashboards activate; apt-get update; apt-get install --yes curl; curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -; apt-get install --yes nodejs r-base r-base-dev; npm install -g bower;
 .example-image:
