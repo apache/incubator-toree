@@ -51,7 +51,8 @@ apache-rat-*.jar
 **.swp
 **/*ivy.xml
 .vagrant
-.example-image
+.toree-dev-image
+.binder-image
 .ensime
 .ensime_cache/
 .system-test-image
