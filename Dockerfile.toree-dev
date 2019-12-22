@@ -17,7 +17,7 @@
 # This is a dockerfile used to construct the spark environment used for the
 # integration test suite.
 
-FROM jupyter/all-spark-notebook:d4cbf2f80a2a
+FROM jupyter/all-spark-notebook
 
 # User escalation
 USER root
@@ -31,7 +31,6 @@ RUN apt-get -y update && \
     rm -rf /var/lib/apt/lists/* && \
     update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
 
-
 # Installing Spark2
 RUN cd /tmp && \
     wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz && \
@@ -43,3 +42,16 @@ RUN cd /usr/local && \
     rm spark && \
     ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6 spark
 
+# Remove other scala kernels
+RUN cd /opt/conda/share/jupyter/kernels/ && \
+    rm -rf spylon-kernel
+
+ADD dist/toree /usr/local/share/jupyter/kernels/toree
+ADD etc/kernel.json /usr/local/share/jupyter/kernels/toree/kernel.json
+
+# Fix permissions on /etc/jupyter as root
+USER root
+RUN fix-permissions /usr/local/share/jupyter/
+
+# Switch back to jovyan to avoid accidental container runs as root
+USER $NB_UID

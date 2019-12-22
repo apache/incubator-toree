@@ -15,7 +15,10 @@
 # limitations under the License
 #
 
-.PHONY: help clean clean-dist build dev test system-test test-travis release pip-release bin-release dev-binder .binder-image audit audit-licenses
+.PHONY: help clean clean-dist .clean-binder-image .clean-toree-dev-image \
+     build dev test system-test test-travis release pip-release bin-release \
+     dev-binder \
+     audit audit-licenses
 
 BASE_VERSION?=0.4.0.dev1
 VERSION=$(BASE_VERSION)-incubating
@@ -29,9 +32,9 @@ endif
 
 APACHE_SPARK_VERSION?=2.3.4
 SCALA_VERSION?=2.11
-IMAGE?=jupyter/all-spark-notebook:228ae7a44e0c
+IMAGE?=jupyter/all-spark-notebook:latest
 EXAMPLE_IMAGE?=apache/toree-examples
-SYSTEM_TEST_IMAGE?=apache/toree-systemtest
+TOREE_DEV_IMAGE?=apache/toree-dev
 GPG?=gpg
 GPG_PASSWORD?=
 BINDER_IMAGE?=apache/toree-binder
@@ -63,12 +66,13 @@ help:
 	@echo '	'
 	@echo '	audit - run audit tools against the source code'
 	@echo '	clean - clean build files'
-	@echo '	dev - starts ipython'
 	@echo '	dist - build a directory with contents to package'
 	@echo '	build - builds assembly'
 	@echo '	test - run all units'
+	@echo '	system-test - run all system tests'
 	@echo '	release - creates packaged distribution'
-	@echo '	jupyter - starts a Jupyter Notebook with Toree installed'
+	@echo '	dev-binder - starts a docker image with Jupyter Notebook and Toree for using with Binder'
+	@echo '	jupyter - starts a docker image with Jupyter Notebook with Toree installed'
 	@echo '	'
 
 build-info:
@@ -83,22 +87,21 @@ clean: clean-dist
 	rm -r `find . -name target -type d`
 	-rm -r `find . -name .ipynb_checkpoints -type d`
 
-.example-image: EXTRA_CMD?=printf "deb http://cran.rstudio.com/bin/linux/debian jessie-cran3/" >> /etc/apt/sources.list; apt-key adv --keyserver keys.gnupg.net --recv-key 381BA480; apt-get update; pip install jupyter_declarativewidgets==0.4.4; jupyter declarativewidgets install --user; jupyter declarativewidgets activate; pip install jupyter_dashboards; jupyter dashboards install --user; jupyter dashboards activate; apt-get update; apt-get install --yes curl; curl --silent --location https://deb.nodesource.com/setup_0.12 | sudo bash -; apt-get install --yes nodejs r-base r-base-dev; npm install -g bower;
-.example-image:
-	@-docker rm -f examples_image
-	@docker run -t --user root --name examples_image \
-		$(IMAGE) bash -c '$(EXTRA_CMD)'
-	@docker commit examples_image $(EXAMPLE_IMAGE)
-	@-docker rm -f examples_image
+.clean-toree-dev-image:
+	@rm -f .toree-dev-image
+	@-docker rmi -f $(TOREE_DEV_IMAGE)
+
+.toree-dev-image:
+	@docker build -t $(TOREE_DEV_IMAGE) -f Dockerfile.toree-dev .
 	touch $@
 
-.system-test-image:
-	@-docker rm -f $(SYSTEM_TEST_IMAGE)
-	@docker build -t $(SYSTEM_TEST_IMAGE) -f Dockerfile.system-test .
-	touch $@
+.clean-binder-image:
+	@rm -f .binder-image
+	@-docker rmi -f $(BINDER_IMAGE)
 
-.binder-image:
+.binder-image: .clean-binder-image
 	@docker build --rm -t $(BINDER_IMAGE) .
+	touch $@
 
 dev-binder: .binder-image
 	@docker run --rm -t -p 8888:8888	\
@@ -114,18 +117,6 @@ target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): dist/toree-legal project/build.pr
 	$(call RUN,$(ENV_OPTS) sbt root/assembly)
 
 build: target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR)
-
-dev: DOCKER_WORKDIR=/srv/toree/etc/examples/notebooks
-dev: SUSPEND=n
-dev: DEBUG_PORT=5005
-dev: .example-image dist
-	@$(DOCKER) \
-		-e SPARK_OPTS="--master=local[4] --driver-java-options=-agentlib:jdwp=transport=dt_socket,server=y,suspend=$(SUSPEND),address=5005" \
-		-v `pwd`/etc/kernel.json:/usr/local/share/jupyter/kernels/toree/kernel.json \
-		-p $(DEBUG_PORT):5005 -p 8888:8888 \
-		--user=root	$(EXAMPLE_IMAGE) \
-		bash -c "cp -r /srv/toree/dist/toree/* /usr/local/share/jupyter/kernels/toree/. \
-			&& jupyter notebook --ip=* --no-browser"
 
 test: VM_WORKDIR=/src/toree-kernel
 test:
@@ -172,22 +163,36 @@ dist/toree: dist/toree/VERSION dist/toree-legal dist/toree/lib dist/toree/bin RE
 
 dist: dist/toree
 
+dev: DOCKER_WORKDIR=/srv/toree/etc/examples/notebooks
+dev: SUSPEND=n
+dev: DEBUG_PORT=5005
+dev: .toree-dev-image dist
+	@$(DOCKER) \
+		-e SPARK_OPTS="--master=local[4] --driver-java-options=-agentlib:jdwp=transport=dt_socket,server=y,suspend=$(SUSPEND),address=5005" \
+		-p $(DEBUG_PORT):5005 -p 8888:8888 $(TOREE_DEV_IMAGE) \
+		bash -c "jupyter lab --debug --ip=* --no-browser"
+
 define JUPYTER_COMMAND
 pip install toree-$(BASE_VERSION).tar.gz
 jupyter toree install --interpreters=Scala,SQL
 cd /srv/toree/etc/examples/notebooks
-jupyter notebook --ip=* --no-browser
+jupyter lab --debug --ip=* --no-browser
 endef
 
 export JUPYTER_COMMAND
 jupyter: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
-jupyter: .example-image pip-release
-	@$(DOCKER) -p 8888:8888	-e SPARK_OPTS="--master=local[4]" --user=root	$(EXAMPLE_IMAGE) bash -c "$$JUPYTER_COMMAND"
+jupyter: SUSPEND=n
+jupyter: DEBUG_PORT=5005
+jupyter: .toree-dev-image pip-release
+	@$(DOCKER) \
+		-e SPARK_OPTS="--master=local[4] --driver-java-options=-agentlib:jdwp=transport=dt_socket,server=y,suspend=$(SUSPEND),address=5005" \
+		-p $(DEBUG_PORT):5005 -p 8888:8888 $(TOREE_DEV_IMAGE) \
+		bash -c "$$JUPYTER_COMMAND"
 
 ################################################################################
 # System Tests Using Jupyter Kernel Test (https://github.com/jupyter/jupyter_kernel_test)
 ################################################################################
-system-test: pip-release .system-test-image
+system-test: pip-release .toree-dev-image
 	@echo '-- Running jupyter kernel tests'
 	@docker run -t --rm \
 		--name jupyter_kernel_tests \
@@ -195,12 +200,11 @@ system-test: pip-release .system-test-image
 		-v `pwd`/test_toree.py:/srv/test_toree.py \
 		-v `pwd`/scala-interpreter/src/test/resources:/srv/system-test-resources \
 		--user=root \
-		$(SYSTEM_TEST_IMAGE) \
+		$(TOREE_DEV_IMAGE) \
 		bash -c "(cd /srv/system-test-resources && python -m http.server 8000 &) && \
 		rm -rf /home/jovyan/.local/share/jupyter/kernels/apache_toree_scala/ && \
 		pip install /srv/toree-pip/toree*.tar.gz && jupyter toree install --interpreters=Scala && \
 		pip install nose jupyter_kernel_test && python /srv/test_toree.py"
-
 
 ################################################################################
 # Jars
