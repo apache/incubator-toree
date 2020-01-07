@@ -19,10 +19,6 @@ package org.apache.toree.plugins.dependencies
 import java.net.URL
 import java.lang.{ ClassLoader => JClassLoader }
 
-
-/**
-  * Created by mariu on 2016-07-16.
-  */
 object ClassLoaderHelper {
 
   def URLClassLoader(urls: Seq[URL], parent: JClassLoader) = {
