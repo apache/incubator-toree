@@ -131,7 +131,7 @@ class InputRequestReplyHandlerSpec
         fakeSender.send(inputRequestReplyHandler, inputReplyMessage)
 
         // Sender should not receive a response
-        fakeSender.expectNoMsg(MaxAkkaTestTimeout)
+        fakeSender.expectNoMessage(MaxAkkaTestTimeout)
       }
     }
   }

@@ -47,11 +47,11 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
         actorLoader.load(MessageType.Outgoing.CompleteReply) ! "<Test Message>"
-        testProbe.expectNoMsg(MaxAkkaTestTimeout)
+        testProbe.expectNoMessage(MaxAkkaTestTimeout)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe),
           MessageType.Outgoing.CompleteReply.toString)
-        testProbe.expectNoMsg(MaxAkkaTestTimeout)
+        testProbe.expectNoMessage(MaxAkkaTestTimeout)
       }
     }
     describe("#load( SocketType )"){
@@ -67,10 +67,10 @@ with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
         val testProbe: TestProbe = TestProbe()
         val actorLoader: ActorLoader = SimpleActorLoader(system)
         actorLoader.load(SocketType.IOPub) ! "<Test Message>"
-        testProbe.expectNoMsg(MaxAkkaTestTimeout)
+        testProbe.expectNoMessage(MaxAkkaTestTimeout)
         // This is to test to see if there the messages go to the actor inbox or the dead mail inbox
         system.actorOf(Props(classOf[TestProbeProxyActor], testProbe), SocketType.IOPub.toString)
-        testProbe.expectNoMsg(MaxAkkaTestTimeout)
+        testProbe.expectNoMessage(MaxAkkaTestTimeout)
       }
 
     }
