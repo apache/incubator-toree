@@ -104,12 +104,12 @@ class KernelMessageRelaySpec extends TestKit(
         it("should not send anything to SignatureManager for incoming") {
           relayWithoutSignatureManager ! true // Mark as ready for incoming
           relayWithoutSignatureManager ! incomingKernelMessage
-          signatureProbe.expectNoMsg(MaxAkkaTestTimeout)
+          signatureProbe.expectNoMessage(MaxAkkaTestTimeout)
         }
 
         it("should not send anything to SignatureManager for outgoing") {
           relayWithoutSignatureManager ! outgoingKernelMessage
-          signatureProbe.expectNoMsg(MaxAkkaTestTimeout)
+          signatureProbe.expectNoMessage(MaxAkkaTestTimeout)
         }
 
         it("should relay KernelMessage for incoming") {
@@ -143,7 +143,7 @@ class KernelMessageRelaySpec extends TestKit(
           val incomingMessage: ZMQMessage = incomingKernelMessage
 
           relayWithoutSignatureManager ! incomingMessage
-          captureProbe.expectNoMsg(MaxAkkaTestTimeout)
+          captureProbe.expectNoMessage(MaxAkkaTestTimeout)
         }
 
         it("should relay the message if it is outgoing") {
