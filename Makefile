@@ -138,6 +138,10 @@ dist/toree/VERSION:
 	@echo "VERSION: $(VERSION)" > dist/toree/VERSION
 	@echo "COMMIT: $(COMMIT)" >> dist/toree/VERSION
 
+dist/toree/logo-64x64.png:
+	@mkdir -p dist/toree
+	@cp -r etc/logo-64x64.png dist/toree/logo-64x64.png
+
 dist/toree-legal/LICENSE: LICENSE etc/legal/LICENSE_extras
 	@mkdir -p dist/toree-legal
 	@cat LICENSE > dist/toree-legal/LICENSE
@@ -157,7 +161,7 @@ dist/toree-legal/DISCLAIMER:
 dist/toree-legal: dist/toree-legal/LICENSE dist/toree-legal/NOTICE dist/toree-legal/DISCLAIMER
 	@cp -R etc/legal/licenses dist/toree-legal/.
 
-dist/toree: dist/toree/VERSION dist/toree-legal dist/toree/lib dist/toree/bin RELEASE_NOTES.md
+dist/toree: dist/toree/VERSION dist/toree/logo-64x64.png dist/toree-legal dist/toree/lib dist/toree/bin RELEASE_NOTES.md
 	@cp -R dist/toree-legal/* dist/toree
 	@cp RELEASE_NOTES.md dist/toree/RELEASE_NOTES.md
 
