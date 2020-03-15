@@ -84,8 +84,8 @@ clean-dist:
 clean: VM_WORKDIR=/src/toree-kernel
 clean: clean-dist
 	$(call RUN,$(ENV_OPTS) sbt clean)
-	rm -r `find . -name target -type d`
-	-rm -r `find . -name .ipynb_checkpoints -type d`
+	-find . -name target -type d -exec rm -fr {} +
+	-find . -name .ipynb_checkpoints  -type d -exec rm -fr {} +
 
 .clean-toree-dev-image:
 	@rm -f .toree-dev-image
