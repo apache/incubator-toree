@@ -68,6 +68,12 @@ class KMBuilderSpec extends FunSpec with Matchers {
         val metadata = builder.build(includeDefaultMetadata = false).metadata
         metadata should be(Metadata())
       }
+
+      it("should merge metadata with default") {
+        val builder = new KM2
+        val metadata = builder.withMetadata(Metadata("some" -> "value")).build.metadata
+        metadata should contain key("some")
+      }
     }
 
     describe("withXYZ"){
