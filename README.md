@@ -20,33 +20,44 @@
 [![Build Status][build-badge]][build-url]
 [![License][license-badge]][license-url]
 [![Join the chat at https://gitter.im/apache/toree][gitter-badge]][gitter-url]
+<!--
 [![Binder](http://mybinder.org/badge.svg)](http://mybinder.org/repo/apache/incubator-toree)
+-->
 
 [Apache Toree][website]
 ============
-The main goal of the Toree is to provide the foundation for interactive applications to connect to and use [Apache Spark][1].
+Apache Toree is a [Juypter Notebook](https://jupyter.org/) kernel. The main goal of Toree is to provide the foundation for
+interactive applications that connect to and use [Apache Spark][1] using Scala language.
 
 Overview
 ========
-Toree provides an interface that allows clients to interact with a Spark Cluster. Clients can send libraries and snippets of code that are interpreted and ran against a preconfigured Spark context. These snippets can do a variety of things:
+Toree provides an interface that allows clients to interact with a Spark Cluster. Clients can send libraries and
+snippets of code that are interpreted and executed using a preconfigured Spark context.
+These snippets can do a variety of things:
  1. Define and run spark jobs of all kinds
  2. Collect results from spark and push them to the client
  3. Load necessary dependencies for the running code
  4. Start and monitor a stream
  5. ...
 
-The main supported language is `Scala`, but it is also capable of processing both `Python` and `R`. It implements the latest Jupyter message protocol (5.0), so it can easily plug into the latest releases of Jupyter/IPython (3.2.x+ and 4.x+) for quick, interactive data exploration.
+Apache Toree supports the `Scala` programming language. It implements the latest Jupyter message protocol (5.0),
+so it can easily plug into the latest releases of Jupyter/IPython (3.2.x+ and up) for quick, interactive data exploration.
 
+<!--
 Try It
 ======
 A version of Toree is deployed as part of the [Try Jupyter!][try-jupyter] site. Select `Apache Toree - Scala` under
 the `New` dropdown. Note that this version only supports `Scala`.
+-->
 
 Develop
 =======
-This project uses `make` as the entry point for build, test, and packaging. It supports 2 modes, local and vagrant. The default is local and all command (i.e. sbt) will be ran locally on your machine. This means that you need to
-install `sbt`, `jupyter/ipython`, and other development requirements locally on your machine. The 2nd mode uses [Vagrant][vagrant] to simplify the development experience. In vagrant mode, all commands are sent to the vagrant box
-that has all necessary dependencies pre-installed. To run in vagrant mode, run `export USE_VAGRANT=true`.  
+This project uses `make` as the entry point for build, test, and packaging. It supports 2 modes, local and vagrant.
+The default is local and all commands (i.e. `sbt`) will be run locally on your machine. This means that you need to
+install `sbt`, `jupyter/ipython`, and other development requirements locally on your machine.
+The 2nd mode uses [Vagrant][vagrant] to simplify the development experience. In vagrant mode, all commands are sent
+to the vagrant box that has all necessary dependencies pre-installed.
+To run in vagrant mode, run `export USE_VAGRANT=true`.
 
 To build and interact with Toree using Jupyter, run
 ```
