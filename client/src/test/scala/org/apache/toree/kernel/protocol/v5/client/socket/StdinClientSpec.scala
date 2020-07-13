@@ -105,7 +105,7 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
 
         stdinClient ! notInputRequestMessage
 
-        socketProbe.expectNoMsg(300.milliseconds)
+        socketProbe.expectNoMessage(300.milliseconds)
       }
 
       it("should respond with an input_reply if the incoming message is " +

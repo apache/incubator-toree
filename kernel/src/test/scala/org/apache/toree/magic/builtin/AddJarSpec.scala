@@ -52,7 +52,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           override val config = testConfig
         }
 
-        addJarMagic.execute("""http://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
+        addJarMagic.execute("""https://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
 
         verify(mockKernel).addJars(any[URI])
         verify(mockPluginManager, times(0)).loadPlugins(any())
@@ -133,7 +133,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           }
         }
 
-        addJarMagic.execute("""http://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
+        addJarMagic.execute("""https://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
 
         downloadFileCalled should be (false)
         verify(mockKernel).addJars(any[URI])
@@ -160,7 +160,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
           }
         }
 
-        addJarMagic.execute("""-f http://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
+        addJarMagic.execute("""-f https://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
 
         downloadFileCalled should be (true)
         verify(mockKernel).addJars(any[URI])
@@ -185,7 +185,7 @@ class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
         }
 
         addJarMagic.execute(
-          """--magic http://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
+          """--magic https://repo1.maven.org/maven2/org/scala-rules/rule-engine-core_2.11/0.5.1/rule-engine-core_2.11-0.5.1.jar""")
 
         verify(mockPluginManager).loadPlugins(any())
         verify(mockSparkContext, times(0)).addJar(anyString())

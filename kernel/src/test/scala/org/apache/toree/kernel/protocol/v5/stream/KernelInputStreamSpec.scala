@@ -139,7 +139,7 @@ class KernelInputStreamSpec
           kernelInputStream.read() should be (TestReplyString.charAt(i - 1))
 
         kernelInputOutputHandlerProbe.expectMsgClass(MaxAkkaTestTimeout, classOf[KernelMessage])
-        kernelInputOutputHandlerProbe.expectNoMsg(MaxAkkaTestTimeout)
+        kernelInputOutputHandlerProbe.expectNoMessage(MaxAkkaTestTimeout)
       }
     }
   }

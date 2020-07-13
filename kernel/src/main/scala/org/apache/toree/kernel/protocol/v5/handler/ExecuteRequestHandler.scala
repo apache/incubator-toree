@@ -89,19 +89,29 @@ class ExecuteRequestHandler(
         case Success(tuple) =>
           val (executeReply, executeResult) = updateCount(tuple, executionCount)
 
-          //  Send an ExecuteReply to the client
-          val executeReplyMsg = skeletonBuilder
-            .withHeader(MessageType.Outgoing.ExecuteReply)
-            .withContentString(executeReply).build
-          relayMsg(executeReplyMsg, relayActor)
+          if (executeReply.status.equals("error")) {
+            // Send an ExecuteReplyError with the result of the code execution to ioPub.error
+            val replyError: ExecuteReply = ExecuteReplyError(
+              executionCount,
+              executeReply.ename,
+              executeReply.evalue,
+              executeReply.traceback)
+            relayErrorMessages(relayActor, replyError, skeletonBuilder)
+          } else {
+            //  Send an ExecuteReply to the client
+            val executeReplyMsg = skeletonBuilder
+              .withHeader(MessageType.Outgoing.ExecuteReply)
+              .withMetadata(Metadata("status" -> executeReply.status))
+              .withContentString(executeReply).build
+            relayMsg(executeReplyMsg, relayActor)
 
-          //  Send an ExecuteResult with the result of the code execution
-          if (executeResult.hasContent) {
-            val executeResultMsg = skeletonBuilder
-              .withIds(Seq(MessageType.Outgoing.ExecuteResult.toString.getBytes))
-              .withHeader(MessageType.Outgoing.ExecuteResult)
-              .withContentString(executeResult).build
-            relayMsg(executeResultMsg, relayActor)
+            if (executeResult.hasContent) {
+              val executeResultMsg = skeletonBuilder
+                .withIds(Seq(MessageType.Outgoing.ExecuteResult.toString.getBytes))
+                .withHeader(MessageType.Outgoing.ExecuteResult)
+                .withContentString(executeResult).build
+              relayMsg(executeResultMsg, relayActor)
+            }
           }
 
         case Failure(error: Throwable) =>
@@ -148,6 +158,7 @@ class ExecuteRequestHandler(
                          skeletonBuilder: KMBuilder) {
     val executeReplyMsg = skeletonBuilder
       .withHeader(MessageType.Outgoing.ExecuteReply)
+      .withMetadata(Metadata("status" -> replyError.status))
       .withContentString(replyError).build
 
     val errorContent: ErrorContent =  ErrorContent(

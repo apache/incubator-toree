@@ -22,9 +22,9 @@ object Dependencies {
 
   // Libraries
 
-  val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.4.20" // Apache v2
-  val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % "2.4.20" // Apache v2
-  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.4.20" // Apache v2
+  val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.5.27" // Apache v2
+  val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % "2.5.27" // Apache v2
+  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.5.27" // Apache v2
 
   val clapper = "org.clapper" %% "classutil" % "1.5.1" // BSD 3-clause license, used for detecting plugins
 
@@ -41,7 +41,7 @@ object Dependencies {
   // use the same jackson version in test than the one provided at runtime by Spark 2.0.0
   val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.5" // Apache v2
 
-  val jeroMq = "org.zeromq" % "jeromq" % "0.3.6" // MPL v2
+  val jeroMq = "org.zeromq" % "jeromq" % "0.4.3" // MPL v2
 
   val joptSimple = "net.sf.jopt-simple" % "jopt-simple" % "4.9" // MIT
 
@@ -65,7 +65,7 @@ object Dependencies {
   val sparkSql = Def.setting{ "org.apache.spark" %% "spark-sql" % sparkVersion.value } // Apache v2
   val sparkStreaming = Def.setting{ "org.apache.spark" %% "spark-streaming" % sparkVersion.value } // Apache v2
 
-  val springCore = "org.springframework" % "spring-core" % "4.1.1.RELEASE"// Apache v2
+  val springCore = "org.springframework" % "spring-core" % "5.2.2.RELEASE"// Apache v2
 
   val guava = "com.google.guava" % "guava" % "14.0.1" // Apache v2
 

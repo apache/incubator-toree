@@ -123,7 +123,7 @@ class CommCloseHandlerSpec extends TestKit(
 
         // TODO: Is there a better way to test for this without an upper time
         //       limit? Is there a different logical approach?
-        kernelMessageRelayProbe.expectNoMsg(MaxAkkaTestTimeout)
+        kernelMessageRelayProbe.expectNoMessage(MaxAkkaTestTimeout)
       }
 
       it("should include the parent's header in the parent header of " +

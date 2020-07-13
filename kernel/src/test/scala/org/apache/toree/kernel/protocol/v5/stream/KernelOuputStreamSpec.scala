@@ -200,7 +200,7 @@ class KernelOuputStreamSpec
         kernelOutputStream.flush()
 
         Then("no message should be sent")
-        kernelOutputRelayProbe.expectNoMsg(MaxAkkaTestTimeout)
+        kernelOutputRelayProbe.expectNoMessage(MaxAkkaTestTimeout)
       }
 
       it("should send empty (whitespace) messages if flag is true") {

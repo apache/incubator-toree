@@ -2,7 +2,7 @@
   "language_info": {
     "name": "scala"
   },
-  "display_name": "Toree",
+  "display_name": "Apache Toree (development)",
   "env": {
     "PYTHONPATH": "/usr/local/spark/python:/usr/local/spark/python/lib/py4j-0.10-1-src.zip",
     "SPARK_HOME": "/usr/local/spark",
