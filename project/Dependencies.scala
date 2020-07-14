@@ -38,8 +38,8 @@ object Dependencies {
 
   val ivy = "org.apache.ivy" % "ivy" % "2.4.0" // Apache v2
 
-  // use the same jackson version in test than the one provided at runtime by Spark 2.0.0
-  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.7.3" // Apache v2
+  // use the same jackson version in test than the one provided at runtime by Spark 3.0.0
+  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.10.0" // Apache v2
 
   val jeroMq = "org.zeromq" % "jeromq" % "0.4.3" // MPL v2
 
