@@ -18,7 +18,7 @@ package org.apache.toree.communication.socket
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.time.{Milliseconds, Span}
+import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 import org.zeromq.ZMQ
 import org.zeromq.ZMQ.{Socket, Context}
@@ -29,7 +29,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
   with MockitoSugar with Eventually with BeforeAndAfter {
 
   implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(Span(2000, Milliseconds)),
+    timeout = scaled(Span(3, Seconds)),
     interval = scaled(Span(5, Milliseconds))
   )
 
