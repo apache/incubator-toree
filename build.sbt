@@ -102,7 +102,7 @@ pomExtra in ThisBuild := {
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>10</version>
+    <version>23</version>
   </parent>
   <url>http://toree.incubator.apache.org/</url>
   <scm>
