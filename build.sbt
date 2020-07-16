@@ -85,7 +85,6 @@ libraryDependencies in ThisBuild ++= Seq(
 )
 
 // Publish settings
-useGpg in ThisBuild := true
 pgpPassphrase in ThisBuild := Some(Properties.envOrElse("GPG_PASSWORD","").toArray)
 publishTo in ThisBuild := {
   if (isSnapshot.value)
