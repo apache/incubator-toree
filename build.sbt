@@ -109,7 +109,7 @@ pomExtra in ThisBuild := {
     <url>git@github.com:apache/incubator-toree.git</url>
     <connection>scm:git:git@github.com:apache/incubator-toree.git</connection>
     <developerConnection>
-      scm:git:https://git-wip-us.apache.org/repos/asf/incubator-toree.git
+      scm:git:https://gitbox.apache.org/repos/asf/incubator-toree.git
     </developerConnection>
     <tag>HEAD</tag>
   </scm>
