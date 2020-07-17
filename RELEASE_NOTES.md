@@ -19,6 +19,13 @@
 
 # RELEASE_NOTES
 
+## 0.4.0-incubating (2020.07)
+
+* Properly reply errors to iopub.error
+* Update dependency versions to match Spark 2.3.x
+* Various small bugfixes
+* Various small build updates/cleanup
+
 ## 0.3.0-incubating (2018.11)
 
 * Fix JupyterLab support after the introduction of new cell metadata information
