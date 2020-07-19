@@ -22,11 +22,11 @@ version in ThisBuild := Properties.envOrElse("VERSION", "0.0.0-dev") +
   (if ((isSnapshot in ThisBuild).value) "-SNAPSHOT" else "")
 isSnapshot in ThisBuild := Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
 organization in ThisBuild := "org.apache.toree.kernel"
-crossScalaVersions in ThisBuild := Seq("2.12.8", "2.11.12")
+crossScalaVersions in ThisBuild := Seq("2.12.12")
 scalaVersion in ThisBuild := (crossScalaVersions in ThisBuild).value.head
 Dependencies.sparkVersion in ThisBuild := {
   val envVar = "APACHE_SPARK_VERSION"
-  val defaultVersion = "2.4.4"
+  val defaultVersion = "3.0.0"
 
   Properties.envOrNone(envVar) match {
     case None =>
@@ -85,7 +85,6 @@ libraryDependencies in ThisBuild ++= Seq(
 )
 
 // Publish settings
-useGpg in ThisBuild := true
 pgpPassphrase in ThisBuild := Some(Properties.envOrElse("GPG_PASSWORD","").toArray)
 publishTo in ThisBuild := {
   if (isSnapshot.value)
@@ -102,14 +101,14 @@ pomExtra in ThisBuild := {
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>10</version>
+    <version>23</version>
   </parent>
   <url>http://toree.incubator.apache.org/</url>
   <scm>
     <url>git@github.com:apache/incubator-toree.git</url>
     <connection>scm:git:git@github.com:apache/incubator-toree.git</connection>
     <developerConnection>
-      scm:git:https://git-wip-us.apache.org/repos/asf/incubator-toree.git
+      scm:git:https://gitbox.apache.org/repos/asf/incubator-toree.git
     </developerConnection>
     <tag>HEAD</tag>
   </scm>

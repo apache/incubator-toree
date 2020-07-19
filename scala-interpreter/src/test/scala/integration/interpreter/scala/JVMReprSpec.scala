@@ -19,17 +19,22 @@ package integration.interpreter.scala
 
 import java.util
 import java.io.ByteArrayOutputStream
+
 import jupyter.{Displayer, Displayers, MIMETypes}
+import org.apache.toree.annotations.SbtForked
 import org.apache.toree.global.StreamState
 import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.interpreter.Results.Success
 import org.apache.toree.kernel.api.{DisplayMethodsLike, KernelLike}
 import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 import org.mockito.Mockito.doReturn
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.{BeforeAndAfter, FunSpec, Ignore, Matchers}
 import org.scalatestplus.mockito.MockitoSugar
+
 import scala.util.Random
 
+@SbtForked
+@Ignore
 class JVMReprSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfter {
 
   private val outputResult = new ByteArrayOutputStream()

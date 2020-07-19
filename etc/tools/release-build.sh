@@ -222,7 +222,7 @@ function checkout_code {
     mkdir target
     cd target
     rm -rf toree
-    git clone https://git-wip-us.apache.org/repos/asf/incubator-toree.git toree
+    git clone https://gitbox.apache.org/repos/asf/incubator-toree.git toree
     cd toree
     git checkout $GIT_REF
     git_hash=`git rev-parse --short HEAD`

@@ -22,9 +22,9 @@ object Dependencies {
 
   // Libraries
 
-  val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.5.27" // Apache v2
-  val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % "2.5.27" // Apache v2
-  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.5.27" // Apache v2
+  val akkaActor = "com.typesafe.akka" %% "akka-actor" % "2.5.31" // Apache v2
+  val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % "2.5.31" // Apache v2
+  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % "2.5.31" // Apache v2
 
   val clapper = "org.clapper" %% "classutil" % "1.5.1" // BSD 3-clause license, used for detecting plugins
 
@@ -39,7 +39,7 @@ object Dependencies {
   val ivy = "org.apache.ivy" % "ivy" % "2.4.0" // Apache v2
 
   // use the same jackson version in test than the one provided at runtime by Spark 2.0.0
-  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.5" // Apache v2
+  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.6.7.3" // Apache v2
 
   val jeroMq = "org.zeromq" % "jeromq" % "0.4.3" // MPL v2
 
