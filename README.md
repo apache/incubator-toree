@@ -130,7 +130,8 @@ As it stands, we maintain several branches for legacy versions of Spark. The tab
 
 Branch                       | Apache Spark Version
 ---------------------------- | --------------------
-[master][master]             | 2.x.x
+[master][master]             | 3.x.x
+[0.4.x][0.4.x]               | 2.x.x
 [0.1.x][0.1.x]               | 1.6+
 
 Please note that for the most part, new features will mainly be added to the `master` branch.
