@@ -99,7 +99,7 @@ trait Interpreter {
    * @return An option containing the variable contents or None if the
    *         variable does not exist
    */
-  def read(variableName: String): Option[AnyRef]
+  def read(variableName: String): Option[Any]
 
   /**
    * Mask the Console and System objects with our wrapper implementations
@@ -146,5 +146,5 @@ trait Interpreter {
    * Initialization done after all other Toree initialization done.
    */
 
-   def postInit () = {}
+   def postInit (): Unit = {}
 }

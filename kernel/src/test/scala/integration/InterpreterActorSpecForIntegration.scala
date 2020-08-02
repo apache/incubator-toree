@@ -31,7 +31,7 @@ import org.apache.toree.kernel.protocol.v5.interpreter.InterpreterActor
 import org.apache.toree.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFactory
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import test.utils.UncaughtExceptionSuppression
 import test.utils.MaxAkkaTestTimeout

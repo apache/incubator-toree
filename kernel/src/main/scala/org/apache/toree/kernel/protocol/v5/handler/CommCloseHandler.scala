@@ -23,7 +23,7 @@ import org.apache.toree.kernel.protocol.v5.content.CommClose
 import org.apache.toree.kernel.protocol.v5.kernel.{Utilities, ActorLoader}
 import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage}
 import org.apache.toree.utils.MessageLogSupport
-import play.api.data.validation.ValidationError
+import play.api.libs.json.JsonValidationError
 import play.api.libs.json.JsPath
 
 import scala.concurrent.Future
@@ -78,7 +78,7 @@ class CommCloseHandler(
     }
   }
 
-  private def handleParseError(invalid: Seq[(JsPath, Seq[ValidationError])]) = {
+  private def handleParseError(invalid: Seq[(JsPath, Seq[JsonValidationError])]) = {
     // TODO: Determine proper response for a parse failure
     logger.warn("Parse error for Comm Close! Not responding!")
   }

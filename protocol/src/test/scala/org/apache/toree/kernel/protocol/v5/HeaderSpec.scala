@@ -17,9 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5
 
-import org.scalatest.{Matchers, FunSpec}
-import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsPath, Json, JsValue}
+import org.scalatest.{FunSpec, Matchers}
+import play.api.libs.json.{JsPath, JsValue, Json, JsonValidationError}
 
 class HeaderSpec extends FunSpec with Matchers {
   val headerJson: JsValue = Json.parse("""
@@ -63,7 +62,7 @@ class HeaderSpec extends FunSpec with Matchers {
         val headerResults = headerJson.validate[Header]
 
         headerResults.fold(
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: Header) => valid
         ) should be (header)
       }

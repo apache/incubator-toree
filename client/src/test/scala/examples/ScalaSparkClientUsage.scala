@@ -17,13 +17,12 @@
 
 package examples
 
-import java.io.File
+import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.toree.kernel.protocol.v5.MIMEType
 import org.apache.toree.kernel.protocol.v5.client.boot.ClientBootstrap
 import org.apache.toree.kernel.protocol.v5.client.boot.layers.{StandardHandlerInitialization, StandardSystemInitialization}
-import org.apache.toree.kernel.protocol.v5.content.{ExecuteResult}
 import org.apache.toree.kernel.protocol.v5.content._
-import com.typesafe.config.{ConfigFactory, Config}
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
 
@@ -32,8 +31,7 @@ import scala.concurrent.Promise
  * Use this class as a playground.
  */
 object ScalaSparkClientUsage extends App {
-  val profile: File = new File(getClass.getResource("/kernel-profiles/IOPubIntegrationProfile.json").toURI)
-  val config: Config = ConfigFactory.parseFile(profile)
+  val config: Config = ConfigFactory.load(getClass.getClassLoader, "/kernel-profiles/IOPubIntegrationProfile.json")
   //  Setup
   val client = (new ClientBootstrap(config)
     with StandardSystemInitialization
@@ -44,7 +42,7 @@ object ScalaSparkClientUsage extends App {
   }
 
   def printTextResult(result:ExecuteResult) = {
-    println(s"ExecuteResult data was: ${result.data.get(MIMEType.PlainText).get}")
+    println(s"ExecuteResult data was: ${result.data(MIMEType.PlainText)}")
   }
 
   def printError(reply:ExecuteReplyError) = {
@@ -140,9 +138,9 @@ object ScalaSparkClientUsage extends App {
   val resultPromise = for {
     x <- xPromise.future
     y <- yPromise.future
-  } yield (complexMath(x, y))
+  } yield complexMath(x, y)
 
-  resultPromise.onSuccess {case x => println(s"Added result is ${x}") }
+  resultPromise.onComplete { x => println(s"Added result is $x") }
   //  Added result is 24
 
   //  Sleep so output does not overlap

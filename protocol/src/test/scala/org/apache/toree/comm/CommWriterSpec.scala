@@ -22,11 +22,10 @@ import java.util.UUID
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
-import org.mockito.Matchers.{eq => mockEq, _}
+import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import org.scalatest.{FunSpec, BeforeAndAfter, Matchers}
-
+import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatestplus.mockito.MockitoSugar
 
 class CommWriterSpec extends FunSpec with Matchers with BeforeAndAfter
   with MockitoSugar

@@ -19,7 +19,7 @@ package org.apache.toree.utils
 
 import java.io.OutputStream
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
 import org.mockito.Matchers._
 import org.mockito.Mockito._

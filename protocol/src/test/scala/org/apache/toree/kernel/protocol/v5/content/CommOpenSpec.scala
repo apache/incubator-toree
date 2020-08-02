@@ -18,7 +18,6 @@
 package org.apache.toree.kernel.protocol.v5.content
 
 import org.scalatest.{FunSpec, Matchers}
-import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import org.apache.toree.kernel.protocol.v5.MsgData
 
@@ -61,7 +60,7 @@ class CommOpenSpec extends FunSpec with Matchers {
         val CompleteRequestResults = commOpenJson.validate[CommOpen]
 
         CompleteRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: CommOpen) => valid
         ) should be (commOpen)
       }

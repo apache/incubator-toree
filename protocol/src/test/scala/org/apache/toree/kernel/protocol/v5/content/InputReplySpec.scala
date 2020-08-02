@@ -18,7 +18,7 @@
 package org.apache.toree.kernel.protocol.v5.content
 
 import org.scalatest.{FunSpec, Matchers}
-import play.api.data.validation.ValidationError
+import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
 class InputReplySpec extends FunSpec with Matchers {
@@ -58,7 +58,7 @@ class InputReplySpec extends FunSpec with Matchers {
         val CompleteReplyResults = inputReplyJson.validate[InputReply]
 
         CompleteReplyResults.fold(
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: InputReply) => valid
         ) should be (inputReply)
       }

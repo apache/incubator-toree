@@ -21,7 +21,7 @@ import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.CommContent
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}

@@ -18,7 +18,7 @@
 package org.apache.toree.kernel.protocol.v5.content
 
 import org.scalatest.{FunSpec, Matchers}
-import play.api.data.validation.ValidationError
+import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
 import org.apache.toree.kernel.protocol.v5._
@@ -56,7 +56,7 @@ class InspectReplyOkSpec extends FunSpec with Matchers {
         val InspectReplyOkResults = inspectReplyOkJson.validate[InspectReplyOk]
 
         InspectReplyOkResults.fold(
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: InspectReplyOk) => valid
         ) should be (inspectReplyOk)
       }

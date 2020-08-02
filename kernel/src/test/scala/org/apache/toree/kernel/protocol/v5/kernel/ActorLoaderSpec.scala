@@ -20,7 +20,7 @@ package org.apache.toree.kernel.protocol.v5.kernel
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5.{MessageType, SocketType}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 import test.utils.TestProbeProxyActor
 import test.utils.MaxAkkaTestTimeout

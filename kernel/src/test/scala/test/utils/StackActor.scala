@@ -23,15 +23,15 @@ import akka.actor.Actor
  * A stack which will block when popping items.
  */
 class BlockingStack {
-  private val items = new scala.collection.mutable.Stack[Any]
+  private var items = List[Any]()
 
   /**
    * Puts an item onto the stack
    * @param item The item to put on the stack
    */
   def put(item : Any) {
-    items.synchronized{
-      items push item
+    items.synchronized {
+      items = item +: items
     }
   }
 
@@ -48,12 +48,14 @@ class BlockingStack {
   private def popN(count: Int) : Any = {
     if(count == 0)
       Option.empty
-    else if( items.synchronized{ items.size == 0 }) {
+    else if( items.synchronized{ items.isEmpty }) {
       Thread.sleep(100)
       popN(count - 1)
     } else
       items.synchronized {
-        items.pop()
+        val value = items.head
+        items = items.tail
+        value
       }
     }
 }

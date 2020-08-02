@@ -25,7 +25,7 @@ import org.apache.toree.kernel.protocol.v5.content.InputRequest
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.mockito.Mockito._
 import org.scalatest._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import test.utils._
 

@@ -23,7 +23,7 @@ import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import Utilities._
 import org.apache.toree.utils.{MessageLogSupport, LogLike}
-import play.api.data.validation.ValidationError
+import play.api.libs.json.JsonValidationError
 import play.api.libs.json.{JsPath, Json}
 
 import scala.concurrent.ExecutionContext.Implicits.global

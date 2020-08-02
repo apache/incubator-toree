@@ -19,7 +19,7 @@ package org.apache.toree.communication.socket
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.scalatest.{Matchers, BeforeAndAfter, OneInstancePerTest, FunSpec}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
 import org.zeromq.ZMsg
 

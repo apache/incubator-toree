@@ -20,7 +20,7 @@ package org.apache.toree.kernel.protocol.v5.content
 import org.scalatest.FunSuite
 
 import org.scalatest.{Matchers, FunSpec}
-import play.api.data.validation.ValidationError
+import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 import org.apache.toree.kernel.protocol.v5._
 
@@ -63,7 +63,7 @@ class DisplayDataSpec extends FunSpec with Matchers {
         val displayDataResults = displayDataJson.validate[DisplayData]
 
         displayDataResults.fold(
-          (invalid: Seq[(JsPath, Seq[ValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: DisplayData) => valid
         ) should be (displayData)
       }

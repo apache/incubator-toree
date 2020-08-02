@@ -22,7 +22,7 @@ import java.net.{URI, URL}
 import org.apache.toree.dependencies.{Credentials, DependencyDownloader}
 import org.apache.toree.utils.ArgumentParsingSupport
 import org.apache.toree.kernel.api.KernelLike
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
 import org.mockito.Mockito._
 import org.mockito.Matchers._

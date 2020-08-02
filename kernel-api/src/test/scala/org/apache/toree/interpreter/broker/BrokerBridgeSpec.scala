@@ -17,7 +17,7 @@
 package org.apache.toree.interpreter.broker
 
 import org.apache.toree.kernel.api.KernelLike
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 
 class BrokerBridgeSpec extends FunSpec with Matchers with OneInstancePerTest

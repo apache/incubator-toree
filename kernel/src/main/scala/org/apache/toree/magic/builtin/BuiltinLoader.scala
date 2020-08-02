@@ -21,7 +21,7 @@ import com.google.common.reflect.ClassPath
 import com.google.common.reflect.ClassPath.ClassInfo
 import org.apache.toree.magic.InternalClassLoader
 import com.google.common.base.Strings._
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 /**
  * Represents a class loader that loads classes from the builtin package.
@@ -44,7 +44,7 @@ class BuiltinLoader
       case false =>
         // TODO: Decide if this.getClass.getClassLoader should just be this
         val classPath = ClassPath.from(this.getClass.getClassLoader)
-        classPath.getTopLevelClasses(pkg).filter(
+        classPath.getTopLevelClasses(pkg).asScala.filter(
           _.getSimpleName != this.getClass.getSimpleName
         ).toList
     }

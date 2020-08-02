@@ -19,7 +19,7 @@ package org.apache.toree.communication.utils
 
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}
 
 case class OrderedType()

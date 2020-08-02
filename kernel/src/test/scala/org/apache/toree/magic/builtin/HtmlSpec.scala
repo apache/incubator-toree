@@ -19,7 +19,7 @@ package org.apache.toree.magic.builtin
 
 import org.apache.toree.kernel.protocol.v5.MIMEType
 import org.apache.toree.magic.CellMagicOutput
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpec, Matchers}
 
 class HtmlSpec extends FunSpec with Matchers with MockitoSugar {

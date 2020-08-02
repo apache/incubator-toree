@@ -24,8 +24,7 @@ import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest
 import org.apache.toree.utils.LogLike
-import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsPath, Json, Reads}
+import play.api.libs.json.{JsPath, Json, JsonValidationError, Reads}
 
 import scala.concurrent.duration._
 
@@ -65,7 +64,7 @@ object Utilities extends LogLike {
     val header = Json.parse(message.frames(delimiterIndex + 2)).as[Header]
     val parentHeader = Json.parse(message.frames(delimiterIndex + 3)).validate[ParentHeader].fold[ParentHeader](
       // TODO: Investigate better solution than setting parentHeader to null for {}
-      (invalid: Seq[(JsPath, Seq[ValidationError])]) => null, //HeaderBuilder.empty,
+      (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => null, //HeaderBuilder.empty,
       (valid: ParentHeader) => valid
     )
     val metadata = Json.parse(message.frames(delimiterIndex + 4)).as[Metadata]
@@ -92,7 +91,7 @@ object Utilities extends LogLike {
 
   def parseAndHandle[T](json: String, reads: Reads[T], handler: T => Unit) : Unit = {
     Json.parse(json).validate[T](reads).fold(
-      (invalid: Seq[(JsPath, Seq[ValidationError])]) =>
+      (invalid: Seq[(JsPath, Seq[JsonValidationError])]) =>
         logger.error(s"Could not parse JSON, ${json}"),
       (content: T) => handler(content)
     )

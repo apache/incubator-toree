@@ -17,7 +17,7 @@
 package org.apache.toree.interpreter.broker
 
 import org.apache.commons.exec.ExecuteException
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 import org.mockito.Mockito._
 import org.mockito.Matchers._

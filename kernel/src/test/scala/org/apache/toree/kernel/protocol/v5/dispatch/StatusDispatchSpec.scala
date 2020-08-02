@@ -23,7 +23,7 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.KernelStatus
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout

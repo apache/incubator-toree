@@ -26,7 +26,7 @@ import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import Utilities._
 import org.mockito.Mockito._
 import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import org.mockito.Matchers.{eq => mockEq}

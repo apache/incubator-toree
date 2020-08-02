@@ -35,7 +35,7 @@ import com.typesafe.config.ConfigFactory
 import org.mockito.Matchers.{eq => mockEq, _}
 import org.mockito.Mockito._
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.time.{Milliseconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import play.api.libs.json.Json
@@ -259,7 +259,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 
         whenReady(promise.future) {
           case res: String =>
-            res should be eq("bar")
+            res shouldBe "bar"
           case _ =>
             fail(s"Received failure when asking IOPubClient")
         }

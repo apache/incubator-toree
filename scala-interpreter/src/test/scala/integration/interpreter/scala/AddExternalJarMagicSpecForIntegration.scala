@@ -25,7 +25,7 @@ import org.apache.toree.global.StreamState
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Ignore, Matchers}
 
 @SbtForked

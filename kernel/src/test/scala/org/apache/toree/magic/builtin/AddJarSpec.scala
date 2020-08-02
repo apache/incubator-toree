@@ -28,7 +28,7 @@ import org.apache.spark.SparkContext
 import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.plugins.PluginManager
 import org.scalatest.{FunSpec, Matchers}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 

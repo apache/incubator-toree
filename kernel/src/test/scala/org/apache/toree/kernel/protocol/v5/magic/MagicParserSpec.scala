@@ -18,7 +18,7 @@
 package org.apache.toree.kernel.protocol.v5.magic
 
 import org.apache.toree.magic.{CellMagic, Magic, MagicManager}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpec, Matchers}
 import org.mockito.Mockito._
 import org.mockito.Matchers._

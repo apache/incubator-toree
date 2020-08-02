@@ -169,8 +169,8 @@ case class KernelMessageRelay(
         val signatureInsertFuture = signatureManager ? kernelMessage
 
         // TODO: Handle error case for mapTo and non-present onFailure
-        signatureInsertFuture.mapTo[KernelMessage] onSuccess {
-          case message =>
+        signatureInsertFuture.mapTo[KernelMessage] foreach {
+          message =>
             outgoingRelay(message)
             finishedProcessing()
         }

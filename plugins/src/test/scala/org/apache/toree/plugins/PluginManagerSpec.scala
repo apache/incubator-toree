@@ -21,11 +21,9 @@ import java.io.File
 import org.apache.toree.plugins.dependencies.DependencyManager
 import org.mockito.Matchers._
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatestplus.mockito.MockitoSugar
 import test.utils._
-
-import scala.util.{Failure, Success}
 
 class PluginManagerSpec extends FunSpec with Matchers
   with OneInstancePerTest with MockitoSugar

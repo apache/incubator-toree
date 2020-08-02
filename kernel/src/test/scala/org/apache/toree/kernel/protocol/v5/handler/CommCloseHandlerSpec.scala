@@ -26,7 +26,7 @@ import org.apache.toree.kernel.protocol.v5.content.{ClearOutput, CommClose}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.{KernelMessage, SystemActorType, KMBuilder}
 import org.apache.toree.comm.{CommRegistrar, CommWriter, CommCallbacks, CommStorage}
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
 import org.mockito.Mockito._
 import org.mockito.Matchers._

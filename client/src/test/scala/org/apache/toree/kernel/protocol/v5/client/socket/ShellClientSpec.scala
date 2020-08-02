@@ -26,7 +26,7 @@ import org.apache.toree.communication.security.SecurityActorType
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
 import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{Matchers, FunSpecLike}
 import org.mockito.Mockito._
 import org.mockito.Matchers._

@@ -21,7 +21,7 @@ import java.io.{OutputStream, InputStream, File}
 import org.apache.commons.exec._
 import org.apache.commons.io.FilenameUtils
 import org.mockito.ArgumentCaptor
-import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
 
 import org.mockito.Mockito._
