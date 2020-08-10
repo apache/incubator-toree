@@ -55,7 +55,7 @@ object Dependencies {
 
   val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" // Apache v2
 
-  val slf4jApi = "org.slf4j" % "slf4j-api" % "1.7.21" // MIT
+  val slf4jApi = "org.slf4j" % "slf4j-api" % "1.7.30" // MIT
 
   val sparkVersion = settingKey[String]("Version of Apache Spark to use in Toree") // defined in root build
   val sparkCore = Def.setting{ "org.apache.spark" %% "spark-core" % sparkVersion.value } // Apache v2
