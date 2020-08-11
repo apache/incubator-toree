@@ -165,7 +165,7 @@ dist/toree: dist/toree/VERSION dist/toree/logo-64x64.png dist/toree-legal dist/t
 	@cp -R dist/toree-legal/* dist/toree
 	@cp RELEASE_NOTES.md dist/toree/RELEASE_NOTES.md
 
-dist: dist/toree
+dist: dist/toree pip-release
 
 dev: DOCKER_WORKDIR=/srv/toree/etc/examples/notebooks
 dev: SUSPEND=n
