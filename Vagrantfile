@@ -136,7 +136,7 @@ cat << EOF > /home/vagrant/.ipython/kernels/toree-kernel/kernel.json
         "CAPTURE_STANDARD_ERR": "true",
         "SEND_EMPTY_OUTPUT": "false",
         "SPARK_HOME": "/opt/spark",
-        "PYTHONPATH": "/opt/spark/python:/opt/spark/python/lib/py4j-0.8.2.1-src.zip"
+        "PYTHONPATH": "/opt/spark/python:/opt/spark/python/lib/py4j-0.10.9-src.zip"
      }
 }
 EOF

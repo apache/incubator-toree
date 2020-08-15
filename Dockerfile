@@ -26,7 +26,7 @@ RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
     npm install -g bower
 
 # for Apache Spark demos
-ENV APACHE_SPARK_VERSION 2.3.4
+ENV APACHE_SPARK_VERSION 3.0.2
 
 RUN apt-get -y update && \
     apt-get -y install software-properties-common
@@ -46,11 +46,11 @@ RUN echo "===> install Java"  && \
     update-java-alternatives -s java-8-oracle
 
 RUN cd /tmp && \
-        wget -q http://apache.claz.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz && \
-        tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz -C /usr/local && \
-        rm spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6.tgz
+        wget -q http://apache.claz.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz && \
+        tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz -C /usr/local && \
+        rm spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz
 
-RUN cd /usr/local && ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.6 spark
+RUN cd /usr/local && ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7 spark
 
 # R support
 RUN apt-get update && \
@@ -61,16 +61,13 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ENV SPARK_HOME /usr/local/spark
-ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.1-src.zip
+ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9-src.zip
 ENV PYSPARK_PYTHON /home/main/anaconda2/envs/python3/bin/python
 ENV R_LIBS_USER $SPARK_HOME/R/lib
 
 USER main
 
-ENV DASHBOARDS_VERSION ==0.4.1
-ENV DASHBOARDS_BUNDLERS_VERSION ==0.2.2
-
-ENV TOREE_VERSION >=0.1.0.dev0, <=0.1.0
+ENV TOREE_VERSION >=0.6.0.dev1, <=0.6.0
 
 # get to the latest jupyter release and necessary libraries
 RUN conda install -y jupyter seaborn futures && \
