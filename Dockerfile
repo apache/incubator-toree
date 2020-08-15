@@ -84,25 +84,9 @@ RUN conda config --add channels r && \
     'r-ggplot2=1.0*' \
     'r-rcurl=1.95*' && conda clean -tipsy
 
-ENV DECL_WIDGETS_VERSION 0.4.3
-
-# install incubator extensions
-RUN pip install jupyter_dashboards==0.4.1 \
-    jupyter_declarativewidgets==$DECL_WIDGETS_VERSION \
-    jupyter_dashboards_bundlers==0.2.2
-RUN jupyter dashboards install --user --symlink && \
-    jupyter declarativewidgets install --user --symlink && \
-    jupyter dashboards activate && \
-    jupyter declarativewidgets activate && \
-    jupyter dashboards_bundlers activate
-
-# install kernel-side incubator extensions for python3 environment too
-RUN bash -c "source activate python3 && pip install jupyter_declarativewidgets==$DECL_WIDGETS_VERSION"
-
 # install Toree
-RUN pip install 'toree>=0.1.0.dev0, <=0.1.0'
+RUN pip install 'toree>=0.5.0.dev0, <=0.5.0'
 RUN jupyter toree install --user
-
 
 # include nice intro notebook
 COPY index.ipynb $HOME/notebooks/
