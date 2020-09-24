@@ -101,8 +101,8 @@ Dev snapshots of Toree are located at https://dist.apache.org/repos/dist/dev/inc
 of those packages, you can use the following:
 
 ```
-pip install <PIP_RELEASE_URL>
-jupyter toree install
+pip install --upgrade toree
+jupyter toree install --spark_home=/usr/local/bin/apache-spark/
 ```
 
 where `PIP_RELEASE_URL` is one of the `pip` packages. For example:
