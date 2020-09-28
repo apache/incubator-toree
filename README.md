@@ -96,20 +96,22 @@ Refer to your `Docker` setup for the ip address. The notebook will be at `http:/
 
 Install
 =======
-
-Dev snapshots of Toree are located at https://dist.apache.org/repos/dist/dev/incubator/toree. To install using one
-of those packages, you can use the following:
-
+This requires you to have a distribution of Apache Spark downloaded to the system where Apache Toree will run. The following commands will install Apache Toree.
 ```
 pip install --upgrade toree
-jupyter toree install --spark_home=/usr/local/bin/apache-spark/
+jupyter toree install --spark_home=<YOUR_SPARK_PATH>
 ```
-
+Dev snapshots of Toree are located at https://dist.apache.org/repos/dist/dev/incubator/toree. To install using one
+of those packages, you can use the following:
+```
+pip install <PIP_RELEASE_URL>
+jupyter toree install --spark_home=<YOUR_SPARK_PATH>
+```
 where `PIP_RELEASE_URL` is one of the `pip` packages. For example:
 
 ```
 pip install https://dist.apache.org/repos/dist/dev/incubator/toree/0.2.0/snapshots/dev1/toree-pip/toree-0.2.0.dev1.tar.gz
-jupyter toree install
+jupyter toree install --spark_home=<YOUR_SPARK_PATH>
 ```
 
 Reporting Issues
