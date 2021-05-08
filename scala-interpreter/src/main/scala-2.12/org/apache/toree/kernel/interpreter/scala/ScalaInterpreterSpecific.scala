@@ -422,7 +422,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
         ExecuteError(
           ex.getClass.getName,
           ex.getLocalizedMessage,
-          formattedException.slice(1, formattedException.size - 1).toList
+          formattedException.toList
         )
       // Compile time error, need to check internal reporter
       case _ =>
