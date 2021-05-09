@@ -20,7 +20,7 @@
      dev-binder \
      audit audit-licenses
 
-BASE_VERSION?=0.5.0
+BASE_VERSION?=0.6.0.dev0
 VERSION=$(BASE_VERSION)-incubating
 COMMIT=$(shell git rev-parse --short=12 --verify HEAD)
 ifeq (, $(findstring dev, $(VERSION)))
