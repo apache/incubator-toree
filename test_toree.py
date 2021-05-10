@@ -45,7 +45,7 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
                 import org.apache.spark.sql.functions._
                 val ds = spark.createDataset(Seq(Foo(1), Foo(2)))
                 ds.agg(sum($"bar")).collect.head(0)"""), 
-          'result': '3'
+            'result': '3'
         },
         # showtypes controls info displayed to stdout, return values are
         # handled by Jupyter displayers.
@@ -116,8 +116,7 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
                 self.assertIn('text/plain', output_msgs[-1]['content']['data'])
                 self.assertEqual(output_msgs[-1]['content']['data']['text/plain'], sample['result'])
 
-    def execute_helper(self, code, timeout=15,
-                       silent=False, store_history=True):
+    def execute_helper(self, code, timeout=15, silent=False, store_history=True):
         '''Overrides the jupyter kernel test execute_helper'''
         self.kc.execute(code=code, silent=silent, store_history=store_history)
 
