@@ -206,7 +206,8 @@ system-test: pip-release .toree-dev-image
 		--user=root \
 		$(TOREE_DEV_IMAGE) \
 		bash -c "(cd /srv/system-test-resources && python -m http.server 8000 &) && \
-		rm -rf /home/jovyan/.local/share/jupyter/kernels/apache_toree_scala/ && \
+		rm -rf /usr/local/share/jupyter/kernels/apache_toree_scala/ && \
+		rm -rf /usr/local/share/jupyter/kernels/toree/ && \
 		pip install /srv/toree-pip/toree*.tar.gz && jupyter toree install --interpreters=Scala && \
 		pip install nose jupyter_kernel_test && python /srv/test_toree.py"
 
