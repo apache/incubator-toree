@@ -26,6 +26,7 @@ env:
         - TEST_DILATION=3
 jdk:
     - oraclejdk8
+    - openjdk8
 
 services:
     - docker
@@ -43,6 +44,7 @@ cache:
         - $HOME/.ivy2/cache
         - $HOME/.sbt/boot/
         - $HOME/.coursier/cache/v1
+
 
 #branches:
 #    only:
