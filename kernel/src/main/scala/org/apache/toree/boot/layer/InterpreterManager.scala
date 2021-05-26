@@ -91,7 +91,7 @@ object InterpreterManager {
     try {
       Class
         .forName(className)
-        .getConstructor(Class.forName("com.typesafe.config.Config"))
+        .getDeclaredConstructor(Class.forName("com.typesafe.config.Config"))
         .newInstance(config).asInstanceOf[Interpreter]
     }
     catch {
@@ -99,6 +99,7 @@ object InterpreterManager {
         logger.debug("Using default constructor for class " + className)
         Class
           .forName(className)
+          .getDeclaredConstructor()
           .newInstance().asInstanceOf[Interpreter]
     }
 

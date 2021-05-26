@@ -57,6 +57,9 @@ class ClientCommWriter(
       case _            =>
         throw new Throwable("Invalid kernel message type!")
     }
+    println(">>>")
+    println(messageType)
+    print(commContent)
     actorLoader.load(SocketType.ShellClient) !
       kmBuilder.withHeader(messageType).withContentString(commContent).build
   }
