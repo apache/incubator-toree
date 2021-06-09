@@ -53,7 +53,7 @@ setup_args = dict(
     install_requires=[
         'jupyter_core>=4.0',
         'jupyter_client>=4.0',
-        'traitlets>=4.0, <5.0'
+        'traitlets>=4.0'
     ],
     data_files=[],
     classifiers=[
