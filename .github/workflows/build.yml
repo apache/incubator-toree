@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Apache Toreee build
+name: Apache Toree build
 
 on:
   pull_request:
