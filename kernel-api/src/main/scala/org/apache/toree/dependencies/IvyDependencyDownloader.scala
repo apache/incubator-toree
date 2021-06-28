@@ -42,16 +42,20 @@ class IvyDependencyDownloader(
   private val ivySettings = new IvySettings()
   private val resolver = new IBiblioResolver
 
-  resolver.setUsepoms(true)
-  resolver.setM2compatible(true)
-  resolver.setName("central")
-
-  // Add our resolver as the main resolver (IBiblio goes to Maven Central)
-  ivySettings.addResolver(resolver)
-
-  // Mark our resolver as the default one to use
-  ivySettings.setDefaultResolver(resolver.getName)
-
+  try {
+    ivySettings.load(new File(System.getProperty("user.home")+"/.ivy2/ivysettings.xml"))
+  } catch { case e: IOException => {
+    resolver.setUsepoms(true)
+    resolver.setM2compatible(true)
+    resolver.setName("central")
+  
+    // Add our resolver as the main resolver (IBiblio goes to Maven Central)
+    ivySettings.addResolver(resolver)
+  
+    // Mark our resolver as the default one to use
+    ivySettings.setDefaultResolver(resolver.getName)
+  }}
+  
   // Set the destination
   ivySettings.setBaseDir(new File(baseDirectory))
   ivySettings.setDefaultResolutionCacheBasedir(baseDirectory)
