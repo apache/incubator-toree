@@ -18,62 +18,62 @@
 package org.apache.toree.boot.layer
 
 import java.io.File
-import java.net.URL
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.ConcurrentHashMap
+
 import akka.actor.ActorRef
 import com.typesafe.config.Config
 import org.apache.spark.SparkConf
 import org.apache.toree.comm.{CommManager, CommRegistrar, CommStorage, KernelCommManager}
-import org.apache.toree.dependencies.{CoursierDependencyDownloader, Credentials, DependencyDownloader}
+import org.apache.toree.dependencies.{CoursierDependencyDownloader, DependencyDownloader, IvyDependencyDownloader}
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.Kernel
 import org.apache.toree.kernel.protocol.v5.KMBuilder
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.magic.MagicManager
-import org.apache.toree.plugins.PluginManager
-import org.apache.toree.utils.{LogLike, FileUtils}
+import org.apache.toree.plugins.{AllInterpretersReady, PluginManager}
+import org.apache.toree.utils.{FileUtils, LogLike}
+
 import scala.collection.JavaConverters._
-import org.apache.toree.plugins.AllInterpretersReady
 
 /**
- * Represents the component initialization. All component-related pieces of the
- * kernel (non-actors) should be created here. Limited items should be exposed.
- */
+  * Represents the component initialization. All component-related pieces of the
+  * kernel (non-actors) should be created here. Limited items should be exposed.
+  */
 trait ComponentInitialization {
   /**
-   * Initializes and registers all components (not needed by bare init).
-   *
-   * @param config The config used for initialization
-   * @param actorLoader The actor loader to use for some initialization
-   */
+    * Initializes and registers all components (not needed by bare init).
+    *
+    * @param config      The config used for initialization
+    * @param actorLoader The actor loader to use for some initialization
+    */
   def initializeComponents(
-    config: Config, actorLoader: ActorLoader
-  ): (CommStorage, CommRegistrar, CommManager, Interpreter,
+                            config: Config, actorLoader: ActorLoader
+                          ): (CommStorage, CommRegistrar, CommManager, Interpreter,
     Kernel, DependencyDownloader, MagicManager, PluginManager,
     collection.mutable.Map[String, ActorRef])
 }
 
 /**
- * Represents the standard implementation of ComponentInitialization.
- */
+  * Represents the standard implementation of ComponentInitialization.
+  */
 trait StandardComponentInitialization extends ComponentInitialization {
   this: LogLike =>
 
   /**
-   * Initializes and registers all components (not needed by bare init).
-   *
-   * @param config The config used for initialization
-   * @param actorLoader The actor loader to use for some initialization
-   */
+    * Initializes and registers all components (not needed by bare init).
+    *
+    * @param config      The config used for initialization
+    * @param actorLoader The actor loader to use for some initialization
+    */
   def initializeComponents(
-    config: Config, actorLoader: ActorLoader
-  ) = {
+                            config: Config, actorLoader: ActorLoader
+                          ) = {
     val (commStorage, commRegistrar, commManager) =
       initializeCommObjects(actorLoader)
 
-    val interpreterManager =  InterpreterManager(config)
-    interpreterManager.interpreters foreach(println)
+    val interpreterManager = InterpreterManager(config)
+    interpreterManager.interpreters foreach (println)
 
     val dependencyDownloader = initializeDependencyDownloader(config)
     val pluginManager = createPluginManager(config, interpreterManager, dependencyDownloader)
@@ -85,7 +85,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
     initializeSparkContext(config, kernel)
 
     interpreterManager.initializeInterpreters(kernel)
-    
+
     pluginManager.fireEvent(AllInterpretersReady)
 
     val responseMap = initializeResponseMap()
@@ -110,25 +110,30 @@ trait StandardComponentInitialization extends ComponentInitialization {
     (commStorage, commRegistrar, commManager)
   }
 
-  def initializeSparkContext(config:Config, kernel:Kernel) = {
-    if(config.getString("spark_context_initialization_mode") == "eager") {
+  def initializeSparkContext(config: Config, kernel: Kernel) = {
+    if (config.getString("spark_context_initialization_mode") == "eager") {
       kernel.sparkSession
     }
   }
 
   private def initializeDependencyDownloader(config: Config) = {
     val depsDir = {
-      if(config.hasPath("deps_dir") && Files.exists(Paths.get(config.getString("deps_dir")))) {
+      if (config.hasPath("deps_dir") && Files.exists(Paths.get(config.getString("deps_dir")))) {
         config.getString("deps_dir")
       } else {
         FileUtils.createManagedTempDirectory("toree_add_deps").getAbsolutePath
       }
     }
 
-    val dependencyDownloader = new CoursierDependencyDownloader
-    dependencyDownloader.setDownloadDirectory(
-      new File(depsDir)
-    )
+    val dependencyDownloader = if (config.hasPath("ivy_settings")) {
+      new IvyDependencyDownloader(depsDir, config.getString("ivy_settings"))
+    } else {
+      val dependencyDownloader = new CoursierDependencyDownloader
+      dependencyDownloader.setDownloadDirectory(
+        new File(depsDir)
+      )
+      dependencyDownloader
+    }
 
     if (config.hasPath("default_repositories")) {
       val repository = config.getStringList("default_repositories").asScala.toList
@@ -138,7 +143,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
       } else Nil
 
       dependencyDownloader.resolveRepositoriesAndCredentials(repository, credentials)
-        .foreach{case (u, c) => dependencyDownloader.addMavenRepository(u, c)}
+        .foreach { case (u, c) => dependencyDownloader.addMavenRepository(u, c) }
     }
 
     dependencyDownloader
@@ -148,17 +153,17 @@ trait StandardComponentInitialization extends ComponentInitialization {
     new ConcurrentHashMap[String, ActorRef]().asScala
 
   private def initializeKernel(
-    config: Config,
-    actorLoader: ActorLoader,
-    interpreterManager: InterpreterManager,
-    commManager: CommManager,
-    pluginManager: PluginManager
-  ) = {
+                                config: Config,
+                                actorLoader: ActorLoader,
+                                interpreterManager: InterpreterManager,
+                                commManager: CommManager,
+                                pluginManager: PluginManager
+                              ) = {
 
     //kernel has a dependency on ScalaInterpreter to get the ClassServerURI for the SparkConf
     //we need to pre-start the ScalaInterpreter
-//    val scalaInterpreter = interpreterManager.interpreters("Scala")
-//    scalaInterpreter.start()
+    //    val scalaInterpreter = interpreterManager.interpreters("Scala")
+    //    scalaInterpreter.start()
 
     val kernel = new Kernel(
       config,
@@ -166,7 +171,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
       interpreterManager,
       commManager,
       pluginManager
-    ){
+    ) {
       override protected[toree] def createSparkConf(conf: SparkConf) = {
         val theConf = super.createSparkConf(conf)
 
@@ -185,9 +190,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
   }
 
   private def createPluginManager(
-    config: Config, interpreterManager: InterpreterManager,
-    dependencyDownloader: DependencyDownloader
-  ) = {
+                                   config: Config, interpreterManager: InterpreterManager,
+                                   dependencyDownloader: DependencyDownloader
+                                 ) = {
     logger.debug("Constructing plugin manager")
     val pluginManager = new PluginManager()
 
@@ -202,9 +207,9 @@ trait StandardComponentInitialization extends ComponentInitialization {
   }
 
   private def initializePlugins(
-    config: Config,
-    pluginManager: PluginManager
-  ) = {
+                                 config: Config,
+                                 pluginManager: PluginManager
+                               ) = {
     val magicUrlArray = config.getStringList("magic_urls").asScala
       .map(s => new java.net.URL(s)).toArray
 
