@@ -23,7 +23,7 @@ FROM jupyter/all-spark-notebook
 USER root
 
 # Spark dependencies
-ENV APACHE_SPARK_VERSION 3.0.2
+ENV APACHE_SPARK_VERSION 3.0.3
 
 RUN apt-get -y update && \
     apt-get install -y --no-install-recommends openjdk-8-jdk ca-certificates-java  && \
