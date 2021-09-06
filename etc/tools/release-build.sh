@@ -260,11 +260,14 @@ if [[ "$RELEASE_PREPARE" == "true" ]]; then
         svn co $RELEASE_STAGING_LOCATION svn-toree
         mkdir -p svn-toree/$RELEASE_STAGING_FOLDER/toree
         mkdir -p svn-toree/$RELEASE_STAGING_FOLDER/toree-pip
+        mkdir -p svn-toree/$RELEASE_STAGING_FOLDER/apache-toree-pip
 
         cp toree/dist/toree-bin/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/toree
         cp toree/dist/toree-src/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/toree
         cp toree/dist/toree-pip/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/toree-pip
         cp -r toree/dist/toree-pip/toree.egg-info svn-toree/$RELEASE_STAGING_FOLDER/toree-pip/
+        cp toree/dist/apache-toree-pip/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/apache-toree-pip
+        cp -r toree/dist/apache-toree-pip/toree.egg-info svn-toree/$RELEASE_STAGING_FOLDER/apache-toree-pip/
 
         cd "$BASE_DIR/target/svn-toree/$RELEASE_STAGING_FOLDER/toree"
         rm -f *.asc
@@ -273,6 +276,12 @@ if [[ "$RELEASE_PREPARE" == "true" ]]; then
         for i in *.tar.gz; do shasum --algorithm 512 $i > $i.sha512; done
 
         cd "$BASE_DIR/target/svn-toree/$RELEASE_STAGING_FOLDER/toree-pip"
+        rm -f *.asc
+        for i in *.tar.gz; do gpg --output $i.asc --detach-sig --armor $i; done
+        rm -f *.sha*
+        for i in *.tar.gz; do shasum --algorithm 512 $i > $i.sha512; done
+
+        cd "$BASE_DIR/target/svn-toree/$RELEASE_STAGING_FOLDER/apache-toree-pip"
         rm -f *.asc
         for i in *.tar.gz; do gpg --output $i.asc --detach-sig --armor $i; done
         rm -f *.sha*
