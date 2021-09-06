@@ -47,10 +47,6 @@ docker run -t --rm \
 	-v `pwd`:/srv/toree $(DOCKER_ARGS)
 endef
 
-USE_VAGRANT?=
-RUN_PREFIX=$(if $(USE_VAGRANT),vagrant ssh -c "cd $(VM_WORKDIR) && )
-RUN_SUFFIX=$(if $(USE_VAGRANT),")
-
 RUN=$(RUN_PREFIX)$(1)$(RUN_SUFFIX)
 
 ENV_OPTS:=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)

@@ -52,12 +52,8 @@ the `New` dropdown. Note that this version only supports `Scala`.
 
 Develop
 =======
-This project uses `make` as the entry point for build, test, and packaging. It supports 2 modes, local and vagrant.
-The default is local and all commands (i.e. `sbt`) will be run locally on your machine. This means that you need to
+This project uses `make` as the entry point for build, test, and packaging. To perform a local build, you need to
 install `sbt`, `jupyter/ipython`, and other development requirements locally on your machine.
-The 2nd mode uses [Vagrant][vagrant] to simplify the development experience. In vagrant mode, all commands are sent
-to the vagrant box that has all necessary dependencies pre-installed.
-To run in vagrant mode, run `export USE_VAGRANT=true`.
 
 To build and interact with Toree using Jupyter, run
 ```
@@ -82,7 +78,7 @@ This results in 2 packages.
 - `./dist/toree-<VERSION>-binary-release.tar.gz` is a simple package that contains JAR and executable
 - `./dist/toree-<VERSION>.tar.gz` is a `pip` installable package that adds Toree as a Jupyter kernel.
 
-NOTE: `make release` uses `docker`. Please refer to `docker` installation instructions for your system. `USE_VAGRANT` is not supported by this `make` target.
+NOTE: `make release` uses `docker`. Please refer to `docker` installation instructions for your system.
 
 Run Examples
 ============
@@ -159,7 +155,6 @@ We are currently enhancing our documentation, which is available in our [website
 [gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/apache/toree
 [try-jupyter]: http://try.jupyter.org
-[vagrant]: https://www.vagrantup.com/
 [mail-list]: mailto:dev@toree.incubator.apache.org
 
 [master]: https://github.com/apache/incubator-toree
