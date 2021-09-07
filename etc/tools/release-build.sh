@@ -267,7 +267,7 @@ if [[ "$RELEASE_PREPARE" == "true" ]]; then
         cp toree/dist/toree-pip/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/toree-pip
         cp -r toree/dist/toree-pip/toree.egg-info svn-toree/$RELEASE_STAGING_FOLDER/toree-pip/
         cp toree/dist/apache-toree-pip/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/apache-toree-pip
-        cp -r toree/dist/apache-toree-pip/toree.egg-info svn-toree/$RELEASE_STAGING_FOLDER/apache-toree-pip/
+        cp -r toree/dist/apache-toree-pip/*toree.egg-info svn-toree/$RELEASE_STAGING_FOLDER/apache-toree-pip/
 
         cd "$BASE_DIR/target/svn-toree/$RELEASE_STAGING_FOLDER/toree"
         rm -f *.asc
