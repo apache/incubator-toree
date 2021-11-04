@@ -22,7 +22,7 @@ version in ThisBuild := Properties.envOrElse("VERSION", "0.0.0-dev") +
   (if ((isSnapshot in ThisBuild).value) "-SNAPSHOT" else "")
 isSnapshot in ThisBuild := Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
 organization in ThisBuild := "org.apache.toree.kernel"
-crossScalaVersions in ThisBuild := Seq("2.12.12")
+crossScalaVersions in ThisBuild := Seq("2.12.15")  // https://github.com/scala/bug/issues/12475, for Spark 3.2.0
 scalaVersion in ThisBuild := (crossScalaVersions in ThisBuild).value.head
 Dependencies.sparkVersion in ThisBuild := {
   val envVar = "APACHE_SPARK_VERSION"

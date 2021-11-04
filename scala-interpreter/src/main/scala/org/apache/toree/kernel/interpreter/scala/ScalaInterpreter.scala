@@ -91,6 +91,9 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      settings = newSettings(args)
      settings = appendClassPath(settings)
 
+     // https://issues.apache.org/jira/browse/TOREE-132?focusedCommentId=15104495&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-15104495
+     settings.usejavacp.value = true
+
      start()
 
      // ensure bindings are defined before allowing user code to run

@@ -99,7 +99,8 @@ object InterpreterManager {
         logger.debug("Using default constructor for class " + className)
         Class
           .forName(className)
-          .newInstance().asInstanceOf[Interpreter]
+          // https://docs.oracle.com/javase/9/docs/api/java/lang/Class.html#newInstance--
+          .getDeclaredConstructor().newInstance().asInstanceOf[Interpreter]
     }
 
   }
