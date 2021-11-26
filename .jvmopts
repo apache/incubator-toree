@@ -22,7 +22,6 @@
 -XX:+UseCompressedClassPointers
 -XX:ReservedCodeCacheSize=256M
 -XX:+TieredCompilation
-#-XX:+CMSPermGenSweepingEnabled  // not supported by OpenJDK 11
 -XX:+CMSClassUnloadingEnabled
 -XX:+UseConcMarkSweepGC
 -XX:+HeapDumpOnOutOfMemoryError
