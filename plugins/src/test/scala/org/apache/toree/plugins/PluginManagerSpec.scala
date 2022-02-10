@@ -131,7 +131,8 @@ class PluginManagerSpec extends FunSpec with Matchers
         val p = pluginManager.loadPlugin("", classOf[SomeClass])
 
         p.isFailure should be (true)
-        p.failed.get shouldBe an [InstantiationException]
+        // NB: Java 8 throws InstantiationException, Java 11 NoSuchMethodException
+        p.failed.get shouldBe an [Exception]
       }
 
       it("should return an unknown plugin type failure if created class but not a plugin") {

@@ -22,7 +22,6 @@
 -XX:+UseCompressedClassPointers
 -XX:ReservedCodeCacheSize=256M
 -XX:+TieredCompilation
--XX:+CMSPermGenSweepingEnabled
 -XX:+CMSClassUnloadingEnabled
 -XX:+UseConcMarkSweepGC
 -XX:+HeapDumpOnOutOfMemoryError

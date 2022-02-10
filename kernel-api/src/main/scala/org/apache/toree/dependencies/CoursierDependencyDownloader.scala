@@ -263,8 +263,8 @@ class CoursierDependencyDownloader extends DependencyDownloader {
         "===> %s %s: Downloaded %d bytes (%.2f%%)\n",
         downloadId.getOrElse(url, url),
         s"(${downloadFile.get(url).map(_.getName).getOrElse("")})",
-        new java.lang.Long(downloaded),
-        new java.lang.Double(percent)
+        java.lang.Long.valueOf(downloaded),
+        java.lang.Double.valueOf(percent)
       )
     }
 

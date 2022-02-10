@@ -129,7 +129,8 @@ class PluginManager(
       logger.debug(s"Loading $name as plugin")
 
       // Assume that each plugin has an empty constructor
-      val tryInstance = Try(klass.newInstance())
+      // https://docs.oracle.com/javase/9/docs/api/java/lang/Class.html#newInstance--
+      val tryInstance = Try(klass.getDeclaredConstructor().newInstance())
 
       // Log failures
       tryInstance.failed.foreach(ex =>

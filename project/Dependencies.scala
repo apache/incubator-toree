@@ -67,7 +67,12 @@ object Dependencies {
 
   val springCore = "org.springframework" % "spring-core" % "5.2.2.RELEASE"// Apache v2
 
-  val guava = "com.google.guava" % "guava" % "14.0.1" // Apache v2
+  // NB: Updated from 14.0.1 as suggested in
+  //       https://github.com/google/guava/issues/3249,
+  //       https://github.com/google/guava/issues/3345
+  //     to prevent test org.apache.toree.magic.builtin.BuiltinLoaderSpec
+  //     from failing on OpenJDK 11.
+  val guava = "com.google.guava" % "guava" % "31.0.1-jre" // Apache v2
 
   // Projects
 
