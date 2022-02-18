@@ -189,8 +189,9 @@ class IvyDependencyDownloader(
     val moduleDescriptor = report.getModuleDescriptor
     ivy.retrieve(
       moduleDescriptor.getModuleRevisionId,
-      baseDirectory + "/[artifact](-[classifier]).[ext]",
-      new RetrieveOptions().setConfs(Seq("default").toArray)
+      new RetrieveOptions()
+        .setConfs(Seq("default").toArray)
+        .setDestArtifactPattern(baseDirectory + "/[artifact](-[classifier]).[ext]")
     )
 
     artifactURLs.map(_.toURI)
