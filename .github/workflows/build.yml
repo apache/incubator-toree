@@ -47,7 +47,7 @@ jobs:
     - name: Checkout
       uses: actions/setup-java@v2
       with:
-        distribution: 'zulu'
+        distribution: 'temurin'
         java-version: ${{ matrix.java }}
     - name: Add SBT launcher
       run: |
