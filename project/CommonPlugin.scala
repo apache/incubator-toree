@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-import sbt._
+import sbt.{Def, _}
 import sbt.Keys._
 
 object CommonPlugin extends AutoPlugin {
@@ -29,24 +29,24 @@ object CommonPlugin extends AutoPlugin {
   }
   import autoImport._
 
-  override def projectSettings = {
+  override def projectSettings: Seq[Def.Setting[_]] = {
     inConfig(UnitTest)(Defaults.testSettings) ++
     inConfig(IntegrationTest)(Defaults.testSettings) ++
     inConfig(SystemTest)(Defaults.testSettings) ++
     Seq(
-      testOptions in UnitTest := Seq(Tests.Filter(unitFilter)),
-      testOptions in IntegrationTest := Seq(Tests.Filter(intFilter)),
-      testOptions in SystemTest := Seq(Tests.Filter(sysFilter)),
+      UnitTest / testOptions := Seq(Tests.Filter(unitFilter)),
+      IntegrationTest / testOptions := Seq(Tests.Filter(intFilter)),
+      SystemTest / testOptions := Seq(Tests.Filter(sysFilter)),
       // Add a global resource directory with compile/ and test/ for resources in all projects
-      unmanagedResourceDirectories in Compile ++= Seq(
-        (baseDirectory in ThisBuild).value / "resources" / "compile"
+      Compile / unmanagedResourceDirectories ++= Seq(
+        (ThisBuild / baseDirectory).value / "resources" / "compile"
       ),
-      unmanagedResourceDirectories in Test ++= Seq(
-        (baseDirectory in ThisBuild).value / "resources" / "test"
+      Test / unmanagedResourceDirectories ++= Seq(
+        (ThisBuild / baseDirectory).value / "resources" / "test"
       ),
-      resourceGenerators in Compile += Def.task {
-        val inputFile = (deliverLocal in Compile).value
-        val outputFile = (resourceManaged in Compile).value / s"${name.value}-ivy.xml"
+      Compile / resourceGenerators += Def.task {
+        val inputFile = (Compile / deliverLocal).value
+        val outputFile = (Compile / resourceManaged).value / s"${name.value}-ivy.xml"
         streams.value.log.info(s"Copying ${inputFile.getPath} to ${outputFile.getPath}")
         IO.copyFile(inputFile, outputFile)
         Seq(outputFile)
