@@ -18,13 +18,13 @@
 import scala.util.Properties
 
 // Version settings
-version in ThisBuild := Properties.envOrElse("VERSION", "0.0.0-dev") +
-  (if ((isSnapshot in ThisBuild).value) "-SNAPSHOT" else "")
-isSnapshot in ThisBuild := Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
-organization in ThisBuild := "org.apache.toree.kernel"
-crossScalaVersions in ThisBuild := Seq("2.12.15")  // https://github.com/scala/bug/issues/12475, for Spark 3.2.0
-scalaVersion in ThisBuild := (crossScalaVersions in ThisBuild).value.head
-Dependencies.sparkVersion in ThisBuild := {
+ThisBuild / version := Properties.envOrElse("VERSION", "0.0.0-dev") +
+  (if ((ThisBuild / isSnapshot ).value) "-SNAPSHOT" else "")
+ThisBuild / isSnapshot := Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
+ThisBuild / organization := "org.apache.toree.kernel"
+ThisBuild / crossScalaVersions := Seq("2.12.15")  // https://github.com/scala/bug/issues/12475, for Spark 3.2.0
+ThisBuild / scalaVersion := (ThisBuild / crossScalaVersions ).value.head
+ThisBuild / Dependencies.sparkVersion := {
   val envVar = "APACHE_SPARK_VERSION"
   val defaultVersion = "3.0.0"
 
@@ -39,7 +39,7 @@ Dependencies.sparkVersion in ThisBuild := {
 }
 
 // Compiler settings
-scalacOptions in ThisBuild ++= Seq(
+ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-unchecked",
   "-feature",
@@ -50,9 +50,9 @@ scalacOptions in ThisBuild ++= Seq(
 )
 // Java-based options for compilation (all tasks)
 // NOTE: Providing a blank flag causes failures, only uncomment with options
-//javacOptions in Compile ++= Seq(""),
+// Compile / javacOptions ++= Seq(""),
 // Java-based options for just the compile task
-javacOptions in ThisBuild ++= Seq(
+ThisBuild / javacOptions ++= Seq(
   "-Xlint:all",   // Enable all Java-based warnings
   "-Xlint:-path", // Suppress path warnings since we get tons of them
   "-Xlint:-options",
@@ -62,42 +62,42 @@ javacOptions in ThisBuild ++= Seq(
   "-target", "1.6"
 )
 // Options provided to forked JVMs through sbt, based on our .jvmopts file
-javaOptions in ThisBuild ++= Seq(
+ThisBuild / javaOptions ++= Seq(
   "-Xms1024M", "-Xmx4096M", "-Xss2m", "-XX:MaxPermSize=1024M",
   "-XX:ReservedCodeCacheSize=256M", "-XX:+TieredCompilation",
   "-XX:+CMSClassUnloadingEnabled",
   "-XX:+UseConcMarkSweepGC", "-XX:+HeapDumpOnOutOfMemoryError"
 )
 // Add additional test option to show time taken per test
-testOptions in (ThisBuild, Test) += Tests.Argument("-oDF")
+ThisBuild / Test / testOptions += Tests.Argument("-oDF")
 // Build-wide dependencies
-resolvers in ThisBuild  ++= Seq(
+ThisBuild / resolvers ++= Seq(
   "Apache Snapshots" at "https://repository.apache.org/snapshots/",
   "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/",
   "Jitpack" at "https://jitpack.io",
   "bintray-sbt-plugins" at "https://dl.bintray.com/sbt/sbt-plugin-releases"
 )
-updateOptions in ThisBuild := updateOptions.value.withCachedResolution(true)
-libraryDependencies in ThisBuild ++= Seq(
+ThisBuild / updateOptions := updateOptions.value.withCachedResolution(true)
+ThisBuild / libraryDependencies ++= Seq(
   Dependencies.scalaTest % "test",
   Dependencies.mockito % "test",
   Dependencies.jacksonDatabind % "test"
 )
 
 // Publish settings
-pgpPassphrase in ThisBuild := Some(Properties.envOrElse("GPG_PASSWORD","").toArray)
-publishTo in ThisBuild := {
+ThisBuild / pgpPassphrase := Some(Properties.envOrElse("GPG_PASSWORD","").toArray)
+ThisBuild / publishTo := {
   if (isSnapshot.value)
     Some("Apache Staging Repo" at "https://repository.apache.org/content/repositories/snapshots/")
   else
     Some("Apache Staging Repo" at "https://repository.apache.org/content/repositories/staging/")
 }
-mappings in packageBin in ThisBuild := Seq(
+ThisBuild / packageBin / mappings := Seq(
   file("LICENSE") -> "LICENSE",
   file("NOTICE") -> "NOTICE"
 )
-licenses in ThisBuild := Seq("Apache 2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
-pomExtra in ThisBuild := {
+ThisBuild / licenses := Seq("Apache 2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / pomExtra := {
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
@@ -113,7 +113,7 @@ pomExtra in ThisBuild := {
     <tag>HEAD</tag>
   </scm>
 }
-credentials in ThisBuild+= Credentials(Path.userHome / ".ivy2" / ".credentials")
+ThisBuild / credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 // Project structure
 
@@ -202,7 +202,7 @@ lazy val kernel = (project in file("kernel"))
 
 // Root project settings
 enablePlugins(ScalaUnidocPlugin)
-scalacOptions in (ScalaUnidoc, unidoc) ++= Seq(
+(ScalaUnidoc / unidoc / scalacOptions) ++= Seq(
   "-Ymacro-expand:none",
   "-skip-packages", Seq(
     "akka",
@@ -212,20 +212,20 @@ scalacOptions in (ScalaUnidoc, unidoc) ++= Seq(
 )
 
 libraryDependencies ++= Dependencies.sparkAll.value
-unmanagedResourceDirectories in Compile += { baseDirectory.value / "dist/toree-legal" }
+Compile / unmanagedResourceDirectories += { baseDirectory.value / "dist/toree-legal" }
 
-assemblyShadeRules in assembly := Seq(
+assembly / assemblyShadeRules := Seq(
   ShadeRule.rename("org.clapper.classutil.**" -> "shadeclapper.@0").inAll,
   ShadeRule.rename("org.objectweb.asm.**" -> "shadeasm.@0").inAll
 )
 
-assemblyMergeStrategy in assembly := {
+assembly / assemblyMergeStrategy := {
   case "module-info.class" => MergeStrategy.discard
   case x =>
-    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 
-test in assembly := {}
-assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
-aggregate in assembly := false
+assembly / test := {}
+assembly / assemblyOption := (assembly / assemblyOption).value.copy(includeScala = false)
+assembly / aggregate := false
