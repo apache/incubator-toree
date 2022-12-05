@@ -56,3 +56,4 @@ apache-rat-*.jar
 .ensime
 .ensime_cache/
 .system-test-image
+.bsp/
