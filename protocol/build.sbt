@@ -19,9 +19,7 @@
 // JSON DEPENDENCIES
 //
 libraryDependencies ++= Seq(
-  Dependencies.playJson excludeAll(
-    ExclusionRule(organization = "com.fasterxml.jackson.core")
-  ),
+  Dependencies.playJson excludeAll ExclusionRule(organization = "com.fasterxml.jackson.core"),
   Dependencies.jacksonDatabind,
   Dependencies.slf4jApi
 )

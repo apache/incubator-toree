@@ -15,7 +15,7 @@
  *  limitations under the License
  */
 
-fork in Test := true
+Test / fork := true
 
 // Needed for type inspection
 libraryDependencies ++= Seq(
