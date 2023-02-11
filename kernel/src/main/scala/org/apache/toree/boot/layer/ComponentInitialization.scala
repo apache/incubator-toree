@@ -33,7 +33,7 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
 import org.apache.toree.utils.{LogLike, FileUtils}
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import org.apache.toree.plugins.AllInterpretersReady
 
 /**
@@ -217,17 +217,19 @@ trait StandardComponentInitialization extends ComponentInitialization {
     // Load internal plugins under kernel module
     logger.debug("Loading internal plugins")
     val internalPlugins = pluginManager.initialize()
-    logger.info(internalPlugins.size + " internal plugins loaded")
+    val internalPluginsSize = internalPlugins.size
+    logger.info(s"$internalPluginsSize internal plugins loaded")
 
     // Load external plugins if provided
     logger.debug("Loading external plugins")
     val externalPlugins = if (magicUrlArray.nonEmpty) {
       val externalPlugins = pluginManager.loadPlugins(
-        magicUrlArray.map(_.getFile).map(new File(_)): _*
+        magicUrlArray.map(_.getFile).map(new File(_)).toIndexedSeq: _*
       )
       pluginManager.initializePlugins(externalPlugins)
       externalPlugins
     } else Nil
-    logger.info(externalPlugins.size + " external plugins loaded")
+    val externalPluginsSize = externalPlugins.size
+    logger.info(s"$externalPluginsSize external plugins loaded")
   }
 }

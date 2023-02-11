@@ -34,7 +34,7 @@ case class PluginMethod(
   method: Method
 ) {
   /** Represents the collection of names of events this method supports. */
-  lazy val eventNames: Seq[String] = {
+  lazy val eventNames: collection.Seq[String] = {
     Option(method.getAnnotation(classOf[Event]))
       .map(_.name()).map(Seq(_)).getOrElse(Nil) ++
     Option(method.getAnnotation(classOf[Events]))
@@ -110,11 +110,11 @@ case class PluginMethod(
     } }
 
     // Validate arguments
-    val arguments: Seq[AnyRef] = dependencies.map(_.value.asInstanceOf[AnyRef])
+    val arguments: Seq[Object] = dependencies.map(_.value.asInstanceOf[Object]).toSeq
 
     // Invoke plugin method
     method.invoke(plugin, arguments: _*)
-  }).map(SuccessPluginMethodResult.apply(this, _: AnyRef)).recover {
+  }).map(SuccessPluginMethodResult.apply(this, _: Object)).recover {
     case i: InvocationTargetException =>
       FailurePluginMethodResult(this, i.getTargetException)
     case throwable: Throwable =>

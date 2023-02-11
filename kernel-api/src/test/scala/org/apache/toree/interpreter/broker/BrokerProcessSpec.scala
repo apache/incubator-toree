@@ -205,7 +205,7 @@ class BrokerProcessSpec extends AnyFunSpec with Matchers
         brokerProcess.start()
         verify(mockExecutor).execute(any(),environmentCaptor.capture() , any())
 
-        import scala.collection.JavaConverters._
+        import scala.jdk.CollectionConverters._
         val environment = environmentCaptor.getValue.asScala
 
         environment should contain theSameElementsAs TestEnvironment

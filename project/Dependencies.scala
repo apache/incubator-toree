@@ -43,7 +43,7 @@ object Dependencies {
 
   val jeroMq = "org.zeromq" % "jeromq" % "0.5.3" // MPL v2
 
-  val joptSimple = "net.sf.jopt-simple" % "jopt-simple" % "4.9" // MIT
+  val joptSimple = "net.sf.jopt-simple" % "jopt-simple" % "5.0.4" // MIT
 
   val playJson = "com.typesafe.play" %% "play-json" % "2.7.4" // Apache v2
 
@@ -65,7 +65,7 @@ object Dependencies {
   val sparkSql = Def.setting{ "org.apache.spark" %% "spark-sql" % sparkVersion.value } // Apache v2
   val sparkStreaming = Def.setting{ "org.apache.spark" %% "spark-streaming" % sparkVersion.value } // Apache v2
 
-  val springCore = "org.springframework" % "spring-core" % "5.2.2.RELEASE"// Apache v2
+  val springCore = "org.springframework" % "spring-core" % "5.2.22.RELEASE"// Apache v2
 
   // TOREE-552 Align Guava with Spark
   val guava = "com.google.guava" % "guava" % "14.0.1" // Apache v2
