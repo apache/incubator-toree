@@ -77,21 +77,21 @@ object Utilities extends LogLike {
   }
 
   implicit def KernelMessageToZMQMessage(kernelMessage : KernelMessage) : ZMQMessage = {
-    val frames: scala.collection.mutable.ListBuffer[ByteString] = scala.collection.mutable.ListBuffer()
-    kernelMessage.ids.map((id : Array[Byte]) => frames += ByteString.apply(id) )
-    frames += "<IDS|MSG>"
-    frames += kernelMessage.signature
-    frames += Json.toJson(kernelMessage.header).toString()
-    frames += Json.toJson(kernelMessage.parentHeader).toString()
-    frames += Json.toJson(kernelMessage.metadata).toString
-    frames += kernelMessage.contentString
+    var frames: Seq[ByteString] = Seq()
+    kernelMessage.ids.map((id : Array[Byte]) => frames = frames :+ ByteString.apply(id) )
+    frames = frames :+ "<IDS|MSG>"
+    frames = frames :+ kernelMessage.signature
+    frames = frames :+ Json.toJson(kernelMessage.header).toString()
+    frames = frames :+ Json.toJson(kernelMessage.parentHeader).toString()
+    frames = frames :+ Json.toJson(kernelMessage.metadata).toString
+    frames = frames :+ kernelMessage.contentString
     ZMQMessage(frames  : _*)
   }
 
   def parseAndHandle[T, U](json: String, reads: Reads[T],
                            handler: T => U) : U = {
     parseAndHandle(json, reads, handler,
-      (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => {
+      (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => {
         logger.error(s"Could not parse JSON, ${json}")
         throw new Throwable(s"Could not parse JSON, ${json}")
       }
@@ -100,7 +100,7 @@ object Utilities extends LogLike {
 
   def parseAndHandle[T, U](json: String, reads: Reads[T],
                            handler: T => U,
-                           errHandler: Seq[(JsPath, Seq[JsonValidationError])] => U) : U = {
+                           errHandler: collection.Seq[(JsPath, collection.Seq[JsonValidationError])] => U) : U = {
     Json.parse(json).validate[T](reads).fold(
       errHandler,
       (content: T) => handler(content)

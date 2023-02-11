@@ -23,7 +23,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import joptsimple.{OptionParser, OptionSpec}
 import joptsimple.util.RegexMatcher._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class CommandLineOptions(args: Seq[String]) {
   private val parser = new OptionParser()

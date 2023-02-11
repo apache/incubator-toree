@@ -75,8 +75,8 @@ class PluginSearcher {
       s"Failed to load class info from classpath: ${classFinder.classpath.mkString(",")}",
       _: Throwable
     ))
-    val stream = tryStream.getOrElse(Stream.empty)
-    ClassFinder.classInfoMap(stream.toIterator)
+    val stream = tryStream.getOrElse(LazyList.empty)
+    ClassFinder.classInfoMap(stream.iterator)
   }
 
   /**
@@ -105,7 +105,7 @@ class PluginSearcher {
     extraClasses: Map[String, ClassInfo]
   ): Iterator[ClassInfo] = {
     @tailrec def classMatches(
-      classesToCheck: Seq[ClassInfo]
+      classesToCheck: collection.Seq[ClassInfo]
     ): Boolean = {
       if (classesToCheck.isEmpty) false
       else if (classesToCheck.exists(_.name == ancestor)) true
@@ -120,7 +120,7 @@ class PluginSearcher {
       }
     }
 
-    classes.values.toIterator
+    classes.values.iterator
       .filter(_.isConcrete)
       .filter(c => classMatches(Seq(c)))
   }

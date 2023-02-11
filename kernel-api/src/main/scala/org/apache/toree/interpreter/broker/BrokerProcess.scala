@@ -23,7 +23,7 @@ import org.apache.commons.exec._
 import org.apache.commons.exec.environment.EnvironmentUtils
 import org.apache.commons.io.{FilenameUtils, IOUtils}
 import org.slf4j.LoggerFactory
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
  * Represents the process used to evaluate broker code.

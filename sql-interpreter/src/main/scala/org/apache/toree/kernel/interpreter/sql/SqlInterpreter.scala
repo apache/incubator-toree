@@ -25,7 +25,7 @@ import org.apache.toree.kernel.BuildInfo
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.tools.nsc.interpreter.{InputStream, OutputStream}
+import java.io.{InputStream, OutputStream}
 
 /**
  * Represents an interpreter interface to Spark SQL.

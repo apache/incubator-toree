@@ -54,14 +54,14 @@ abstract class DependencyDownloader {
     transitive: Boolean = true,
     excludeBaseDependencies: Boolean = true,
     ignoreResolutionErrors: Boolean = true,
-    extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
+    extraRepositories: collection.Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean = false,
     trace: Boolean = false,
     configuration: Option[String] = None,
     artifactType: Option[String] = None,
     artifactClassifier: Option[String] = None,
-    excludes: Set[(String,String)] = Set.empty
-  ): Seq[URI]
+    excludes: collection.Set[(String,String)] = collection.Set.empty
+  ): collection.Seq[URI]
 
   /**
    * Sets the printstream to log to.
@@ -89,7 +89,7 @@ abstract class DependencyDownloader {
    *
    * @return The list of repositories as URIs
    */
-  def getRepositories: Seq[URI]
+  def getRepositories: collection.Seq[URI]
 
   /**
    * Sets the directory where all downloaded jars will be stored.

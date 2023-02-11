@@ -89,14 +89,14 @@ class IvyDependencyDownloader(
     transitive: Boolean = true,
     excludeBaseDependencies: Boolean,
     ignoreResolutionErrors: Boolean,
-    extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
+    extraRepositories: collection.Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean,
     trace: Boolean,
     configuration: Option[String] = None,
     artifactType: Option[String] = None,
     artifactClassifier: Option[String] = None,
-    excludes: Set[(String,String)] = Set.empty
-  ): Seq[URI] = {
+    excludes: collection.Set[(String,String)] = collection.Set.empty
+  ): collection.Seq[URI] = {
     // Start building the ivy.xml file
     val ivyFile = File.createTempFile("ivy-custom", ".xml")
     ivyFile.deleteOnExit()

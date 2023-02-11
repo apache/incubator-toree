@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap
 import org.apache.toree.communication.socket._
 import org.zeromq.{SocketType, ZMQ}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
  * Represents the factory for sockets that also manages ZMQ contexts and
