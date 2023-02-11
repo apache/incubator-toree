@@ -78,7 +78,7 @@ class CommMsgHandler(
     }
   }
 
-  private def handleParseError(invalid: Seq[(JsPath, Seq[JsonValidationError])]) = {
+  private def handleParseError(invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) = {
     // TODO: Determine proper response for a parse failure
     logger.warn("Parse error for Comm Msg! Not responding!")
   }

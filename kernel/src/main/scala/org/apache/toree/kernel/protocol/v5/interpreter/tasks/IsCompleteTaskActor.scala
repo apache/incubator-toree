@@ -34,8 +34,8 @@ class IsCompleteTaskActor(interpreter: Interpreter)
   override def receive: Receive = {
     case req: IsCompleteRequest =>
       logger.debug("Invoking the interpreter completion")
-      sender ! interpreter.isComplete(req.code)
+      sender() ! interpreter.isComplete(req.code)
     case _ =>
-      sender ! "Unknown message" // TODO: Provide a failure message type to be passed around?
+      sender() ! "Unknown message" // TODO: Provide a failure message type to be passed around?
   }
 }

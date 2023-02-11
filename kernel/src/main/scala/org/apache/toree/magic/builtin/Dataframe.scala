@@ -84,7 +84,7 @@ class DataFrame extends CellMagic with IncludeKernelInterpreter
   }
   
   private def outputTypeToMimeType(): String = {
-    outputTypeMap.getOrElse(outputType, MIMEType.PlainText)
+    outputTypeMap.getOrElse(outputType(), MIMEType.PlainText)
   }
   
   private def convertToJson(rddCode: String): CellMagicOutput = {
@@ -95,20 +95,20 @@ class DataFrame extends CellMagic with IncludeKernelInterpreter
         kernelInterpreter.read(rddVarName).map(variableVal => {
           _dataFrameConverter.convert(
             variableVal.asInstanceOf[org.apache.spark.sql.DataFrame],
-            outputType,
-            limit
+            outputType(),
+            limit()
           ).map(output =>
-            CellMagicOutput(outputTypeToMimeType -> output)
+            CellMagicOutput(outputTypeToMimeType() -> output)
           ).get
         }).getOrElse(CellMagicOutput(MIMEType.PlainText -> DataFrameResponses.NoVariableFound(rddVarName)))
       case Results.Aborted =>
-        logger.error(DataFrameResponses.ErrorMessage(outputType, DataFrameResponses.MagicAborted))
+        logger.error(DataFrameResponses.ErrorMessage(outputType(), DataFrameResponses.MagicAborted))
         CellMagicOutput(
-          MIMEType.PlainText -> DataFrameResponses.ErrorMessage(outputType, DataFrameResponses.MagicAborted)
+          MIMEType.PlainText -> DataFrameResponses.ErrorMessage(outputType(), DataFrameResponses.MagicAborted)
         )
       case Results.Error =>
-        val error = message.right.get.asInstanceOf[ExecuteError]
-        val errorMessage = DataFrameResponses.ErrorMessage(outputType, error.value)
+        val error = message.toOption.get.asInstanceOf[ExecuteError]
+        val errorMessage = DataFrameResponses.ErrorMessage(outputType(), error.value)
         logger.error(errorMessage)
         CellMagicOutput(MIMEType.PlainText -> errorMessage)
       case Results.Incomplete =>

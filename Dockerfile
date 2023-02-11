@@ -27,7 +27,7 @@ RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
 
 # for Apache Spark demos
 ENV APACHE_SPARK_VERSION 3.3.2
-ENV APACHE_SPARK_CUSTOM_NAME=hadoop3
+ENV APACHE_SPARK_CUSTOM_NAME=hadoop3-scala2.13
 
 RUN apt-get -y update && \
     apt-get -y install software-properties-common

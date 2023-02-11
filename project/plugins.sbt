@@ -30,4 +30,4 @@ addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.9.0")
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.1")
 
 // Provides the ability to generate dependency graphs
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1")
+addDependencyTreePlugin
