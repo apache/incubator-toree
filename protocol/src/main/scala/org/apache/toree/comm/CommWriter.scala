@@ -108,5 +108,5 @@ abstract class CommWriter(
    */
   protected[comm] def sendCommKernelMessage[
     T <: KernelMessageContent with CommContent
-  ](commContent: T)
+  ](commContent: T): Unit
 }

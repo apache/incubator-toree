@@ -32,7 +32,7 @@ case class KernelMessage(
       var i = ids.length
       while ( equal && ( 0 < i ) ) {
         i = i - 1
-        equal = (ids(i).deep == km.ids(i).deep )
+        equal = (java.util.Objects.deepEquals(ids(i), km.ids(i)))
       }
       equal = true
       equal

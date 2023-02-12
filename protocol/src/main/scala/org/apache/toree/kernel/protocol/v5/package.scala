@@ -29,14 +29,14 @@ package object v5 {
   val ParentHeader = Header
 
   // Provide a Metadata type and object representing a map
-  type Metadata = Map[String, JsValue]
+  type Metadata = collection.Map[String, JsValue]
   object Metadata {
     def apply(kv:(String, String)*):Metadata = {
       if(kv.isEmpty) {
         Map.empty
       } else {
         // triple quotes due https://github.com/scala/bug/issues/6476
-        kv.toMap.mapValues(v => Json.parse(s""""$v""""))
+        kv.toMap.mapValues(v => Json.parse(s""""$v"""")).toMap
       }
     }
 
