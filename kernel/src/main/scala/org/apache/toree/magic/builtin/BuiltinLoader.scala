@@ -21,7 +21,7 @@ import com.google.common.reflect.ClassPath
 import com.google.common.reflect.ClassPath.ClassInfo
 import org.apache.toree.magic.InternalClassLoader
 import com.google.common.base.Strings._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
  * Represents a class loader that loads classes from the builtin package.

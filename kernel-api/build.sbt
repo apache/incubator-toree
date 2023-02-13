@@ -60,6 +60,3 @@ libraryDependencies ++= Seq(
 // from the classpath. If we really want we can write our own class and remove
 // this dependency but the wheel has already been invented.
 libraryDependencies += Dependencies.springCore // Apache v2
-
-// scalaz nolonger gets pulled in automatically by springcore
-libraryDependencies += "org.scalaz" %% "scalaz-concurrent" % "7.2.35"

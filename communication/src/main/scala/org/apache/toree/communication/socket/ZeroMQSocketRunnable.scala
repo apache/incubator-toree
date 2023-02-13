@@ -20,7 +20,7 @@ import org.apache.toree.utils.LogLike
 import org.zeromq.{ZMsg, ZMQ}
 import org.zeromq.ZMQ.Context
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 /**

@@ -20,8 +20,7 @@ package org.apache.toree.interpreter
 import java.net.URL
 
 import org.apache.toree.kernel.api.KernelLike
-
-import scala.tools.nsc.interpreter._
+import java.io.{InputStream, OutputStream}
 
 case class LanguageInfo(
                  name: String,
@@ -90,7 +89,7 @@ trait Interpreter {
    * @param value The value of the variable binding
    * @param modifiers Any annotation, scoping modifiers, etc on the variable
    */
-  def bind(variableName: String, typeName: String, value: Any, modifiers: List[String])
+  def bind(variableName: String, typeName: String, value: Any, modifiers: List[String]): Unit
 
   /**
    * Retrieves the contents of the variable with the provided name from the
@@ -109,7 +108,7 @@ trait Interpreter {
    * @param out The new output stream
    * @param err The new error stream
    */
-  def updatePrintStreams(in: InputStream, out: OutputStream, err: OutputStream)
+  def updatePrintStreams(in: InputStream, out: OutputStream, err: OutputStream): Unit
 
   /**
    * Attempts to perform code completion via the <TAB> command.

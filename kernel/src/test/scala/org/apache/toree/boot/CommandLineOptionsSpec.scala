@@ -23,7 +23,7 @@ import com.typesafe.config.Config
 import joptsimple.OptionException
 import org.scalatest.{FunSpec, Matchers}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 class CommandLineOptionsSpec extends FunSpec with Matchers {
 

@@ -32,7 +32,7 @@ object Dependencies {
 
   val config = "com.typesafe" % "config" % "1.4.2" // Apache v2
 
-  val coursierVersion = "2.0.16"
+  val coursierVersion = "2.0.13"
   val coursier = "io.get-coursier" %% "coursier" % coursierVersion // Apache v2
   val coursierCache = "io.get-coursier" %% "coursier-cache" % coursierVersion // Apache v2
 
@@ -47,7 +47,7 @@ object Dependencies {
 
   val mockito = "org.mockito" % "mockito-all" % "1.10.19" // MIT
 
-  val playJson = "com.typesafe.play" %% "play-json" % "2.9.4" // Apache v2
+  val playJson = "com.typesafe.play" %% "play-json" % "2.7.4" // Apache v2
 
   val scalaCompiler = Def.setting{ "org.scala-lang" % "scala-compiler" % scalaVersion.value } // BSD 3-clause
   val scalaLibrary = Def.setting{ "org.scala-lang" % "scala-library" % scalaVersion.value } // BSD 3-clause
