@@ -24,6 +24,8 @@ import org.apache.toree.global.StreamState
 import org.apache.toree.interpreter.imports.printers.{WrapperConsole, WrapperSystem}
 import org.apache.toree.interpreter.{ExecuteError, Interpreter}
 import scala.tools.nsc.interpreter._
+import scala.tools.nsc.interpreter.shell._
+import scala.language.postfixOps
 import scala.concurrent.Future
 import scala.tools.nsc.{Global, Settings, util}
 import scala.util.Try
@@ -32,16 +34,16 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
   private val ExecutionExceptionName = "lastException"
 
   private[toree] var iMain: IMain = _
-  private var completer: PresentationCompilerCompleter = _
+  private var completer: Completion = _
   private val exceptionHack = new ExceptionHack()
 
   def _runtimeClassloader = {
     _thisClassloader
   }
 
-  protected def newIMain(settings: Settings, out: JPrintWriter): IMain = {
-    val s = new IMain(settings, out)
-    s.initializeSynchronous()
+  protected def newIMain(settings: Settings, out: PrintWriter): IMain = {
+    val s = new IMain(settings, new ReplReporterImpl(settings, out))
+    s.initializeCompiler()
     s
   }
 
@@ -82,7 +84,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
           val modifiers = buildModifierList(termNameString)
           logger.debug(s"Rebinding of $termNameString as " +
             s"${modifiers.mkString(" ")} $termTypeString")
-          Try(iMain.beSilentDuring {
+          Try(iMain.beQuietDuring {
             iMain.bind(
               termNameString, termTypeString, termValue, modifiers
             )
@@ -145,7 +147,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
       case Left(ex) =>
         logger.error("Set failed in bind(%s, %s, %s)".format(variableName, typeName, value))
         logger.error(util.stackTraceString(ex))
-        IR.Error
+        Results.Error
 
       case Right(_) =>
         val line = "%sval %s = %s.value".format(modifiers map (_ + " ") mkString, variableName, bindRep.evalPath)
@@ -164,7 +166,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
    */
   override def doQuietly[T](body: => T): T = {
     require(iMain != null)
-    iMain.beQuietDuring[T](body)
+    iMain.withoutWarnings[T](body)
   }
 
 
@@ -271,13 +273,13 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     logger.debug("Initializing task manager")
     taskManager.start()
 
-    iMain = newIMain(settings, new JPrintWriter(lastResultOut, true))
+    iMain = newIMain(settings, new PrintWriter(lastResultOut, true))
 
     //logger.debug("Initializing interpreter")
     //iMain.initializeSynchronous()
 
     logger.debug("Initializing completer")
-    completer = new PresentationCompilerCompleter(iMain)
+    completer = new ReplCompletion(iMain)
 
     iMain.beQuietDuring {
       //logger.info("Rerouting Console and System related input and output")
@@ -307,7 +309,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     logger.debug(s"Attempting code completion for ${code}")
     val result = completer.complete(code, pos)
 
-    (result.cursor, result.candidates)
+    (result.cursor, result.candidates.map(_.toString))
   }
 
   /**
@@ -318,11 +320,13 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     * @return tuple of (completeStatus, indent)
     */
   override def isComplete(code: String): (String, String) = {
-    val result = iMain.beSilentDuring {
-      val parse = iMain.parse
-      parse(code) match {
-        case t: parse.Error => ("invalid", "")
-        case t: parse.Success =>
+    import scala.language.existentials
+    val result = iMain.withoutWarnings {
+      val parse = iMain.parse(code)
+      parse match {
+        case Left(Results.Error) => ("invalid", "")
+        case Right(_) => ("invalid", "")
+        case Left(Results.Success) =>
           val lines = code.split("\n", -1)
           val numLines = lines.length
           // for multiline code blocks, require an empty line before executing
@@ -332,7 +336,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
           } else {
             ("complete", "")
           }
-        case t: parse.Incomplete =>
+        case Left(Results.Incomplete) =>
           val lines = code.split("\n", -1)
           // For now lets just grab the indent of the current line, if none default to 2 spaces.
           ("incomplete", startingWhiteSpace(lines.last))
@@ -367,14 +371,14 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     s
   }
 
-  protected def interpretAddTask(code: String, silent: Boolean): Future[IR.Result] = {
+  protected def interpretAddTask(code: String, silent: Boolean): Future[Results.Result] = {
     if (iMain == null) throw new IllegalArgumentException("Interpreter not started yet!")
 
     taskManager.add {
       // Add a task using the given state of our streams
       StreamState.withStreams {
         if (silent) {
-          iMain.beSilentDuring {
+          iMain.withoutWarnings {
             iMain.interpret(code)
           }
         } else {
@@ -385,7 +389,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
   }
 
   private def retrieveLastException: Throwable = {
-    iMain.beSilentDuring {
+    iMain.withoutWarnings {
       iMain.interpret("_exceptionHack.lastException = lastException")
     }
     exceptionHack.lastException
