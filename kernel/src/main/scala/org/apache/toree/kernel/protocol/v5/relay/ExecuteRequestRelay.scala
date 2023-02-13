@@ -75,13 +75,13 @@ case class ExecuteRequestRelay(
     future: Future[Either[ExecuteOutput, ExecuteFailure]]
   ): Future[(ExecuteReply, ExecuteResult)] = future.map { value =>
     if (value.isLeft) {
-      val data = value.left.get
+      val data = value.swap.toOption.get
       (
         ExecuteReplyOk(1, Some(Payloads()), Some(UserExpressions())),
         ExecuteResult(1, data, Metadata())
       )
     } else {
-      failureMatch(value.right.get)
+      failureMatch(value.toOption.get)
     }
   }
 

@@ -41,7 +41,7 @@ object Dependencies {
   // use the same jackson version in test than the one provided at runtime by Spark 3.0.0
   val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.4" // Apache v2
 
-  val jeroMq = "org.zeromq" % "jeromq" % "0.5.3" // MPL v2
+  val jeroMq = "org.zeromq" % "jeromq" % "0.4.3" // MPL v2
 
   val joptSimple = "net.sf.jopt-simple" % "jopt-simple" % "5.0.4" // MIT
 

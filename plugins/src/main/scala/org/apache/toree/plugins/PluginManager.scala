@@ -90,13 +90,13 @@ class PluginManager(
    * @param paths The file paths from which to load new plugins
    * @return The collection of loaded plugins
    */
-  def loadPlugins(paths: File*): collection.Seq[Plugin] = {
+  def loadPlugins(paths: File*): Seq[Plugin] = {
     require(paths.nonEmpty, "Plugin paths cannot be empty!")
 
     // Search for plugins in our new paths, then add loaded plugins to list
     // NOTE: Iterator returned from plugin searcher, so avoid building a
     //       large collection by performing all tasks together
-    @volatile var newPlugins = collection.mutable.Seq[Plugin]()
+    @volatile var newPlugins = collection.Seq[Plugin]()
     pluginSearcher.search(paths: _*).foreach(ci => {
       // Add valid path to class loader
       pluginClassLoader.addURL(ci.location.toURI.toURL)
@@ -110,7 +110,7 @@ class PluginManager(
       // Load the plugin using the given name and class
       loadPlugin(ci.name, klass).foreach(newPlugins :+= _)
     })
-    newPlugins
+    newPlugins.toSeq
   }
 
   /**

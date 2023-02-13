@@ -60,7 +60,7 @@ class HeartbeatClient(
     case HeartbeatMessage =>
       import scala.concurrent.ExecutionContext.Implicits.global
       val id = java.util.UUID.randomUUID().toString
-      futureMap += (id -> sender)
+      futureMap += (id -> sender())
       logger.info(s"Heartbeat client send: $id")
       val future = socket ? ZMQMessage(ByteString(id.getBytes))
       future.onComplete {
