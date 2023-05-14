@@ -21,11 +21,13 @@ import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.UUID
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.collection.{immutable, mutable}
 
-class CommStorageSpec extends FunSpec with Matchers with BeforeAndAfter
+class CommStorageSpec extends AnyFunSpec with Matchers with BeforeAndAfterEach
   with MockitoSugar
 {
   private val TestTargetName = "some target"
@@ -37,7 +39,7 @@ class CommStorageSpec extends FunSpec with Matchers with BeforeAndAfter
   private var linkStorage: mutable.Map[String, immutable.IndexedSeq[UUID]] = _
   private var commStorage: CommStorage = _
 
-  before {
+  override def beforeEach(): Unit = {
     mockLinks = mock[immutable.IndexedSeq[v5.UUID]]
     mockCommCallbacks = mock[CommCallbacks]
     callbackStorage = new mutable.HashMap[String, CommCallbacks]()

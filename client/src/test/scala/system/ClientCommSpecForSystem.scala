@@ -26,9 +26,15 @@ import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage, SocketType
 import org.scalatest.concurrent.Eventually
 import org.scalatest.exceptions.TestFailedDueToTimeoutException
 import org.scalatest.time.{Milliseconds, Seconds, Span}
-import org.scalatest.{BeforeAndAfterAll, FunSpecLike, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 import test.utils.SparkClientDeployer
+
+import org.mockito.ArgumentMatchers.{anyString, eq => mockEq, _}
+import org.mockito.Mockito._
+import org.scalatestplus.mockito.MockitoSugar
 
 import scala.concurrent.duration._
 
@@ -39,10 +45,13 @@ import scala.concurrent.duration._
  *       kernel instance (to avoid death by slowness) and it is not guaranteed
  *       that previous tests will do proper cleanup!
  */
+trait TestKitLike extends TestKit {
+  def actorSystem = SparkClientDeployer.getClientActorSystem()
+}
+
 class ClientCommSpecForSystem
-  extends TestKit(SparkClientDeployer.getClientActorSystem)
-  with FunSpecLike with Matchers with BeforeAndAfterAll with Eventually
-{
+  extends AnyFunSpec with Matchers with BeforeAndAfterAll with Eventually with TestKitLike {
+
   private val MaxFishTime = 2.seconds
   implicit override val patienceConfig = PatienceConfig(
     timeout = scaled(Span(2, Seconds)),

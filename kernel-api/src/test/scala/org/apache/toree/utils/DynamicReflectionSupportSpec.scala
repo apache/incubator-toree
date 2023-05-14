@@ -19,13 +19,16 @@ package org.apache.toree.utils
 
 import java.io.OutputStream
 
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{GivenWhenThen, BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.GivenWhenThen
+import org.scalatest.BeforeAndAfter
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 class DynamicReflectionSupportSpec
-  extends FunSpec with Matchers with MockitoSugar {
+  extends AnyFunSpec with Matchers with MockitoSugar {
 
   describe("DynamicReflectionSupport") {
     describe("with a class instance") {

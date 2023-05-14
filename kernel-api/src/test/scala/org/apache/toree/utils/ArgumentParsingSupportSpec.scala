@@ -17,23 +17,25 @@
 
 package org.apache.toree.utils
 
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import joptsimple.{OptionSet, OptionSpec, OptionParser}
 import org.scalatestplus.mockito.MockitoSugar
 
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 
 import collection.JavaConverters._
 
-class ArgumentParsingSupportSpec extends FunSpec with Matchers
-  with BeforeAndAfter with MockitoSugar
+class ArgumentParsingSupportSpec extends AnyFunSpec with Matchers
+  with BeforeAndAfterEach with MockitoSugar
 {
   private var mockOptions: OptionSet = _
   private var mockParser: OptionParser = _
   private var argumentParsingInstance: ArgumentParsingSupport = _
 
-  before {
+  override def beforeEach(): Unit = {
     mockOptions = mock[OptionSet]
     mockParser = mock[OptionParser]
     doReturn(mockOptions).when(mockParser).parse(anyVararg[String]())

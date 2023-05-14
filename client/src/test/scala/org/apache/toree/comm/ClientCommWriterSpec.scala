@@ -25,10 +25,12 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
 import org.apache.toree.kernel.protocol.v5.content._
 import com.typesafe.config.ConfigFactory
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 
 import scala.concurrent.duration._
@@ -43,7 +45,7 @@ object ClientCommWriterSpec {
 class ClientCommWriterSpec extends TestKit(
   ActorSystem("ClientCommWriterSpec",
     ConfigFactory.parseString(ClientCommWriterSpec.config))
-) with FunSpecLike with Matchers with BeforeAndAfter with MockitoSugar
+) with AnyFunSpecLike with Matchers with BeforeAndAfterEach with MockitoSugar
 {
 
   private val commId = UUID.randomUUID().toString
@@ -84,7 +86,7 @@ class ClientCommWriterSpec extends TestKit(
     Json.parse(receivedMessage.contentString).as[T]
   }
 
-  before {
+  override def beforeEach(): Unit = {
     kernelMessageBuilder = spy(KMBuilder())
 
     // Construct path for kernel message relay

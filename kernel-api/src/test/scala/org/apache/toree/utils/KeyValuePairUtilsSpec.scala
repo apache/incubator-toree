@@ -18,9 +18,10 @@
 package org.apache.toree.utils
 
 import joptsimple.util.KeyValuePair
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class KeyValuePairUtilsSpec extends FunSpec with Matchers {
+class KeyValuePairUtilsSpec extends AnyFunSpec with Matchers {
   private object TestKeyValuePair {
     def apply(key: String, value: String) = KeyValuePair.valueOf(s"$key=$value")
   }

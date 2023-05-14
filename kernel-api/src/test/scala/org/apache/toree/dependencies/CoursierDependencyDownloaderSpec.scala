@@ -19,9 +19,11 @@ package org.apache.toree.dependencies
 import java.net.URL
 import java.nio.file.Files
 
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class CoursierDependencyDownloaderSpec extends FunSpec with Matchers
+class CoursierDependencyDownloaderSpec extends AnyFunSpec with Matchers
   with OneInstancePerTest
 {
   private val coursierDependencyDownloader = new CoursierDependencyDownloader

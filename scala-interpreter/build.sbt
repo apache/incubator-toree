@@ -19,3 +19,11 @@ import sbt.Tests.{Group, SubProcess}
 
 libraryDependencies ++= Dependencies.sparkAll.value
 libraryDependencies += "com.github.jupyter" % "jvm-repr" % "0.1.0"
+
+libraryDependencies ++= Seq(
+  Dependencies.scalaTest % "test",
+  Dependencies.mockitoSugar % "test",
+  Dependencies.mockitoScala % "test",
+  Dependencies.mockitoScalaScalaTest % "test"
+)
+

@@ -20,23 +20,25 @@ package org.apache.toree.utils
 import java.io.FileNotFoundException
 import java.net.URL
 
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import scala.io.Source
 import scala.tools.nsc.io.File
 
-class DownloadSupportSpec extends FunSpec with Matchers with BeforeAndAfter {
+class DownloadSupportSpec extends AnyFunSpec with Matchers with BeforeAndAfterEach {
   val downloadDestinationUrl = new URL("file:///tmp/testfile2.ext")
 
   val testFileContent = "This is a test"
   val testFileName = "/tmp/testfile.txt"
 
   //  Create a test file for downloading
-  before {
+  override def beforeEach(): Unit = {
     File(testFileName).writeAll(testFileContent)
   }
 
   //  Cleanup what we made
-  after {
+  override def afterEach(): Unit = {
     if (File(testFileName).exists) File(testFileName).delete()
     if (File(downloadDestinationUrl.getPath).exists) File(downloadDestinationUrl.getPath).delete()
   }

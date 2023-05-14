@@ -24,11 +24,12 @@ import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.magic.dependencies.{IncludeOutputStream, IncludeInterpreter}
 import org.apache.toree.magic.{CellMagic, LineMagic}
 import org.apache.spark.SparkContext
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 
 class TestLSMagic(sc: SparkContext, intp: Interpreter, os: OutputStream)
   extends LSMagic
@@ -39,7 +40,7 @@ class TestLSMagic(sc: SparkContext, intp: Interpreter, os: OutputStream)
     override val outputStream: OutputStream = os
   }
 
-class LSMagicSpec extends FunSpec with Matchers with MockitoSugar {
+class LSMagicSpec extends AnyFunSpec with Matchers with MockitoSugar {
   describe("LSMagic") {
 
     describe("#execute") {

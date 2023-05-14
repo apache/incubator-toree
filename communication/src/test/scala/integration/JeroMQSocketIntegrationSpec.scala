@@ -22,11 +22,13 @@ import java.util.concurrent.ConcurrentLinkedDeque
 import org.apache.toree.communication.SocketManager
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Span}
-import org.scalatest.{Matchers, OneInstancePerTest, FunSpec}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.zeromq.ZMQ.Context
 import org.zeromq.{ZMsg, ZMQ}
 
-class JeroMQSocketIntegrationSpec extends FunSpec
+class JeroMQSocketIntegrationSpec extends AnyFunSpec
   with OneInstancePerTest with Matchers with Eventually {
   implicit override val patienceConfig = PatienceConfig(
     timeout = scaled(Span(800, Milliseconds)),

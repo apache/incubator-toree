@@ -22,7 +22,7 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.util.ByteString
 import org.apache.toree.communication.ZMQMessage
 import com.typesafe.config.ConfigFactory
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{FunSpecLike, Matchers}

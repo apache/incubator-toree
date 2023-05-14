@@ -440,13 +440,6 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
   }
 }
 
-/**
-  * Due to a bug in the scala interpreter under scala 2.11 (SI-8935) with IMain.valueOfTerm we can hack around it by
-  * binding an instance of ExceptionHack into iMain and interpret the "_exceptionHack.lastException = lastException".
-  * This makes it possible to extract the exception.
-  *
-  * TODO: Revisit this once Scala 2.12 is released.
-  */
 class ExceptionHack {
   var lastException: Throwable = _
 }

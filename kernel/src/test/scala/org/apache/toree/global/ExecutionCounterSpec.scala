@@ -17,9 +17,10 @@
 
 package org.apache.toree.global
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class ExecutionCounterSpec extends FunSpec with Matchers {
+class ExecutionCounterSpec extends AnyFunSpec with Matchers {
   describe("ExecutionCounter") {
     describe("#increment( String )"){
       it("should increment value when key is not present"){

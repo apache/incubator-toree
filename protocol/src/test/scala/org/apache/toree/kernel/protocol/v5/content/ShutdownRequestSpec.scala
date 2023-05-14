@@ -17,11 +17,12 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
-class ShutdownRequestSpec extends FunSpec with Matchers {
+class ShutdownRequestSpec extends AnyFunSpec with Matchers {
   val shutdownRequestJson: JsValue = Json.parse("""
   {
     "restart": true
@@ -58,7 +59,7 @@ class ShutdownRequestSpec extends FunSpec with Matchers {
         val ShutdownRequestResults = shutdownRequestJson.validate[ShutdownRequest]
 
         ShutdownRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: scala.collection.Seq[(JsPath, scala.collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ShutdownRequest) => valid
         ) should be (shutdownRequest)
       }

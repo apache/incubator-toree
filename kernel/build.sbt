@@ -21,4 +21,9 @@ libraryDependencies += Dependencies.guava
 //
 // TEST DEPENDENCIES
 //
-libraryDependencies += Dependencies.akkaTestkit % "test"
+libraryDependencies ++= Seq(
+  Dependencies.akkaTestkit % "test",
+  Dependencies.mockitoSugar % "test",
+  Dependencies.mockitoScala % "test",
+  Dependencies.mockitoScalaScalaTest % "test"
+)

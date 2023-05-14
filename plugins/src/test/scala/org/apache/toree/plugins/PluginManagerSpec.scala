@@ -19,13 +19,15 @@ package org.apache.toree.plugins
 import java.io.File
 
 import org.apache.toree.plugins.dependencies.DependencyManager
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import test.utils._
 
-class PluginManagerSpec extends FunSpec with Matchers
+class PluginManagerSpec extends AnyFunSpec with Matchers
   with OneInstancePerTest with MockitoSugar
 {
   private val TestPluginName = "some.plugin.class.name"
@@ -50,7 +52,7 @@ class PluginManagerSpec extends FunSpec with Matchers
         )
 
         // When returning class information
-        doReturn(classInfoList.toIterator)
+        doReturn(classInfoList.iterator)
           .when(mockPluginSearcher).search(any[File])
 
         doReturn(classOf[TestPlugin])
@@ -78,7 +80,7 @@ class PluginManagerSpec extends FunSpec with Matchers
         )
 
         // When returning class information
-        doReturn(classInfoList.toIterator)
+        doReturn(classInfoList.iterator)
           .when(mockPluginSearcher).search(any[File])
 
         doReturn(classOf[TestPlugin])
@@ -169,7 +171,7 @@ class PluginManagerSpec extends FunSpec with Matchers
         )
 
         // When returning class information
-        doReturn(classInfoList.toIterator)
+        doReturn(classInfoList.iterator)
           .when(mockPluginSearcher).search(any[File])
 
         doReturn(classOf[TestPlugin])
@@ -192,7 +194,7 @@ class PluginManagerSpec extends FunSpec with Matchers
         )
 
         // When returning class information
-        doReturn(classInfoList.toIterator)
+        doReturn(classInfoList.iterator)
           .when(mockPluginSearcher).search(any[File])
 
         doReturn(classOf[TestPlugin])

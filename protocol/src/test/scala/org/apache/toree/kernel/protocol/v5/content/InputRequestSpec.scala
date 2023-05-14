@@ -17,11 +17,12 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
-class InputRequestSpec extends FunSpec with Matchers {
+class InputRequestSpec extends AnyFunSpec with Matchers {
   val inputRequestJson: JsValue = Json.parse("""
   {
     "prompt": "<STRING>",
@@ -59,7 +60,7 @@ class InputRequestSpec extends FunSpec with Matchers {
         val CompleteRequestResults = inputRequestJson.validate[InputRequest]
 
         CompleteRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: scala.collection.Seq[(JsPath, scala.collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: InputRequest) => valid
         ) should be (inputRequest)
       }

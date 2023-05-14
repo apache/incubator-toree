@@ -25,7 +25,7 @@ import org.apache.toree.interpreter.Results.Result
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.utils.TaskManager
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
@@ -34,8 +34,8 @@ import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.{IMain, IR, JPrintWriter}
 import scala.tools.nsc.util.ClassPath
 
-class ScalaInterpreterSpec extends FunSpec
-  with Matchers with MockitoSugar with BeforeAndAfter
+class ScalaInterpreterSpec extends AnyFunSpec
+  with Matchers with MockitoSugar with BeforeAndAfterEach
 {
   private var interpreter: ScalaInterpreter               = _
   private var interpreterNoPrintStreams: ScalaInterpreter = _

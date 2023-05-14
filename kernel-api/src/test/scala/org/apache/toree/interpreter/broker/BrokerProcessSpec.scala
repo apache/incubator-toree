@@ -22,12 +22,15 @@ import org.apache.commons.exec._
 import org.apache.commons.io.FilenameUtils
 import org.mockito.ArgumentCaptor
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+
 
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 
-class BrokerProcessSpec extends FunSpec with Matchers
+class BrokerProcessSpec extends AnyFunSpec with Matchers
   with OneInstancePerTest with MockitoSugar
 {
   private val TestProcessName = "test_process"

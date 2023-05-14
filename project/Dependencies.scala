@@ -45,7 +45,12 @@ object Dependencies {
 
   val joptSimple = "net.sf.jopt-simple" % "jopt-simple" % "5.0.4" // MIT
 
-  val mockito = "org.mockito" % "mockito-all" % "1.10.19" // MIT
+  val mockito = "org.mockito" % "mockito-core" % "4.6.1" // MIT
+
+  val mockitoScala = "org.mockito" % "mockito-scala_2.13" % "1.17.12" // MIT
+  val mockitoSugar = "org.scalatestplus" % "scalatestplus-mockito_2.13" % "1.0.0-M2" // MIT
+  val mockitoScalaScalaTest = "org.mockito" % "mockito-scala-scalatest_2.13" % "1.17.12" // MIT
+
 
   val playJson = "com.typesafe.play" %% "play-json" % "2.7.4" // Apache v2
 

@@ -28,7 +28,9 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.scalatest.concurrent.Eventually
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.time.{Milliseconds, Span}
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfter
 import test.utils.MaxAkkaTestTimeout
 import org.mockito.Mockito._
 
@@ -37,7 +39,7 @@ import collection.JavaConverters._
 class InputRequestReplyHandlerSpec
   extends TestKit(ActorSystem("InputRequestReplyHandlerSystem", None, Some(Main.getClass.getClassLoader)))
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter with Eventually
+  with BeforeAndAfterEach with Eventually
 {
   implicit override val patienceConfig = PatienceConfig(
     timeout = scaled(Span(200, Milliseconds)),

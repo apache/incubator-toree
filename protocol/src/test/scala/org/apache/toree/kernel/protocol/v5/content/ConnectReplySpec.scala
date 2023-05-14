@@ -17,11 +17,12 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json.{JsPath, JsValue, Json}
 
-class ConnectReplySpec extends FunSpec with Matchers {
+class ConnectReplySpec extends AnyFunSpec with Matchers {
 
 
   val connectReplyJson: JsValue = Json.parse("""
@@ -61,7 +62,7 @@ class ConnectReplySpec extends FunSpec with Matchers {
         val ConnectReplyResults = connectReplyJson.validate[ConnectReply]
 
         ConnectReplyResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: scala.collection.Seq[(JsPath, scala.collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ConnectReply) => valid
         ) should be (connectReply)
       }

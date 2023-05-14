@@ -17,11 +17,12 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
-class KernelInfoRequestSpec extends FunSpec with Matchers {
+class KernelInfoRequestSpec extends AnyFunSpec with Matchers {
   val kernelInfoRequestJson: JsValue = Json.parse("""
   {}
   """)
@@ -55,7 +56,7 @@ class KernelInfoRequestSpec extends FunSpec with Matchers {
         val KernelInfoRequestResults = kernelInfoRequestJson.validate[KernelInfoRequest]
 
         KernelInfoRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: scala.collection.Seq[(JsPath, scala.collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: KernelInfoRequest) => valid
         ) should be (kernelInfoRequest)
       }

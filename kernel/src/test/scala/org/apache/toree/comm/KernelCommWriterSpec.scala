@@ -27,9 +27,10 @@ import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestProbe, TestKit}
 import com.typesafe.config.ConfigFactory
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 
 object KernelCommWriterSpec {
   val config ="""
@@ -43,7 +44,7 @@ class KernelCommWriterSpec extends TestKit(
     ConfigFactory.parseString(KernelCommWriterSpec.config),
     org.apache.toree.Main.getClass.getClassLoader
   )
-) with FunSpecLike with Matchers with BeforeAndAfter with MockitoSugar
+) with FunSpecLike with Matchers with BeforeAndAfterEach with MockitoSugar
 {
 
   private val commId = UUID.randomUUID().toString

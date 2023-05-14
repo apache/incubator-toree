@@ -16,9 +16,11 @@
  */
 package org.apache.toree.plugins.dependencies
 
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{OneInstancePerTest}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class DependencyManagerSpec extends FunSpec with Matchers with OneInstancePerTest {
+class DependencyManagerSpec extends AnyFunSpec with Matchers with OneInstancePerTest {
   private val dependencyManager = new DependencyManager
 
   describe("DependencyManager") {

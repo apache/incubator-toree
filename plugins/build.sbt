@@ -25,4 +25,9 @@ libraryDependencies ++= Seq(
 )
 
 // Test dependencies
-libraryDependencies += Dependencies.scalaCompiler.value % "test"
+libraryDependencies ++= Seq(
+  Dependencies.scalaCompiler.value % "test",
+  Dependencies.mockitoSugar % "test",
+  Dependencies.mockitoScala % "test",
+  Dependencies.mockitoScalaScalaTest % "test"
+)

@@ -29,9 +29,10 @@ import org.apache.toree.kernel.protocol.v5.{KernelMessage, SystemActorType}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import com.typesafe.config.ConfigFactory
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{Matchers, FunSpecLike}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import test.utils.MaxAkkaTestTimeout
 
 object StdinSpec {

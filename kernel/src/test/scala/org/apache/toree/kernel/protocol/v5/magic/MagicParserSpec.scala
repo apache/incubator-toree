@@ -19,11 +19,12 @@ package org.apache.toree.kernel.protocol.v5.magic
 
 import org.apache.toree.magic.{CellMagic, Magic, MagicManager}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 
-class MagicParserSpec extends FunSpec with Matchers with MockitoSugar {
+class MagicParserSpec extends AnyFunSpec with Matchers with MockitoSugar {
   describe("#parse") {
     it("should call parseCell if the code is a cell magic invocation") {
       val codeBlob =

@@ -32,12 +32,14 @@ import org.apache.toree.kernel.protocol.v5.client.execution.{DeferredExecution, 
 import org.apache.toree.kernel.protocol.v5.client.{ActorLoader, Utilities}
 import org.apache.toree.kernel.protocol.v5.content.{CommClose, CommMsg, CommOpen, StreamContent}
 import com.typesafe.config.ConfigFactory
-import org.mockito.Matchers.{eq => mockEq, _}
+import org.mockito.ArgumentMatchers.{eq => mockEq, _}
 import org.mockito.Mockito._
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.time.{Milliseconds, Span}
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.Json
 
 import scala.concurrent.duration._
@@ -53,8 +55,8 @@ object IOPubClientSpec {
 
 class IOPubClientSpec extends TestKit(ActorSystem(
   "IOPubClientSpecSystem", ConfigFactory.parseString(IOPubClientSpec.config)
-)) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with ScalaFutures with BeforeAndAfter with Eventually
+)) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with ScalaFutures with BeforeAndAfterEach with Eventually
 {
   private val TestTimeout = Timeout(10.seconds)
   implicit override val patienceConfig = PatienceConfig(
@@ -77,7 +79,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
   private val TestTargetName = "some target"
   private val TestCommId = UUID.randomUUID().toString
 
-  before {
+  override def beforeEach(): Unit = {
     kmBuilder = KMBuilder()
     mockCommCallbacks = mock[CommCallbacks]
     mockCommRegistrar = mock[CommRegistrar]

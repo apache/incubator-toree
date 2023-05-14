@@ -21,7 +21,12 @@
 libraryDependencies ++= Seq(
   Dependencies.playJson excludeAll ExclusionRule(organization = "com.fasterxml.jackson.core"),
   Dependencies.jacksonDatabind,
-  Dependencies.slf4jApi
+  Dependencies.slf4jApi,
+  Dependencies.scalaTest % "test",
+  Dependencies.akkaTestkit % "test",
+  Dependencies.mockitoSugar % "test",
+  Dependencies.mockitoScala % "test",
+  Dependencies.mockitoScalaScalaTest % "test"
 )
 
 enablePlugins(BuildInfoPlugin)

@@ -20,7 +20,8 @@ package org.apache.toree.communication.utils
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 
 case class OrderedType()
 case class NotOrderedType()
@@ -35,17 +36,17 @@ class TestOrderedSupport extends OrderedSupport {
     case OrderedType() =>
       startProcessing()
       receivedCounter = receivedCounter + 1
-      sender ! ReceiveMessageCount(receivedCounter)
+      sender() ! ReceiveMessageCount(receivedCounter)
     case NotOrderedType() =>
       receivedCounter = receivedCounter + 1
-      sender ! ReceiveMessageCount(receivedCounter)
+      sender() ! ReceiveMessageCount(receivedCounter)
     case FinishProcessingMessage() =>
       finishedProcessing()
   }
 }
 
 class OrderedSupportSpec extends TestKit(ActorSystem("OrderedSupportSystem"))
-  with ImplicitSender with Matchers with FunSpecLike
+  with ImplicitSender with Matchers with AnyFunSpecLike
   with MockitoSugar  {
 
   describe("OrderedSupport"){

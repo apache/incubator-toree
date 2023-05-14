@@ -17,9 +17,10 @@
 
 package org.apache.toree.kernel.protocol.v5.kernel.socket
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class SocketFactorySpec extends FunSpec with Matchers {
+class SocketFactorySpec extends AnyFunSpec with Matchers {
   describe("SocketFactory"){
     describe("HeartbeatConnection"){
     	it("should be composed of transport ip and heartbeat port"){

@@ -25,10 +25,11 @@ import org.apache.toree.kernel.protocol.v5.content.CommInfoReply
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.{Header, KernelMessage, Metadata, SystemActorType}
 import org.mockito.AdditionalMatchers.{not => mockNot}
-import org.mockito.Matchers.{eq => mockEq}
+import org.mockito.ArgumentMatchers.{eq => mockEq, _}
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 
 import scala.concurrent.duration._
