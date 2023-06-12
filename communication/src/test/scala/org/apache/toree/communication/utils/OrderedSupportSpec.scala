@@ -56,9 +56,9 @@ class OrderedSupportSpec extends TestKit(ActorSystem("OrderedSupportSystem"))
 
         // Send a message having a type in orderedTypes
         // Starts processing and is handled with receive()
-        testOrderedSupport ! new OrderedType
+        testOrderedSupport ! new OrderedType()
         // This message should be handled with waiting()
-        testOrderedSupport ! new OrderedType
+        testOrderedSupport ! new OrderedType()
 
         // Verify receive was not called for the second OrderedType
         expectMsg(ReceiveMessageCount(1))
@@ -69,10 +69,10 @@ class OrderedSupportSpec extends TestKit(ActorSystem("OrderedSupportSystem"))
         val testOrderedSupport = system.actorOf(Props[TestOrderedSupport])
 
         // Send a message that starts the processing
-        testOrderedSupport ! new OrderedType
+        testOrderedSupport ! new OrderedType()
 
         // Send a message having a type not in orderedTypes
-        testOrderedSupport ! new NotOrderedType
+        testOrderedSupport ! new NotOrderedType()
 
         // Verify receive did get called for NotOrderedType
         expectMsg(ReceiveMessageCount(1))
@@ -84,13 +84,13 @@ class OrderedSupportSpec extends TestKit(ActorSystem("OrderedSupportSystem"))
         val testOrderedSupport = system.actorOf(Props[TestOrderedSupport])
         
         //  Switch actor to waiting mode
-        testOrderedSupport ! new OrderedType
+        testOrderedSupport ! new OrderedType()
 
         //  Call finishedProcessing
-        testOrderedSupport ! new FinishProcessingMessage
+        testOrderedSupport ! new FinishProcessingMessage()
 
         //  Sending something that would match in receive, and is in orderedTypes
-        testOrderedSupport ! new OrderedType
+        testOrderedSupport ! new OrderedType()
 
         expectMsg(ReceiveMessageCount(1))
         expectMsg(ReceiveMessageCount(2))

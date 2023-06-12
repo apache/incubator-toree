@@ -91,7 +91,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
     mockClientSocketFactory = mock[SocketFactory]
 
     //  Stub the return value for the socket factory
-    when(mockClientSocketFactory.IOPubClient(anyObject(), any[ActorRef]))
+    when(mockClientSocketFactory.IOPubClient(any, any[ActorRef]))
       .thenReturn(clientSocketProbe.ref)
 
     //  Construct the object we will test against

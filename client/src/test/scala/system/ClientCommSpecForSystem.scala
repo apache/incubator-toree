@@ -46,7 +46,7 @@ import scala.concurrent.duration._
  *       that previous tests will do proper cleanup!
  */
 trait TestKitLike extends TestKit {
-  def actorSystem = SparkClientDeployer.getClientActorSystem()
+  def actorSystem = SparkClientDeployer.getClientActorSystem
 }
 
 class ClientCommSpecForSystem

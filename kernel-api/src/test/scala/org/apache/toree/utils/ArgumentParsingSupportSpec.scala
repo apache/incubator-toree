@@ -38,7 +38,7 @@ class ArgumentParsingSupportSpec extends AnyFunSpec with Matchers
   override def beforeEach(): Unit = {
     mockOptions = mock[OptionSet]
     mockParser = mock[OptionParser]
-    doReturn(mockOptions).when(mockParser).parse(anyVararg[String]())
+    doReturn(mockOptions).when(mockParser).parse(anyVararg[String](): _*)
 
     argumentParsingInstance = new Object() with ArgumentParsingSupport {
       override protected lazy val parser: OptionParser = mockParser
