@@ -20,7 +20,8 @@ package org.apache.toree.kernel.protocol.v5.client.execution
 import org.apache.toree.kernel.protocol.v5.content.{StreamContent, ExecuteResult}
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5._
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.concurrent.ScalaFutures
 
 import scala.concurrent.Promise
@@ -64,7 +65,7 @@ object DeferredExecutionTest {
 class ExecuteResultPromise {}
 class ExecuteReplyPromise {}
 
-class DeferredExecutionTest extends FunSpec with ScalaFutures with Matchers {
+class DeferredExecutionTest extends AnyFunSpec with ScalaFutures with Matchers {
   import DeferredExecutionTest._
   describe("DeferredExecution") {
     describe("onResult( callback )"){

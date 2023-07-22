@@ -22,10 +22,12 @@ import java.util.UUID
 import org.apache.toree.comm.CommCallbacks.{CloseCallback, MsgCallback, OpenCallback}
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar
-  with BeforeAndAfter
+class CommRegistrarSpec extends AnyFunSpec with Matchers with MockitoSugar
+  with BeforeAndAfterEach
 {
   private val TestTargetName = "some target name"
   private val TestCommId = UUID.randomUUID().toString
@@ -36,7 +38,7 @@ class CommRegistrarSpec extends FunSpec with Matchers with MockitoSugar
   private var commStorage: CommStorage = _
   private var commRegistrar: CommRegistrar = _
 
-  before {
+  override def beforeEach(): Unit = {
     commStorage = new CommStorage()
     commRegistrar = new CommRegistrar(commStorage)
   }

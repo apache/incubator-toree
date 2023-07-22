@@ -21,14 +21,16 @@ import org.apache.toree.interpreter._
 import org.apache.toree.kernel.protocol.v5.MIMEType
 import org.apache.toree.magic.dependencies.IncludeKernelInterpreter
 import org.apache.toree.utils.DataFrameConverter
-import org.mockito.Matchers.{anyString, eq => mockEq, _}
+import org.mockito.ArgumentMatchers.{anyString, eq => mockEq, _}
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.BeforeAndAfter
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.util.Success
 
-class DataFrameSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfter {
+class DataFrameSpec extends AnyFunSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
 
   def createMocks = {
     val interpreter = mock[Interpreter]

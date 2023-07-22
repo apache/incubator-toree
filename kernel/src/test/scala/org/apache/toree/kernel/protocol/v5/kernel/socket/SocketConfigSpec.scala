@@ -18,12 +18,13 @@
 package org.apache.toree.kernel.protocol.v5.kernel.socket
 
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.slf4j.LoggerFactory
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json.{JsPath, JsValue, Json}
 
-class SocketConfigSpec extends FunSpec with Matchers {
+class SocketConfigSpec extends AnyFunSpec with Matchers {
   val logger = LoggerFactory.getLogger("jt4")
   //logger.error("WOOT!")
 

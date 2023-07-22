@@ -22,7 +22,9 @@ import akka.testkit.{ImplicitSender, TestKit}
 import org.apache.toree.communication.security.SignatureManagerActor
 import org.apache.toree.kernel.protocol.v5.{KernelMessage, _}
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.Json
 
 import scala.concurrent.duration._
@@ -39,7 +41,7 @@ class SignatureManagerActorSpecForIntegration extends TestKit(
     "SignatureManagerActorSpec",
     ConfigFactory.parseString(SignatureManagerActorSpecForIntegration.config)
   )
-) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
+) with ImplicitSender with AnyFunSpecLike with Matchers with BeforeAndAfterEach
 {
   private val IncomingMessageType = "d" // Needed for valid signature
   
@@ -66,7 +68,7 @@ class SignatureManagerActorSpecForIntegration extends TestKit(
   private var signatureManager: ActorRef = _
   private var signatureManagerWithNoIncoming: ActorRef = _
 
-  before {
+  override def beforeEach(): Unit = {
     signatureManager =
       system.actorOf(Props(
         classOf[SignatureManagerActor], sigKey
@@ -78,7 +80,7 @@ class SignatureManagerActorSpecForIntegration extends TestKit(
       ))
   }
 
-  after {
+  override def afterEach(): Unit = {
     signatureManager = null
   }
 

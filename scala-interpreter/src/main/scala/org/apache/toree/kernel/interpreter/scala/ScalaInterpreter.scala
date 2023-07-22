@@ -31,11 +31,12 @@ import org.slf4j.LoggerFactory
 import org.apache.toree.kernel.BuildInfo
 import org.apache.toree.kernel.protocol.v5.MIMEType
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.{Await, Future}
 import scala.language.reflectiveCalls
 import scala.tools.nsc.Settings
-import scala.tools.nsc.interpreter.{IR, OutputStream}
+import scala.tools.nsc.interpreter.Results
+import java.io.OutputStream
 import scala.tools.nsc.util.ClassPath
 import scala.util.matching.Regex
 import scala.concurrent.duration.Duration
@@ -131,7 +132,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    }
 
    protected def interpreterArgs(kernel: KernelLike): List[String] = {
-     import scala.collection.JavaConverters._
+     import scala.jdk.CollectionConverters._
      if (kernel == null || kernel.config == null) {
        List()
      }
@@ -188,7 +189,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    }
 
    override def interpret(code: String, silent: Boolean = false, output: Option[OutputStream]):
-    (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
+    (org.apache.toree.interpreter.Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
      interpretBlock(code, silent)
    }
 
@@ -277,7 +278,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
   }
 
   protected def interpretBlock(code: String, silent: Boolean = false):
-    (Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
+    (org.apache.toree.interpreter.Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
 
      logger.trace(s"Interpreting line: $code")
 
@@ -294,23 +295,23 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      Await.result(futureResultAndExecuteInfo, Duration.Inf)
    }
 
-   protected def interpretMapToCustomResult(future: Future[IR.Result]): Future[Results.Result] = {
+   protected def interpretMapToCustomResult(future: Future[Results.Result]): Future[org.apache.toree.interpreter.Results.Result] = {
      import scala.concurrent.ExecutionContext.Implicits.global
      future map {
-       case IR.Success             => Results.Success
-       case IR.Error               => Results.Error
-       case IR.Incomplete          => Results.Incomplete
+       case Results.Success             => org.apache.toree.interpreter.Results.Success
+       case Results.Error               => org.apache.toree.interpreter.Results.Error
+       case Results.Incomplete          => org.apache.toree.interpreter.Results.Incomplete
      } recover {
-       case ex: ExecutionException => Results.Aborted
+       case ex: ExecutionException => org.apache.toree.interpreter.Results.Aborted
      }
    }
 
-   protected def interpretMapToResultAndOutput(future: Future[Results.Result]):
-      Future[(Results.Result, Either[Map[String, String], ExecuteError])] = {
+   protected def interpretMapToResultAndOutput(future: Future[org.apache.toree.interpreter.Results.Result]):
+      Future[(org.apache.toree.interpreter.Results.Result, Either[Map[String, String], ExecuteError])] = {
      import scala.concurrent.ExecutionContext.Implicits.global
 
      future map {
-       case result @ (Results.Success | Results.Incomplete) =>
+       case result @ (org.apache.toree.interpreter.Results.Success | org.apache.toree.interpreter.Results.Incomplete) =>
          val lastOutput = lastResultOut.toString("UTF-8").trim
          lastResultOut.reset()
 
@@ -320,17 +321,17 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
          val output = obj.map(Displayers.display(_).asScala.toMap).getOrElse(Map.empty)
          (result, Left(output))
 
-       case Results.Error =>
+       case org.apache.toree.interpreter.Results.Error =>
          val lastOutput = lastResultOut.toString("UTF-8").trim
          lastResultOut.reset()
 
          val (obj, defStr, text) = prepareResult(lastOutput)
          defStr.foreach(kernel.display.content(MIMEType.PlainText, _))
          val output = interpretConstructExecuteError(text.get)
-         (Results.Error, Right(output))
+         (org.apache.toree.interpreter.Results.Error, Right(output))
 
-       case Results.Aborted =>
-         (Results.Aborted, Right(null))
+       case org.apache.toree.interpreter.Results.Aborted =>
+         (org.apache.toree.interpreter.Results.Aborted, Right(null))
      }
    }
 

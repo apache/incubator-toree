@@ -21,9 +21,10 @@ package org.apache.toree.comm
 
 import org.apache.toree.comm.CommCallbacks._
 import org.apache.toree.kernel.protocol.v5._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class CommCallbacksSpec extends FunSpec with Matchers {
+class CommCallbacksSpec extends AnyFunSpec with Matchers {
 
   private val testOpenCallback: OpenCallback = (_, _, _, _) => {}
   private val testMsgCallback: MsgCallback = (_, _, _) => {}

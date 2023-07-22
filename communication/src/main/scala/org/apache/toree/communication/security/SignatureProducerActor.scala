@@ -38,7 +38,7 @@ class SignatureProducerActor(
         Json.stringify(Json.toJson(message.metadata)),
         message.contentString
       )
-      sender ! signature
+      sender() ! signature
     }
   }
 

@@ -27,12 +27,13 @@ import com.typesafe.config.ConfigFactory
 import org.apache.spark.SparkContext
 import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.plugins.PluginManager
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 
-class AddJarSpec extends FunSpec with Matchers with MockitoSugar {
+class AddJarSpec extends AnyFunSpec with Matchers with MockitoSugar {
   describe("AddJar"){
     describe("#execute") {
       it("should call addJar on the provided kernel") {

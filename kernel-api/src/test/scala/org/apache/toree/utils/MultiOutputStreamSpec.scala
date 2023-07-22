@@ -20,12 +20,14 @@ package org.apache.toree.utils
 import java.io.OutputStream
 
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
-import org.mockito.Matchers._
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 
 class MultiOutputStreamSpec
-  extends FunSpec with Matchers with MockitoSugar with BeforeAndAfter {
+  extends AnyFunSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
 
   describe("MultiOutputStream") {
     val listOfMockOutputStreams = List(mock[OutputStream], mock[OutputStream])

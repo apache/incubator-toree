@@ -20,13 +20,15 @@ package system
 import org.apache.toree.kernel.protocol.v5.client.SparkKernelClient
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Seconds, Milliseconds, Span}
-import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import test.utils.root.{SparkKernelClientDeployer, SparkKernelDeployer}
 
 /**
  * Tests all stdin-related functionality between the client and kernel.
  */
-class StdinForSystemSpec extends FunSpec with Matchers with BeforeAndAfterAll
+class StdinForSystemSpec extends AnyFunSpec with Matchers with BeforeAndAfterAll
   with Eventually
 {
   implicit override val patienceConfig = PatienceConfig(

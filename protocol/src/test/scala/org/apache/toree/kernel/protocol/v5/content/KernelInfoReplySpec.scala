@@ -18,11 +18,12 @@
 package org.apache.toree.kernel.protocol.v5.content
 
 import org.apache.toree.kernel.protocol.v5.LanguageInfo
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
-class KernelInfoReplySpec extends FunSpec with Matchers {
+class KernelInfoReplySpec extends AnyFunSpec with Matchers {
   val kernelInfoReplyJson: JsValue = Json.parse("""
   {
     "protocol_version": "x.y.z",
@@ -63,7 +64,7 @@ class KernelInfoReplySpec extends FunSpec with Matchers {
         val kernelInfoReplyResults = kernelInfoReplyJson.validate[KernelInfoReply]
 
         kernelInfoReplyResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: scala.collection.Seq[(JsPath, scala.collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: KernelInfoReply) => valid
         ) should be (kernelInfoReply)
       }

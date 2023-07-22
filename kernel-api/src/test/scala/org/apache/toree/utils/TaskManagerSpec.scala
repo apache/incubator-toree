@@ -22,15 +22,17 @@ import java.util.concurrent.{ExecutionException, RejectedExecutionException}
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.concurrent.{Eventually, ScalaFutures, TimeLimits}
 import org.scalatest.time.{Milliseconds, Seconds, Span}
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import test.utils.UncaughtExceptionSuppression
 
 import scala.concurrent.Future
 import scala.runtime.BoxedUnit
 
-class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
-  with BeforeAndAfter with ScalaFutures with UncaughtExceptionSuppression
+class TaskManagerSpec extends AnyFunSpec with Matchers with MockitoSugar
+  with BeforeAndAfterEach with ScalaFutures with UncaughtExceptionSuppression
   with Eventually with TimeLimits
 {
   implicit override val patienceConfig = PatienceConfig(
@@ -40,11 +42,11 @@ class TaskManagerSpec extends FunSpec with Matchers with MockitoSugar
   private val MaxTestTasks = 50000
   private var taskManager: TaskManager = _
 
-  before {
+  override def beforeEach(): Unit = {
     taskManager = new TaskManager
   }
 
-  after {
+  override def afterEach(): Unit = {
     taskManager = null
   }
 

@@ -18,9 +18,11 @@ package org.apache.toree.interpreter.broker
 
 import org.apache.toree.kernel.api.KernelLike
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class BrokerBridgeSpec extends FunSpec with Matchers with OneInstancePerTest
+class BrokerBridgeSpec extends AnyFunSpec with Matchers with OneInstancePerTest
   with MockitoSugar
 {
   private val mockBrokerState = mock[BrokerState]

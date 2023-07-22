@@ -31,7 +31,9 @@ import org.apache.toree.plugins.PluginManager
 import org.apache.toree.plugins.dependencies.DependencyManager
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfter
 import test.utils.MaxAkkaTestTimeout
 import scala.concurrent.duration.Duration
 
@@ -49,7 +51,7 @@ class ExecuteRequestRelaySpec extends TestKit(
     org.apache.toree.Main.getClass.getClassLoader
   )
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+  with BeforeAndAfterEach
 {
   var mockActorLoader: ActorLoader      = _
   var interpreterActorProbe: TestProbe  = _

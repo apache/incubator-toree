@@ -17,9 +17,10 @@
 
 package org.apache.toree.kernel.protocol.v5
 
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class HeaderBuilderSpec extends FunSpec with Matchers {
+class HeaderBuilderSpec extends AnyFunSpec with Matchers {
   describe("HeaderBuilder") {
     describe("#create") {
       it("should set the msg_id field to a unique ID if none is provided") {

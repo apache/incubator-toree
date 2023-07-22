@@ -31,7 +31,7 @@ import test.utils._
 
 class KernelInputStreamSpec
   extends TestKit(ActorSystem("KernelInputStreamActorSystem", None, Some(Main.getClass.getClassLoader)))
-  with FunSpecLike with Matchers with GivenWhenThen with BeforeAndAfter
+  with FunSpecLike with Matchers with GivenWhenThen with BeforeAndAfterEach
   with MockitoSugar
 {
 

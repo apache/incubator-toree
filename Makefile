@@ -30,8 +30,8 @@ IS_SNAPSHOT?=true
 SNAPSHOT:=-SNAPSHOT
 endif
 
-APACHE_SPARK_VERSION?=3.0.3
-SCALA_VERSION?=2.12
+APACHE_SPARK_VERSION?=3.3.1
+SCALA_VERSION?=2.13
 IMAGE?=jupyter/all-spark-notebook:latest
 EXAMPLE_IMAGE?=apache/toree-examples
 TOREE_DEV_IMAGE?=apache/toree-dev

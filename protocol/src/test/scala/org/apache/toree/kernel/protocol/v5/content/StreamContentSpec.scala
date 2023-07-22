@@ -17,11 +17,12 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
-class StreamContentSpec extends FunSpec with Matchers {
+class StreamContentSpec extends AnyFunSpec with Matchers {
   val streamJson: JsValue = Json.parse("""
   {
     "text": "<STRING>",
@@ -47,7 +48,7 @@ class StreamContentSpec extends FunSpec with Matchers {
       it("should also work with asOpt") {
         // This is safer, but we lose the error information as it returns
         // None if the conversion fails
-        val newCompleteRequest = streamJson.asOpt[StreamContent]
+        val newCompleteRequest = streamJson.validate[StreamContent]
 
         newCompleteRequest.get should be (stream)
       }
@@ -57,7 +58,7 @@ class StreamContentSpec extends FunSpec with Matchers {
         val CompleteRequestResults = streamJson.validate[StreamContent]
 
         CompleteRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: scala.collection.Seq[(JsPath, scala.collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: StreamContent) => valid
         ) should be (stream)
       }
@@ -68,4 +69,3 @@ class StreamContentSpec extends FunSpec with Matchers {
     }
   }
 }
-

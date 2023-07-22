@@ -18,10 +18,11 @@
 package org.apache.toree.kernel.protocol.v5
 
 import org.apache.toree.kernel.protocol.v5.content.{CommOpen, StreamContent}
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json._
 
-class KMBuilderSpec extends FunSpec with Matchers {
+class KMBuilderSpec extends AnyFunSpec with Matchers {
   describe("KMBuilder") {
     val emptyKM = KernelMessage(
       ids          = Seq(),

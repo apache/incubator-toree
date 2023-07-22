@@ -21,5 +21,9 @@ scalacOptions += "-language:reflectiveCalls"
 libraryDependencies ++= Seq(
   Dependencies.akkaActor,
   Dependencies.akkaSlf4j,
-  Dependencies.akkaTestkit % "test"
+  Dependencies.scalaTest % "test",
+  Dependencies.akkaTestkit % "test",
+  Dependencies.mockitoSugar % "test",
+  Dependencies.mockitoScala % "test",
+  Dependencies.mockitoScalaScalaTest % "test"
 )

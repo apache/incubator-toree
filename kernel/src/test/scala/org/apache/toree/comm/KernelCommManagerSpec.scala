@@ -23,10 +23,12 @@ import org.apache.toree.kernel.protocol.v5.content.CommContent
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
-import org.mockito.Matchers._
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.mockito.ArgumentMatchers._
+import org.scalatest.BeforeAndAfter
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class KernelCommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
+class KernelCommManagerSpec extends AnyFunSpec with Matchers with BeforeAndAfterEach
   with MockitoSugar
 {
   private val TestTargetName = "some target"

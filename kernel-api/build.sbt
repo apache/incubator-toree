@@ -32,7 +32,12 @@ ivyConfigurations += Configurations.ScalaTool
 libraryDependencies ++= Seq(
   Dependencies.scalaLibrary.value,
   Dependencies.scalaCompiler.value % "scala-tool",
-  Dependencies.scalaReflect.value
+  Dependencies.scalaReflect.value,
+  Dependencies.scalaTest % "test",
+  Dependencies.akkaTestkit % "test",
+  Dependencies.mockitoSugar % "test",
+  Dependencies.mockitoScala % "test",
+  Dependencies.mockitoScalaScalaTest % "test"
 )
 
 //

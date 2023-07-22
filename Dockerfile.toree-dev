@@ -23,25 +23,27 @@ FROM jupyter/all-spark-notebook
 USER root
 
 # Spark dependencies
-ENV APACHE_SPARK_VERSION 3.0.3
+ENV APACHE_SPARK_VERSION 3.3.1 \
+HADOOP_VERSION=3 \
+SCALA_VERSION=2.13
 
 RUN apt-get -y update && \
-    apt-get install -y --no-install-recommends openjdk-8-jdk ca-certificates-java  && \
+    apt-get install -y --no-install-recommends openjdk-11-jdk ca-certificates-java  && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     update-ca-certificates -f && \
-    update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+    update-alternatives --set java /usr/lib/jvm/java-11-openjdk-amd64/jre/bin/java
 
 # Installing Spark3
 RUN cd /tmp && \
-    wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz && \
-    tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz -C /usr/local && \
-    rm spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz
+    wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${SCALA_VERSION}.tgz && \
+    tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${SCALA_VERSION}.tgz -C /usr/local && \
+    rm spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${SCALA_VERSION}.tgz
 
 # Overwrite symlink
 RUN cd /usr/local && \
     rm spark && \
-    ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7 spark
+    ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${SCALA_VERSION} spark
 
 # Remove other scala kernels
 RUN cd /opt/conda/share/jupyter/kernels/ && \

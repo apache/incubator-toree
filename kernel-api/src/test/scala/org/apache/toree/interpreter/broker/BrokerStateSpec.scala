@@ -16,11 +16,13 @@
  */
 package org.apache.toree.interpreter.broker
 
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.util.Success
 
-class BrokerStateSpec extends FunSpec with Matchers with OneInstancePerTest {
+class BrokerStateSpec extends AnyFunSpec with Matchers with OneInstancePerTest {
 
   private val TestMaxQueuedCode = 5
   private val brokerState = new BrokerState(TestMaxQueuedCode)

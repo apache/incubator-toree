@@ -19,9 +19,11 @@ package org.apache.toree.plugins
 
 import org.apache.toree.plugins.annotations._
 import org.apache.toree.plugins.dependencies.{DepClassNotFoundException, DepUnexpectedClassException, DepNameNotFoundException}
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{OneInstancePerTest}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class PluginMethodSpec extends FunSpec with Matchers with OneInstancePerTest {
+class PluginMethodSpec extends AnyFunSpec with Matchers with OneInstancePerTest {
   private val testThrowable = new Throwable
   private case class TestDependency(x: Int)
   private class TestPlugin extends Plugin {

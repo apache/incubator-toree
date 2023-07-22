@@ -27,13 +27,14 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
 import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{Matchers, FunSpecLike}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import play.api.libs.json.Json
 
 class ShellClientSpec extends TestKit(ActorSystem("ShellActorSpec"))
-  with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+  with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
   private val SignatureEnabled = true
 
   describe("ShellClientActor") {

@@ -20,9 +20,11 @@ package org.apache.toree.magic
 import org.apache.toree.plugins.dependencies.Dependency
 import org.apache.toree.plugins._
 import org.mockito.Mockito._
-import org.mockito.Matchers.{eq => mockEq, _}
+import org.mockito.ArgumentMatchers.{eq => mockEq, _}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import test.utils
 
 import MagicManagerSpec._
@@ -60,7 +62,7 @@ private class ExceptionCellMagic extends CellMagic {
 }
 
 class MagicManagerSpec
-  extends FunSpec with Matchers with MockitoSugar with OneInstancePerTest
+  extends AnyFunSpec with Matchers with MockitoSugar with OneInstancePerTest
 {
   private val TestPluginName = "SomePlugin"
   private val TestMagicName = "SomeMagic"

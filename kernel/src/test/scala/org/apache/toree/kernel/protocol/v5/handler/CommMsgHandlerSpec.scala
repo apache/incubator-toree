@@ -26,16 +26,18 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.comm._
 import org.apache.toree.kernel.protocol.v5.content.{CommMsg, ClearOutput}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfter
 import test.utils.MaxAkkaTestTimeout
 
 class CommMsgHandlerSpec extends TestKit(
   ActorSystem("CommMsgHandlerSpec", None, Some(Main.getClass.getClassLoader))
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+  with BeforeAndAfterEach
 {
   private val TestCommId = UUID.randomUUID().toString
 

@@ -16,7 +16,7 @@
  */
 package org.apache.toree.kernel.interpreter.sql
 
-import java.io.ByteArrayOutputStream
+import java.io.{ByteArrayOutputStream, OutputStream}
 
 import org.apache.toree.interpreter.broker.BrokerService
 import org.apache.toree.kernel.api.KernelLike

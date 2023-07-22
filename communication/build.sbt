@@ -19,5 +19,8 @@ libraryDependencies ++= Seq(
   Dependencies.jeroMq,
   Dependencies.akkaActor,
   Dependencies.akkaSlf4j,
-  Dependencies.akkaTestkit % "test"
+  Dependencies.akkaTestkit % "test",
+  Dependencies.mockitoSugar % "test",
+  Dependencies.mockitoScala % "test",
+  Dependencies.mockitoScalaScalaTest % "test"
 )

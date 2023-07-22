@@ -21,12 +21,14 @@ import java.lang.reflect.Method
 import org.apache.toree.plugins.annotations._
 import org.apache.toree.plugins.dependencies.DependencyManager
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{OneInstancePerTest}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
-import org.mockito.Matchers.{eq => mockEq, _}
+import org.mockito.ArgumentMatchers.{eq => mockEq, _}
 import scala.reflect.runtime.universe._
 
-class PluginSpec extends FunSpec with Matchers with OneInstancePerTest with MockitoSugar {
+class PluginSpec extends AnyFunSpec with Matchers with OneInstancePerTest with MockitoSugar {
   private val mockPluginManager = mock[PluginManager]
   private val testPlugin = {
     val plugin = new TestPlugin
@@ -238,7 +240,7 @@ class PluginSpec extends FunSpec with Matchers with OneInstancePerTest with Mock
             // New
             classOf[ExtendedTestPlugin].getDeclaredMethod("mixed4")
           )
-        ).mapValues(m => m.map(PluginMethod.apply(extendedTestPlugin, _: Method)))
+        ).view.mapValues(m => m.map(PluginMethod.apply(extendedTestPlugin, _: Method))).toMap
 
         val actual = extendedTestPlugin.eventMethodMap
 

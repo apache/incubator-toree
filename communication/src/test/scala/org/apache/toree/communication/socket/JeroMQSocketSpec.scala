@@ -18,13 +18,17 @@ package org.apache.toree.communication.socket
 
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import org.scalatest.{Matchers, BeforeAndAfter, OneInstancePerTest, FunSpec}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
 import org.zeromq.ZMsg
 
-class JeroMQSocketSpec extends FunSpec with MockitoSugar
-  with OneInstancePerTest with BeforeAndAfter with Matchers
+class JeroMQSocketSpec extends AnyFunSpec with MockitoSugar
+  with OneInstancePerTest with BeforeAndAfterEach with Matchers
 {
   private val runnable = mock[ZeroMQSocketRunnable]
   @volatile private var running = true
@@ -43,7 +47,7 @@ class JeroMQSocketSpec extends FunSpec with MockitoSugar
 
   private val socket: JeroMQSocket = new JeroMQSocket(runnable)
 
-  after {
+  override def afterEach(): Unit = {
     running = false
   }
 

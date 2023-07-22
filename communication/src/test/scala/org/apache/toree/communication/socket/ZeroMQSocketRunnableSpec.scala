@@ -19,14 +19,16 @@ package org.apache.toree.communication.socket
 import org.scalatest.concurrent.Eventually
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.time.{Milliseconds, Seconds, Span}
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.zeromq.ZMQ
 import org.zeromq.ZMQ.{Socket, Context}
 
 import scala.util.Try
 
-class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
-  with MockitoSugar with Eventually with BeforeAndAfter {
+class ZeroMQSocketRunnableSpec extends AnyFunSpec with Matchers
+  with MockitoSugar with Eventually with BeforeAndAfterEach {
 
   implicit override val patienceConfig = PatienceConfig(
     timeout = scaled(Span(3, Seconds)),
@@ -53,13 +55,13 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
     override protected def newZmqSocket(zmqContext: Context, socketType: Int): Socket = socket
   }
 
-  before {
+  override def beforeEach(): Unit = {
     mockSocketType = mock[SocketType]
     zmqContext = ZMQ.context(1)
     pubSocket = zmqContext.socket(PubSocket.`type`)
   }
 
-  after {
+  override def afterEach(): Unit = {
     Try(zmqContext.close())
   }
 

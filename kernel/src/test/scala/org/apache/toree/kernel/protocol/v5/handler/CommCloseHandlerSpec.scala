@@ -27,9 +27,11 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.{KernelMessage, SystemActorType, KMBuilder}
 import org.apache.toree.comm.{CommRegistrar, CommWriter, CommCallbacks, CommStorage}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfter
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import test.utils.MaxAkkaTestTimeout
 
 class CommCloseHandlerSpec extends TestKit(
@@ -39,7 +41,7 @@ class CommCloseHandlerSpec extends TestKit(
     Some(org.apache.toree.Main.getClass.getClassLoader)
   )
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+  with BeforeAndAfterEach
 {
   private val TestCommId = UUID.randomUUID().toString
   private var kmBuilder: KMBuilder = _

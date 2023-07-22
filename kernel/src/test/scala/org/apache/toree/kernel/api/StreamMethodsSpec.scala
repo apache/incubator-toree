@@ -22,7 +22,9 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers}
+import org.scalatest.BeforeAndAfter
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout
 import org.mockito.Mockito._
@@ -34,7 +36,7 @@ class StreamMethodsSpec extends TestKit(
     Some(org.apache.toree.Main.getClass.getClassLoader)
   )
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+  with BeforeAndAfterEach
 {
 
   private var kernelMessageRelayProbe: TestProbe = _

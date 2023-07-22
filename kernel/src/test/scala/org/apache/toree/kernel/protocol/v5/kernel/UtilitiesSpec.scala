@@ -20,12 +20,13 @@ package org.apache.toree.kernel.protocol.v5.kernel
 import akka.util.ByteString
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.kernel.protocol.v5._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 /**
  * Refactored from old KernelMessageSpec.
  */
-class UtilitiesSpec extends FunSpec with Matchers {
+class UtilitiesSpec extends AnyFunSpec with Matchers {
   val header: Header = Header(
     "<UUID>", "<STRING>", "<UUID>", "<STRING>", "<FLOAT>"
   )

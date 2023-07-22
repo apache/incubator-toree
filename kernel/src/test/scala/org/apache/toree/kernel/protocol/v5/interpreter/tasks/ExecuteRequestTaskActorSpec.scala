@@ -25,10 +25,11 @@ import com.typesafe.config.ConfigFactory
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
-import org.mockito.Matchers.{anyBoolean, anyString, anyObject}
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import test.utils.MaxAkkaTestTimeout
 
 object ExecuteRequestTaskActorSpec {

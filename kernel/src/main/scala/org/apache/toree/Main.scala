@@ -22,7 +22,7 @@ import org.apache.toree.boot.{CommandLineOptions, KernelBootstrap}
 import org.apache.toree.kernel.BuildInfo
 
 object Main extends App {
-  private val options = new CommandLineOptions(args)
+  private val options = new CommandLineOptions(args.toIndexedSeq)
 
   if (options.help) {
     options.printHelpOn(System.out)

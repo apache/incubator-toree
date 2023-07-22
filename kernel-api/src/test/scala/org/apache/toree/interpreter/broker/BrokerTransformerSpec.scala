@@ -19,9 +19,11 @@ package org.apache.toree.interpreter.broker
 import org.apache.toree.interpreter.{ExecuteError, Results}
 import org.scalatest.concurrent.Eventually
 import scala.concurrent.Promise
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class BrokerTransformerSpec extends FunSpec with Matchers
+class BrokerTransformerSpec extends AnyFunSpec with Matchers
   with OneInstancePerTest with Eventually
 {
   private val brokerTransformer = new BrokerTransformer

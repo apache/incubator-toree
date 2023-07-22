@@ -34,7 +34,7 @@ import test.utils.MaxAkkaTestTimeout
 
 class KernelOuputStreamSpec
   extends TestKit(ActorSystem("KernelOutputStreamActorSystem", None, Some(Main.getClass.getClassLoader)))
-  with FunSpecLike with Matchers with GivenWhenThen with BeforeAndAfter
+  with FunSpecLike with Matchers with GivenWhenThen with BeforeAndAfterEach
   with MockitoSugar
 {
 

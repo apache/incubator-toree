@@ -21,13 +21,15 @@ import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, Row}
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfterAll, FunSpec, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.{JsArray, JsDefined, JsString, JsValue, Json}
 import test.utils.SparkContextProvider
 
 import scala.collection.mutable
 
-class DataFrameConverterSpec extends FunSpec with MockitoSugar with Matchers with BeforeAndAfterAll {
+class DataFrameConverterSpec extends AnyFunSpec with MockitoSugar with Matchers with BeforeAndAfterAll {
 
   lazy val spark = SparkContextProvider.sparkContext
 

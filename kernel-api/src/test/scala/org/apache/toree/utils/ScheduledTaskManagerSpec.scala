@@ -23,9 +23,11 @@ import java.util.concurrent.{TimeUnit, CountDownLatch}
 
 import org.scalatest.concurrent.Eventually
 import org.scalatest.time.{Milliseconds, Span}
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class ScheduledTaskManagerSpec extends FunSpec with Matchers with BeforeAndAfter
+class ScheduledTaskManagerSpec extends AnyFunSpec with Matchers with BeforeAndAfterEach
   with Eventually
 {
   private val TestTimeInterval = 30
@@ -81,12 +83,12 @@ class ScheduledTaskManagerSpec extends FunSpec with Matchers with BeforeAndAfter
     }
   }
 
-  before {
+  override def beforeEach(): Unit = {
     scheduledTaskManager = new ScheduledTaskManager
     scheduleVerifier = new ScheduleVerifier
   }
 
-  after {
+  override def afterEach(): Unit = {
     scheduledTaskManager.stop()
   }
 

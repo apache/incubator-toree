@@ -20,7 +20,7 @@ package org.apache.toree.boot.layer
 import org.apache.toree.kernel.api.KernelLike
 import com.typesafe.config.Config
 import org.apache.toree.interpreter._
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 import org.slf4j.LoggerFactory
 

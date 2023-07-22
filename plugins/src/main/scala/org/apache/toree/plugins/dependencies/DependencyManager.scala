@@ -17,7 +17,7 @@
 package org.apache.toree.plugins.dependencies
 
 import java.util.concurrent.ConcurrentHashMap
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.reflect.runtime.universe.{Type, TypeTag}
 import scala.util.Try
 

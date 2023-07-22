@@ -52,7 +52,7 @@ trait OrderedSupport extends Actor with Stash with LogLike {
    */
   def startProcessing(): Unit = {
     logger.debug("Actor is in processing state and will stash messages of " +
-      s"types: ${orderedTypes.mkString(" ")}")
+      s"types: ${orderedTypes().mkString(" ")}")
     context.become(waiting, discardOld = false)
   }
 

@@ -25,7 +25,7 @@ import org.apache.toree.utils.MessageLogSupport
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, future}
+import scala.concurrent.Future
 
 /**
  * Receives a CommInfoRequest KernelMessage and returns a CommInfoReply
@@ -53,14 +53,14 @@ class CommInfoRequestHandler(
 
   override def process(kernelMessage: KernelMessage): Future[_] = Future {
     logKernelMessageAction("Initiating CommInfo request for", kernelMessage)
-
+    import scala.language.existentials
     val commMap = (Json.parse(kernelMessage.contentString) \ "target_name").asOpt[String] match {
       case Some(targetName) => {
         buildCommMap(targetName)
       }
       case None => {
         //target_name is missing from the kernel message so return all comms over every target
-        commStorage.getTargets().map(buildCommMap(_)).reduce(_ ++ _)
+        commStorage.getTargets().map(buildCommMap(_))
       }
     }
     val commInfoReply = CommInfoReply(commMap.asInstanceOf[Map[String, Map[String, String]]])

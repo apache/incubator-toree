@@ -18,11 +18,12 @@
 package org.apache.toree.magic.builtin
 
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.apache.toree.magic.CellMagicOutput
 import org.apache.toree.kernel.protocol.v5.MIMEType
 
-class JavaScriptSpec extends FunSpec with Matchers with MockitoSugar {
+class JavaScriptSpec extends AnyFunSpec with Matchers with MockitoSugar {
   describe("JavaScript"){
     describe("#execute") {
       it("should return the entire cell's contents with the MIME type of text/javascript") {

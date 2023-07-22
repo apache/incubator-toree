@@ -21,10 +21,12 @@ import java.io.OutputStream
 
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
-import org.mockito.Matchers._
-import org.scalatest.{Matchers, FunSpec}
+import org.mockito.ArgumentMatchers._
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class ConditionalOutputStreamSpec extends FunSpec with Matchers with MockitoSugar {
+class ConditionalOutputStreamSpec extends AnyFunSpec with Matchers with MockitoSugar {
   describe("ConditionalOutputStream") {
     describe("#()") {
       it("should throw an exception if the output stream is null") {

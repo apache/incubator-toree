@@ -31,10 +31,12 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.plugins.PluginManager
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.BeforeAndAfter
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class KernelSpec extends FunSpec with Matchers with MockitoSugar
-  with BeforeAndAfter
+class KernelSpec extends AnyFunSpec with Matchers with MockitoSugar
+  with BeforeAndAfterEach
 {
   private val BadCode = Some("abc foo bar")
   private val GoodCode = Some("val foo = 1")

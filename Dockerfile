@@ -26,7 +26,9 @@ RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
     npm install -g bower
 
 # for Apache Spark demos
-ENV APACHE_SPARK_VERSION 3.0.3
+ENV APACHE_SPARK_VERSION 3.3.1 \
+HADOOP_VERSION=3 \
+SCALA_VERSION=2.13
 
 RUN apt-get -y update && \
     apt-get -y install software-properties-common
@@ -46,11 +48,11 @@ RUN echo "===> install Java"  && \
     update-java-alternatives -s java-8-oracle
 
 RUN cd /tmp && \
-        wget -q http://apache.claz.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz && \
-        tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz -C /usr/local && \
-        rm spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz
+    wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${SCALA_VERSION}.tgz && \
+    tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${SCALA_VERSION}.tgz -C /usr/local && \
+    rm spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${SCALA_VERSION}.tgz
 
-RUN cd /usr/local && ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7 spark
+RUN cd /usr/local && ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${SCALA_VERSION} spark
 
 # R support
 RUN apt-get update && \

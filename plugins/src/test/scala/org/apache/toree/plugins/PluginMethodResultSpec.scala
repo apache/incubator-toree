@@ -20,12 +20,14 @@ import java.lang.reflect.Method
 
 import org.apache.toree.plugins.annotations.{Priority, Event}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.{OneInstancePerTest}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
 
 import scala.util.{Failure, Success, Try}
 
-class PluginMethodResultSpec extends FunSpec with Matchers
+class PluginMethodResultSpec extends AnyFunSpec with Matchers
   with OneInstancePerTest with MockitoSugar
 {
   private val testResult = new AnyRef

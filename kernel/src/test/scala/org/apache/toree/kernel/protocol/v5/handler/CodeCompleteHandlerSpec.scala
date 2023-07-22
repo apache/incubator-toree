@@ -25,14 +25,16 @@ import org.apache.toree.kernel.protocol.v5.content.CompleteRequest
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5Test._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers}
+import org.scalatest.BeforeAndAfter
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
 import test.utils.MaxAkkaTestTimeout
 
 class CodeCompleteHandlerSpec extends TestKit(
   ActorSystem("CodeCompleteHandlerSpec", None, Some(Main.getClass.getClassLoader))
 ) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter {
+  with BeforeAndAfterEach {
 
   var actorLoader: ActorLoader = _
   var handlerActor: ActorRef = _

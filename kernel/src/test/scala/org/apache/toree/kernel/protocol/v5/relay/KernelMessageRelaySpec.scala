@@ -28,8 +28,10 @@ import org.mockito.Mockito._
 import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
-import org.mockito.Matchers.{eq => mockEq}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfter
+import org.mockito.ArgumentMatchers.{eq => mockEq, _}
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import scala.concurrent._
@@ -46,7 +48,7 @@ class KernelMessageRelaySpec extends TestKit(
   )
 )
   with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter with ScalaFutures {
+  with BeforeAndAfterEach with ScalaFutures {
   private val IncomingMessageType = MessageType.Incoming.CompleteRequest.toString
   private val OutgoingMessageType = MessageType.Outgoing.CompleteReply.toString
 

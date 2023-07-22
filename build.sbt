@@ -22,11 +22,11 @@ ThisBuild / version := Properties.envOrElse("VERSION", "0.0.0-dev") +
   (if ((ThisBuild / isSnapshot ).value) "-SNAPSHOT" else "")
 ThisBuild / isSnapshot := Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
 ThisBuild / organization := "org.apache.toree.kernel"
-ThisBuild / crossScalaVersions := Seq("2.12.15")  // https://github.com/scala/bug/issues/12475, for Spark 3.2.0
-ThisBuild / scalaVersion := (ThisBuild / crossScalaVersions ).value.head
+ThisBuild / crossScalaVersions := Seq("2.13.10")
+ThisBuild / scalaVersion := "2.13.10"
 ThisBuild / Dependencies.sparkVersion := {
   val envVar = "APACHE_SPARK_VERSION"
-  val defaultVersion = "3.0.0"
+  val defaultVersion = "3.3.1"
 
   Properties.envOrNone(envVar) match {
     case None =>
@@ -65,7 +65,6 @@ ThisBuild / javacOptions ++= Seq(
 ThisBuild / javaOptions ++= Seq(
   "-Xms1024M", "-Xmx4096M", "-Xss2m", "-XX:MaxPermSize=1024M",
   "-XX:ReservedCodeCacheSize=256M", "-XX:+TieredCompilation",
-  "-XX:+CMSClassUnloadingEnabled",
   "-XX:+UseConcMarkSweepGC", "-XX:+HeapDumpOnOutOfMemoryError"
 )
 // Add additional test option to show time taken per test

@@ -17,13 +17,14 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
 import org.apache.toree.kernel.protocol.v5._
 
-class HistoryReplySpec extends FunSpec with Matchers {
+class HistoryReplySpec extends AnyFunSpec with Matchers {
   val historyReplyJson: JsValue = Json.parse("""
   {
     "history": ["<STRING>", "<STRING2>", "<STRING3>"]
@@ -60,7 +61,7 @@ class HistoryReplySpec extends FunSpec with Matchers {
         val CompleteRequestResults = historyReplyJson.validate[HistoryReply]
 
         CompleteRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: scala.collection.Seq[(JsPath, scala.collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: HistoryReply) => valid
         ) should be (historyReply)
       }

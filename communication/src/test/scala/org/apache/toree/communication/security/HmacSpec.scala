@@ -19,9 +19,10 @@ package org.apache.toree.communication.security
 
 import java.security.NoSuchAlgorithmException
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class HmacSpec extends FunSpec with Matchers {
+class HmacSpec extends AnyFunSpec with Matchers {
   describe("Hmac Object") {
     describe("#apply") {
       it("should fail if the algorithm is not available") {

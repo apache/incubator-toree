@@ -20,7 +20,8 @@ package org.apache.toree.communication.utils
 import akka.actor._
 import akka.testkit.{ImplicitSender, TestKit}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 
 case class OrderedType()
 case class NotOrderedType()
@@ -35,17 +36,17 @@ class TestOrderedSupport extends OrderedSupport {
     case OrderedType() =>
       startProcessing()
       receivedCounter = receivedCounter + 1
-      sender ! ReceiveMessageCount(receivedCounter)
+      sender() ! ReceiveMessageCount(receivedCounter)
     case NotOrderedType() =>
       receivedCounter = receivedCounter + 1
-      sender ! ReceiveMessageCount(receivedCounter)
+      sender() ! ReceiveMessageCount(receivedCounter)
     case FinishProcessingMessage() =>
       finishedProcessing()
   }
 }
 
 class OrderedSupportSpec extends TestKit(ActorSystem("OrderedSupportSystem"))
-  with ImplicitSender with Matchers with FunSpecLike
+  with ImplicitSender with Matchers with AnyFunSpecLike
   with MockitoSugar  {
 
   describe("OrderedSupport"){
@@ -55,9 +56,9 @@ class OrderedSupportSpec extends TestKit(ActorSystem("OrderedSupportSystem"))
 
         // Send a message having a type in orderedTypes
         // Starts processing and is handled with receive()
-        testOrderedSupport ! new OrderedType
+        testOrderedSupport ! new OrderedType()
         // This message should be handled with waiting()
-        testOrderedSupport ! new OrderedType
+        testOrderedSupport ! new OrderedType()
 
         // Verify receive was not called for the second OrderedType
         expectMsg(ReceiveMessageCount(1))
@@ -68,10 +69,10 @@ class OrderedSupportSpec extends TestKit(ActorSystem("OrderedSupportSystem"))
         val testOrderedSupport = system.actorOf(Props[TestOrderedSupport])
 
         // Send a message that starts the processing
-        testOrderedSupport ! new OrderedType
+        testOrderedSupport ! new OrderedType()
 
         // Send a message having a type not in orderedTypes
-        testOrderedSupport ! new NotOrderedType
+        testOrderedSupport ! new NotOrderedType()
 
         // Verify receive did get called for NotOrderedType
         expectMsg(ReceiveMessageCount(1))
@@ -83,13 +84,13 @@ class OrderedSupportSpec extends TestKit(ActorSystem("OrderedSupportSystem"))
         val testOrderedSupport = system.actorOf(Props[TestOrderedSupport])
         
         //  Switch actor to waiting mode
-        testOrderedSupport ! new OrderedType
+        testOrderedSupport ! new OrderedType()
 
         //  Call finishedProcessing
-        testOrderedSupport ! new FinishProcessingMessage
+        testOrderedSupport ! new FinishProcessingMessage()
 
         //  Sending something that would match in receive, and is in orderedTypes
-        testOrderedSupport ! new OrderedType
+        testOrderedSupport ! new OrderedType()
 
         expectMsg(ReceiveMessageCount(1))
         expectMsg(ReceiveMessageCount(2))

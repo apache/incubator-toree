@@ -32,7 +32,9 @@ import org.apache.toree.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFact
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfter
 import test.utils.UncaughtExceptionSuppression
 import test.utils.MaxAkkaTestTimeout
 
@@ -49,7 +51,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
     ConfigFactory.parseString(InterpreterActorSpecForIntegration.config),
     Main.getClass.getClassLoader
   )
-) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
+) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfterEach
   with MockitoSugar with UncaughtExceptionSuppression {
 
   private val output = new ByteArrayOutputStream()
