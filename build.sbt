@@ -22,11 +22,11 @@ ThisBuild / version := Properties.envOrElse("VERSION", "0.0.0-dev") +
   (if ((ThisBuild / isSnapshot ).value) "-SNAPSHOT" else "")
 ThisBuild / isSnapshot := Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
 ThisBuild / organization := "org.apache.toree.kernel"
-ThisBuild / crossScalaVersions := Seq("2.12.15")  // https://github.com/scala/bug/issues/12475, for Spark 3.2.0
+ThisBuild / crossScalaVersions := Seq("2.12.15")
 ThisBuild / scalaVersion := (ThisBuild / crossScalaVersions ).value.head
 ThisBuild / Dependencies.sparkVersion := {
   val envVar = "APACHE_SPARK_VERSION"
-  val defaultVersion = "3.0.0"
+  val defaultVersion = "3.3.2"
 
   Properties.envOrNone(envVar) match {
     case None =>
@@ -58,8 +58,8 @@ ThisBuild / javacOptions ++= Seq(
   "-Xlint:-options",
   "-Xlint:-processing",
   "-Werror",       // Treat warnings as errors
-  "-source", "1.6",
-  "-target", "1.6"
+  "-source", "1.8",
+  "-target", "1.8"
 )
 // Options provided to forked JVMs through sbt, based on our .jvmopts file
 ThisBuild / javaOptions ++= Seq(

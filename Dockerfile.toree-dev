@@ -23,7 +23,8 @@ FROM jupyter/all-spark-notebook
 USER root
 
 # Spark dependencies
-ENV APACHE_SPARK_VERSION 3.0.3
+ENV APACHE_SPARK_VERSION 3.3.2
+ENV APACHE_SPARK_CUSTOM_NAME=hadoop3
 
 RUN apt-get -y update && \
     apt-get install -y --no-install-recommends openjdk-8-jdk ca-certificates-java  && \
@@ -34,14 +35,14 @@ RUN apt-get -y update && \
 
 # Installing Spark3
 RUN cd /tmp && \
-    wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz && \
-    tar xzf spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz -C /usr/local && \
-    rm spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7.tgz
+    wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz && \
+    tar xzf spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz -C /usr/local && \
+    rm spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz
 
 # Overwrite symlink
 RUN cd /usr/local && \
     rm spark && \
-    ln -s spark-${APACHE_SPARK_VERSION}-bin-hadoop2.7 spark
+    ln -s spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME} spark
 
 # Remove other scala kernels
 RUN cd /opt/conda/share/jupyter/kernels/ && \
