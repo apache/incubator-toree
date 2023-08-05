@@ -17,7 +17,7 @@
 package org.apache.toree.communication.socket
 
 import org.apache.toree.utils.LogLike
-import org.zeromq.{ZMsg, ZMQ}
+import org.zeromq.{SocketType, ZMsg, ZMQ}
 import org.zeromq.ZMQ.Context
 
 import scala.collection.JavaConverters._
@@ -64,7 +64,7 @@ class ZeroMQSocketRunnable(
    */
   protected def processOptions(socket: ZMQ.Socket): Unit = {
     val socketOptionsString = socketOptions.map("\n- " + _.toString).mkString("")
-    logger.trace(
+    logger.info(
       s"Processing options for socket $socketType: $socketOptionsString"
     )
 
@@ -103,7 +103,7 @@ class ZeroMQSocketRunnable(
    */
   protected def processNextOutboundMessage(socket: ZMQ.Socket): Boolean = {
     val message = Option(outboundMessages.poll())
-
+    message.foreach(msg => println(s"send: \n$msg"))
     message.foreach(_.send(socket))
 
     message.nonEmpty
@@ -134,11 +134,11 @@ class ZeroMQSocketRunnable(
    *
    * @return The new ZMQ.Socket instance
    */
-  protected def newZmqSocket(zmqContext: ZMQ.Context, socketType: Int) =
+  protected def newZmqSocket(zmqContext: ZMQ.Context, socketType: SocketType) =
     zmqContext.socket(socketType)
 
   override def run(): Unit = {
-    val socket = newZmqSocket(context, socketType.`type`)//context.socket(socketType.`type`)
+    val socket = newZmqSocket(context, socketType)//context.socket(socketType.`type`)
 
     try {
       processOptions(socket)

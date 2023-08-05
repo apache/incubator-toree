@@ -20,8 +20,8 @@ import org.scalatest.concurrent.Eventually
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
-import org.zeromq.ZMQ
-import org.zeromq.ZMQ.{Socket, Context}
+import org.zeromq.{SocketType, ZMQ}
+import org.zeromq.ZMQ.{Context, Socket}
 
 import scala.util.Try
 
@@ -50,13 +50,14 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
     inboundMessageCallback,
     socketOptions: _*
   ) {
-    override protected def newZmqSocket(zmqContext: Context, socketType: Int): Socket = socket
+    override protected def newZmqSocket(zmqContext: Context, socketType: SocketType): Socket = socket
   }
 
   before {
-    mockSocketType = mock[SocketType]
+    // TODO mockito 1.x does not support mock/spy enum, upgrade 2.x to achieve it
+    mockSocketType = SocketType.RAW // mock[SocketType]
     zmqContext = ZMQ.context(1)
-    pubSocket = zmqContext.socket(PubSocket.`type`)
+    pubSocket = zmqContext.socket(SocketType.PUB)
   }
 
   after {
@@ -119,7 +120,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
         val runnable: TestRunnable = new TestRunnable(
           pubSocket,
           zmqContext,
-          PubSocket,
+          SocketType.PUB,
           None,
           Connect(TestAddress),
           Linger(expected)
@@ -142,7 +143,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
         val runnable: TestRunnable = new TestRunnable(
           pubSocket,
           zmqContext,
-          PubSocket,
+          SocketType.PUB,
           None,
           Connect(TestAddress),
           Identity(expected)
@@ -163,7 +164,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
         val runnable = new TestRunnable(
           pubSocket,
           zmqContext,
-          PubSocket,
+          SocketType.PUB,
           None,
           Connect(TestAddress)
         )
@@ -189,7 +190,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
         val runnable = new TestRunnable(
           pubSocket,
           zmqContext,
-          PubSocket,
+          SocketType.PUB,
           None,
           Connect(TestAddress)
         )
@@ -213,7 +214,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
         val runnable = new TestRunnable(
           pubSocket,
           zmqContext,
-          PubSocket,
+          SocketType.PUB,
           None,
           Connect(TestAddress)
         )
@@ -235,7 +236,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
           val runnable = new TestRunnable(
             pubSocket,
             zmqContext,
-            PubSocket,
+            SocketType.PUB,
             None,
             Connect(TestAddress)
           )
