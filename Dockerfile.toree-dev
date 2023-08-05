@@ -30,7 +30,8 @@ RUN apt-get -y update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     update-ca-certificates -f && \
-    update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+    JAVA_8=`update-alternatives --list java | grep java-8-openjdk` && \
+    update-alternatives --set java $JAVA_8
 
 # Installing Spark3
 RUN cd /tmp && \
