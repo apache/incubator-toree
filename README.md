@@ -144,8 +144,8 @@ We are currently enhancing our documentation, which is available in our [website
 [website]: https://toree.apache.org
 [documentation]: https://toree.apache.org/docs/current/user/quick-start/
 [issues]: https://issues.apache.org/jira/browse/TOREE
-[build-badge]: https://github.com/apache/incubator-toree/blob/master/.github/workflows/build.yml/badge.svg
-[build-url]: https://github.com/apache/incubator-toree/blob/master/.github/workflows/build.yml
+[build-badge]: https://github.com/apache/incubator-toree/actions/workflows/build.yml/badge.svg
+[build-url]: https://github.com/apache/incubator-toree/actions/workflows/build.yml
 [license-badge]: https://img.shields.io/badge/License-Apache%202-blue.svg?style=flat
 [license-url]: LICENSE
 [gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
