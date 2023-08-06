@@ -64,7 +64,7 @@ class ZeroMQSocketRunnable(
    */
   protected def processOptions(socket: ZMQ.Socket): Unit = {
     val socketOptionsString = socketOptions.map("\n- " + _.toString).mkString("")
-    logger.info(
+    logger.trace(
       s"Processing options for socket $socketType: $socketOptionsString"
     )
 
@@ -103,7 +103,7 @@ class ZeroMQSocketRunnable(
    */
   protected def processNextOutboundMessage(socket: ZMQ.Socket): Boolean = {
     val message = Option(outboundMessages.poll())
-    message.foreach(msg => println(s"send: \n$msg"))
+
     message.foreach(_.send(socket))
 
     message.nonEmpty
