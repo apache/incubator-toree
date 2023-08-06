@@ -24,11 +24,13 @@ import play.api.libs.json._
 class InputReplySpec extends FunSpec with Matchers {
   val inputReplyJson: JsValue = Json.parse("""
   {
+    "status": "ok",
     "value": "<STRING>"
   }
   """)
 
   val inputReply = InputReply(
+    "ok",
     "<STRING>"
   )
 

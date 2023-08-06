@@ -38,6 +38,7 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader, languageInfo: LanguageI
 
       val kernelInfo = SparkKernelInfo
       val kernelInfoReply = KernelInfoReply(
+        "ok",
         kernelInfo.protocolVersion,
         kernelInfo.implementation,
         kernelInfo.implementationVersion,

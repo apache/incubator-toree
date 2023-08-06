@@ -30,7 +30,7 @@ case class InspectReply(
   ename: Option[String],
   evalue: Option[String],
   traceback: Option[List[String]]
-) extends KernelMessageContent {
+) extends KernelMessageContent with ReplyContent {
   override def content : String =
     Json.toJson(this)(InspectReply.inspectReplyOkWrites).toString
 }

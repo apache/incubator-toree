@@ -20,6 +20,8 @@ package org.apache.toree.kernel.protocol.v5.content
 import org.apache.toree.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json._
 
+// Deprecated since version 5.1: connect_request/reply have not proved useful, and are
+// considered deprecated. Kernels are not expected to implement handlers for this message.
 case class ConnectRequest() extends KernelMessageContent {
   override def content : String =
     Json.toJson(this)(ConnectRequest.connectRequestWrites).toString

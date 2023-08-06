@@ -21,8 +21,9 @@ import org.apache.toree.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json.Json
 
 case class ShutdownReply(
+  status: String,
   restart: Boolean
-) extends KernelMessageContent {
+) extends KernelMessageContent with ReplyContent {
   override def content : String =
     Json.toJson(this)(ShutdownReply.shutdownReplyWrites).toString
 }

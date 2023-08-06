@@ -26,11 +26,13 @@ import org.apache.toree.kernel.protocol.v5._
 class HistoryReplySpec extends FunSpec with Matchers {
   val historyReplyJson: JsValue = Json.parse("""
   {
+    "status": "ok",
     "history": ["<STRING>", "<STRING2>", "<STRING3>"]
   }
   """)
 
   val historyReply = HistoryReply(
+    "ok",
     List("<STRING>", "<STRING2>", "<STRING3>")
   )
 

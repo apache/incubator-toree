@@ -76,7 +76,7 @@ class StdinClient(
         val inputRequest =
           Json.parse(kernelMessage.contentString).as[InputRequest]
         val value = responseFunc(inputRequest.prompt, inputRequest.password)
-        val inputReply = InputReply(value)
+        val inputReply = InputReply("ok", value)
 
         val newKernelMessage = KMBuilder()
           .withParent(kernelMessage)

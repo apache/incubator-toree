@@ -33,7 +33,7 @@ case class ExecuteReply(
   ename: Option[String],
   evalue: Option[String],
   traceback: Option[List[String]]
-) extends KernelMessageContent {
+) extends KernelMessageContent with ReplyContent {
 
   override def content : String =
     Json.toJson(this)(ExecuteReply.executeReplyWrites).toString

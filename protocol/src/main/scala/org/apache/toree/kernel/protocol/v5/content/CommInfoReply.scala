@@ -21,8 +21,9 @@ import org.apache.toree.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json.Json
 
 case class CommInfoReply(
+  status: String,
   comms: Map[String, Map[String, String]]
-) extends KernelMessageContent {
+) extends KernelMessageContent with ReplyContent {
   override def content : String =
     Json.toJson(this)(CommInfoReply.commInfoReplyWrites).toString
 }
