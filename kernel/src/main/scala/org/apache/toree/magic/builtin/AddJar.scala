@@ -30,7 +30,7 @@ import org.apache.hadoop.fs.Path
 import org.apache.toree.plugins.annotations.Event
 
 object AddJar {
-  val HADOOP_FS_SCHEMES = Set("hdfs", "s3", "s3n", "file", "gs")
+  val HADOOP_FS_SCHEMES = Set("hdfs", "s3", "s3a", "s3n", "file", "gs")
 
   private var jarDir:Option[String] = None
 
