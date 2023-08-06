@@ -19,7 +19,7 @@ package org.apache.toree.communication
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import org.apache.toree.communication.socket._
-import org.zeromq.ZMQ
+import org.zeromq.{SocketType, ZMQ}
 
 import scala.collection.JavaConverters._
 
@@ -99,7 +99,7 @@ class SocketManager {
   ): SocketLike = withNewContext{ ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
       ctx,
-      RepSocket,
+      SocketType.REP,
       Some(inboundMessageCallback),
       Bind(address),
       Linger(0)
@@ -137,7 +137,7 @@ class SocketManager {
   ): SocketLike = withNewContext { ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
       ctx,
-      SubSocket,
+      SocketType.SUB,
       Some(inboundMessageCallback),
       Connect(address),
       Linger(0),
@@ -159,7 +159,7 @@ class SocketManager {
   ): SocketLike = withNewContext { ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
       ctx,
-      RouterSocket,
+      SocketType.ROUTER,
       Some(inboundMessageCallback),
       Bind(address),
       Linger(0)
@@ -181,7 +181,7 @@ class SocketManager {
   ): SocketLike = withNewContext{ ctx =>
     new JeroMQSocket(new ZeroMQSocketRunnable(
       ctx,
-      DealerSocket,
+      SocketType.DEALER,
       Some(inboundMessageCallback),
       Connect(address),
       Linger(0),

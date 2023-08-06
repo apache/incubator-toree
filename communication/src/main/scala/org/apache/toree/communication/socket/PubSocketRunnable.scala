@@ -16,7 +16,8 @@
  */
 package org.apache.toree.communication.socket
 
-import org.zeromq.ZMQ.{Socket, Context}
+import org.zeromq.SocketType
+import org.zeromq.ZMQ.{Context, Socket}
 
 /**
  * Represents the runnable component of a socket specifically targeted towards
@@ -30,7 +31,7 @@ class PubSocketRunnable(
   private val socketOptions: SocketOption*
 ) extends ZeroMQSocketRunnable(
   context,
-  PubSocket,
+  SocketType.PUB,
   None,
   socketOptions: _*
 ) {
