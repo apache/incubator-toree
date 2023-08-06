@@ -18,25 +18,13 @@
 package org.apache.toree.kernel.protocol.v5.content
 
 import org.apache.toree.kernel.protocol.v5.KernelMessageContent
-import play.api.libs.json._
 
-case class InputReply(
-  status: String,
-  value: String
-) extends KernelMessageContent with ReplyContent {
-  override def content : String =
-    Json.toJson(this)(InputReply.inputReplyWrites).toString()
+/**
+ * Represents a series of subclasses of KernelMessageContent that embodies the
+ * xyzReply content types.
+ */
+trait ReplyContent {
+  this: KernelMessageContent =>
+
+  def status: String
 }
-
-object InputReply extends TypeString {
-  implicit val inputReplyReads = Json.reads[InputReply]
-  implicit val inputReplyWrites = Json.writes[InputReply]
-
-  /**
-   * Returns the type string associated with this object.
-   *
-   * @return The type as a string
-   */
-  override def toTypeString: String = "input_reply"
-}
-

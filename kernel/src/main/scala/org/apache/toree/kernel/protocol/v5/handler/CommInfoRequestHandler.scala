@@ -63,7 +63,7 @@ class CommInfoRequestHandler(
         commStorage.getTargets().map(buildCommMap(_)).reduce(_ ++ _)
       }
     }
-    val commInfoReply = CommInfoReply(commMap.asInstanceOf[Map[String, Map[String, String]]])
+    val commInfoReply = CommInfoReply("ok", commMap.asInstanceOf[Map[String, Map[String, String]]])
 
     val kernelInfo = SparkKernelInfo
 

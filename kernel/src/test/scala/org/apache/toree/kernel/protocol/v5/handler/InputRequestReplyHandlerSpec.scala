@@ -105,7 +105,7 @@ class InputRequestReplyHandlerSpec
             msg_type = MessageType.Incoming.InputReply.toString,
             session = session
           ))
-          .withContentString(InputReply(expected))
+          .withContentString(InputReply("ok", expected))
           .build
 
         // Add our fake sender actor to the receiving end of the message
@@ -127,7 +127,7 @@ class InputRequestReplyHandlerSpec
           msg_type = MessageType.Incoming.InputReply.toString,
           session = session
         ))
-          .withContentString(InputReply(expected))
+          .withContentString(InputReply("ok", expected))
           .build
 
         fakeSender.send(inputRequestReplyHandler, inputReplyMessage)

@@ -25,11 +25,13 @@ import play.api.libs.json._
 class ShutdownReplySpec extends AnyFunSpec with Matchers {
   val shutdownReplyJson: JsValue = Json.parse("""
   {
+    "status": "ok",
     "restart": true
   }
   """)
 
   val shutdownReply: ShutdownReply = ShutdownReply(
+    "ok",
     true
   )
 

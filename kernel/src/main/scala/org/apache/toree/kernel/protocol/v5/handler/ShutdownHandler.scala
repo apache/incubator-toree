@@ -43,7 +43,7 @@ class ShutdownHandler(
 
     val kernelInfo = SparkKernelInfo
 
-    val shutdownReply = ShutdownReply(false)
+    val shutdownReply = ShutdownReply("ok", false)
 
     val replyHeader = Header(
       java.util.UUID.randomUUID.toString,
