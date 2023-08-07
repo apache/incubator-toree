@@ -140,22 +140,19 @@ Resources
 We are currently enhancing our documentation, which is available in our [website][documentation].
 
 [1]: https://spark.apache.org/
-[2]: https://github.com/ibm-et/spark-kernel/wiki/Guide-to-the-Comm-API-of-the-Spark-Kernel-and-Spark-Kernel-Client
-[3]: https://github.com/ibm-et/spark-kernel/wiki/Guide-to-Developing-Magics-for-the-Spark-Kernel
-[4]: https://github.com/ibm-et/spark-kernel/wiki/Getting-Started-with-the-Spark-Kernel
-[5]: https://github.com/ibm-et/spark-kernel/wiki
 
-[website]: http://toree.apache.org
-[documentation]: http://toree.apache.org/docs/current/user/quick-start/
+[website]: https://toree.apache.org
+[documentation]: https://toree.apache.org/docs/current/user/quick-start/
 [issues]: https://issues.apache.org/jira/browse/TOREE
-[build-badge]: https://travis-ci.org/apache/incubator-toree.svg?branch=master
-[build-url]: https://travis-ci.org/apache/incubator-toree
+[build-badge]: https://github.com/apache/incubator-toree/actions/workflows/build.yml/badge.svg
+[build-url]: https://github.com/apache/incubator-toree/actions/workflows/build.yml
 [license-badge]: https://img.shields.io/badge/License-Apache%202-blue.svg?style=flat
 [license-url]: LICENSE
 [gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/apache/toree
-[try-jupyter]: http://try.jupyter.org
-[mail-list]: mailto:dev@toree.incubator.apache.org
+[try-jupyter]: https://try.jupyter.org
+[mail-list]: mailto:dev@incubator.apache.org
 
 [master]: https://github.com/apache/incubator-toree
 [0.1.x]: https://github.com/apache/incubator-toree/tree/0.1.x
+[0.4.x]: https://github.com/apache/incubator-toree/tree/0.4.x
