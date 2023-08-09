@@ -34,8 +34,8 @@ class KernelInfoReplySpec extends FunSpec with Matchers {
   }
   """)
 
-  val kernelInfoReply: KernelInfoReply = KernelInfoReply(
-    "ok", "x.y.z", "<name>", "z.y.x", LanguageInfo("<some language>", "a.b.c", Some("<some extension>")), "<some banner>"
+  val kernelInfoReply: KernelInfoReply = KernelInfoReplyOk(
+    "x.y.z", "<name>", "z.y.x", LanguageInfo("<some language>", "a.b.c", Some("<some extension>")), "<some banner>"
   )
 
   describe("KernelInfoReply") {

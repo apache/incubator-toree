@@ -31,8 +31,7 @@ class HistoryReplySpec extends FunSpec with Matchers {
   }
   """)
 
-  val historyReply = HistoryReply(
-    "ok",
+  val historyReply = HistoryReplyOk(
     List("<STRING>", "<STRING2>", "<STRING3>")
   )
 

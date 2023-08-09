@@ -19,11 +19,11 @@ package org.apache.toree.kernel.protocol.v5.handler
 
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import akka.actor.{Props, ActorRef, ActorSystem}
-import akka.testkit.{TestProbe, ImplicitSender, TestKit}
+import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.Main
-import org.apache.toree.kernel.protocol.v5.content.InputReply
-import org.apache.toree.kernel.protocol.v5.{HeaderBuilder, MessageType, KMBuilder, SystemActorType}
+import org.apache.toree.kernel.protocol.v5.content.{InputReply, InputReplyOk}
+import org.apache.toree.kernel.protocol.v5.{HeaderBuilder, KMBuilder, MessageType, SystemActorType}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.scalatest.concurrent.Eventually
 import org.scalatestplus.mockito.MockitoSugar
@@ -103,7 +103,7 @@ class InputRequestReplyHandlerSpec
             msg_type = MessageType.Incoming.InputReply.toString,
             session = session
           ))
-          .withContentString(InputReply("ok", expected))
+          .withContentString(InputReplyOk(expected))
           .build
 
         // Add our fake sender actor to the receiving end of the message
@@ -125,7 +125,7 @@ class InputRequestReplyHandlerSpec
           msg_type = MessageType.Incoming.InputReply.toString,
           session = session
         ))
-          .withContentString(InputReply("ok", expected))
+          .withContentString(InputReplyOk(expected))
           .build
 
         fakeSender.send(inputRequestReplyHandler, inputReplyMessage)
