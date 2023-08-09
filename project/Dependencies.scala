@@ -36,10 +36,10 @@ object Dependencies {
   val coursier = "io.get-coursier" %% "coursier" % coursierVersion // Apache v2
   val coursierCache = "io.get-coursier" %% "coursier-cache" % coursierVersion // Apache v2
 
-  val ivy = "org.apache.ivy" % "ivy" % "2.4.0" // Apache v2
+  val ivy = "org.apache.ivy" % "ivy" % "2.5.1" // Apache v2
 
-  // use the same jackson version in test than the one provided at runtime by Spark 3.0.0
-  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.10.0" // Apache v2
+  // use the same jackson version in test than the one provided at runtime by Spark 3.3.2
+  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.13.4.2" // Apache v2
 
   val jeroMq = "org.zeromq" % "jeromq" % "0.5.3" // MPL v2
 
@@ -55,7 +55,7 @@ object Dependencies {
 
   val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" // Apache v2
 
-  val slf4jApi = "org.slf4j" % "slf4j-api" % "1.7.30" // MIT
+  val slf4jApi = "org.slf4j" % "slf4j-api" % "1.7.32" // MIT
 
   val sparkVersion = settingKey[String]("Version of Apache Spark to use in Toree") // defined in root build
   val sparkCore = Def.setting{ "org.apache.spark" %% "spark-core" % sparkVersion.value } // Apache v2
