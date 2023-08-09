@@ -30,8 +30,7 @@ class InputReplySpec extends AnyFunSpec with Matchers {
   }
   """)
 
-  val inputReply = InputReply(
-    "ok",
+  val inputReply = InputReplyOk(
     "<STRING>"
   )
 

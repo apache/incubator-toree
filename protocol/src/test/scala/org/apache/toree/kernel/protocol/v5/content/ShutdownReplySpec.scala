@@ -30,8 +30,7 @@ class ShutdownReplySpec extends AnyFunSpec with Matchers {
   }
   """)
 
-  val shutdownReply: ShutdownReply = ShutdownReply(
-    "ok",
+  val shutdownReply: ShutdownReply = ShutdownReplyOk(
     true
   )
 
