@@ -63,10 +63,8 @@ ThisBuild / javacOptions ++= Seq(
 )
 // Options provided to forked JVMs through sbt, based on our .jvmopts file
 ThisBuild / javaOptions ++= Seq(
-  "-Xms1024M", "-Xmx4096M", "-Xss2m", "-XX:MaxPermSize=1024M",
-  "-XX:ReservedCodeCacheSize=256M", "-XX:+TieredCompilation",
-  "-XX:+CMSClassUnloadingEnabled",
-  "-XX:+UseConcMarkSweepGC", "-XX:+HeapDumpOnOutOfMemoryError"
+  "-Xms1024M", "-Xmx4096M", "-Xss2m", "-XX:MetaspaceSize=1024M",
+  "-XX:ReservedCodeCacheSize=256M", "-XX:+HeapDumpOnOutOfMemoryError"
 )
 // Add additional test option to show time taken per test
 ThisBuild / Test / testOptions += Tests.Argument("-oDF")
