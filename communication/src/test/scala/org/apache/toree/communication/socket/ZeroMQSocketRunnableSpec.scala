@@ -58,7 +58,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
     mockSocketType = SocketType.RAW // mock[SocketType]
     zmqContext = ZMQ.context(1)
     pubSocket = zmqContext.socket(SocketType.PUB)
-    pubSocket.setLinger(10 * 1000)
+    pubSocket.setLinger(0)
   }
 
   after {
