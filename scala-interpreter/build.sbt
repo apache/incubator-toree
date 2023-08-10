@@ -17,5 +17,6 @@ import sbt.Tests.{Group, SubProcess}
  *  limitations under the License
  */
 
+Test / fork := true
 libraryDependencies ++= Dependencies.sparkAll.value
 libraryDependencies += "com.github.jupyter" % "jvm-repr" % "0.1.0"
