@@ -22,6 +22,7 @@ import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
 import org.zeromq.{SocketType, ZMQ}
 import org.zeromq.ZMQ.{Context, Socket}
+import zmq.Ctx
 
 import scala.util.Try
 
@@ -61,7 +62,14 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
   }
 
   after {
-    Try(zmqContext.close())
+    Try {
+      val ctxFiled = classOf[ZMQ.Context].getClass.getDeclaredField("ctx")
+      ctxFiled.setAccessible(true)
+      val ctx = ctxFiled.get(zmqContext).asInstanceOf[Ctx]
+      val shutdownMethod = classOf[Ctx].getDeclaredMethod("shutdown")
+      shutdownMethod.setAccessible(true)
+      shutdownMethod.invoke(ctx)
+    }
   }
 
   describe("ZeroMQSocketRunnable") {
