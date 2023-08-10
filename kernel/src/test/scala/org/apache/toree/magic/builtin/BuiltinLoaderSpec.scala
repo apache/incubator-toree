@@ -18,9 +18,10 @@
 package org.apache.toree.magic.builtin
 
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class BuiltinLoaderSpec extends FunSpec with Matchers with MockitoSugar {
+class BuiltinLoaderSpec extends AnyFunSpec with Matchers with MockitoSugar {
   describe("BuiltinLoader") {
     describe("#getClasses") {
       it("should return classes in a package") {

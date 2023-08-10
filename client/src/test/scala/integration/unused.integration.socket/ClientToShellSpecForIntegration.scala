@@ -28,14 +28,15 @@ import akka.zeromq._
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest
 import org.apache.toree.kernel.protocol.v5.socket._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 
 class ClientToShellSpecForIntegration extends TestKit(ActorSystem("ShellActorSpec"))
-with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
   describe("ShellActor") {
     val clientSocketFactory = mock[ClientSocketFactory]
     val serverSocketFactory = mock[ServerSocketFactory]

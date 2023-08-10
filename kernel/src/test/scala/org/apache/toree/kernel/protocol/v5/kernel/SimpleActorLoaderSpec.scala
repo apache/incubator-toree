@@ -20,7 +20,8 @@ package org.apache.toree.kernel.protocol.v5.kernel
 import akka.actor.{ActorSelection, ActorSystem, Props}
 import akka.testkit.{TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5.MessageType
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import test.utils.TestProbeProxyActor
 import test.utils.MaxAkkaTestTimeout
 
@@ -31,7 +32,7 @@ class SimpleActorLoaderSpec extends TestKit(
     Some(org.apache.toree.Main.getClass.getClassLoader)
   )
 )
-  with FunSpecLike with Matchers
+  with AnyFunSpecLike with Matchers
 {
   describe("SimpleActorLoader") {
     //val system = ActorSystem("SimpleActorLoaderSystem")

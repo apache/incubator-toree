@@ -18,11 +18,13 @@ package org.apache.toree.interpreter.broker
 
 import org.apache.commons.exec.ExecuteException
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 
-class BrokerProcessHandlerSpec extends FunSpec with Matchers
+class BrokerProcessHandlerSpec extends AnyFunSpec with Matchers
   with OneInstancePerTest with MockitoSugar
 {
   private val mockBrokerBridge = mock[BrokerBridge]

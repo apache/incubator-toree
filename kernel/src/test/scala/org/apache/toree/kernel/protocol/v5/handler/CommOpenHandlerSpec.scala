@@ -29,15 +29,17 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.comm._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import test.utils.MaxAkkaTestTimeout
 
 class CommOpenHandlerSpec extends TestKit(
   ActorSystem("CommOpenHandlerSpec", None, Some(Main.getClass.getClassLoader))
-) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach
 {
   private val TestCommId = UUID.randomUUID().toString
   private val TestTargetName = "some test target"
@@ -51,10 +53,10 @@ class CommOpenHandlerSpec extends TestKit(
   private var kernelMessageRelayProbe: TestProbe = _
   private var statusDispatchProbe: TestProbe = _
 
-  before {
+  override def beforeEach(): Unit = {
     kmBuilder = KMBuilder()
     mockCommCallbacks = mock[CommCallbacks]
-    spyCommStorage = spy(new CommStorage())
+    spyCommStorage = spy[CommStorage](new CommStorage())
     mockCommRegistrar = mock[CommRegistrar]
 
     mockActorLoader = mock[ActorLoader]
@@ -79,7 +81,7 @@ class CommOpenHandlerSpec extends TestKit(
     describe("#process") {
       it("should execute open callbacks if the target exists") {
         // Mark our target as registered
-        doReturn(Some(mockCommCallbacks)).when(spyCommStorage)
+        doReturn(Some(mockCommCallbacks), Nil: _*).when(spyCommStorage)
           .getTargetCallbacks(TestTargetName)
 
         // Send a comm_open message with the test target
@@ -98,7 +100,7 @@ class CommOpenHandlerSpec extends TestKit(
 
       it("should close the comm connection if the target does not exist") {
         // Mark our target as not registered
-        doReturn(None).when(spyCommStorage).getTargetCallbacks(TestTargetName)
+        doReturn(None, Nil: _*).when(spyCommStorage).getTargetCallbacks(TestTargetName)
 
         // Send a comm_open message with the test target
         commOpenHandler ! kmBuilder
@@ -135,7 +137,7 @@ class CommOpenHandlerSpec extends TestKit(
               v1.writeMsg(MsgData.Empty)
           }
         val callbacks = (new CommCallbacks).addOpenCallback(openCallback)
-        doReturn(Some(callbacks)).when(spyCommStorage)
+        doReturn(Some(callbacks), Nil: _*).when(spyCommStorage)
           .getCommIdCallbacks(TestCommId)
 
         // Send a comm_open message

@@ -29,9 +29,10 @@ import org.apache.toree.kernel.protocol.v5.{KernelMessage, SystemActorType}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import com.typesafe.config.ConfigFactory
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{Matchers, FunSpecLike}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import test.utils.MaxAkkaTestTimeout
 
 object StdinSpec {
@@ -45,7 +46,7 @@ class StdinSpec extends TestKit(ActorSystem(
   "StdinActorSpec",
   ConfigFactory.parseString(StdinSpec.config),
   org.apache.toree.Main.getClass.getClassLoader
-)) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+)) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
   describe("Stdin") {
     val socketFactory = mock[SocketFactory]
     val actorLoader = mock[ActorLoader]

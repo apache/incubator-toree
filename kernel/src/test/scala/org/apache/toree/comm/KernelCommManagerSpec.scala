@@ -23,10 +23,12 @@ import org.apache.toree.kernel.protocol.v5.content.CommContent
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.Mockito._
-import org.mockito.Matchers._
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.mockito.ArgumentMatchers._
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class KernelCommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
+class KernelCommManagerSpec extends AnyFunSpec with Matchers with BeforeAndAfterEach
   with MockitoSugar
 {
   private val TestTargetName = "some target"
@@ -38,7 +40,7 @@ class KernelCommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
 
   private var generatedCommWriter: CommWriter = _
 
-  before {
+  override def beforeEach(): Unit = {
     mockActorLoader = mock[ActorLoader]
     mockKMBuilder = mock[KMBuilder]
     mockCommRegistrar = mock[CommRegistrar]
@@ -53,7 +55,7 @@ class KernelCommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
 
         generatedCommWriter = commWriter
 
-        val spyCommWriter = spy(commWriter)
+        val spyCommWriter = spy[CommWriter](commWriter)
         doNothing().when(spyCommWriter)
           .sendCommKernelMessage(any[KernelMessageContent with CommContent])
 

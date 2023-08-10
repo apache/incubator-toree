@@ -18,21 +18,23 @@
 package org.apache.toree.kernel.protocol.v5.handler
 
 import akka.actor._
-import akka.testkit.{TestProbe, ImplicitSender, TestKit}
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.CompleteRequest
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5Test._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers}
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpecLike
 import test.utils.MaxAkkaTestTimeout
 
 class CodeCompleteHandlerSpec extends TestKit(
   ActorSystem("CodeCompleteHandlerSpec", None, Some(Main.getClass.getClassLoader))
-) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter {
+) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach {
 
   var actorLoader: ActorLoader = _
   var handlerActor: ActorRef = _
@@ -40,7 +42,7 @@ class CodeCompleteHandlerSpec extends TestKit(
   var interpreterProbe: TestProbe = _
   var statusDispatchProbe: TestProbe = _
 
-  before {
+  override def beforeEach(): Unit = {
     actorLoader = mock[ActorLoader]
 
     handlerActor = system.actorOf(Props(classOf[CodeCompleteHandler], actorLoader))

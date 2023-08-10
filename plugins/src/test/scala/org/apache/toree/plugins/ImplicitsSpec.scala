@@ -18,9 +18,11 @@
 package org.apache.toree.plugins
 
 import org.apache.toree.plugins.dependencies.Dependency
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class ImplicitsSpec extends FunSpec with Matchers with OneInstancePerTest {
+class ImplicitsSpec extends AnyFunSpec with Matchers with OneInstancePerTest {
   describe("Implicits") {
     describe("#$dep") {
       it("should convert values to dependencies with generated names") {

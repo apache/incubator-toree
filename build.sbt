@@ -77,7 +77,8 @@ ThisBuild / resolvers ++= Seq(
 ThisBuild / updateOptions := updateOptions.value.withCachedResolution(true)
 ThisBuild / libraryDependencies ++= Seq(
   Dependencies.scalaTest % "test",
-  Dependencies.mockito % "test",
+  Dependencies.scalaTestMockito % "test",
+  Dependencies.mockitoInline % "test",
   Dependencies.jacksonDatabind % "test"
 )
 

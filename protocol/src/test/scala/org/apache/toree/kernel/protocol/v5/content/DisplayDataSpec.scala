@@ -17,14 +17,13 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.FunSuite
-
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 import org.apache.toree.kernel.protocol.v5._
 
-class DisplayDataSpec extends FunSpec with Matchers {
+class DisplayDataSpec extends AnyFunSpec with Matchers {
   val displayDataJson: JsValue = Json.parse("""
   {
     "source": "<STRING>",

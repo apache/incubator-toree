@@ -23,13 +23,15 @@ import org.apache.toree.dependencies.{Credentials, DependencyDownloader}
 import org.apache.toree.utils.ArgumentParsingSupport
 import org.apache.toree.kernel.api.KernelLike
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpec, GivenWhenThen, Matchers}
+import org.scalatest.GivenWhenThen
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.apache.toree.magic._
 import org.apache.toree.magic.dependencies._
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
+class AddDepsSpec extends AnyFunSpec with Matchers with MockitoSugar
   with GivenWhenThen
 {
   describe("AddDeps"){
@@ -70,7 +72,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
 
       it("should set the retrievals transitive to true if provided") {
         val mockDependencyDownloader = mock[DependencyDownloader]
-        doReturn(Nil).when(mockDependencyDownloader).retrieve(
+        doReturn(Nil, Nil: _*).when(mockDependencyDownloader).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
           anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean(),
           any[Option[String]], any[Option[String]], any[Option[String]], any[Set[(String,String)]]
@@ -97,7 +99,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
 
       it("should set the retrieval's transitive to false if not provided") {
         val mockDependencyDownloader = mock[DependencyDownloader]
-        doReturn(Nil).when(mockDependencyDownloader).retrieve(
+        doReturn(Nil, Nil: _*).when(mockDependencyDownloader).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
           anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean(),
           any[Option[String]], any[Option[String]], any[Option[String]], any[Set[(String,String)]]
@@ -124,7 +126,7 @@ class AddDepsSpec extends FunSpec with Matchers with MockitoSugar
 
       it("should add retrieved artifacts to the kernel") {
         val mockDependencyDownloader = mock[DependencyDownloader]
-        doReturn(Nil).when(mockDependencyDownloader).retrieve(
+        doReturn(Nil, Nil: _*).when(mockDependencyDownloader).retrieve(
           anyString(), anyString(), anyString(), anyBoolean(), anyBoolean(),
           anyBoolean(), any[Seq[(URL, Option[Credentials])]], anyBoolean(), anyBoolean(),
           any[Option[String]], any[Option[String]], any[Option[String]], any[Set[(String,String)]]

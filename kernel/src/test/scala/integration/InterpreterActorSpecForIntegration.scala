@@ -32,7 +32,9 @@ import org.apache.toree.kernel.protocol.v5.interpreter.tasks.InterpreterTaskFact
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import test.utils.UncaughtExceptionSuppression
 import test.utils.MaxAkkaTestTimeout
 
@@ -49,7 +51,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
     ConfigFactory.parseString(InterpreterActorSpecForIntegration.config),
     Main.getClass.getClassLoader
   )
-) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
+) with ImplicitSender with AnyFunSpecLike with Matchers with BeforeAndAfterEach
   with MockitoSugar with UncaughtExceptionSuppression {
 
   private val output = new ByteArrayOutputStream()
@@ -58,12 +60,12 @@ class InterpreterActorSpecForIntegration extends TestKit(
   }
 
 
-  before {
+  override def beforeEach(): Unit = {
     output.reset()
     // interpreter.start()
     val mockDisplayMethods = mock[DisplayMethodsLike]
     val mockKernel = mock[KernelLike]
-    doReturn(mockDisplayMethods).when(mockKernel).display
+    doReturn(mockDisplayMethods, Nil: _*).when(mockKernel).display
     interpreter.init(mockKernel)
 
     interpreter.doQuietly({
@@ -75,7 +77,7 @@ class InterpreterActorSpecForIntegration extends TestKit(
     })
   }
 
-  after {
+  override def afterEach(): Unit = {
     //  context is shared so dont stop it
     //    context.stop()
     interpreter.stop()

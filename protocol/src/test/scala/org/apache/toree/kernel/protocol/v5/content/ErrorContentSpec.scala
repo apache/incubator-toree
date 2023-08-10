@@ -17,10 +17,11 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json._
 
-class ErrorContentSpec extends FunSpec with Matchers {
+class ErrorContentSpec extends AnyFunSpec with Matchers {
   val errorJson: JsValue = Json.parse("""
   {
     "ename": "<STRING>",

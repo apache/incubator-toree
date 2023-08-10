@@ -24,7 +24,9 @@ import org.apache.toree.kernel.protocol.v5.content.KernelStatus
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout
 
@@ -35,10 +37,10 @@ class StatusDispatchSpec extends TestKit(
     Some(org.apache.toree.Main.getClass.getClassLoader)
   )
 )
-with FunSpecLike with Matchers with MockitoSugar with BeforeAndAfter{
+with AnyFunSpecLike with Matchers with MockitoSugar with BeforeAndAfterEach{
   var statusDispatchRef: ActorRef = _
   var relayProbe: TestProbe = _
-  before {
+  override def beforeEach(): Unit = {
     //  Mock the relay with a probe
     relayProbe = TestProbe()
     //  Mock the ActorLoader

@@ -17,11 +17,12 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json._
 
-class HistoryRequestSpec extends FunSpec with Matchers {
+class HistoryRequestSpec extends AnyFunSpec with Matchers {
   val historyRequestJson: JsValue = Json.parse("""
   {
     "output": true,

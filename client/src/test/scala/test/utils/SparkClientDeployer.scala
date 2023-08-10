@@ -164,7 +164,7 @@ object SparkClientDeployer extends LogLike{
    *
    * @return The actor system of ClientBootstrap
    */
-  def getClientActorSystem: ActorSystem =
+  def getClientActorSystem(): ActorSystem =
     if (testActorSystem == null) { client; testActorSystem }
     else testActorSystem
 }

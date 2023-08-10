@@ -22,7 +22,9 @@ import akka.testkit.{ImplicitSender, TestKit}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.communication.security.{Hmac, SignatureProducerActor}
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 
 object SignatureProducerActorSpecForIntegration {
   val config = """
@@ -36,21 +38,21 @@ class SignatureProducerActorSpecForIntegration extends TestKit(
     "SignatureProducerActorSpec",
     ConfigFactory.parseString(SignatureProducerActorSpecForIntegration.config)
   )
-) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
+) with ImplicitSender with AnyFunSpecLike with Matchers with BeforeAndAfterEach
 {
 
   private val sigKey = "12345"
 
   private var signatureProducer: ActorRef = _
 
-  before {
+  override def beforeEach(): Unit = {
     val hmac = Hmac(sigKey)
     signatureProducer =
       system.actorOf(Props(classOf[SignatureProducerActor], hmac))
 
   }
 
-  after {
+  override def afterEach(): Unit = {
     signatureProducer = null
   }
 

@@ -22,12 +22,13 @@ import akka.testkit.{TestProbe, ImplicitSender, TestKit}
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{Matchers, FunSpecLike}
-import org.mockito.Matchers._
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 
 class HeartbeatClientSpec extends TestKit(ActorSystem("HeartbeatActorSpec"))
-  with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+  with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
 
   describe("HeartbeatClientActor") {
     val socketFactory = mock[SocketFactory]

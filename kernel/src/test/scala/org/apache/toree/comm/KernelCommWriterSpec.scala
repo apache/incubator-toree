@@ -27,9 +27,11 @@ import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestProbe, TestKit}
 import com.typesafe.config.ConfigFactory
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 
 object KernelCommWriterSpec {
   val config ="""
@@ -43,7 +45,7 @@ class KernelCommWriterSpec extends TestKit(
     ConfigFactory.parseString(KernelCommWriterSpec.config),
     org.apache.toree.Main.getClass.getClassLoader
   )
-) with FunSpecLike with Matchers with BeforeAndAfter with MockitoSugar
+) with AnyFunSpecLike with Matchers with BeforeAndAfterEach with MockitoSugar
 {
 
   private val commId = UUID.randomUUID().toString
@@ -84,15 +86,15 @@ class KernelCommWriterSpec extends TestKit(
     Json.parse(receivedMessage.contentString).as[T]
   }
 
-  before {
-    kernelMessageBuilder = spy(KMBuilder())
+  override def beforeEach(): Unit = {
+    kernelMessageBuilder = spy[KMBuilder](KMBuilder())
 
     // Construct path for kernel message relay
     actorLoader = mock[ActorLoader]
     kernelMessageRelayProbe = TestProbe()
     val kernelMessageRelaySelection: ActorSelection =
       system.actorSelection(kernelMessageRelayProbe.ref.path.toString)
-    doReturn(kernelMessageRelaySelection)
+    doReturn(kernelMessageRelaySelection, Nil: _*)
       .when(actorLoader).load(SystemActorType.KernelMessageRelay)
 
     // Create a new writer to use for testing

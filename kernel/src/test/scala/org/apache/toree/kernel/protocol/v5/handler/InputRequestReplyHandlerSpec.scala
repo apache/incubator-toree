@@ -28,7 +28,9 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.scalatest.concurrent.Eventually
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.time.{Milliseconds, Span}
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import test.utils.MaxAkkaTestTimeout
 import org.mockito.Mockito._
 
@@ -36,8 +38,8 @@ import collection.JavaConverters._
 
 class InputRequestReplyHandlerSpec
   extends TestKit(ActorSystem("InputRequestReplyHandlerSystem", None, Some(Main.getClass.getClassLoader)))
-  with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter with Eventually
+  with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach with Eventually
 {
   implicit override val patienceConfig = PatienceConfig(
     timeout = scaled(Span(200, Milliseconds)),
@@ -51,12 +53,12 @@ class InputRequestReplyHandlerSpec
 
   private var inputRequestReplyHandler: ActorRef = _
 
-  before {
+  override def beforeEach(): Unit = {
     fakeSender = TestProbe()
 
     kernelMessageRelayProbe = TestProbe()
     mockActorLoader = mock[ActorLoader]
-    doReturn(system.actorSelection(kernelMessageRelayProbe.ref.path.toString))
+    doReturn(system.actorSelection(kernelMessageRelayProbe.ref.path.toString), Nil: _*)
       .when(mockActorLoader).load(SystemActorType.KernelMessageRelay)
 
     responseMap = new ConcurrentHashMap[String, ActorRef]().asScala

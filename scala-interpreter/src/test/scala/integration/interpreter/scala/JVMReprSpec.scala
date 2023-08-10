@@ -28,29 +28,32 @@ import org.apache.toree.interpreter.Results.Success
 import org.apache.toree.kernel.api.{DisplayMethodsLike, KernelLike}
 import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 import org.mockito.Mockito.doReturn
-import org.scalatest.{BeforeAndAfter, FunSpec, Ignore, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.Ignore
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 
 import scala.util.Random
 
 @SbtForked
 @Ignore
-class JVMReprSpec extends FunSpec with Matchers with MockitoSugar with BeforeAndAfter {
+class JVMReprSpec extends AnyFunSpec with Matchers with MockitoSugar with BeforeAndAfterEach {
 
   private val outputResult = new ByteArrayOutputStream()
   private var interpreter: Interpreter = _
 
-  before {
+  override def beforeEach(): Unit = {
     val mockKernel = mock[KernelLike]
     val mockDisplayMethods = mock[DisplayMethodsLike]
-    doReturn(mockDisplayMethods).when(mockKernel).display
+    doReturn(mockDisplayMethods, Nil: _*).when(mockKernel).display
 
     interpreter = new ScalaInterpreter().init(mockKernel)
 
     StreamState.setStreams(outputStream = outputResult)
   }
 
-  after {
+  override def afterEach(): Unit = {
     interpreter.stop()
     outputResult.reset()
   }

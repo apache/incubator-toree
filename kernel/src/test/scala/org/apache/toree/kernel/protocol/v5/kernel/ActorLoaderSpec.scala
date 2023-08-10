@@ -21,7 +21,8 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5.{MessageType, SocketType}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import test.utils.TestProbeProxyActor
 import test.utils.MaxAkkaTestTimeout
 
@@ -31,7 +32,7 @@ class ActorLoaderSpec extends TestKit(
     None,
     Some(org.apache.toree.Main.getClass.getClassLoader)
   ))
-with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
   describe("ActorLoader"){
     describe("#load( MessageType )"){
       it("should load an ActorSelection that has been loaded into the system"){

@@ -26,12 +26,15 @@ import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.kernel.interpreter.scala.ScalaInterpreter
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpec, Ignore, Matchers}
+import org.scalatest.Ignore
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 @SbtForked
 @Ignore
 class AddExternalJarMagicSpecForIntegration
-  extends FunSpec with Matchers with MockitoSugar with BeforeAndAfter
+  extends AnyFunSpec with Matchers with MockitoSugar with BeforeAndAfterEach
 {
 
   private val outputResult = new ByteArrayOutputStream()
@@ -39,7 +42,7 @@ class AddExternalJarMagicSpecForIntegration
   private var tempdir: File = _
 
 
-  before {
+  override def beforeEach(): Unit = {
     interpreter = new ScalaInterpreter {
       override protected def bindKernelVariable(kernel: KernelLike): Unit = { }
     }
@@ -51,7 +54,7 @@ class AddExternalJarMagicSpecForIntegration
     tempdir = JarUtils.createTemporaryDir()
   }
 
-  after {
+  override def afterEach(): Unit = {
     interpreter.stop()
     outputResult.reset()
   }
