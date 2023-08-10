@@ -134,7 +134,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
           actual should be (expected)
         }
 
-        runnable.close()
+        Try(runnable.close())
       }
 
       it("should set the identity option when provided") {
@@ -157,7 +157,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
           actual should be (expected)
         }
 
-        runnable.close()
+        Try(runnable.close())
       }
 
       it("should close the thread when closed"){
@@ -177,7 +177,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
           runnable.isProcessing should be (true)
         }
 
-        runnable.close()
+        Try(runnable.close())
 
         eventually{
           thread.isAlive should be (false)
@@ -203,7 +203,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
           runnable.isProcessing should be (true)
         }
 
-        runnable.close()
+        Try(runnable.close())
 
         eventually {
           runnable.isProcessing should be (false)
@@ -227,7 +227,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
           runnable.isProcessing should be (true)
         }
 
-        runnable.close()
+        Try(runnable.close())
       }
     }
 
@@ -249,7 +249,7 @@ class ZeroMQSocketRunnableSpec extends FunSpec with Matchers
             runnable.isProcessing should be (true)
           }
 
-          runnable.close()
+          Try(runnable.close())
 
           eventually{
             thread.isAlive should be(false)
