@@ -155,7 +155,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      doQuietly {
 
        bind(
-         "kernel", "org.apache.toree.kernel.api.KernelLike",
+         "kernel", "org.apache.toree.kernel.api.Kernel",
          kernel, List( """@transient implicit""")
        )
      }
