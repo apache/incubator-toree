@@ -33,7 +33,7 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.magic.MagicManager
 import org.apache.toree.plugins.PluginManager
 import org.apache.toree.utils.{LogLike, FileUtils}
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 import org.apache.toree.plugins.AllInterpretersReady
 
 /**
