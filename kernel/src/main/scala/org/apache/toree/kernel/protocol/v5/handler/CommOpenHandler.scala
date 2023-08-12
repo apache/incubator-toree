@@ -82,7 +82,7 @@ class CommOpenHandler(
     }
   }
 
-  private def handleParseError(invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) = {
+  private def handleParseError(invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]): Unit = {
     // TODO: Determine proper response for a parse failure
     logger.warn("Parse error for Comm Open! Not responding!")
   }

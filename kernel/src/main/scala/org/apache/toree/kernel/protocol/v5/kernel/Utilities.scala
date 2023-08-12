@@ -26,6 +26,7 @@ import org.apache.toree.utils.LogLike
 import play.api.libs.json.JsonValidationError
 import play.api.libs.json.{JsPath, Json, Reads}
 
+import scala.collection.mutable
 import scala.concurrent.duration._
 
 object Utilities extends LogLike {
@@ -77,15 +78,15 @@ object Utilities extends LogLike {
   }
 
   implicit def KernelMessageToZMQMessage(kernelMessage : KernelMessage) : ZMQMessage = {
-    var frames: Seq[ByteString] = Seq()
-    kernelMessage.ids.map((id : Array[Byte]) => frames = frames :+ ByteString.apply(id) )
-    frames = frames :+ "<IDS|MSG>"
-    frames = frames :+ kernelMessage.signature
-    frames = frames :+ Json.toJson(kernelMessage.header).toString()
-    frames = frames :+ Json.toJson(kernelMessage.parentHeader).toString()
-    frames = frames :+ Json.toJson(kernelMessage.metadata).toString
-    frames = frames :+ kernelMessage.contentString
-    ZMQMessage(frames  : _*)
+    val frames: mutable.ListBuffer[ByteString] = mutable.ListBuffer()
+    kernelMessage.ids.map((id: Array[Byte]) => frames += ByteString.apply(id))
+    frames += "<IDS|MSG>"
+    frames += kernelMessage.signature
+    frames += Json.toJson(kernelMessage.header).toString()
+    frames += Json.toJson(kernelMessage.parentHeader).toString()
+    frames += Json.toJson(kernelMessage.metadata).toString
+    frames += kernelMessage.contentString
+    ZMQMessage(frames.toSeq : _*)
   }
 
   def parseAndHandle[T, U](json: String, reads: Reads[T],

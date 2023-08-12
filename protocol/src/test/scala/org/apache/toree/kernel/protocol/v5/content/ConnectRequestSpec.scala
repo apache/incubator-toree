@@ -55,7 +55,7 @@ class ConnectRequestSpec extends AnyFunSpec with Matchers {
         val ConnectRequestResults = connectRequestJson.validate[ConnectRequest]
 
         ConnectRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ConnectRequest) => valid
         ) should be (connectRequest)
       }

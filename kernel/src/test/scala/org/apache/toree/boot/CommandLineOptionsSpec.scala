@@ -24,7 +24,7 @@ import joptsimple.OptionException
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 
 class CommandLineOptionsSpec extends AnyFunSpec with Matchers {
 

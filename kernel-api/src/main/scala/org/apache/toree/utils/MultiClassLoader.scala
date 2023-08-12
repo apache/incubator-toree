@@ -22,7 +22,7 @@ import java.net.{URL, URLClassLoader}
 import java.util
 import org.slf4j.LoggerFactory
 
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 import scala.language.existentials
@@ -38,11 +38,11 @@ import scala.language.existentials
  *                     implementations of this class loader
  */
 class MultiClassLoader(
-  private val urls: collection.Seq[URL],
-  private val classLoaders: collection.Seq[ClassLoader]
+  private val urls: Seq[URL],
+  private val classLoaders: Seq[ClassLoader]
 ) extends URLClassLoader(
   classLoaders.flatMap({
-    case urlClassLoader: URLClassLoader => urlClassLoader.getURLs.to(collection.Seq)
+    case urlClassLoader: URLClassLoader => urlClassLoader.getURLs.toSeq
     case _                              => Nil
   }).distinct.toArray,
   /* Create a parent chain based on a each classloader's parent */ {

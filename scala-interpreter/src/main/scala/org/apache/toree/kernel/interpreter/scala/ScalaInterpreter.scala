@@ -25,13 +25,14 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.repl.Main
 import org.apache.toree.interpreter._
+import org.apache.toree.interpreter.{Results => ToreeResults}
 import org.apache.toree.kernel.api.{KernelLike, KernelOptions}
 import org.apache.toree.utils.TaskManager
 import org.slf4j.LoggerFactory
 import org.apache.toree.kernel.BuildInfo
 import org.apache.toree.kernel.protocol.v5.MIMEType
 import scala.annotation.tailrec
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 import scala.concurrent.{Await, Future}
 import scala.language.reflectiveCalls
 import scala.tools.nsc.Settings
@@ -134,7 +135,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    }
 
    protected def interpreterArgs(kernel: KernelLike): List[String] = {
-     import scala.jdk.CollectionConverters._
+     import scala.collection.JavaConverters._
      if (kernel == null || kernel.config == null) {
        List()
      }
@@ -191,7 +192,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    }
 
    override def interpret(code: String, silent: Boolean = false, output: Option[OutputStream]):
-    (org.apache.toree.interpreter.Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
+    (ToreeResults.Result, Either[ExecuteOutput, ExecuteFailure]) = {
      interpretBlock(code, silent)
    }
 
@@ -215,7 +216,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
         definitions.append(s"$name: $func$funcType").append("\n")
 
-      case NamedResult(name, vtype, value) if read(name).nonEmpty =>
+      case NamedResult(_, _, name, vtype, value) if read(name).nonEmpty =>
 
         val result = read(name)
 
@@ -280,7 +281,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
   }
 
   protected def interpretBlock(code: String, silent: Boolean = false):
-    (org.apache.toree.interpreter.Results.Result, Either[ExecuteOutput, ExecuteFailure]) = {
+    (ToreeResults.Result, Either[ExecuteOutput, ExecuteFailure]) = {
 
      logger.trace(s"Interpreting line: $code")
 
@@ -297,23 +298,23 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      Await.result(futureResultAndExecuteInfo, Duration.Inf)
    }
 
-   protected def interpretMapToCustomResult(future: Future[Results.Result]): Future[org.apache.toree.interpreter.Results.Result] = {
+   protected def interpretMapToCustomResult(future: Future[Results.Result]): Future[ToreeResults.Result] = {
      import scala.concurrent.ExecutionContext.Implicits.global
      future map {
-       case Results.Success             => org.apache.toree.interpreter.Results.Success
-       case Results.Error               => org.apache.toree.interpreter.Results.Error
-       case Results.Incomplete          => org.apache.toree.interpreter.Results.Incomplete
+       case Results.Success             => ToreeResults.Success
+       case Results.Error               => ToreeResults.Error
+       case Results.Incomplete          => ToreeResults.Incomplete
      } recover {
-       case ex: ExecutionException => org.apache.toree.interpreter.Results.Aborted
+       case ex: ExecutionException => ToreeResults.Aborted
      }
    }
 
-   protected def interpretMapToResultAndOutput(future: Future[org.apache.toree.interpreter.Results.Result]):
-      Future[(org.apache.toree.interpreter.Results.Result, Either[Map[String, String], ExecuteError])] = {
+   protected def interpretMapToResultAndOutput(future: Future[ToreeResults.Result]):
+      Future[(ToreeResults.Result, Either[Map[String, String], ExecuteError])] = {
      import scala.concurrent.ExecutionContext.Implicits.global
 
      future map {
-       case result @ (org.apache.toree.interpreter.Results.Success | org.apache.toree.interpreter.Results.Incomplete) =>
+       case result @ (ToreeResults.Success | ToreeResults.Incomplete) =>
          val lastOutput = lastResultOut.toString("UTF-8").trim
          lastResultOut.reset()
 
@@ -323,17 +324,17 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
          val output = obj.map(Displayers.display(_).asScala.toMap).getOrElse(Map.empty)
          (result, Left(output))
 
-       case org.apache.toree.interpreter.Results.Error =>
+       case ToreeResults.Error =>
          val lastOutput = lastResultOut.toString("UTF-8").trim
          lastResultOut.reset()
 
          val (obj, defStr, text) = prepareResult(lastOutput)
          defStr.foreach(kernel.display.content(MIMEType.PlainText, _))
          val output = interpretConstructExecuteError(text.get)
-         (org.apache.toree.interpreter.Results.Error, Right(output))
+         (ToreeResults.Error, Right(output))
 
-       case org.apache.toree.interpreter.Results.Aborted =>
-         (org.apache.toree.interpreter.Results.Aborted, Right(null))
+       case ToreeResults.Aborted =>
+         (ToreeResults.Aborted, Right(null))
      }
    }
 
@@ -421,7 +422,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 object ScalaInterpreter {
 
   val HigherOrderFunction: Regex = """(\w+):\s+(\(\s*.*=>\s*\w+\))(\w+)\s*.*""".r
-  val NamedResult: Regex = """(\w+):\s+([^=]+)\s+=\s*(.*)""".r
+  val NamedResult: Regex = """((val|var)\s+)?(\w+):\s+([^=]+)\s+=\s*(.*)""".r
   val Definition: Regex = """defined\s+(\w+)\s+(.+)""".r
   val Import: Regex = """import\s+([\w\.,\{\}\s]+)""".r
 

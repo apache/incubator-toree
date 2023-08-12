@@ -19,7 +19,7 @@ package org.apache.toree.kernel.interpreter.scala
 
 import java.util
 
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.util.Try
 import org.apache.spark.SparkContext

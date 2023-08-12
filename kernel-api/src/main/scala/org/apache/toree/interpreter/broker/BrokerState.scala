@@ -35,7 +35,7 @@ import java.io.{InputStream, OutputStream}
 class BrokerState(private val maxQueuedCode: Int) {
   private val logger = LoggerFactory.getLogger(this.getClass)
 
-  import scala.jdk.CollectionConverters._
+  import scala.collection.JavaConverters._
 
   @volatile private var _isReady: Boolean = false
 

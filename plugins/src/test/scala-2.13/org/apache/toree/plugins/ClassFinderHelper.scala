@@ -14,8 +14,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
-resolvers += Resolver.sonatypeRepo("releases")
 
-if (scalaBinaryVersion.value == "2.12") {
-  addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
+package org.apache.toree.plugins
+
+import org.clapper.classutil.ClassInfo
+
+trait ClassFinderHelper {
+
+  def wrappedGetClassesReturnVal(classes: Seq[ClassInfo]): Object = {
+    LazyList.from(classes)
+  }
 }
