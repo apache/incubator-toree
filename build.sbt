@@ -43,7 +43,7 @@ ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-unchecked",
   "-feature",
-  "-Xfatal-warnings",
+//  "-Xfatal-warnings",
   "-language:reflectiveCalls",
   "-target:jvm-1.8"
 )

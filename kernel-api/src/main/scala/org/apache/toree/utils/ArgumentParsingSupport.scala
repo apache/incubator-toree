@@ -18,7 +18,7 @@
 package org.apache.toree.utils
 
 import joptsimple.{OptionSpec, OptionParser}
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 import scala.language.implicitConversions
 import java.io.{PrintStream, OutputStream}
 

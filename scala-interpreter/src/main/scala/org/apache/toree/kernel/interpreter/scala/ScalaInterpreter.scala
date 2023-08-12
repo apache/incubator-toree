@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory
 import org.apache.toree.kernel.BuildInfo
 import org.apache.toree.kernel.protocol.v5.MIMEType
 import scala.annotation.tailrec
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 import scala.concurrent.{Await, Future}
 import scala.language.reflectiveCalls
 import scala.tools.nsc.Settings
@@ -132,7 +132,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    }
 
    protected def interpreterArgs(kernel: KernelLike): List[String] = {
-     import scala.jdk.CollectionConverters._
+     import scala.collection.JavaConverters._
      if (kernel == null || kernel.config == null) {
        List()
      }
