@@ -75,8 +75,8 @@ class PluginSearcher {
       s"Failed to load class info from classpath: ${classFinder.classpath.mkString(",")}",
       _: Throwable
     ))
-    val stream = tryStream.getOrElse(LazyList.empty)
-    ClassFinder.classInfoMap(stream.iterator)
+    val stream = tryStream.getOrElse(Stream.empty)
+    ClassFinder.classInfoMap(stream.toIterator)
   }
 
   /**

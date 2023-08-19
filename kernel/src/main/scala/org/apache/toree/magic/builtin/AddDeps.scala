@@ -91,7 +91,7 @@ class AddDeps extends LineMagic with IncludeInterpreter
       } else {
         (x, "*")
       }
-    }: (String, String)).to(collection.Set)
+    }: (String, String)).toSet
 
     val repositoriesWithCreds = dependencyDownloader.resolveRepositoriesAndCredentials(repository, credentials)
 

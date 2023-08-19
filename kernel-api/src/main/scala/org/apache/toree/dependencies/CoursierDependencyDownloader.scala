@@ -298,11 +298,11 @@ object Credentials {
       p
     }
 
-    private def findKey(keys: collection.Seq[String]) = keys
+    private def findKey(keys: collection.Seq[String]): String = keys
       .iterator
       .map(props.getProperty)
       .filter(_ != null)
-      .to(LazyList)
+      .toStream
       .headOption
       .getOrElse {
         throw new NoSuchElementException(s"${keys.head} key in $file")

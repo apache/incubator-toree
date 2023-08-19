@@ -22,8 +22,9 @@ ThisBuild / version := Properties.envOrElse("VERSION", "0.0.0-dev") +
   (if ((ThisBuild / isSnapshot ).value) "-SNAPSHOT" else "")
 ThisBuild / isSnapshot := Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
 ThisBuild / organization := "org.apache.toree.kernel"
-ThisBuild / crossScalaVersions := Seq("2.13.10")
-ThisBuild / scalaVersion := (ThisBuild / crossScalaVersions ).value.head
+ThisBuild / crossScalaVersions := Seq("2.13.8", "2.12.15")
+//ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8")
+ThisBuild / scalaVersion := (ThisBuild / crossScalaVersions).value.head
 ThisBuild / Dependencies.sparkVersion := {
   val envVar = "APACHE_SPARK_VERSION"
   val defaultVersion = "3.3.2"
@@ -40,7 +41,7 @@ ThisBuild / Dependencies.sparkVersion := {
 
 // Compiler settings
 ThisBuild / scalacOptions ++= Seq(
-  "-deprecation",
+//  "-deprecation",
   "-unchecked",
   "-feature",
 //  "-Xfatal-warnings",
