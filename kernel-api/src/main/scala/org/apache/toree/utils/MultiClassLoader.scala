@@ -42,7 +42,7 @@ class MultiClassLoader(
   private val classLoaders: collection.Seq[ClassLoader]
 ) extends URLClassLoader(
   classLoaders.flatMap({
-    case urlClassLoader: URLClassLoader => urlClassLoader.getURLs.to(collection.Seq)
+    case urlClassLoader: URLClassLoader => urlClassLoader.getURLs.toSeq
     case _                              => Nil
   }).distinct.toArray,
   /* Create a parent chain based on a each classloader's parent */ {

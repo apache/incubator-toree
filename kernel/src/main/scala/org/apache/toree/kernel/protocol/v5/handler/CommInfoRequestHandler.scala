@@ -40,10 +40,10 @@ class CommInfoRequestHandler(
   extends BaseHandler(actorLoader) with MessageLogSupport
 {
 
-  def buildCommMap(targetName: String) = {
+  def buildCommMap(targetName: String): Map[UUID, Map[UUID, UUID]] = {
     commStorage.getCommIdsFromTarget(targetName) match {
       case Some(commVector) => {
-        commVector.map(x => Map(x -> Map("target_name" -> targetName))).flatten.toMap
+        commVector.flatMap(x => Map(x -> Map("target_name" -> targetName))).toMap
       }
       case _ => {
         Map()
@@ -54,13 +54,14 @@ class CommInfoRequestHandler(
   override def process(kernelMessage: KernelMessage): Future[_] = Future {
     logKernelMessageAction("Initiating CommInfo request for", kernelMessage)
     import scala.language.existentials
-    val commMap = (Json.parse(kernelMessage.contentString) \ "target_name").asOpt[String] match {
+    val commMap: Map[String, Map[String, String]] =
+      (Json.parse(kernelMessage.contentString) \ "target_name").asOpt[String] match {
       case Some(targetName) => {
         buildCommMap(targetName)
       }
       case None => {
-        //target_name is missing from the kernel message so return all comms over every target
-        commStorage.getTargets().map(buildCommMap(_))
+        // target_name is missing from the kernel message so return all comms over every target
+        commStorage.getTargets().map(buildCommMap).reduce(_ ++ _)
       }
     }
     val commInfoReply = CommInfoReplyOk(commMap.asInstanceOf[Map[String, Map[String, String]]])
