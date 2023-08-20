@@ -213,7 +213,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
         definitions.append(s"$name: $func$funcType").append("\n")
 
-      case NamedResult(name, vtype, value) if read(name).nonEmpty =>
+      case NamedResult(_, _, name, vtype, value) if read(name).nonEmpty =>
 
         val result = read(name)
 
@@ -419,7 +419,7 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 object ScalaInterpreter {
 
   val HigherOrderFunction: Regex = """(\w+):\s+(\(\s*.*=>\s*\w+\))(\w+)\s*.*""".r
-  val NamedResult: Regex = """(\w+):\s+([^=]+)\s+=\s*(.*)""".r
+  val NamedResult: Regex = """((val|var)\s+)?(\w+):\s+([^=]+)\s+=\s*(.*)""".r
   val Definition: Regex = """defined\s+(\w+)\s+(.+)""".r
   val Import: Regex = """import\s+([\w\.,\{\}\s]+)""".r
 
