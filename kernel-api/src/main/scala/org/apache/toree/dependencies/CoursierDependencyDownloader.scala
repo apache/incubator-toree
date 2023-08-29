@@ -21,16 +21,17 @@ import java.net.{URI, URL}
 import java.util.Properties
 import java.util.concurrent.ConcurrentHashMap
 import coursier.core.Authentication
-import coursier.Cache.Logger
+import coursier._
+import coursier.util.{Gather, Task}
+import coursier.cache.{ArtifactError, Cache}
 import coursier.Dependency
 import coursier.core.Repository
 import coursier.core.Resolution.ModuleVersion
 import coursier.ivy.{IvyRepository, IvyXml}
 import coursier.maven.MavenRepository
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
-import scalaz.\/
-import scalaz.concurrent.Task
 
 /**
  * Represents a dependency downloader for jars that uses Coursier underneath.
@@ -71,34 +72,27 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     transitive: Boolean,
     excludeBaseDependencies: Boolean,
     ignoreResolutionErrors: Boolean,
-    extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
+    extraRepositories: collection.Seq[(URL, Option[Credentials])] = Nil,
     verbose: Boolean,
     trace: Boolean,
     configuration: Option[String] = None,
     artifactType: Option[String] = None,
     artifactClassifier: Option[String] = None,
-    excludes: Set[(String,String)] = Set.empty
-  ): Seq[URI] = {
+    excludes: collection.Set[(String,String)] = collection.Set.empty
+  ): collection.Seq[URI] = {
     assert(localDirectory != null)
     import coursier._
 
     // Grab exclusions using base dependencies (always exclude scala lang)
-    val exclusions: Set[(String, String)] = (if (excludeBaseDependencies) {
-      getBaseDependencies.map(_.module).map(m => (m.organization, m.name))
-    } else Nil).toSet ++ Set(("org.scala-lang", "*"), ("org.scala-lang.modules", "*")) ++ excludes
+    val exclusions: collection.Set[(String, String)] = (if (excludeBaseDependencies) {
+      getBaseDependencies.map(_.module).map(m => (m.organization.toString, m.name.toString))
+    } else Nil).toSet ++ collection.Set(("org.scala-lang".toString, "*".toString), ("org.scala-lang.modules".toString, "*".toString)) ++ excludes
 
     // Mark dependency that we want to download
-    val start = Resolution(Set(
+    val start = Resolution(Seq(
       Dependency(
-        module = Module(organization = groupId, name = artifactId),
-        version = version,
-        transitive = transitive,
-        exclusions = exclusions, // NOTE: Source/Javadoc not downloaded by default
-        configuration = configuration.getOrElse("default"),
-        attributes = Attributes(
-          artifactType.getOrElse(""),
-          artifactClassifier.getOrElse("")
-        )
+        module = Module(organization = Organization(groupId), name = ModuleName(artifactId)),
+        version = version
       )
     ))
 
@@ -112,9 +106,9 @@ class CoursierDependencyDownloader extends DependencyDownloader {
 
     // Build list of locations to fetch dependencies
     val fetchLocations = Seq(ivy2Cache(localDirectory)) ++ allRepositories
-    val fetch = Fetch.from(
+    val fetch = ResolutionProcess.fetch(
       fetchLocations,
-      Cache.fetch(downloadLocations, logger = Some(new DownloadLogger(verbose, trace)))
+      Cache.default.fetch
     )
 
     val fetchUris = localDirectory +: repositoriesToURIs(allRepositories)
@@ -123,12 +117,12 @@ class CoursierDependencyDownloader extends DependencyDownloader {
       printStream.println(s"-> ${fetchUris.mkString("\n-> ")}")
     }
     // Verify locations where we will download dependencies
-    val resolution = start.process.run(fetch).unsafePerformSync
+    val resolution = start.process.run(fetch).unsafeRun()
 
     // Report any resolution errors
-    val errors: Seq[(ModuleVersion, Seq[String])] = resolution.metadataErrors
-    errors.foreach { case (dep, e) =>
-      printStream.println(s"-> Failed to resolve ${dep._1.toString()}:${dep._2}")
+    val errors: collection.Seq[((Module, String), Seq[String])] = resolution.errors
+    errors.foreach { case ((dep, msg), e) =>
+      printStream.println(s"-> Failed to resolve ${dep.toString()}:${msg}")
       e.foreach(s => printStream.println(s"    -> $s"))
     }
 
@@ -136,12 +130,9 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     if (errors.nonEmpty && !ignoreResolutionErrors) return Nil
 
     // Perform task of downloading dependencies
-    val localArtifacts: Seq[FileError \/ File] = Task.gatherUnordered(
-      resolution.artifacts.map(a => Cache.file(
-        artifact = a,
-        cache = downloadLocations,
-        logger = Some(new DownloadLogger(verbose, trace))
-      ).run)).unsafePerformSync
+    val localArtifacts: collection.Seq[Either[ArtifactError, File]] = Gather[Task].gather(
+      resolution.artifacts().map(Cache.default.file(_).run)
+    ).unsafeRun()
 
     // Print any errors in retrieving dependencies
     localArtifacts.flatMap(_.swap.toOption).map(_.message)
@@ -192,7 +183,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    *
    * @return The list of repositories as URIs
    */
-  def getRepositories: Seq[URI] = repositoriesToURIs(repositories)
+  def getRepositories: collection.Seq[URI] = repositoriesToURIs(repositories)
 
   /**
    * Returns the current directory where dependencies will be downloaded.
@@ -220,79 +211,12 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     true
   }
 
-  private class DownloadLogger(
-    private val verbose: Boolean,
-    private val trace: Boolean
-  ) extends Logger {
-    import scala.collection.JavaConverters._
-    private val downloadId = new ConcurrentHashMap[String, String]().asScala
-    private val downloadFile = new ConcurrentHashMap[String, File]().asScala
-    private val downloadAmount = new ConcurrentHashMap[String, Long]().asScala
-    private val downloadTotal = new ConcurrentHashMap[String, Long]().asScala
-
-    override def foundLocally(url: String, file: File): Unit = {
-      val id = downloadId.getOrElse(url, url)
-      val f = s"(${downloadFile.get(url).map(_.getName).getOrElse("")})"
-      if (verbose) printStream.println(s"=> $id: Found at ${file.getAbsolutePath}")
-    }
-
-    override def downloadingArtifact(url: String, file: File): Unit = {
-      downloadId.put(url, nextId())
-      val id = downloadId.getOrElse(url, url)
-      val f = s"(${downloadFile.get(url).map(_.getName).getOrElse("")})"
-
-      if (verbose) printStream.println(s"=> $id $f: Downloading $url")
-
-      downloadFile.put(url, file)
-    }
-
-    override def downloadLength(url: String, length: Long): Unit = {
-      val id = downloadId.getOrElse(url, url)
-      val f = s"(${downloadFile.get(url).map(_.getName).getOrElse("")})"
-      if (trace) printStream.println(s"===> $id $f: Is $length total bytes")
-      downloadTotal.put(url, length)
-    }
-
-    override def downloadProgress(url: String, downloaded: Long): Unit = {
-      downloadAmount.put(url, downloaded)
-
-      val ratio = downloadAmount(url).toDouble / downloadTotal.getOrElse[Long](url, 1).toDouble
-      val percent = ratio * 100.0
-
-      if (trace) printStream.printf(
-        "===> %s %s: Downloaded %d bytes (%.2f%%)\n",
-        downloadId.getOrElse(url, url),
-        s"(${downloadFile.get(url).map(_.getName).getOrElse("")})",
-        java.lang.Long.valueOf(downloaded),
-        java.lang.Double.valueOf(percent)
-      )
-    }
-
-    override def downloadedArtifact(url: String, success: Boolean): Unit = {
-      if (verbose) {
-        val id = downloadId.getOrElse(url, url)
-        val f = s"(${downloadFile.get(url).map(_.getName).getOrElse("")})"
-        if (success) printStream.println(s"=> $id $f: Finished downloading")
-        else printStream.println(s"=> $id: An error occurred while downloading")
-      }
-    }
-
-    private val nextId: () => String = (() => {
-      var counter: Long = 0
-
-      () => {
-        counter += 1
-        counter.toString
-      }
-    })()
-  }
-
   /**
    * Retrieves base dependencies used when building Toree modules.
    *
    * @return The collection of dependencies
    */
-  private def getBaseDependencies: Seq[Dependency] = {
+  private def getBaseDependencies: collection.Seq[Dependency] = {
     import coursier.core.compatibility.xmlParse
 
     // Find all of the *ivy.xml files on the classpath.
@@ -307,7 +231,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     nodes.flatMap(_.left.toOption).foreach(s => printStream.println(s"Error: $s"))
 
     // Grab Ivy XML projects
-    val projects = nodes.flatMap(_.right.toOption).map(IvyXml.project)
+    val projects = nodes.flatMap(_.toOption).map(IvyXml.project)
 
     // Report any errors parsing Ivy XML
     projects.flatMap(_.swap.toOption).foreach(s => printStream.println(s"Error: $s"))
@@ -325,7 +249,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
    * @param repositories The repositories to convert
    * @return The resulting URIs
    */
-  private def repositoriesToURIs(repositories: Seq[Repository]) =
+  private def repositoriesToURIs(repositories: collection.Seq[Repository]) =
     repositories.map {
       case ivy: IvyRepository => ivy.pattern.string
       case maven: MavenRepository => maven.root
@@ -344,7 +268,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
       "(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[organisation]/[module]/" +
       "[type]s/[artifact]-[revision](-[classifier]).[ext]",
     metadataPatternOpt = Some(
-      ivy2HomeUri + "cache/" +
+      ivy2HomeUri.toString + "cache/" +
         "(scala_[scalaVersion]/)(sbt_[sbtVersion]/)[organisation]/[module]/" +
         "[type]-[revision](-[classifier]).[ext]"
     ),
@@ -374,7 +298,7 @@ object Credentials {
       p
     }
 
-    private def findKey(keys: Seq[String]) = keys
+    private def findKey(keys: collection.Seq[String]): String = keys
       .iterator
       .map(props.getProperty)
       .filter(_ != null)

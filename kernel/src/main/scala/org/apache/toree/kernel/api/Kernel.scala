@@ -138,9 +138,9 @@ class Kernel (
     val (success, result) = output
     success match {
       case Results.Success =>
-        (true, result.left.get)
+        (true, result.swap.toOption.get)
       case Results.Error =>
-        (false, Map("text/plain" -> result.right.getOrElse("").toString))
+        (false, Map("text/plain" -> result.getOrElse("").toString))
       case Results.Aborted =>
         (false, Map("text/plain" -> "Aborted!"))
       case Results.Incomplete =>
@@ -413,7 +413,7 @@ class Kernel (
 
     if(config.getString("spark_context_initialization_mode") == "eager") {
       // explicitly enable eager initialization of spark context
-      SparkSession.builder.config(defaultSparkConf).getOrCreate
+      SparkSession.builder().config(defaultSparkConf).getOrCreate()
     } else {
       // default lazy initialization of spark context
       defaultSparkConf.getOption("spark.master") match {
@@ -425,7 +425,7 @@ class Kernel (
           // default timeout is 100ms and it is specified in reference.conf.
           import scala.concurrent.ExecutionContext.Implicits.global
           val sessionFuture = Future {
-            SparkSession.builder.config(defaultSparkConf).getOrCreate
+            SparkSession.builder().config(defaultSparkConf).getOrCreate()
           }
 
           try {
@@ -441,7 +441,7 @@ class Kernel (
           }
 
         case _ =>
-          SparkSession.builder.config(defaultSparkConf).getOrCreate
+          SparkSession.builder().config(defaultSparkConf).getOrCreate()
       }
     }
   }
