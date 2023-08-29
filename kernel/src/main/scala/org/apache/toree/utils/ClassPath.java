@@ -1,4 +1,20 @@
 /*
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License
+ */
+/*
  * Copyright (C) 2012 The Guava Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -16,9 +32,6 @@ package org.apache.toree.utils;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.StandardSystemProperty.JAVA_CLASS_PATH;
-import static com.google.common.base.StandardSystemProperty.PATH_SEPARATOR;
-import static java.util.logging.Level.WARNING;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.CharMatcher;
@@ -32,6 +45,8 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.CharSource;
 import com.google.common.io.Resources;
 import com.google.common.reflect.Reflection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,10 +65,9 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 
-// This class is copied from Guava v32.1.2
+// This class is derived from Guava v32.1.2
 // https://github.com/google/guava/blob/v32.1.2/guava/src/com/google/common/reflect/ClassPath.java
 //
 // TOREE-552: Apache Toree should use Guava 14 to align with Apache Spark, unfortunately, ClassPath
@@ -100,9 +114,11 @@ import javax.annotation.CheckForNull;
  * @since 14.0
  */
 public final class ClassPath {
-    private static final Logger logger = Logger.getLogger(ClassPath.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(ClassPath.class.getName());
 
-    /** Separator for the Class-Path manifest attribute value in jar files. */
+    /**
+     * Separator for the Class-Path manifest attribute value in jar files.
+     */
     private static final Splitter CLASS_PATH_ATTRIBUTE_SEPARATOR =
             Splitter.on(" ").omitEmptyStrings();
 
@@ -128,7 +144,7 @@ public final class ClassPath {
      * </ul>
      *
      * @throws IOException if the attempt to read class path resources (jar files or directories)
-     *     failed.
+     *                     failed.
      */
     public static ClassPath from(ClassLoader classloader) throws IOException {
         ImmutableSet<LocationInfo> locations = locationsFrom(classloader);
@@ -176,7 +192,9 @@ public final class ClassPath {
                 .toSet();
     }
 
-    /** Returns all top level classes whose package name is {@code packageName}. */
+    /**
+     * Returns all top level classes whose package name is {@code packageName}.
+     */
     public ImmutableSet<ClassInfo> getTopLevelClasses(String packageName) {
         checkNotNull(packageName);
         ImmutableSet.Builder<ClassInfo> builder = ImmutableSet.builder();
@@ -236,7 +254,7 @@ public final class ClassPath {
          * <p>See {@link ClassLoader#getResource}
          *
          * @throws NoSuchElementException if the resource cannot be loaded through the class loader,
-         *     despite physically existing in the class path.
+         *                                despite physically existing in the class path.
          */
         public final URL url() {
             URL url = loader.getResource(resourceName);
@@ -250,7 +268,7 @@ public final class ClassPath {
          * Returns a {@link ByteSource} view of the resource from which its bytes can be read.
          *
          * @throws NoSuchElementException if the resource cannot be loaded through the class loader,
-         *     despite physically existing in the class path.
+         *                                despite physically existing in the class path.
          * @since 20.0
          */
         public final ByteSource asByteSource() {
@@ -262,19 +280,23 @@ public final class ClassPath {
          * characters decoded with the given {@code charset}.
          *
          * @throws NoSuchElementException if the resource cannot be loaded through the class loader,
-         *     despite physically existing in the class path.
+         *                                despite physically existing in the class path.
          * @since 20.0
          */
         public final CharSource asCharSource(Charset charset) {
             return Resources.asCharSource(url(), charset);
         }
 
-        /** Returns the fully qualified name of the resource. Such as "com/mycomp/foo/bar.txt". */
+        /**
+         * Returns the fully qualified name of the resource. Such as "com/mycomp/foo/bar.txt".
+         */
         public final String getResourceName() {
             return resourceName;
         }
 
-        /** Returns the file that includes this resource. */
+        /**
+         * Returns the file that includes this resource.
+         */
         final File getFile() {
             return file;
         }
@@ -380,7 +402,7 @@ public final class ClassPath {
          * Loads (but doesn't link or initialize) the class.
          *
          * @throws LinkageError when there were errors in loading classes that this class depends on.
-         *     For example, {@link NoClassDefFoundError}.
+         *                      For example, {@link NoClassDefFoundError}.
          */
         public Class<?> load() {
             try {
@@ -423,12 +445,16 @@ public final class ClassPath {
             this.classloader = checkNotNull(classloader);
         }
 
-        /** Returns the file this location is from. */
+        /**
+         * Returns the file this location is from.
+         */
         public final File file() {
             return home;
         }
 
-        /** Scans this location and returns all scanned resources. */
+        /**
+         * Scans this location and returns all scanned resources.
+         */
         public ImmutableSet<ResourceInfo> scanResources() throws IOException {
             return scanResources(new HashSet<File>());
         }
@@ -461,7 +487,7 @@ public final class ClassPath {
                     return;
                 }
             } catch (SecurityException e) {
-                logger.warning("Cannot access " + file + ": " + e);
+                logger.warn("Cannot access " + file + ": " + e);
                 // TODO(emcmanus): consider whether to log other failure cases too.
                 return;
             }
@@ -522,11 +548,11 @@ public final class ClassPath {
          * which have already been traversed in the current tree path will be skipped to eliminate
          * cycles; otherwise symlinks are traversed.
          *
-         * @param directory the root of the directory to scan
+         * @param directory     the root of the directory to scan
          * @param packagePrefix resource path prefix inside {@code classloader} for any files found
-         *     under {@code directory}
-         * @param currentPath canonical files already visited in the current directory tree path, for
-         *     cycle elimination
+         *                      under {@code directory}
+         * @param currentPath   canonical files already visited in the current directory tree path, for
+         *                      cycle elimination
          */
         private void scanDirectory(
                 File directory,
@@ -536,7 +562,7 @@ public final class ClassPath {
                 throws IOException {
             File[] files = directory.listFiles();
             if (files == null) {
-                logger.warning("Cannot read directory " + directory);
+                logger.warn("Cannot read directory " + directory);
                 // IO error, just skip the directory
                 return;
             }
@@ -600,7 +626,7 @@ public final class ClassPath {
                     url = getClassPathEntry(jarFile, path);
                 } catch (MalformedURLException e) {
                     // Ignore bad entry
-                    logger.warning("Invalid Class-Path entry: " + path);
+                    logger.warn("Invalid Class-Path entry: " + path);
                     continue;
                 }
                 if (url.getProtocol().equals("file")) {
@@ -647,7 +673,7 @@ public final class ClassPath {
     @VisibleForTesting // TODO(b/65488446): Make this a public API.
     static ImmutableList<URL> parseJavaClassPath() {
         ImmutableList.Builder<URL> urls = ImmutableList.builder();
-        for (String entry : Splitter.on(PATH_SEPARATOR.value()).split(JAVA_CLASS_PATH.value())) {
+        for (String entry : Splitter.on(System.getProperty("path.separator")).split(System.getProperty("java.class.path"))) {
             try {
                 try {
                     urls.add(new File(entry).toURI().toURL());
@@ -655,7 +681,7 @@ public final class ClassPath {
                     urls.add(new URL("file", null, new File(entry).getAbsolutePath()));
                 }
             } catch (MalformedURLException e) {
-                logger.log(WARNING, "malformed classpath entry: " + entry, e);
+                logger.warn("malformed classpath entry: " + entry, e);
             }
         }
         return urls.build();
