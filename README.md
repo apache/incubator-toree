@@ -151,7 +151,7 @@ We are currently enhancing our documentation, which is available in our [website
 [gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/apache/toree
 [try-jupyter]: https://try.jupyter.org
-[mail-list]: mailto:dev@incubator.apache.org
+[mail-list]: mailto:dev@toree.apache.org
 
 [master]: https://github.com/apache/incubator-toree
 [0.1.x]: https://github.com/apache/incubator-toree/tree/0.1.x
