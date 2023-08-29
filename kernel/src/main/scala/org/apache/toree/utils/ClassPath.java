@@ -53,8 +53,12 @@ import java.util.jar.Manifest;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 
-// Copied from Guava v32.1.2
+// This class is copied from Guava v32.1.2
 // https://github.com/google/guava/blob/v32.1.2/guava/src/com/google/common/reflect/ClassPath.java
+//
+// TOREE-552: Apache Toree should use Guava 14 to align with Apache Spark, unfortunately, ClassPath
+// from Guava 14 does not work well with Java 11+.
+// See detail at: https://github.com/google/guava/issues/3249
 
 /**
  * Scans the source of a {@link ClassLoader} and finds all loadable classes and resources.
