@@ -14,6 +14,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License
  */
+
+// Below are original header from Guava project
+
 /*
  * Copyright (C) 2012 The Guava Authors
  *
