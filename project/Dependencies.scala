@@ -72,7 +72,7 @@ object Dependencies {
   //       https://github.com/google/guava/issues/3345
   //     to prevent test org.apache.toree.magic.builtin.BuiltinLoaderSpec
   //     from failing on OpenJDK 11.
-  val guava = "com.google.guava" % "guava" % "31.0.1-jre" // Apache v2
+  val guava = "com.google.guava" % "guava" % "14.0.1" // Apache v2
 
   // Projects
 
