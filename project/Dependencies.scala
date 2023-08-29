@@ -67,24 +67,13 @@ object Dependencies {
 
   val springCore = "org.springframework" % "spring-core" % "5.2.2.RELEASE"// Apache v2
 
-  // NB: Updated from 14.0.1 as suggested in
-  //       https://github.com/google/guava/issues/3249,
-  //       https://github.com/google/guava/issues/3345
-  //     to prevent test org.apache.toree.magic.builtin.BuiltinLoaderSpec
-  //     from failing on OpenJDK 11.
+  // TOREE-552 Align Guava with Spark
   val guava = "com.google.guava" % "guava" % "14.0.1" // Apache v2
 
   // Projects
-
   val sparkAll = Def.setting{
     Seq(
-      sparkCore.value % "provided" excludeAll(
-        // Exclude netty (org.jboss.netty is for 3.2.2.Final only)
-        ExclusionRule(
-          organization = "org.jboss.netty",
-          name = "netty"
-        )
-      ),
+      sparkCore.value % "provided",
       sparkGraphX.value % "provided",
       sparkMllib.value % "provided",
       sparkRepl.value % "provided",
