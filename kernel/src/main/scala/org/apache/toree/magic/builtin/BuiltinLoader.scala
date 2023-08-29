@@ -42,6 +42,7 @@ class BuiltinLoader
     if (isNullOrEmpty(pkg)) {
       List.empty
     } else {
+      // TODO: Decide if this.getClass.getClassLoader should just be this
       val classPath = ClassPath.from(this.getClass.getClassLoader)
       classPath.getTopLevelClasses(pkg).asScala
         .filter(_.getSimpleName != this.getClass.getSimpleName).toList
