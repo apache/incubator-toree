@@ -22,7 +22,9 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, BeforeAndAfter, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout
 import org.mockito.Mockito._
@@ -33,8 +35,8 @@ class StreamMethodsSpec extends TestKit(
     None,
     Some(org.apache.toree.Main.getClass.getClassLoader)
   )
-) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach
 {
 
   private var kernelMessageRelayProbe: TestProbe = _
@@ -43,17 +45,17 @@ class StreamMethodsSpec extends TestKit(
   private var mockKernelMessage: v5.KernelMessage = _
   private var streamMethods: StreamMethods = _
 
-  before {
+  override def beforeEach(): Unit = {
     kernelMessageRelayProbe = TestProbe()
 
     mockParentHeader = mock[v5.ParentHeader]
 
     mockActorLoader = mock[v5.kernel.ActorLoader]
-    doReturn(system.actorSelection(kernelMessageRelayProbe.ref.path))
+    doReturn(system.actorSelection(kernelMessageRelayProbe.ref.path), Nil: _*)
       .when(mockActorLoader).load(v5.SystemActorType.KernelMessageRelay)
 
     mockKernelMessage = mock[v5.KernelMessage]
-    doReturn(mockParentHeader).when(mockKernelMessage).header
+    doReturn(mockParentHeader, Nil: _*).when(mockKernelMessage).header
 
     streamMethods = new StreamMethods(mockActorLoader, mockKernelMessage)
   }

@@ -22,7 +22,9 @@ import akka.testkit.{ImplicitSender, TestKit}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.communication.security.{Hmac, SignatureCheckerActor}
 import com.typesafe.config.ConfigFactory
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.Json
 
 object SignatureCheckerActorSpecForIntegration {
@@ -37,7 +39,7 @@ class SignatureCheckerActorSpecForIntegration extends TestKit(
     "SignatureCheckerActorSpec",
     ConfigFactory.parseString(SignatureCheckerActorSpecForIntegration.config)
   )
-) with ImplicitSender with FunSpecLike with Matchers with BeforeAndAfter
+) with ImplicitSender with AnyFunSpecLike with Matchers with BeforeAndAfterEach
 {
 
   private val sigKey = "12345"
@@ -62,13 +64,13 @@ class SignatureCheckerActorSpecForIntegration extends TestKit(
 
   private var signatureChecker: ActorRef = _
 
-  before {
+  override def beforeEach(): Unit = {
     val hmac = Hmac(sigKey)
     signatureChecker =
       system.actorOf(Props(classOf[SignatureCheckerActor], hmac))
   }
 
-  after {
+  override def afterEach(): Unit = {
     signatureChecker = null
   }
 

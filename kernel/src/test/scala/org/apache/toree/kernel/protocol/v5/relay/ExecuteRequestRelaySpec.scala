@@ -31,7 +31,9 @@ import org.apache.toree.plugins.PluginManager
 import org.apache.toree.plugins.dependencies.DependencyManager
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import test.utils.MaxAkkaTestTimeout
 import scala.concurrent.duration.Duration
 
@@ -48,18 +50,18 @@ class ExecuteRequestRelaySpec extends TestKit(
     ConfigFactory.parseString(ExecuteRequestRelaySpec.config),
     org.apache.toree.Main.getClass.getClassLoader
   )
-) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach
 {
   var mockActorLoader: ActorLoader      = _
   var interpreterActorProbe: TestProbe  = _
 
-  before {
+  override def beforeEach(): Unit = {
     mockActorLoader = mock[ActorLoader]
     interpreterActorProbe = new TestProbe(system)
     val mockInterpreterActorSelection =
       system.actorSelection(interpreterActorProbe.ref.path.toString)
-    doReturn(mockInterpreterActorSelection).when(mockActorLoader)
+    doReturn(mockInterpreterActorSelection, Nil: _*).when(mockActorLoader)
       .load(SystemActorType.Interpreter)
   }
 
@@ -71,10 +73,10 @@ class ExecuteRequestRelaySpec extends TestKit(
 
         val mockPluginManager = mock[PluginManager]
         val mockDependencyManager = mock[DependencyManager]
-        doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
+        doReturn(mockDependencyManager, Nil: _*).when(mockPluginManager).dependencyManager
 
         val mockMagicParser = mock[MagicParser]
-        doReturn(Left(executeRequest.code))
+        doReturn(Left(executeRequest.code), Nil: _*)
           .when(mockMagicParser).parse(executeRequest.code)
 
         val executeRequestRelay = system.actorOf(Props(
@@ -108,10 +110,10 @@ class ExecuteRequestRelaySpec extends TestKit(
 
         val mockPluginManager = mock[PluginManager]
         val mockDependencyManager = mock[DependencyManager]
-        doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
+        doReturn(mockDependencyManager, Nil: _*).when(mockPluginManager).dependencyManager
 
         val mockMagicParser = mock[MagicParser]
-        doReturn(Left(executeRequest.code))
+        doReturn(Left(executeRequest.code), Nil: _*)
           .when(mockMagicParser).parse(executeRequest.code)
 
         val executeRequestRelay = system.actorOf(Props(
@@ -151,10 +153,10 @@ class ExecuteRequestRelaySpec extends TestKit(
 
         val mockPluginManager = mock[PluginManager]
         val mockDependencyManager = mock[DependencyManager]
-        doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
+        doReturn(mockDependencyManager, Nil: _*).when(mockPluginManager).dependencyManager
 
         val mockMagicParser = mock[MagicParser]
-        doReturn(Left(executeRequest.code))
+        doReturn(Left(executeRequest.code), Nil: _*)
           .when(mockMagicParser).parse(executeRequest.code)
 
         val executeRequestRelay = system.actorOf(Props(

@@ -28,10 +28,11 @@ import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import org.apache.toree.kernel.protocol.v5Test._
 import Utilities._
 import com.typesafe.config.ConfigFactory
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import test.utils.MaxAkkaTestTimeout
 
 object ShellSpec {
@@ -47,7 +48,7 @@ class ShellSpec extends TestKit(
     ConfigFactory.parseString(ShellSpec.config),
     org.apache.toree.Main.getClass.getClassLoader
   ))
-  with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+  with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
 
   describe("Shell") {
     val socketFactory = mock[SocketFactory]

@@ -27,9 +27,10 @@ import Utilities._
 import org.mockito.Mockito._
 import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
-import org.mockito.Matchers.{eq => mockEq}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
+import org.mockito.ArgumentMatchers.{eq => mockEq}
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import scala.concurrent._
@@ -45,8 +46,8 @@ class KernelMessageRelaySpec extends TestKit(
     Some(org.apache.toree.Main.getClass.getClassLoader)
   )
 )
-  with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter with ScalaFutures {
+  with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach with ScalaFutures {
   private val IncomingMessageType = MessageType.Incoming.CompleteRequest.toString
   private val OutgoingMessageType = MessageType.Outgoing.CompleteReply.toString
 
@@ -70,7 +71,7 @@ class KernelMessageRelaySpec extends TestKit(
   private var relayWithoutSignatureManager: ActorRef = _
   private var relayWithSignatureManager: ActorRef = _
 
-  before {
+  override def beforeEach(): Unit = {
     // Create a mock ActorLoader for the Relay we are going to test
     actorLoader = mock[ActorLoader]
 

@@ -26,16 +26,18 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.comm._
 import org.apache.toree.kernel.protocol.v5.content.{CommMsg, ClearOutput}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import test.utils.MaxAkkaTestTimeout
 
 class CommMsgHandlerSpec extends TestKit(
   ActorSystem("CommMsgHandlerSpec", None, Some(Main.getClass.getClassLoader))
-) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach
 {
   private val TestCommId = UUID.randomUUID().toString
 
@@ -47,10 +49,10 @@ class CommMsgHandlerSpec extends TestKit(
   private var kernelMessageRelayProbe: TestProbe = _
   private var statusDispatchProbe: TestProbe = _
 
-  before {
+  override def beforeEach(): Unit = {
     kmBuilder = KMBuilder()
     mockCommCallbacks = mock[CommCallbacks]
-    spyCommStorage = spy(new CommStorage())
+    spyCommStorage = spy[CommStorage](new CommStorage())
 
     mockActorLoader = mock[ActorLoader]
 
@@ -74,7 +76,7 @@ class CommMsgHandlerSpec extends TestKit(
     describe("#process") {
       it("should execute msg callbacks if the id is registered") {
         // Mark our id as registered
-        doReturn(Some(mockCommCallbacks)).when(spyCommStorage)
+        doReturn(Some(mockCommCallbacks), Nil: _*).when(spyCommStorage)
           .getCommIdCallbacks(TestCommId)
 
         // Send a comm_open message with the test target
@@ -93,7 +95,7 @@ class CommMsgHandlerSpec extends TestKit(
 
       it("should not execute msg callbacks if the id is not registered") {
         // Mark our target as not registered
-        doReturn(None).when(spyCommStorage).getCommIdCallbacks(TestCommId)
+        doReturn(None, Nil: _*).when(spyCommStorage).getCommIdCallbacks(TestCommId)
 
         // Send a comm_msg message with the test id
         commMsgHandler ! kmBuilder
@@ -131,7 +133,7 @@ class CommMsgHandlerSpec extends TestKit(
               v1.writeMsg(MsgData.Empty)
           }
         val callbacks = (new CommCallbacks).addMsgCallback(msgCallback)
-        doReturn(Some(callbacks)).when(spyCommStorage)
+        doReturn(Some(callbacks), Nil: _*).when(spyCommStorage)
           .getCommIdCallbacks(TestCommId)
 
         // Send a comm_msg message with the test id

@@ -25,13 +25,15 @@ import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.client.execution.ExecuteRequestTuple
 import scala.concurrent.duration._
 import org.mockito.Mockito._
-import org.mockito.Matchers.{eq => mockEq, _}
+import org.mockito.ArgumentMatchers.{eq => mockEq, _}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 
 class SparkKernelClientSpec
   extends TestKit(ActorSystem("SparkKernelClientActorSystem"))
-  with Matchers with MockitoSugar with FunSpecLike with BeforeAndAfter
+  with Matchers with MockitoSugar with AnyFunSpecLike with BeforeAndAfterEach
 {
   private val TestTargetName = "some target"
 
@@ -41,7 +43,7 @@ class SparkKernelClientSpec
   private var executeRequestProbe: TestProbe = _
   private var shellClientProbe: TestProbe = _
 
-  before {
+  override def beforeEach(): Unit = {
     mockActorLoader = mock[ActorLoader]
     mockCommRegistrar = mock[CommRegistrar]
 

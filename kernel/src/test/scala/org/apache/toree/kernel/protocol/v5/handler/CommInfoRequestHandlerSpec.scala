@@ -25,10 +25,11 @@ import org.apache.toree.kernel.protocol.v5.content.CommInfoReply
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.{Header, KernelMessage, Metadata, SystemActorType}
 import org.mockito.AdditionalMatchers.{not => mockNot}
-import org.mockito.Matchers.{eq => mockEq}
+import org.mockito.ArgumentMatchers.{eq => mockEq}
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 
 import scala.concurrent.duration._
@@ -45,7 +46,7 @@ class CommInfoRequestHandlerSpec extends TestKit(
     ConfigFactory.parseString(CommInfoRequestHandlerSpec.config),
     org.apache.toree.Main.getClass.getClassLoader
   )
-) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
 
   var WAIT_TIME = 2.seconds
 

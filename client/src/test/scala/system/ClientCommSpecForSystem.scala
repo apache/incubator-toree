@@ -26,7 +26,9 @@ import org.apache.toree.kernel.protocol.v5.{KMBuilder, KernelMessage, SocketType
 import org.scalatest.concurrent.Eventually
 import org.scalatest.exceptions.TestFailedDueToTimeoutException
 import org.scalatest.time.{Milliseconds, Seconds, Span}
-import org.scalatest.{BeforeAndAfterAll, FunSpecLike, Matchers}
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 import test.utils.SparkClientDeployer
 
@@ -41,8 +43,8 @@ import scala.concurrent.duration._
  */
 class ClientCommSpecForSystem
   extends TestKit(SparkClientDeployer.getClientActorSystem)
-  with FunSpecLike with Matchers with BeforeAndAfterAll with Eventually
-{
+  with AnyFunSpecLike with Matchers with BeforeAndAfterAll with Eventually {
+
   private val MaxFishTime = 2.seconds
   implicit override val patienceConfig = PatienceConfig(
     timeout = scaled(Span(2, Seconds)),

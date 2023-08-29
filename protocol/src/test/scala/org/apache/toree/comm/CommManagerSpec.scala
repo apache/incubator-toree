@@ -24,11 +24,13 @@ import org.apache.toree.kernel.protocol.v5.content.{CommClose, CommOpen}
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
-import org.mockito.Matchers.{eq => mockEq, _}
+import org.mockito.ArgumentMatchers.{eq => mockEq, _}
 
-class CommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
+class CommManagerSpec extends AnyFunSpec with Matchers with BeforeAndAfterEach
   with MockitoSugar
 {
   private val TestTargetName = "some target"
@@ -46,16 +48,16 @@ class CommManagerSpec extends FunSpec with Matchers with BeforeAndAfter
   private var mockCommRegistrar: CommRegistrar = _
   private var commManager: CommManager = _
 
-  before {
+  override def beforeEach(): Unit = {
     mockCommWriter = mock[CommWriter]
     mockCommRegistrar = mock[CommRegistrar]
-    doReturn(mockCommRegistrar).when(mockCommRegistrar)
+    doReturn(mockCommRegistrar, Nil: _*).when(mockCommRegistrar)
       .register(anyString())
-    doReturn(mockCommRegistrar).when(mockCommRegistrar)
+    doReturn(mockCommRegistrar, Nil: _*).when(mockCommRegistrar)
       .addOpenHandler(any(classOf[OpenCallback]))
-    doReturn(mockCommRegistrar).when(mockCommRegistrar)
+    doReturn(mockCommRegistrar, Nil: _*).when(mockCommRegistrar)
       .addCloseHandler(any(classOf[CloseCallback]))
-    doReturn(mockCommRegistrar).when(mockCommRegistrar)
+    doReturn(mockCommRegistrar, Nil: _*).when(mockCommRegistrar)
       .withTarget(anyString())
 
     commManager = newCommManager(mockCommRegistrar, mockCommWriter)

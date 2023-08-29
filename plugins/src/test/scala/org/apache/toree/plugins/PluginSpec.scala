@@ -21,12 +21,14 @@ import java.lang.reflect.Method
 import org.apache.toree.plugins.annotations._
 import org.apache.toree.plugins.dependencies.DependencyManager
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.mockito.Mockito._
-import org.mockito.Matchers.{eq => mockEq, _}
+import org.mockito.ArgumentMatchers.{eq => mockEq, _}
 import scala.reflect.runtime.universe._
 
-class PluginSpec extends FunSpec with Matchers with OneInstancePerTest with MockitoSugar {
+class PluginSpec extends AnyFunSpec with Matchers with OneInstancePerTest with MockitoSugar {
   private val mockPluginManager = mock[PluginManager]
   private val testPlugin = {
     val plugin = new TestPlugin
@@ -261,7 +263,7 @@ class PluginSpec extends FunSpec with Matchers with OneInstancePerTest with Mock
         val value = new AnyRef
         val mockDependencyManager = mock[DependencyManager]
         doNothing().when(mockDependencyManager).add(anyString(), mockEq(value))(any[TypeTag[AnyRef]])
-        doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
+        doReturn(mockDependencyManager, Nil: _*).when(mockPluginManager).dependencyManager
 
         registerPlugin.register(value)
       }
@@ -273,7 +275,7 @@ class PluginSpec extends FunSpec with Matchers with OneInstancePerTest with Mock
         val value = new AnyRef
         val mockDependencyManager = mock[DependencyManager]
         doNothing().when(mockDependencyManager).add(mockEq(name), mockEq(value))(any[TypeTag[AnyRef]])
-        doReturn(mockDependencyManager).when(mockPluginManager).dependencyManager
+        doReturn(mockDependencyManager, Nil: _*).when(mockPluginManager).dependencyManager
 
         registerPlugin.register(name, value)
       }

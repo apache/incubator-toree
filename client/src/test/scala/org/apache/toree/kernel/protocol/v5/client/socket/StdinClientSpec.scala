@@ -26,17 +26,19 @@ import org.apache.toree.kernel.protocol.v5.client.ActorLoader
 import org.apache.toree.kernel.protocol.v5.client.socket.StdinClient.{ResponseFunctionMessage, ResponseFunction}
 import org.apache.toree.kernel.protocol.v5.content.{InputReply, InputRequest, ClearOutput, ExecuteRequest}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import org.apache.toree.kernel.protocol.v5.client.Utilities._
 import play.api.libs.json.Json
 import scala.concurrent.duration._
 
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 
 class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
-  with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+  with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach
 {
   private val SignatureEnabled = true
   private val TestReplyString = "some value"
@@ -48,14 +50,14 @@ class StdinClientSpec extends TestKit(ActorSystem("StdinActorSpec"))
   private var socketProbe: TestProbe = _
   private var stdinClient: ActorRef = _
 
-  before {
+  override def beforeEach(): Unit = {
     socketProbe = TestProbe()
     signatureManagerProbe = TestProbe()
     mockSocketFactory = mock[SocketFactory]
     mockActorLoader = mock[ActorLoader]
-    doReturn(system.actorSelection(signatureManagerProbe.ref.path.toString))
+    doReturn(system.actorSelection(signatureManagerProbe.ref.path.toString), Nil: _*)
       .when(mockActorLoader).load(SecurityActorType.SignatureManager)
-    doReturn(socketProbe.ref).when(mockSocketFactory)
+    doReturn(socketProbe.ref, Nil: _*).when(mockSocketFactory)
       .StdinClient(any[ActorSystem], any[ActorRef])
 
     stdinClient = system.actorOf(Props(

@@ -27,9 +27,11 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.{KernelMessage, SystemActorType, KMBuilder}
 import org.apache.toree.comm.{CommRegistrar, CommWriter, CommCallbacks, CommStorage}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import test.utils.MaxAkkaTestTimeout
 
 class CommCloseHandlerSpec extends TestKit(
@@ -38,8 +40,8 @@ class CommCloseHandlerSpec extends TestKit(
     None,
     Some(org.apache.toree.Main.getClass.getClassLoader)
   )
-) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach
 {
   private val TestCommId = UUID.randomUUID().toString
   private var kmBuilder: KMBuilder = _
@@ -51,10 +53,10 @@ class CommCloseHandlerSpec extends TestKit(
   private var kernelMessageRelayProbe: TestProbe = _
   private var statusDispatchProbe: TestProbe = _
 
-  before {
+  override def beforeEach(): Unit = {
     kmBuilder = KMBuilder()
     mockCommCallbacks = mock[CommCallbacks]
-    spyCommStorage = spy(new CommStorage())
+    spyCommStorage = spy[CommStorage](new CommStorage())
     mockCommRegistrar = mock[CommRegistrar]
 
     mockActorLoader = mock[ActorLoader]
@@ -79,7 +81,7 @@ class CommCloseHandlerSpec extends TestKit(
     describe("#process") {
       it("should execute close callbacks if the id is registered") {
         // Mark our id as registered
-        doReturn(Some(mockCommCallbacks)).when(spyCommStorage)
+        doReturn(Some(mockCommCallbacks), Nil: _*).when(spyCommStorage)
           .getCommIdCallbacks(TestCommId)
 
         // Send a comm_open message with the test target
@@ -98,7 +100,7 @@ class CommCloseHandlerSpec extends TestKit(
 
       it("should not execute close callbacks if the id is not registered") {
         // Mark our target as not registered
-        doReturn(None).when(spyCommStorage).getCommIdCallbacks(TestCommId)
+        doReturn(None, Nil: _*).when(spyCommStorage).getCommIdCallbacks(TestCommId)
 
         // Send a comm_msg message with the test id
         commCloseHandler ! kmBuilder
@@ -136,7 +138,7 @@ class CommCloseHandlerSpec extends TestKit(
               v1.writeMsg(v5.MsgData.Empty)
           }
         val callbacks = (new CommCallbacks).addCloseCallback(closeCallback)
-        doReturn(Some(callbacks)).when(spyCommStorage)
+        doReturn(Some(callbacks), Nil: _*).when(spyCommStorage)
           .getCommIdCallbacks(TestCommId)
 
         // Send a comm close message

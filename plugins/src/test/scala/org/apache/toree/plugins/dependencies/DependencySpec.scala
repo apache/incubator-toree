@@ -16,10 +16,12 @@
  */
 package org.apache.toree.plugins.dependencies
 
-import org.scalatest.{FunSpec, OneInstancePerTest, Matchers}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 
-class DependencySpec extends FunSpec with Matchers with OneInstancePerTest {
+class DependencySpec extends AnyFunSpec with Matchers with OneInstancePerTest {
   import scala.reflect.runtime.universe._
 
   describe("Dependency") {

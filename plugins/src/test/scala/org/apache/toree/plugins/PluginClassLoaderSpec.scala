@@ -18,9 +18,11 @@ package org.apache.toree.plugins
 
 import java.io.File
 
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class PluginClassLoaderSpec extends FunSpec with Matchers
+class PluginClassLoaderSpec extends AnyFunSpec with Matchers
   with OneInstancePerTest
 {
   describe("PluginClassLoader") {

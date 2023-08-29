@@ -22,10 +22,11 @@ import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.util.ByteString
 import org.apache.toree.communication.ZMQMessage
 import com.typesafe.config.ConfigFactory
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import test.utils.MaxAkkaTestTimeout
 
 object HeartbeatSpec {
@@ -41,7 +42,7 @@ class HeartbeatSpec extends TestKit(
     ConfigFactory.parseString(HeartbeatSpec.config),
     org.apache.toree.Main.getClass.getClassLoader
   ))
-with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
   val SomeMessage: String = "some message"
   val SomeZMQMessage: ZMQMessage = ZMQMessage(ByteString(SomeMessage.getBytes))
 

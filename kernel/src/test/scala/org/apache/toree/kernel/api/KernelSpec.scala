@@ -31,10 +31,12 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.plugins.PluginManager
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class KernelSpec extends FunSpec with Matchers with MockitoSugar
-  with BeforeAndAfter
+class KernelSpec extends AnyFunSpec with Matchers with MockitoSugar
+  with BeforeAndAfterEach
 {
   private val BadCode = Some("abc foo bar")
   private val GoodCode = Some("val foo = 1")
@@ -54,7 +56,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
   private var kernel: Kernel = _
   private var spyKernel: Kernel = _
 
-  before {
+  override def beforeEach(): Unit = {
     mockConfig = mock[Config]
     mockInterpreter = mock[Interpreter]
     mockInterpreterManager = mock[InterpreterManager]
@@ -81,11 +83,11 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
       mockPluginManager
     )
 
-    spyKernel = spy(kernel)
+    spyKernel = spy[Kernel](kernel)
 
   }
 
-  after {
+  override def afterEach(): Unit = {
     ExecuteRequestState.reset()
   }
 
@@ -197,7 +199,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
 
       it("should create SparkConf") {
         val expected = "some value"
-        doReturn(expected).when(mockConfig).getString("spark.master")
+        doReturn(expected, Nil: _*).when(mockConfig).getString("spark.master")
 
         val sparkConf = kernel.createSparkConf(new SparkConf().setMaster(expected))
 
@@ -209,7 +211,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
 
       it("should use the specified timeout to initialize spark context") {
         val expectedTimeout: Long = 30000
-        doReturn(expectedTimeout).when(mockConfig).getDuration("spark_context_initialization_timeout", TimeUnit.MILLISECONDS)
+        doReturn(expectedTimeout, Nil: _*).when(mockConfig).getDuration("spark_context_initialization_timeout", TimeUnit.MILLISECONDS)
 
         kernel.getSparkContextInitializationTimeout should be(expectedTimeout)
       }
@@ -217,7 +219,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
       it("should throw an exception when negative value is specified as timeout") {
         intercept[RuntimeException] {
           val timeout: Long = -30000
-          doReturn(timeout).when(mockConfig).getDuration("spark_context_initialization_timeout", TimeUnit.MILLISECONDS)
+          doReturn(timeout, Nil: _*).when(mockConfig).getDuration("spark_context_initialization_timeout", TimeUnit.MILLISECONDS)
 
           kernel.getSparkContextInitializationTimeout
         }
@@ -226,7 +228,7 @@ class KernelSpec extends FunSpec with Matchers with MockitoSugar
       it("should throw an exception when zero is specified as timeout") {
         intercept[RuntimeException] {
           val timeout: Long = 0
-          doReturn(timeout).when(mockConfig).getDuration("spark_context_initialization_timeout", TimeUnit.MILLISECONDS)
+          doReturn(timeout, Nil: _*).when(mockConfig).getDuration("spark_context_initialization_timeout", TimeUnit.MILLISECONDS)
 
           kernel.getSparkContextInitializationTimeout
         }

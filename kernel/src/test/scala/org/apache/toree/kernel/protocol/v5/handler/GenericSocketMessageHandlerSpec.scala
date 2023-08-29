@@ -24,7 +24,8 @@ import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5Test._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{Matchers, FunSpecLike}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import test.utils.MaxAkkaTestTimeout
 
 class GenericSocketMessageHandlerSpec extends TestKit(
@@ -33,7 +34,7 @@ class GenericSocketMessageHandlerSpec extends TestKit(
     None,
     Some(org.apache.toree.Main.getClass.getClassLoader)
   ))
-with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
   describe("GenericSocketMessageHandler( ActorLoader, SocketType )") {
     //  Create a mock ActorLoader for the Relay we are going to test
     val actorLoader: ActorLoader = mock[ActorLoader]

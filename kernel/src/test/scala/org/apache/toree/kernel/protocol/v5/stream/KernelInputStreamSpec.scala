@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.stream
 
-import akka.actor.{ActorRef, Actor, ActorSystem}
+import akka.actor.{Actor, ActorRef, ActorSystem}
 import akka.testkit.{TestActorRef, TestKit, TestProbe}
 import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5._
@@ -25,13 +25,15 @@ import org.apache.toree.kernel.protocol.v5.content.InputRequest
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.mockito.Mockito._
 import org.scalatest._
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import test.utils._
 
 class KernelInputStreamSpec
   extends TestKit(ActorSystem("KernelInputStreamActorSystem", None, Some(Main.getClass.getClassLoader)))
-  with FunSpecLike with Matchers with GivenWhenThen with BeforeAndAfter
+  with AnyFunSpecLike with Matchers with GivenWhenThen with BeforeAndAfterEach
   with MockitoSugar
 {
 
@@ -43,7 +45,7 @@ class KernelInputStreamSpec
 
   private val TestReplyString = "some reply"
 
-  before {
+  override def beforeEach(): Unit = {
     mockActorLoader = mock[ActorLoader]
     mockKMBuilder = KMBuilder() // No need to really mock this
 
@@ -63,7 +65,7 @@ class KernelInputStreamSpec
 
     // Add the actor that routes to our test probe and responds with a fake
     // set of data
-    doReturn(system.actorSelection(fakeInputOutputHandlerActor.path.toString))
+    doReturn(system.actorSelection(fakeInputOutputHandlerActor.path.toString), Nil: _*)
       .when(mockActorLoader).load(MessageType.Incoming.InputReply)
     // Allow time for the actors to start. This avoids read() hanging forever
     // when running tests in gradle.

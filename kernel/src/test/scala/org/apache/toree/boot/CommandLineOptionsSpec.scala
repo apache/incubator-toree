@@ -21,11 +21,12 @@ import java.io.File
 
 import com.typesafe.config.Config
 import joptsimple.OptionException
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.collection.JavaConverters._
 
-class CommandLineOptionsSpec extends FunSpec with Matchers {
+class CommandLineOptionsSpec extends AnyFunSpec with Matchers {
 
   describe("CommandLineOptions") {
     describe("when received --max-interpreter-threads=<int>") {

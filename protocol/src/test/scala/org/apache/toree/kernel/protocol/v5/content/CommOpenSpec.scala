@@ -17,11 +17,12 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json._
 import org.apache.toree.kernel.protocol.v5.MsgData
 
-class CommOpenSpec extends FunSpec with Matchers {
+class CommOpenSpec extends AnyFunSpec with Matchers {
   val commOpenJson: JsValue = Json.parse("""
   {
     "comm_id": "<UUID>",

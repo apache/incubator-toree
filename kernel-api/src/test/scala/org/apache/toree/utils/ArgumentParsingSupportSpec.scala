@@ -17,26 +17,28 @@
 
 package org.apache.toree.utils
 
-import org.scalatest.{BeforeAndAfter, Matchers, FunSpec}
-import joptsimple.{OptionSet, OptionSpec, OptionParser}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+import joptsimple.{OptionSet, OptionParser}
 import org.scalatestplus.mockito.MockitoSugar
 
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 
 import collection.JavaConverters._
 
-class ArgumentParsingSupportSpec extends FunSpec with Matchers
-  with BeforeAndAfter with MockitoSugar
+class ArgumentParsingSupportSpec extends AnyFunSpec with Matchers
+  with BeforeAndAfterEach with MockitoSugar
 {
   private var mockOptions: OptionSet = _
   private var mockParser: OptionParser = _
   private var argumentParsingInstance: ArgumentParsingSupport = _
 
-  before {
+  override def beforeEach(): Unit = {
     mockOptions = mock[OptionSet]
     mockParser = mock[OptionParser]
-    doReturn(mockOptions).when(mockParser).parse(anyVararg[String]())
+    doReturn(mockOptions, Nil: _*).when(mockParser).parse(any[Array[String]](): _*)
 
     argumentParsingInstance = new Object() with ArgumentParsingSupport {
       override protected lazy val parser: OptionParser = mockParser
@@ -46,7 +48,7 @@ class ArgumentParsingSupportSpec extends FunSpec with Matchers
   describe("ArgumentParsingSupport") {
     describe("#parseArgs") {
       it("should invoke the underlying parser's parse method") {
-        doReturn(Nil.asJava).when(mockOptions).nonOptionArguments()
+        doReturn(Nil.asJava, Nil: _*).when(mockOptions).nonOptionArguments()
         argumentParsingInstance.parseArgs("")
 
         verify(mockParser).parse(anyString())
@@ -54,7 +56,7 @@ class ArgumentParsingSupportSpec extends FunSpec with Matchers
 
       it("should return an empty list if there are no non-option arguments") {
         val expected = Nil
-        doReturn(expected.asJava).when(mockOptions).nonOptionArguments()
+        doReturn(expected.asJava, Nil: _*).when(mockOptions).nonOptionArguments()
         val actual = argumentParsingInstance.parseArgs((
           "--transitive" :: expected
         ).mkString(" "))
@@ -64,7 +66,7 @@ class ArgumentParsingSupportSpec extends FunSpec with Matchers
 
       it("should return a list containing non-option arguments") {
         val expected = "non-option" :: Nil
-        doReturn(expected.asJava).when(mockOptions).nonOptionArguments()
+        doReturn(expected.asJava, Nil: _*).when(mockOptions).nonOptionArguments()
         val actual = argumentParsingInstance.parseArgs((
           "--transitive" :: expected
           ).mkString(" "))

@@ -17,10 +17,11 @@
 
 package org.apache.toree.magic
 
-import org.scalatest.{Matchers, FunSpec}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 
-class InternalClassLoaderSpec extends FunSpec with Matchers with MockitoSugar {
+class InternalClassLoaderSpec extends AnyFunSpec with Matchers with MockitoSugar {
 
   abstract class MockClassLoader extends ClassLoader(null) {
     override def loadClass(name: String): Class[_] = null

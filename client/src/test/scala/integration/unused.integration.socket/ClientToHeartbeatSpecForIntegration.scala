@@ -31,15 +31,16 @@ import org.apache.toree.kernel.protocol.v5.SocketType
 import org.apache.toree.kernel.protocol.v5.socket._
 import org.apache.toree.kernel.protocol.v5.socket.SocketConfig
 import com.typesafe.config.ConfigFactory
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import scala.concurrent.duration._
 
 
 class ClientToHeartbeatSpecForIntegration extends TestKit(ActorSystem("HeartbeatActorSpec"))
-  with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+  with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
 
   describe("HeartbeatActor") {
     implicit val timeout = Timeout(1.minute)

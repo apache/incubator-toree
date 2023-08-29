@@ -20,9 +20,11 @@ package org.apache.toree.magic
 import org.apache.toree.plugins.dependencies.Dependency
 import org.apache.toree.plugins._
 import org.mockito.Mockito._
-import org.mockito.Matchers.{eq => mockEq, _}
+import org.mockito.ArgumentMatchers.{eq => mockEq, _}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import test.utils
 
 import MagicManagerSpec._
@@ -60,12 +62,11 @@ private class ExceptionCellMagic extends CellMagic {
 }
 
 class MagicManagerSpec
-  extends FunSpec with Matchers with MockitoSugar with OneInstancePerTest
-{
+  extends AnyFunSpec with Matchers with MockitoSugar with OneInstancePerTest {
   private val TestPluginName = "SomePlugin"
   private val TestMagicName = "SomeMagic"
   private val mockPluginManager = mock[PluginManager]
-  private val magicManager = spy(new MagicManager(mockPluginManager))
+  private val magicManager = spy[MagicManager](new MagicManager(mockPluginManager))
 
   describe("MagicManager") {
     describe("#isLineMagic") {
@@ -75,7 +76,7 @@ class MagicManagerSpec
         val mockLineMagic = mock[LineMagic]
         val actual = magicManager.isLineMagic(mockLineMagic)
 
-        actual should be (expected)
+        actual should be(expected)
       }
 
       it("should return false if the magic does not extend the line magic interface") {
@@ -84,7 +85,7 @@ class MagicManagerSpec
         val mockMagic = mock[Magic]
         val actual = magicManager.isLineMagic(mockMagic)
 
-        actual should be (expected)
+        actual should be(expected)
       }
 
       it("should throw an exception if provided null") {
@@ -101,7 +102,7 @@ class MagicManagerSpec
         val mockCellMagic = mock[CellMagic]
         val actual = magicManager.isCellMagic(mockCellMagic)
 
-        actual should be (expected)
+        actual should be(expected)
       }
 
       it("should return false if the magic does not extend the cell magic interface") {
@@ -110,7 +111,7 @@ class MagicManagerSpec
         val mockMagic = mock[Magic]
         val actual = magicManager.isCellMagic(mockMagic)
 
-        actual should be (expected)
+        actual should be(expected)
       }
 
       it("should throw an exception if provided null") {
@@ -123,7 +124,7 @@ class MagicManagerSpec
     describe("#findMagic") {
       it("should throw a MagicNotFoundException if no magic matches the name") {
         intercept[MagicNotFoundException] {
-          doReturn(Seq(new Plugin {}).toIterable).when(mockPluginManager).plugins
+          doReturn(Seq(new Plugin {}).toIterable, Nil: _*).when(mockPluginManager).plugins
 
           magicManager.findMagic(TestMagicName)
         }
@@ -131,7 +132,7 @@ class MagicManagerSpec
 
       it("should throw a MagicNotFoundException if there are no loaded plugins") {
         intercept[MagicNotFoundException] {
-          doReturn(Nil).when(mockPluginManager).plugins
+          doReturn(Nil, Nil: _*).when(mockPluginManager).plugins
 
           magicManager.findMagic(TestMagicName)
         }
@@ -139,7 +140,7 @@ class MagicManagerSpec
 
       it("should throw a MagicNotFoundException if a plugin matches but is not a magic") {
         intercept[MagicNotFoundException] {
-          doReturn(Seq(new SomePlugin).toIterable).when(mockPluginManager).plugins
+          doReturn(Seq(new SomePlugin).toIterable, Nil: _*).when(mockPluginManager).plugins
 
           magicManager.findMagic(TestPluginName)
         }
@@ -148,29 +149,29 @@ class MagicManagerSpec
       it("should return the magic if exactly one is found") {
         val expected = new SomeMagic
 
-        doReturn(Seq(expected).toIterable).when(mockPluginManager).plugins
+        doReturn(Seq(expected).toIterable, Nil: _*).when(mockPluginManager).plugins
         val actual = magicManager.findMagic(TestMagicName)
 
-        actual should be (expected)
+        actual should be(expected)
       }
 
       it("should return a magic whose name matches even if casing is different") {
         val expected = new SomeMagic
 
-        doReturn(Seq(expected).toIterable).when(mockPluginManager).plugins
+        doReturn(Seq(expected).toIterable, Nil: _*).when(mockPluginManager).plugins
         val actual = magicManager.findMagic(TestMagicName.toUpperCase())
 
-        actual should be (expected)
+        actual should be(expected)
       }
 
       it("should return the first match if more than one magic matches the name") {
         val expected = new SomeMagic
 
-        doReturn(Seq(expected, new utils.SomeMagic).toIterable)
+        doReturn(Seq(expected, new utils.SomeMagic).toIterable, Nil: _*)
           .when(mockPluginManager).plugins
         val actual = magicManager.findMagic(TestMagicName)
 
-        actual should be (expected)
+        actual should be(expected)
       }
     }
 
@@ -179,13 +180,13 @@ class MagicManagerSpec
         doReturn(Some(FailurePluginMethodResult(
           mock[PluginMethod],
           new LineMagicException()
-        ))).when(mockPluginManager).fireEventFirstResult(
-          anyString(), any(classOf[Dependency[_ <: AnyRef]])
+        )), Nil: _*).when(mockPluginManager).fireEventFirstResult(
+          anyString(), any[Dependency[_ <: AnyRef]]()
         )
 
         val result = magicManager.applyDynamic("TEST")()
 
-        result.asMap.get("text/plain") should not be(empty)
+        result.asMap.get("text/plain") should not be (empty)
       }
 
       it("should fire an event with the lowercase of the magic name") {
@@ -196,8 +197,8 @@ class MagicManagerSpec
         doReturn(Some(FailurePluginMethodResult(
           mock[PluginMethod],
           new LineMagicException()
-        ))).when(mockPluginManager).fireEventFirstResult(
-          anyString(), any(classOf[Dependency[_ <: AnyRef]])
+        )), Nil: _*).when(mockPluginManager).fireEventFirstResult(
+          anyString(), any[Dependency[_ <: AnyRef]]()
         )
 
         magicManager.applyDynamic(pluginName)(arg :: Nil: _*)
@@ -212,8 +213,8 @@ class MagicManagerSpec
         doReturn(Some(FailurePluginMethodResult(
           mock[PluginMethod],
           new LineMagicException()
-        ))).when(mockPluginManager).fireEventFirstResult(
-          anyString(), any(classOf[Dependency[_ <: AnyRef]])
+        )), Nil: _*).when(mockPluginManager).fireEventFirstResult(
+          anyString(), any[Dependency[_ <: AnyRef]]()
         )
 
         magicManager.applyDynamic(pluginName)(arg :: Nil: _*)
@@ -228,10 +229,9 @@ class MagicManagerSpec
         doReturn(Some(FailurePluginMethodResult(
           mock[PluginMethod],
           new LineMagicException()
-        ))).when(mockPluginManager).fireEventFirstResult(
-          anyString(), any(classOf[Dependency[_ <: AnyRef]])
+        )), Nil: _*).when(mockPluginManager).fireEventFirstResult(
+          anyString(), any[Dependency[_ <: AnyRef]]()
         )
-
         magicManager.applyDynamic(pluginName)(Nil: _*)
         verify(mockPluginManager).fireEventFirstResult(anyString(), mockEq(Seq(expected)): _*)
       }
@@ -243,8 +243,8 @@ class MagicManagerSpec
         doReturn(Some(SuccessPluginMethodResult(
           mock[PluginMethod],
           null
-        ))).when(mockPluginManager).fireEventFirstResult(
-          anyString(), any(classOf[Dependency[_ <: AnyRef]])
+        )), Nil: _*).when(mockPluginManager).fireEventFirstResult(
+          anyString(), any[Dependency[_ <: AnyRef]]()
         )
 
         val result = magicManager.applyDynamic(pluginName)(Nil: _*)
@@ -258,8 +258,8 @@ class MagicManagerSpec
         doReturn(Some(SuccessPluginMethodResult(
           mock[PluginMethod],
           BoxedUnit.UNIT
-        ))).when(mockPluginManager).fireEventFirstResult(
-          anyString(), any(classOf[Dependency[_ <: AnyRef]])
+        )), Nil: _*).when(mockPluginManager).fireEventFirstResult(
+          anyString(), any[Dependency[_ <: AnyRef]]()
         )
 
         val result = magicManager.applyDynamic(pluginName)(Nil: _*)
@@ -272,8 +272,8 @@ class MagicManagerSpec
         doReturn(Some(SuccessPluginMethodResult(
           mock[PluginMethod],
           cellMagicOutput
-        ))).when(mockPluginManager).fireEventFirstResult(
-          anyString(), any(classOf[Dependency[_ <: AnyRef]])
+        )), Nil: _*).when(mockPluginManager).fireEventFirstResult(
+          anyString(), any[Dependency[_ <: AnyRef]]()
         )
 
         val result = magicManager.applyDynamic(pluginName)(Nil: _*)
@@ -286,8 +286,8 @@ class MagicManagerSpec
         doReturn(Some(SuccessPluginMethodResult(
           mock[PluginMethod],
           new AnyRef
-        ))).when(mockPluginManager).fireEventFirstResult(
-          anyString(), any(classOf[Dependency[_ <: AnyRef]])
+        )), Nil: _*).when(mockPluginManager).fireEventFirstResult(
+          anyString(), any[Dependency[_ <: AnyRef]]()
         )
 
         val result = magicManager.applyDynamic(pluginName)(Nil: _*)
@@ -301,8 +301,8 @@ class MagicManagerSpec
         doReturn(Some(FailurePluginMethodResult(
           mock[PluginMethod],
           new Throwable
-        ))).when(mockPluginManager).fireEventFirstResult(
-          anyString(), any(classOf[Dependency[_ <: AnyRef]])
+        )), Nil: _*).when(mockPluginManager).fireEventFirstResult(
+          anyString(), any[Dependency[_ <: AnyRef]]()
         )
 
         val result = magicManager.applyDynamic(pluginName)(Nil: _*)
@@ -312,8 +312,8 @@ class MagicManagerSpec
       it("should throw a MagicNotFoundException when a magic cannot be found") {
         val pluginName = "THISMAGICDOESN'TEXIST"
 
-        doReturn(None).when(mockPluginManager).fireEventFirstResult(
-          anyString(), any(classOf[Dependency[_ <: AnyRef]])
+        doReturn(None, Nil: _*).when(mockPluginManager).fireEventFirstResult(
+          anyString(), any[Dependency[_ <: AnyRef]]()
         )
         intercept[MagicNotFoundException] {
           magicManager.applyDynamic(pluginName)(Nil: _*)

@@ -45,15 +45,15 @@ object Dependencies {
 
   val joptSimple = "net.sf.jopt-simple" % "jopt-simple" % "4.9" // MIT
 
-  val mockito = "org.mockito" % "mockito-all" % "1.10.19" // MIT
-
   val playJson = "com.typesafe.play" %% "play-json" % "2.7.4" // Apache v2
 
   val scalaCompiler = Def.setting{ "org.scala-lang" % "scala-compiler" % scalaVersion.value } // BSD 3-clause
   val scalaLibrary = Def.setting{ "org.scala-lang" % "scala-library" % scalaVersion.value } // BSD 3-clause
   val scalaReflect = Def.setting{ "org.scala-lang" % "scala-reflect" % scalaVersion.value } // BSD 3-clause
 
-  val scalaTest = "org.scalatest" %% "scalatest" % "3.0.8" // Apache v2
+  val scalaTest = "org.scalatest" %% "scalatest" % "3.2.16" // Apache v2
+  val scalaTestMockito = "org.scalatestplus" %% "mockito-4-11" % "3.2.16.0" // Apache v2
+  val mockitoInline = "org.mockito" % "mockito-inline" % "4.11.0" // MIT
 
   val slf4jApi = "org.slf4j" % "slf4j-api" % "1.7.32" // MIT
 

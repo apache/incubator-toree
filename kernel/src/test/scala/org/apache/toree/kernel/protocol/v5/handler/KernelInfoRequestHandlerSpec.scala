@@ -23,11 +23,12 @@ import org.apache.toree.kernel.protocol.v5.content.KernelInfoReply
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5._
 import org.mockito.AdditionalMatchers.{not => mockNot}
-import org.mockito.Matchers.{eq => mockEq}
+import org.mockito.ArgumentMatchers.{eq => mockEq}
 import com.typesafe.config.ConfigFactory
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout
 
@@ -42,7 +43,7 @@ class KernelInfoRequestHandlerSpec extends TestKit(
   ActorSystem("KernelInfoRequestHandlerSpec",
     ConfigFactory.parseString(KernelInfoRequestHandlerSpec.config),
     Main.getClass.getClassLoader)
-) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar {
+) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar {
   val actorLoader: ActorLoader =  mock[ActorLoader]
   val actor = system.actorOf(Props(classOf[KernelInfoRequestHandler], actorLoader, LanguageInfo("test", "1.0.0", Some(".test"))))
 

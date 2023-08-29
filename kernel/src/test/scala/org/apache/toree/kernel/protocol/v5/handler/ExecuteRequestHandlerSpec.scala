@@ -28,11 +28,13 @@ import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5Test._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.Json
 
 import org.mockito.Mockito._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
@@ -43,8 +45,8 @@ class ExecuteRequestHandlerSpec extends TestKit(
     None,
     Some(org.apache.toree.Main.getClass.getClassLoader)
   )
-) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter {
+) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach {
 
   private var mockActorLoader: ActorLoader = _
   private var mockFactoryMethods: FactoryMethods = _
@@ -55,15 +57,15 @@ class ExecuteRequestHandlerSpec extends TestKit(
   private var executeRequestRelayProbe: TestProbe = _
   private var statusDispatchProbe: TestProbe = _
 
-  before {
+  override def beforeEach(): Unit = {
     mockActorLoader = mock[ActorLoader]
     mockFactoryMethods = mock[FactoryMethods]
     mockKernel = mock[Kernel]
     mockOutputStream = mock[OutputStream]
-    doReturn(mockFactoryMethods).when(mockKernel)
+    doReturn(mockFactoryMethods, Nil: _*).when(mockKernel)
       .factory(any[KernelMessage], any[KMBuilder])
 
-    doReturn(mockOutputStream).when(mockFactoryMethods)
+    doReturn(mockOutputStream, Nil: _*).when(mockFactoryMethods)
       .newKernelOutputStream(anyString(), anyBoolean())
 
     // Add our handler and mock interpreter to the actor system

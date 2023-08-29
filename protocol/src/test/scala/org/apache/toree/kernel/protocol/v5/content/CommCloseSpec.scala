@@ -18,10 +18,11 @@
 package org.apache.toree.kernel.protocol.v5.content
 
 import org.apache.toree.kernel.protocol.v5._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json._
 
-class CommCloseSpec extends FunSpec with Matchers {
+class CommCloseSpec extends AnyFunSpec with Matchers {
   val commCloseJson: JsValue = Json.parse("""
   {
     "comm_id": "<UUID>",

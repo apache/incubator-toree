@@ -23,7 +23,9 @@ import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{BeforeAndAfter, FunSpecLike, Matchers}
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout
 
@@ -32,8 +34,8 @@ class DisplayMethodsSpec extends TestKit(
     "DisplayMethodsSpec",
     None,
     Some(org.apache.toree.Main.getClass.getClassLoader)
-  )) with ImplicitSender with FunSpecLike with Matchers with MockitoSugar
-  with BeforeAndAfter
+  )) with ImplicitSender with AnyFunSpecLike with Matchers with MockitoSugar
+  with BeforeAndAfterEach
 {
   
 
@@ -43,17 +45,17 @@ class DisplayMethodsSpec extends TestKit(
   private var mockKernelMessage: v5.KernelMessage = _
   private var displayMethods: DisplayMethods = _
 
-  before {
+  override def beforeEach(): Unit = {
     kernelMessageRelayProbe = TestProbe()
 
     mockParentHeader = mock[v5.ParentHeader]
 
     mockActorLoader = mock[v5.kernel.ActorLoader]
-    doReturn(system.actorSelection(kernelMessageRelayProbe.ref.path))
+    doReturn(system.actorSelection(kernelMessageRelayProbe.ref.path), Nil: _*)
       .when(mockActorLoader).load(v5.SystemActorType.KernelMessageRelay)
 
     mockKernelMessage = mock[v5.KernelMessage]
-    doReturn(mockParentHeader).when(mockKernelMessage).header
+    doReturn(mockParentHeader, Nil: _*).when(mockKernelMessage).header
 
     displayMethods = new DisplayMethods(mockActorLoader, mockKernelMessage, v5.KMBuilder())
   }

@@ -17,10 +17,11 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json._
 
-class CompleteReplyOkSpec extends FunSpec with Matchers {
+class CompleteReplyOkSpec extends AnyFunSpec with Matchers {
   val completeReplyOkJson: JsValue = Json.parse("""
   {
     "matches": [],

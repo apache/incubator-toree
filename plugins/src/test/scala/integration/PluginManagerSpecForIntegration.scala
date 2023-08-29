@@ -18,9 +18,11 @@ package integration
 
 import org.apache.toree.plugins.{PluginManager, Plugin}
 import org.apache.toree.plugins.annotations.Init
-import org.scalatest.{OneInstancePerTest, Matchers, FunSpec}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class PluginManagerSpecForIntegration extends FunSpec with Matchers
+class PluginManagerSpecForIntegration extends AnyFunSpec with Matchers
   with OneInstancePerTest
 {
   private val pluginManager = new PluginManager

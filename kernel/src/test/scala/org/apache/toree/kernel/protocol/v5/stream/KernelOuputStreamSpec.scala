@@ -18,7 +18,6 @@
 package org.apache.toree.kernel.protocol.v5.stream
 
 import java.util.UUID
-
 import akka.actor.{ActorSelection, ActorSystem}
 import akka.testkit.{TestKit, TestProbe}
 import org.apache.toree.Main
@@ -30,11 +29,13 @@ import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest._
 import play.api.libs.json._
 import org.apache.toree.kernel.protocol.v5.content.StreamContent
+import org.scalatest.funspec.AnyFunSpecLike
+import org.scalatest.matchers.should.Matchers
 import test.utils.MaxAkkaTestTimeout
 
 class KernelOuputStreamSpec
   extends TestKit(ActorSystem("KernelOutputStreamActorSystem", None, Some(Main.getClass.getClassLoader)))
-  with FunSpecLike with Matchers with GivenWhenThen with BeforeAndAfter
+  with AnyFunSpecLike with Matchers with GivenWhenThen with BeforeAndAfterEach
   with MockitoSugar
 {
 
@@ -85,7 +86,7 @@ class KernelOuputStreamSpec
     def teardown(): Unit = super.stop()
   }
 
-  before {
+  override def beforeEach(): Unit = {
     // Create a mock ActorLoader for the KernelOutputStream we are testing
     mockActorLoader = mock[ActorLoader]
 
@@ -96,11 +97,11 @@ class KernelOuputStreamSpec
     kernelOutputRelayProbe = TestProbe()
     val kernelOutputRelaySelection: ActorSelection =
       system.actorSelection(kernelOutputRelayProbe.ref.path.toString)
-    doReturn(kernelOutputRelaySelection)
+    doReturn(kernelOutputRelaySelection, Nil: _*)
       .when(mockActorLoader).load(SystemActorType.KernelMessageRelay)
   }
 
-  after {
+  override def afterEach(): Unit = {
     mockScheduledTaskManager.teardown()
   }
 

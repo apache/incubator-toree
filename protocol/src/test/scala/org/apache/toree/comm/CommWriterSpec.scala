@@ -22,12 +22,14 @@ import java.util.UUID
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
-import org.scalatest.{BeforeAndAfter, FunSpec, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.scalatestplus.mockito.MockitoSugar
 
-class CommWriterSpec extends FunSpec with Matchers with BeforeAndAfter
+class CommWriterSpec extends AnyFunSpec with Matchers with BeforeAndAfterEach
   with MockitoSugar
 {
   private val TestCommId = UUID.randomUUID().toString
@@ -41,8 +43,8 @@ class CommWriterSpec extends FunSpec with Matchers with BeforeAndAfter
 
   private var commWriter: CommWriter = _
 
-  before {
-    commWriter = spy(new TestCommWriter())
+  override def beforeEach(): Unit = {
+    commWriter = spy[CommWriter](new TestCommWriter())
   }
 
   describe("CommWriter") {
