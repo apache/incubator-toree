@@ -20,8 +20,8 @@ package org.apache.toree.boot
 import java.io.{File, OutputStream}
 
 import com.typesafe.config.{Config, ConfigFactory}
-import joptsimple.{OptionParser, OptionSpec}
 import joptsimple.util.RegexMatcher._
+import joptsimple.{OptionParser, OptionSpec}
 
 import scala.collection.JavaConverters._
 
@@ -86,6 +86,16 @@ class CommandLineOptions(args: Seq[String]) {
   private val _jar_dir = parser.accepts(
     "jar-dir",
     "directory where user added jars are stored (MUST EXIST)"
+  ).withRequiredArg().ofType(classOf[String])
+
+  private val _deps_dir = parser.accepts(
+    "deps-dir",
+    "directory where user dependencies are stored (MUST EXIST)"
+  ).withRequiredArg().ofType(classOf[String])
+
+  private val _ivy_settings = parser.accepts(
+    "ivy-settings",
+    "location of ivy settings xml file"
   ).withRequiredArg().ofType(classOf[String])
 
   private val _default_interpreter =
@@ -171,6 +181,8 @@ class CommandLineOptions(args: Seq[String]) {
       "max_interpreter_threads" -> get(_max_interpreter_threads),
       "alternate_sigint" -> get(_alternate_sigint),
       "jar_dir" -> get(_jar_dir),
+      "deps_dir" -> get(_deps_dir),
+      "ivy_settings" -> get(_ivy_settings),
       "default_interpreter" -> get(_default_interpreter),
       // deprecated in favor of spark-context-initialization-mode none
       // "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false)),

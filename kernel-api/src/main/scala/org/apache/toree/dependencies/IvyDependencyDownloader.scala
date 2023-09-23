@@ -33,24 +33,28 @@ import org.apache.ivy.util.{DefaultMessageLogger, Message}
 import org.springframework.core.io.support._
 
 /**
- * Represents a dependency downloader for jars that uses Ivy underneath.
- */
+  * Represents a dependency downloader for jars that uses Ivy underneath.
+  */
 class IvyDependencyDownloader(
-  val repositoryUrl: String,
-  val baseDirectory: String
-) extends DependencyDownloader {
+                               val baseDirectory: String,
+                               val ivySettingsFile: String
+                             ) extends DependencyDownloader {
+
   private val ivySettings = new IvySettings()
-  private val resolver = new IBiblioResolver
 
-  resolver.setUsepoms(true)
-  resolver.setM2compatible(true)
-  resolver.setName("central")
+  private val settingsFile = new File(ivySettingsFile)
 
-  // Add our resolver as the main resolver (IBiblio goes to Maven Central)
-  ivySettings.addResolver(resolver)
-
-  // Mark our resolver as the default one to use
-  ivySettings.setDefaultResolver(resolver.getName)
+  if (settingsFile.exists()) {
+    ivySettings.load(settingsFile)
+  } else {
+    // Use default maven resolver, when ivy settings file doesn't exist.
+    val resolver = new IBiblioResolver
+    resolver.setUsepoms(true)
+    resolver.setM2compatible(true)
+    resolver.setName("central")
+    ivySettings.addResolver(resolver)
+    ivySettings.setDefaultResolver(resolver.getName)
+  }
 
   // Set the destination
   ivySettings.setBaseDir(new File(baseDirectory))
@@ -58,45 +62,23 @@ class IvyDependencyDownloader(
   ivySettings.setDefaultRepositoryCacheBasedir(baseDirectory)
 
   //creates an Ivy instance with settings
-  val ivy = Ivy.newInstance(ivySettings)
-
-  private def getBaseDependencies: Iterable[DependencyDescriptor] = {
-    val xmlModuleDescriptor = XmlModuleDescriptorParser.getInstance()
-    val getDependencies = (url: URL) => xmlModuleDescriptor.parseDescriptor(
-      new IvySettings(), url, false
-    ).getDependencies
-
-    // Find all of the *ivy.xml files on the classpath.
-    val ivyFiles = new PathMatchingResourcePatternResolver().getResources(
-      "classpath*:**/*ivy.xml"
-    )
-    val classpathURLs = ivyFiles.map(_.getURI.toURL)
-
-    // Get all of the dependencies from the *ivy.xml files
-    val dependencies = classpathURLs.map(getDependencies).flatMap(_.toSeq)
-
-    // Remove duplicates based on artifact name
-    val distinctDependencies =
-      dependencies.groupBy(_.getDependencyId.getName).map(_._2.head)
-
-    distinctDependencies
-  }
+  private val ivy = Ivy.newInstance(ivySettings)
 
   override def retrieve(
-    groupId: String,
-    artifactId: String,
-    version: String,
-    transitive: Boolean = true,
-    excludeBaseDependencies: Boolean,
-    ignoreResolutionErrors: Boolean,
-    extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
-    verbose: Boolean,
-    trace: Boolean,
-    configuration: Option[String] = None,
-    artifactType: Option[String] = None,
-    artifactClassifier: Option[String] = None,
-    excludes: Set[(String,String)] = Set.empty
-  ): Seq[URI] = {
+                         groupId: String,
+                         artifactId: String,
+                         version: String,
+                         transitive: Boolean = true,
+                         excludeBaseDependencies: Boolean,
+                         ignoreResolutionErrors: Boolean,
+                         extraRepositories: Seq[(URL, Option[Credentials])] = Nil,
+                         verbose: Boolean,
+                         trace: Boolean,
+                         configuration: Option[String] = None,
+                         artifactType: Option[String] = None,
+                         artifactClassifier: Option[String] = None,
+                         excludes: Set[(String, String)] = Set.empty
+                       ): Seq[URI] = {
     // Start building the ivy.xml file
     val ivyFile = File.createTempFile("ivy-custom", ".xml")
     ivyFile.deleteOnExit()
@@ -153,8 +135,8 @@ class IvyDependencyDownloader(
 
 
     excludes.foreach(x => {
-      val moduleId = new ModuleId(x._1,x._2);
-      val artifactId = new ArtifactId(moduleId,"*","*","*");
+      val moduleId = new ModuleId(x._1, x._2);
+      val artifactId = new ArtifactId(moduleId, "*", "*", "*");
       val exclusion = new DefaultExcludeRule(artifactId, new RegexpPatternMatcher(), null);
       md.addExcludeRule(exclusion);
     })
@@ -197,11 +179,33 @@ class IvyDependencyDownloader(
     artifactURLs.map(_.toURI)
   }
 
+  private def getBaseDependencies: Iterable[DependencyDescriptor] = {
+    val xmlModuleDescriptor = XmlModuleDescriptorParser.getInstance()
+    val getDependencies = (url: URL) => xmlModuleDescriptor.parseDescriptor(
+      new IvySettings(), url, false
+    ).getDependencies
+
+    // Find all of the *ivy.xml files on the classpath.
+    val ivyFiles = new PathMatchingResourcePatternResolver().getResources(
+      "classpath*:**/*ivy.xml"
+    )
+    val classpathURLs = ivyFiles.map(_.getURI.toURL)
+
+    // Get all of the dependencies from the *ivy.xml files
+    val dependencies = classpathURLs.map(getDependencies).flatMap(_.toSeq)
+
+    // Remove duplicates based on artifact name
+    val distinctDependencies =
+      dependencies.groupBy(_.getDependencyId.getName).map(_._2.head)
+
+    distinctDependencies
+  }
+
   /**
-   * Uses our printstream in Ivy's LoggingEngine
-   *
-   * @param printStream the print stream to use
-   */
+    * Uses our printstream in Ivy's LoggingEngine
+    *
+    * @param printStream the print stream to use
+    */
   override def setPrintStream(printStream: PrintStream): Unit = {
     ivy.getLoggerEngine.setDefaultLogger(
       new DefaultMessageLogger(Message.MSG_INFO) {
@@ -216,40 +220,40 @@ class IvyDependencyDownloader(
   }
 
   /**
-   * Adds the specified resolver url as an additional search option.
-   *
-   * @param url The url of the repository
-   */
+    * Adds the specified resolver url as an additional search option.
+    *
+    * @param url The url of the repository
+    */
   override def addMavenRepository(url: URL, credentials: Option[Credentials]): Unit = ???
 
   /**
-   * Remove the specified resolver url from the search options.
-   *
-   * @param url The url of the repository
-   */
+    * Remove the specified resolver url from the search options.
+    *
+    * @param url The url of the repository
+    */
   override def removeMavenRepository(url: URL): Unit = ???
 
   /**
-   * Returns a list of all repositories used by the downloader.
-   *
-   * @return The list of repositories as URIs
-   */
+    * Returns a list of all repositories used by the downloader.
+    *
+    * @return The list of repositories as URIs
+    */
   override def getRepositories: Seq[URI] = Seq(
     DependencyDownloader.DefaultMavenRepository.toURI
   )
 
   /**
-   * Sets the directory where all downloaded jars will be stored.
-   *
-   * @param directory The directory to use
-   * @return True if successfully set directory, otherwise false
-   */
+    * Sets the directory where all downloaded jars will be stored.
+    *
+    * @param directory The directory to use
+    * @return True if successfully set directory, otherwise false
+    */
   override def setDownloadDirectory(directory: File): Boolean = false
 
   /**
-   * Returns the current directory where dependencies will be downloaded.
-   *
-   * @return The directory as a string
-   */
+    * Returns the current directory where dependencies will be downloaded.
+    *
+    * @return The directory as a string
+    */
   override def getDownloadDirectory: String = baseDirectory
 }
