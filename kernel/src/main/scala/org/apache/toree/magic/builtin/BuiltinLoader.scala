@@ -17,10 +17,11 @@
 
 package org.apache.toree.magic.builtin
 
-import com.google.common.reflect.ClassPath
-import com.google.common.reflect.ClassPath.ClassInfo
 import org.apache.toree.magic.InternalClassLoader
 import com.google.common.base.Strings._
+import org.apache.toree.utils.ClassPath
+import org.apache.toree.utils.ClassPath.ClassInfo
+
 import scala.collection.JavaConverters._
 
 /**
@@ -38,15 +39,13 @@ class BuiltinLoader
    * @return list of ClassInfo objects
    */
   def getClasses(pkg: String = pkgName): List[ClassInfo] = {
-    isNullOrEmpty(pkg) match {
-      case true =>
-        List()
-      case false =>
-        // TODO: Decide if this.getClass.getClassLoader should just be this
-        val classPath = ClassPath.from(this.getClass.getClassLoader)
-        classPath.getTopLevelClasses(pkg).asScala.filter(
-          _.getSimpleName != this.getClass.getSimpleName
-        ).toList
+    if (isNullOrEmpty(pkg)) {
+      List.empty
+    } else {
+      // TODO: Decide if this.getClass.getClassLoader should just be this
+      val classPath = ClassPath.from(this.getClass.getClassLoader)
+      classPath.getTopLevelClasses(pkg).asScala
+        .filter(_.getSimpleName != this.getClass.getSimpleName).toList
     }
   }
 
