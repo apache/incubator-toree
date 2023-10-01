@@ -18,7 +18,7 @@
 package org.apache.toree.kernel.protocol.v5.handler
 
 import org.apache.toree.kernel.protocol.v5._
-import org.apache.toree.kernel.protocol.v5.content.KernelInfoReply
+import org.apache.toree.kernel.protocol.v5.content.{KernelInfoReply, KernelInfoReplyOk}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.utils.LogLike
 
@@ -37,7 +37,7 @@ class KernelInfoRequestHandler(actorLoader: ActorLoader, languageInfo: LanguageI
       logger.debug("Sending kernel info reply message")
 
       val kernelInfo = SparkKernelInfo
-      val kernelInfoReply = KernelInfoReply(
+      val kernelInfoReply = KernelInfoReplyOk(
         kernelInfo.protocolVersion,
         kernelInfo.implementation,
         kernelInfo.implementationVersion,

@@ -17,13 +17,13 @@
 
 package org.apache.toree.kernel.protocol.v5.content
 
-import org.apache.toree.kernel.protocol.v5.{KernelMessageContent}
+import org.apache.toree.kernel.protocol.v5.KernelMessageContent
 import play.api.libs.json.{Json, Reads, Writes}
 
-case class IsCompleteReply (
-                           status: String,
-                           indent: String
-                         ) extends KernelMessageContent {
+case class IsCompleteReply(
+  status: String,
+  indent: String
+) extends KernelMessageContent with ReplyContent {
   override def content : String =
     Json.toJson(this)(IsCompleteReply.isCompleteReplyWrites).toString
 }

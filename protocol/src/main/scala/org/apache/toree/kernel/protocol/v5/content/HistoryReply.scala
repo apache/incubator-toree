@@ -22,12 +22,13 @@ import play.api.libs.json.Json
 
 
 case class HistoryReply(
+  status: String,
   // TODO: This is really (String, String, String | (String, String)), look
   // TODO: into writing implicits to handle tuples
 
   // NOTE: Currently, only handle (String, String, String)
   history: List[String]
-) extends KernelMessageContent {
+) extends KernelMessageContent with ReplyContent {
   override def content : String =
     Json.toJson(this)(HistoryReply.historyReplyWrites).toString
 }

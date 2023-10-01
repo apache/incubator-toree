@@ -26,6 +26,7 @@ import play.api.libs.json._
 class KernelInfoReplySpec extends AnyFunSpec with Matchers {
   val kernelInfoReplyJson: JsValue = Json.parse("""
   {
+    "status": "ok",
     "protocol_version": "x.y.z",
     "implementation": "<name>",
     "implementation_version": "z.y.x",
@@ -34,7 +35,7 @@ class KernelInfoReplySpec extends AnyFunSpec with Matchers {
   }
   """)
 
-  val kernelInfoReply: KernelInfoReply = KernelInfoReply(
+  val kernelInfoReply: KernelInfoReply = KernelInfoReplyOk(
     "x.y.z", "<name>", "z.y.x", LanguageInfo("<some language>", "a.b.c", Some("<some extension>")), "<some banner>"
   )
 

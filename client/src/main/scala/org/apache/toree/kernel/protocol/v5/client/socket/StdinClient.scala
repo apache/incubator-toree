@@ -22,7 +22,7 @@ import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.communication.security.SecurityActorType
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
 import org.apache.toree.kernel.protocol.v5.{HeaderBuilder, KMBuilder, KernelMessage}
-import org.apache.toree.kernel.protocol.v5.content.{InputReply, InputRequest}
+import org.apache.toree.kernel.protocol.v5.content.{InputReply, InputReplyOk, InputRequest}
 import org.apache.toree.utils.LogLike
 import org.apache.toree.kernel.protocol.v5.client.Utilities._
 import play.api.libs.json.Json
@@ -76,7 +76,7 @@ class StdinClient(
         val inputRequest =
           Json.parse(kernelMessage.contentString).as[InputRequest]
         val value = responseFunc(inputRequest.prompt, inputRequest.password)
-        val inputReply = InputReply(value)
+        val inputReply = InputReplyOk(value)
 
         val newKernelMessage = KMBuilder()
           .withParent(kernelMessage)

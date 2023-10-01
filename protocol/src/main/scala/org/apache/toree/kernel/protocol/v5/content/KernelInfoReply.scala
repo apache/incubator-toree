@@ -22,12 +22,13 @@ import org.apache.toree.kernel.protocol.v5.LanguageInfo
 import play.api.libs.json.Json
 
 case class KernelInfoReply (
+  status: String,
   protocol_version: String,
   implementation: String,
   implementation_version: String,
   language_info: LanguageInfo,
   banner: String
-) extends KernelMessageContent {
+) extends KernelMessageContent with ReplyContent {
   override def content: String =
     Json.toJson(this)(KernelInfoReply.kernelInfoReplyWrites).toString
 }

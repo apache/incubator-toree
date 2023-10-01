@@ -74,4 +74,30 @@ package object content {
     _: List[String], _: Int, _: Int, _: Metadata, "error", _: Option[String],
     _: Option[String], _: Option[List[String]]
   )
+
+  // Provide an InputReplyOk type and object representing a
+  // partially-completed InputReply
+  type InputReplyOk = InputReply
+  val InputReplyOk = InputReply("ok", _: String)
+
+  // Provide an CommInfoReplyOk type and object representing a
+  // partially-completed CommInfoReply
+  type CommInfoReplyOk = CommInfoReply
+  val CommInfoReplyOk = CommInfoReply("ok", _: Map[String, Map[String, String]])
+
+  // Provide an KernelInfoReplyOk type and object representing a
+  // partially-completed KernelInfoReply
+  type KernelInfoReplyOk = KernelInfoReply
+  val KernelInfoReplyOk = KernelInfoReply(
+    "ok", _: String, _: String, _: String, _: LanguageInfo, _: String)
+
+  // Provide an ShutdownReplyOk type and object representing a
+  // partially-completed ShutdownReply
+  type ShutdownReplyOk = ShutdownReply
+  val ShutdownReplyOk = ShutdownReply("ok", _: Boolean)
+
+  // Provide an HistoryReplyOk type and object representing a
+  // partially-completed HistoryReply
+  type HistoryReplyOk = HistoryReply
+  val HistoryReplyOk = HistoryReply("ok", _: List[String])
 }
