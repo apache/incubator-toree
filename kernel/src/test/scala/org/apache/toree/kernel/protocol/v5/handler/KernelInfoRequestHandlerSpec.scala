@@ -16,8 +16,8 @@
  */
 
 package org.apache.toree.kernel.protocol.v5.handler
-import akka.actor.{ActorSelection, ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.actor.{ActorSelection, ActorSystem, Props}
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5.content.KernelInfoReply
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
@@ -34,7 +34,7 @@ import test.utils.MaxAkkaTestTimeout
 
 object KernelInfoRequestHandlerSpec {
   val config = """
-    akka {
+    pekko {
       loglevel = "WARNING"
     }"""
 }

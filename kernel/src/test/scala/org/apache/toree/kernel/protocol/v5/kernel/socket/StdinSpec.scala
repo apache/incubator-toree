@@ -19,9 +19,9 @@ package org.apache.toree.kernel.protocol.v5.kernel.socket
 
 import java.nio.charset.Charset
 
-import akka.actor.{Props, ActorSelection, ActorRef, ActorSystem}
-import akka.testkit.{TestProbe, ImplicitSender, TestKit}
-import akka.util.ByteString
+import org.apache.pekko.actor.{Props, ActorSelection, ActorRef, ActorSystem}
+import org.apache.pekko.testkit.{TestProbe, ImplicitSender, TestKit}
+import org.apache.pekko.util.ByteString
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.kernel.protocol.v5.kernel.Utilities._
 import org.apache.toree.kernel.protocol.v5Test._
@@ -37,7 +37,7 @@ import test.utils.MaxAkkaTestTimeout
 
 object StdinSpec {
   val config ="""
-    akka {
+    pekko {
       loglevel = "WARNING"
     }"""
 }

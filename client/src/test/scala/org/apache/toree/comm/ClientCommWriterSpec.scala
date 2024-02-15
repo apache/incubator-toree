@@ -19,8 +19,8 @@ package org.apache.toree.comm
 
 import java.util.UUID
 
-import akka.actor.{ActorSelection, ActorSystem}
-import akka.testkit.{TestKit, TestProbe}
+import org.apache.pekko.actor.{ActorSelection, ActorSystem}
+import org.apache.pekko.testkit.{TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
 import org.apache.toree.kernel.protocol.v5.content._
@@ -37,7 +37,7 @@ import scala.concurrent.duration._
 
 object ClientCommWriterSpec {
   val config ="""
-    akka {
+    pekko {
       loglevel = "WARNING"
     }"""
 }

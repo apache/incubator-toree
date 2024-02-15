@@ -17,7 +17,7 @@
 
 package org.apache.toree.communication.utils
 
-import akka.actor.{Actor, Stash}
+import org.apache.pekko.actor.{Actor, Stash}
 import org.apache.toree.utils.LogLike
 
 /**

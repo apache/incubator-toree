@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.dispatch
 
-import akka.actor.Actor
+import org.apache.pekko.actor.Actor
 import org.apache.toree.kernel.protocol.v5.KernelStatusType.KernelStatusType
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.KernelStatus

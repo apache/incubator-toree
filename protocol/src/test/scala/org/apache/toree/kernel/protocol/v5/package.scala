@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol
 
-//import akka.zeromq.ZMQMessage
+//import org.apache.pekko.zeromq.ZMQMessage
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.{CompleteRequest, ExecuteRequest}
 import play.api.libs.json.{JsValue, Json}

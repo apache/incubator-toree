@@ -17,7 +17,7 @@
 
 package org.apache.toree.boot.layer
 
-import akka.actor.{ActorRef, Props, ActorSystem}
+import org.apache.pekko.actor.{ActorRef, Props, ActorSystem}
 import org.apache.toree.kernel.protocol.v5.dispatch.StatusDispatch
 import org.apache.toree.kernel.protocol.v5.handler.{GenericSocketMessageHandler, ShutdownHandler}
 import org.apache.toree.kernel.protocol.v5.kernel.{SimpleActorLoader, ActorLoader}

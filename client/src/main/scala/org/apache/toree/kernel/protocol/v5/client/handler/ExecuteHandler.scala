@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.client.handler
 
-import akka.actor.Actor
-import akka.util.Timeout
+import org.apache.pekko.actor.Actor
+import org.apache.pekko.util.Timeout
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.client.{ActorLoader, Utilities}
 import org.apache.toree.kernel.protocol.v5.client.execution.{ExecuteRequestTuple, DeferredExecutionManager}

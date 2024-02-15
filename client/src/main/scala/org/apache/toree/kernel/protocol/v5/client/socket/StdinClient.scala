@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.client.socket
 
-import akka.actor.Actor
+import org.apache.pekko.actor.Actor
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.communication.security.SecurityActorType
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
@@ -28,7 +28,7 @@ import org.apache.toree.kernel.protocol.v5.client.Utilities._
 import play.api.libs.json.Json
 
 import StdinClient._
-import akka.pattern.ask
+import org.apache.pekko.pattern.ask
 
 import scala.concurrent.duration._
 import scala.concurrent.Await

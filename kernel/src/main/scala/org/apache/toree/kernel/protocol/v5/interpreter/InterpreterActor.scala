@@ -19,9 +19,9 @@ package org.apache.toree.kernel.protocol.v5.interpreter
 
 import java.io.OutputStream
 
-import akka.actor.{Actor, ActorRef, Props}
-import akka.pattern.{ask, pipe}
-import akka.util.Timeout
+import org.apache.pekko.actor.{Actor, ActorRef, Props}
+import org.apache.pekko.pattern.{ask, pipe}
+import org.apache.pekko.util.Timeout
 import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import org.apache.toree.kernel.protocol.v5.interpreter.tasks._

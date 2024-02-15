@@ -19,8 +19,8 @@ package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
 import java.io.OutputStream
 
-import akka.actor.{ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit}
+import org.apache.pekko.actor.{ActorSystem, Props}
+import org.apache.pekko.testkit.{ImplicitSender, TestKit}
 import com.typesafe.config.ConfigFactory
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.protocol.v5._
@@ -34,7 +34,7 @@ import test.utils.MaxAkkaTestTimeout
 
 object ExecuteRequestTaskActorSpec {
   val config = """
-    akka {
+    pekko {
       loglevel = "WARNING"
     }"""
 }

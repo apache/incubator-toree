@@ -21,16 +21,16 @@ import scala.util.Properties
 object Dependencies {
 
   // Libraries
-  val akkaVersion = "2.6.21" // The latest version under Apache v2
-  val akkaActor = "com.typesafe.akka" %% "akka-actor" % akkaVersion // Apache v2
-  val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % akkaVersion // Apache v2
-  val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % akkaVersion // Apache v2
+  val pekkoVersion = "1.0.2" // The latest version under Apache v2
+  val pekkoActor = "org.apache.pekko" %% "pekko-actor" % pekkoVersion // Apache v2
+  val pekkoSlf4j = "org.apache.pekko" %% "pekko-slf4j" % pekkoVersion // Apache v2
+  val pekkoTestkit = "org.apache.pekko" %% "pekko-testkit" % pekkoVersion // Apache v2
 
   val clapper = "org.clapper" %% "classutil" % "1.5.1" // BSD 3-clause license, used for detecting plugins
 
   val commonsExec = "org.apache.commons" % "commons-exec" % "1.3" // Apache v2
 
-  val config = "com.typesafe" % "config" % "1.4.2" // Apache v2
+  val config = "com.typesafe" % "config" % "1.4.3" // Apache v2
 
   val coursierVersion = "1.0.3"
   val coursier = "io.get-coursier" %% "coursier" % coursierVersion // Apache v2

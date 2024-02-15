@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.handler
 
-import akka.actor._
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.actor._
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.CompleteRequest

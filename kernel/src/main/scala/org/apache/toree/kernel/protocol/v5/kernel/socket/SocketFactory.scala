@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.kernel.socket
 
-import akka.actor.{Props, ActorRef, ActorSystem}
+import org.apache.pekko.actor.{Props, ActorRef, ActorSystem}
 import org.apache.toree.communication.actors.{RouterSocketActor, RepSocketActor, PubSocketActor}
 
 object SocketFactory {

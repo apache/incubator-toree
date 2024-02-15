@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.client
 
-import akka.actor.{ActorRefFactory, ActorSelection}
+import org.apache.pekko.actor.{ActorRefFactory, ActorSelection}
 
 /**
  * This trait defines the interface for loading actors based on some value

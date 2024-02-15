@@ -19,8 +19,8 @@ package org.apache.toree.kernel.protocol.v5.kernel.socket
 
 import java.nio.charset.Charset
 
-import akka.actor.{ActorSelection, ActorSystem, ActorRef, Actor}
-import akka.util.ByteString
+import org.apache.pekko.actor.{ActorSelection, ActorSystem, ActorRef, Actor}
+import org.apache.pekko.util.ByteString
 import org.apache.toree.communication.ZMQMessage
 
 //import org.apache.toree.kernel.protocol.v5.kernel.ZMQMessage

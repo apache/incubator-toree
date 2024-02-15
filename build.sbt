@@ -203,7 +203,7 @@ enablePlugins(ScalaUnidocPlugin)
 (ScalaUnidoc / unidoc / scalacOptions) ++= Seq(
   "-Ymacro-expand:none",
   "-skip-packages", Seq(
-    "akka",
+    "org.apache.pekko",
     "scala"
   ).mkString(":"),
   "-no-link-warnings" // Suppresses problems with Scaladoc @throws links

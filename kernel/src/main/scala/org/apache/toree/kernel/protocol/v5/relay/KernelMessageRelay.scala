@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.relay
 
-import akka.pattern.ask
-import akka.util.Timeout
+import org.apache.pekko.pattern.ask
+import org.apache.pekko.util.Timeout
 import org.apache.toree.communication.security.SecurityActorType
 import org.apache.toree.communication.utils.OrderedSupport
 import org.apache.toree.kernel.protocol.v5.MessageType.MessageType

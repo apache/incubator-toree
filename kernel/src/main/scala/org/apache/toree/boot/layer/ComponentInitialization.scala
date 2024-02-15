@@ -21,7 +21,7 @@ import java.io.File
 import java.net.URL
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.ConcurrentHashMap
-import akka.actor.ActorRef
+import org.apache.pekko.actor.ActorRef
 import com.typesafe.config.Config
 import org.apache.spark.SparkConf
 import org.apache.toree.comm.{CommManager, CommRegistrar, CommStorage, KernelCommManager}

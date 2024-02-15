@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.stream
 
-import akka.actor.{Actor, ActorRef, ActorSystem}
-import akka.testkit.{TestActorRef, TestKit, TestProbe}
+import org.apache.pekko.actor.{Actor, ActorRef, ActorSystem}
+import org.apache.pekko.testkit.{TestActorRef, TestKit, TestProbe}
 import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.InputRequest

@@ -22,9 +22,9 @@ package integration.socket
 
 import java.util.UUID
 
-import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import akka.zeromq._
+import org.apache.pekko.actor.{ActorRef, ActorSystem, Props}
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.zeromq._
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest
 import org.apache.toree.kernel.protocol.v5.socket._

@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.kernel
 
-import akka.util.ByteString
+import org.apache.pekko.util.ByteString
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.kernel.protocol.v5._
 import org.scalatest.funspec.AnyFunSpec

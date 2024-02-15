@@ -17,9 +17,9 @@
 
 package org.apache.toree.kernel.protocol.v5.kernel.socket
 
-import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import akka.util.ByteString
+import org.apache.pekko.actor.{ActorRef, ActorSystem, Props}
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.util.ByteString
 import org.apache.toree.communication.ZMQMessage
 import com.typesafe.config.ConfigFactory
 import org.mockito.ArgumentMatchers._
@@ -31,7 +31,7 @@ import test.utils.MaxAkkaTestTimeout
 
 object HeartbeatSpec {
   val config = """
-    akka {
+    pekko {
       loglevel = "WARNING"
     }"""
 }

@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.handler
 
-import akka.actor.ActorSelection
-import akka.pattern.ask
+import org.apache.pekko.actor.ActorSelection
+import org.apache.pekko.pattern.ask
 import org.apache.toree.global.{ExecuteRequestState, ExecutionCounter}
 import org.apache.toree.kernel.api.{Kernel, KernelLike}
 import org.apache.toree.kernel.protocol.v5._

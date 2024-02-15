@@ -23,8 +23,8 @@ import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import play.api.libs.json.Json
 import test.utils.MaxAkkaTestTimeout
-import akka.actor.{ActorSelection, ActorSystem}
-import akka.testkit.{TestProbe, TestKit}
+import org.apache.pekko.actor.{ActorSelection, ActorSystem}
+import org.apache.pekko.testkit.{TestProbe, TestKit}
 import com.typesafe.config.ConfigFactory
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.funspec.AnyFunSpecLike
@@ -35,7 +35,7 @@ import org.mockito.ArgumentMatchers._
 
 object KernelCommWriterSpec {
   val config ="""
-    akka {
+    pekko {
       loglevel = "WARNING"
     }"""
 }

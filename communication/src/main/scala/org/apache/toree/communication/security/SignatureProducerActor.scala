@@ -17,7 +17,7 @@
 
 package org.apache.toree.communication.security
 
-import akka.actor.Actor
+import org.apache.pekko.actor.Actor
 import org.apache.toree.communication.utils.OrderedSupport
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import org.apache.toree.utils.LogLike

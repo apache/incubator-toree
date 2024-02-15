@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.client.socket
 
-import akka.actor.Actor
-import akka.util.Timeout
+import org.apache.pekko.actor.Actor
+import org.apache.pekko.util.Timeout
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.communication.security.SecurityActorType
 import org.apache.toree.kernel.protocol.v5.client.{ActorLoader, Utilities}
@@ -30,7 +30,7 @@ import org.apache.toree.kernel.protocol.v5.content.ExecuteReply
 import org.apache.toree.utils.LogLike
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import akka.pattern.ask
+import org.apache.pekko.pattern.ask
 
 /**
  * The client endpoint for Shell messages specified in the IPython Kernel Spec

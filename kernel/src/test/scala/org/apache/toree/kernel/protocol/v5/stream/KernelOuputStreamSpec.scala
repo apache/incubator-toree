@@ -18,8 +18,8 @@
 package org.apache.toree.kernel.protocol.v5.stream
 
 import java.util.UUID
-import akka.actor.{ActorSelection, ActorSystem}
-import akka.testkit.{TestKit, TestProbe}
+import org.apache.pekko.actor.{ActorSelection, ActorSystem}
+import org.apache.pekko.testkit.{TestKit, TestProbe}
 import org.apache.toree.Main
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader

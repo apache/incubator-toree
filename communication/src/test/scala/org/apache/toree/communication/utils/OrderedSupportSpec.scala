@@ -17,8 +17,8 @@
 
 package org.apache.toree.communication.utils
 
-import akka.actor._
-import akka.testkit.{ImplicitSender, TestKit}
+import org.apache.pekko.actor._
+import org.apache.pekko.testkit.{ImplicitSender, TestKit}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.funspec.AnyFunSpecLike
 import org.scalatest.matchers.should.Matchers

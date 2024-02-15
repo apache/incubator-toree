@@ -21,4 +21,4 @@ libraryDependencies += Dependencies.guava
 //
 // TEST DEPENDENCIES
 //
-libraryDependencies += Dependencies.akkaTestkit % "test"
+libraryDependencies += Dependencies.pekkoTestkit % "test"

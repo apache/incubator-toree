@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.kernel.socket
 
-import akka.actor.Actor
-import akka.util.ByteString
+import org.apache.pekko.actor.Actor
+import org.apache.pekko.util.ByteString
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.communication.utils.OrderedSupport
 import org.apache.toree.kernel.protocol.v5._

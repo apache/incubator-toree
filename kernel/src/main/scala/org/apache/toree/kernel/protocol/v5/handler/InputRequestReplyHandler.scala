@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.handler
 
-import akka.actor.ActorRef
+import org.apache.pekko.actor.ActorRef
 import org.apache.toree.comm.{CommRegistrar, CommStorage}
 import org.apache.toree.communication.utils.OrderedSupport
 import org.apache.toree.kernel.protocol.v5.{SystemActorType, KernelMessage}

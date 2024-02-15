@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.api
 
-import akka.actor.ActorSystem
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import org.scalatestplus.mockito.MockitoSugar

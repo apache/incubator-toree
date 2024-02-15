@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
-import akka.actor.{Actor, Props}
+import org.apache.pekko.actor.{Actor, Props}
 import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.kernel.protocol.v5.content.IsCompleteRequest
 import org.apache.toree.utils.LogLike

@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.client.boot.layers
 
-import akka.actor.{Props, ActorRef, ActorSystem}
+import org.apache.pekko.actor.{Props, ActorRef, ActorSystem}
 import org.apache.toree.comm.{CommRegistrar, CommStorage}
 import org.apache.toree.communication.security.{SecurityActorType, SignatureManagerActor}
 import org.apache.toree.kernel.protocol.v5.SocketType

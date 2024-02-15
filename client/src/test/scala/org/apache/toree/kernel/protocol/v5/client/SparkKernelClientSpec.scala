@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.client
 
-import akka.actor.ActorSystem
-import akka.testkit.{TestKit, TestProbe}
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.testkit.{TestKit, TestProbe}
 import org.apache.toree.comm.{CommCallbacks, CommStorage, CommRegistrar}
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5._
