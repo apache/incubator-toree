@@ -11,8 +11,8 @@ Apache License 2.0
 ========================================================================
 
    com.google.guava:guava:14.0.1
-   com.typesafe.akka:akka-slf4j_2.11:2.4.20
-   com.typesafe.akka:akka-actor_2.11:2.4.20
+   org.apache.pekko:pekko-slf4j_2.12:1.0.2
+   org.apache.pekko:pekko-actor_2.12:1.0.2
    com.typesafe:config:1.3.0 -> https://github.com/lightbend/config/blob/master/LICENSE-2.0.txt
    com.typesafe.play:play-json_2.11:2.3.10 -> https://github.com/playframework/play-json/blob/master/LICENSE
    com.typesafe.play:play-datacommons_2.11:2.3.10

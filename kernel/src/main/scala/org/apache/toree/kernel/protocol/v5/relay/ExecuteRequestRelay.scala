@@ -18,9 +18,9 @@
 package org.apache.toree.kernel.protocol.v5.relay
 
 import java.io.OutputStream
-import akka.actor.Actor
-import akka.pattern._
-import akka.util.Timeout
+import org.apache.pekko.actor.Actor
+import org.apache.pekko.pattern._
+import org.apache.pekko.util.Timeout
 import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError, ExecuteFailure, ExecuteOutput}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._

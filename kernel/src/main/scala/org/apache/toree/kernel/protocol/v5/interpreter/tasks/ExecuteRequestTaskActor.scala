@@ -19,7 +19,7 @@ package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
 import java.io.OutputStream
 
-import akka.actor.{Actor, Props}
+import org.apache.pekko.actor.{Actor, Props}
 import org.apache.toree.global.StreamState
 import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError, Interpreter, Results}
 import org.apache.toree.kernel.protocol.v5._

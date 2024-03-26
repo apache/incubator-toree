@@ -19,8 +19,8 @@ package org.apache.toree.kernel.protocol.v5.client.socket
 
 import java.util.UUID
 
-import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.testkit.{TestProbe, ImplicitSender, TestKit}
+import org.apache.pekko.actor.{ActorRef, ActorSystem, Props}
+import org.apache.pekko.testkit.{TestProbe, ImplicitSender, TestKit}
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.communication.security.SecurityActorType
 import org.apache.toree.kernel.protocol.v5._

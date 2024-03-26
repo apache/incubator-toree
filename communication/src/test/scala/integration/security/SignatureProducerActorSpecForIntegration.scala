@@ -17,8 +17,8 @@
 
 package integration.security
 
-import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit}
+import org.apache.pekko.actor.{ActorRef, ActorSystem, Props}
+import org.apache.pekko.testkit.{ImplicitSender, TestKit}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.communication.security.{Hmac, SignatureProducerActor}
 import com.typesafe.config.ConfigFactory
@@ -28,7 +28,7 @@ import org.scalatest.BeforeAndAfterEach
 
 object SignatureProducerActorSpecForIntegration {
   val config = """
-    akka {
+    pekko {
       loglevel = "WARNING"
     }"""
 }

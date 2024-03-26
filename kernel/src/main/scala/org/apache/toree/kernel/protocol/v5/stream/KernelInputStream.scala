@@ -20,7 +20,7 @@ package org.apache.toree.kernel.protocol.v5.stream
 import java.io.InputStream
 import java.nio.charset.Charset
 
-import akka.pattern.ask
+import org.apache.pekko.pattern.ask
 import org.apache.toree.kernel.protocol.v5.content.InputRequest
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.kernel.protocol.v5.kernel.Utilities.timeout

@@ -19,8 +19,8 @@ package org.apache.toree.kernel.protocol.v5.relay
 
 import java.io.OutputStream
 import java.util.concurrent.TimeUnit
-import akka.actor._
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.actor._
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.interpreter.{ExecuteAborted, ExecuteError}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
@@ -39,7 +39,7 @@ import scala.concurrent.duration.Duration
 
 object ExecuteRequestRelaySpec {
   val config = """
-    akka {
+    pekko {
       loglevel = "WARNING"
     }"""
 }

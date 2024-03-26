@@ -19,7 +19,7 @@ package org.apache.toree.kernel.protocol.v5.client
 
 import java.nio.charset.Charset
 
-import akka.util.{ByteString, Timeout}
+import org.apache.pekko.util.{ByteString, Timeout}
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content.ExecuteRequest

@@ -16,7 +16,7 @@
  */
 package org.apache.toree.communication.actors
 
-import akka.actor.Actor
+import org.apache.pekko.actor.Actor
 import org.apache.toree.communication.utils.OrderedSupport
 import org.apache.toree.communication.{SocketManager, ZMQMessage}
 import org.apache.toree.kernel.protocol.v5.KernelMessage

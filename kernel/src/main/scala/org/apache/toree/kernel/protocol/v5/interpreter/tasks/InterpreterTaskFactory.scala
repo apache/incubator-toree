@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.interpreter.tasks
 
-import akka.actor.{ActorRefFactory, ActorRef}
+import org.apache.pekko.actor.{ActorRefFactory, ActorRef}
 import org.apache.toree.interpreter.Interpreter
 
 class InterpreterTaskFactory(interpreter: Interpreter) {

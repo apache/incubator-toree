@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.kernel
 
-import akka.actor.{ActorSelection, ActorSystem, Props}
-import akka.testkit.{TestKit, TestProbe}
+import org.apache.pekko.actor.{ActorSelection, ActorSystem, Props}
+import org.apache.pekko.testkit.{TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5.MessageType
 import org.scalatest.funspec.AnyFunSpecLike
 import org.scalatest.matchers.should.Matchers

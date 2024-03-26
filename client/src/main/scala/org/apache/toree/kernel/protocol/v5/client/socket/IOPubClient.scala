@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.client.socket
 
-import akka.actor.Actor
+import org.apache.pekko.actor.Actor
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.comm.{CommStorage, CommRegistrar, ClientCommWriter}
 import org.apache.toree.kernel.protocol.v5.client.{ActorLoader, Utilities}

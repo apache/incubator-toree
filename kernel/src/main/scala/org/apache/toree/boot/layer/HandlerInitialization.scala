@@ -17,7 +17,7 @@
 
 package org.apache.toree.boot.layer
 
-import akka.actor.{ActorRef, ActorSystem, Props}
+import org.apache.pekko.actor.{ActorRef, ActorSystem, Props}
 import org.apache.toree.comm.{CommRegistrar, CommStorage}
 import org.apache.toree.interpreter.Interpreter
 import org.apache.toree.kernel.api.Kernel

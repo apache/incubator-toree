@@ -19,8 +19,8 @@ package org.apache.toree.kernel.protocol.v5.handler
 
 import java.util.UUID
 
-import akka.actor.{Props, ActorRef, ActorSystem}
-import akka.testkit.{TestProbe, ImplicitSender, TestKit}
+import org.apache.pekko.actor.{Props, ActorRef, ActorSystem}
+import org.apache.pekko.testkit.{TestProbe, ImplicitSender, TestKit}
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.content.{ClearOutput, CommClose}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader

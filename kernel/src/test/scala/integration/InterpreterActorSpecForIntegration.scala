@@ -19,8 +19,8 @@ package integration
 
 import java.io.{ByteArrayOutputStream, OutputStream}
 
-import akka.actor.{ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit}
+import org.apache.pekko.actor.{ActorSystem, Props}
+import org.apache.pekko.testkit.{ImplicitSender, TestKit}
 import org.apache.toree.Main
 import org.apache.toree.interpreter._
 import org.apache.toree.kernel.api.{DisplayMethodsLike, KernelLike}
@@ -40,7 +40,7 @@ import test.utils.MaxAkkaTestTimeout
 
 object InterpreterActorSpecForIntegration {
   val config = """
-    akka {
+    pekko {
       loglevel = "WARNING"
     }"""
 }

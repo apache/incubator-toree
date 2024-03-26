@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.handler
 
-import akka.pattern.ask
+import org.apache.pekko.pattern.ask
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._
 import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}

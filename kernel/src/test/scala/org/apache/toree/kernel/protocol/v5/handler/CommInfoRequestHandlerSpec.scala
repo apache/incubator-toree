@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.handler
 
-import akka.actor.{ActorSelection, ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.actor.{ActorSelection, ActorSystem, Props}
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.typesafe.config.ConfigFactory
 import org.apache.toree.comm.CommStorage
 import org.apache.toree.kernel.protocol.v5.content.CommInfoReply
@@ -36,7 +36,7 @@ import scala.concurrent.duration._
 
 object CommInfoRequestHandlerSpec {
   val config = """
-    akka {
+    pekko {
       loglevel = "WARNING"
     }"""
 }

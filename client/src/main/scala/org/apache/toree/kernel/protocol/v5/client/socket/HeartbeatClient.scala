@@ -17,10 +17,10 @@
 
 package org.apache.toree.kernel.protocol.v5.client.socket
 
-import akka.actor.{ActorRef, Actor}
-import akka.util.{ByteString, Timeout}
+import org.apache.pekko.actor.{ActorRef, Actor}
+import org.apache.pekko.util.{ByteString, Timeout}
 import org.apache.toree.communication.ZMQMessage
-import akka.pattern.ask
+import org.apache.pekko.pattern.ask
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
 import org.apache.toree.utils.LogLike
 import org.apache.toree.kernel.protocol.v5.UUID

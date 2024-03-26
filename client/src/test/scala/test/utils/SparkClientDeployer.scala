@@ -17,8 +17,8 @@
 
 package test.utils
 
-import akka.actor.{Actor, Props, ActorRef, ActorSystem}
-import akka.testkit.TestProbe
+import org.apache.pekko.actor.{Actor, Props, ActorRef, ActorSystem}
+import org.apache.pekko.testkit.TestProbe
 import org.apache.toree.comm.{CommRegistrar, CommStorage}
 import org.apache.toree.kernel.protocol.v5.client.socket._
 import org.apache.toree.kernel.protocol.v5.client.{ActorLoader, SparkKernelClient}

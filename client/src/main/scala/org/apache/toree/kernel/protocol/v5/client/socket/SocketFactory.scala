@@ -19,7 +19,7 @@ package org.apache.toree.kernel.protocol.v5.client.socket
 
 import java.util.UUID
 
-import akka.actor.{Props, ActorRef, ActorSystem}
+import org.apache.pekko.actor.{Props, ActorRef, ActorSystem}
 import org.apache.toree.communication.actors.{DealerSocketActor, ReqSocketActor, SubSocketActor}
 
 object SocketFactory {

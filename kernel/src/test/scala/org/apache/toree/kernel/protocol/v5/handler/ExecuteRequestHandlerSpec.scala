@@ -20,8 +20,8 @@ package org.apache.toree.kernel.protocol.v5.handler
 import java.io.OutputStream
 import java.util.concurrent.atomic.AtomicInteger
 
-import akka.actor._
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.actor._
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.kernel.api.{FactoryMethods, Kernel}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.kernel.protocol.v5.content._

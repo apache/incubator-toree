@@ -22,10 +22,10 @@ package integration.socket
 
 import java.io.File
 
-import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.pattern.ask
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
-import akka.util.Timeout
+import org.apache.pekko.actor.{ActorRef, ActorSystem, Props}
+import org.apache.pekko.pattern.ask
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.util.Timeout
 import org.apache.toree.kernel.protocol.v5.client.ZMQMessage
 import org.apache.toree.kernel.protocol.v5.SocketType
 import org.apache.toree.kernel.protocol.v5.socket._

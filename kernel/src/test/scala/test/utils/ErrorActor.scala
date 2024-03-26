@@ -17,7 +17,7 @@
 
 package test.utils
 
-import akka.actor.Actor
+import org.apache.pekko.actor.Actor
 
 class ErrorActor extends Actor {
   override def receive: Receive = {

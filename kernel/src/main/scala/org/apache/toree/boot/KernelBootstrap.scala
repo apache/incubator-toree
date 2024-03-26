@@ -17,7 +17,7 @@
 
 package org.apache.toree.boot
 
-import akka.actor.{ActorRef, ActorSystem}
+import org.apache.pekko.actor.{ActorRef, ActorSystem}
 import com.typesafe.config.Config
 import org.apache.toree.boot.layer._
 import org.apache.toree.interpreter.Interpreter

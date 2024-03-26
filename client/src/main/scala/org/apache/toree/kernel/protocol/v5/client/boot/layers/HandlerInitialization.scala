@@ -17,7 +17,7 @@
 
 package org.apache.toree.kernel.protocol.v5.client.boot.layers
 
-import akka.actor.{ActorSystem, Props}
+import org.apache.pekko.actor.{ActorSystem, Props}
 import org.apache.toree.kernel.protocol.v5.client.ActorLoader
 import org.apache.toree.kernel.protocol.v5.MessageType
 import org.apache.toree.kernel.protocol.v5.MessageType.MessageType

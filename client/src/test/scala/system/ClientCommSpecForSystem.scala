@@ -17,7 +17,7 @@
 
 package system
 
-import akka.testkit.{TestKit, TestProbe}
+import org.apache.pekko.testkit.{TestKit, TestProbe}
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.kernel.protocol.v5
 import org.apache.toree.kernel.protocol.v5.client.Utilities._

@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.kernel
 
-import akka.actor.{ActorSystem, Props}
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.actor.{ActorSystem, Props}
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.kernel.protocol.v5.{MessageType, SocketType}
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.funspec.AnyFunSpecLike

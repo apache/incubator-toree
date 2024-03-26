@@ -17,8 +17,8 @@
 
 package test.utils
 
-import akka.actor.Actor
-import akka.testkit.TestProbe
+import org.apache.pekko.actor.Actor
+import org.apache.pekko.testkit.TestProbe
 
 class TestProbeProxyActor(probe: TestProbe) extends Actor {
   override def receive = {

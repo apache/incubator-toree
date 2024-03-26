@@ -17,8 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5.relay
 
-import akka.actor._
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import org.apache.pekko.actor._
+import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
 import org.apache.toree.communication.ZMQMessage
 import org.apache.toree.communication.security.SecurityActorType
 import org.apache.toree.kernel.protocol.v5._
@@ -34,7 +34,7 @@ import org.mockito.ArgumentMatchers.{eq => mockEq}
 import org.mockito.AdditionalMatchers.{not => mockNot}
 import org.apache.toree.kernel.protocol.v5.KernelMessage
 import scala.concurrent._
-import akka.pattern.pipe
+import org.apache.pekko.pattern.pipe
 import scala.util.Random
 import ExecutionContext.Implicits.global
 import test.utils._

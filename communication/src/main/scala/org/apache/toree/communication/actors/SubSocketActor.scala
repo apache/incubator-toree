@@ -16,8 +16,8 @@
  */
 package org.apache.toree.communication.actors
 
-import akka.actor.{Actor, ActorRef}
-import akka.util.ByteString
+import org.apache.pekko.actor.{Actor, ActorRef}
+import org.apache.pekko.util.ByteString
 import org.apache.toree.communication.{ZMQMessage, SocketManager}
 import org.apache.toree.utils.LogLike
 

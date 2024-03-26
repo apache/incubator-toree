@@ -16,7 +16,7 @@
  */
 package org.apache.toree.communication
 
-import akka.util.ByteString
+import org.apache.pekko.util.ByteString
 
 /**
  * Represents a ZeroMQ message containing a collection of Akka ByteString
