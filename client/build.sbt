@@ -21,5 +21,5 @@ scalacOptions += "-language:reflectiveCalls"
 libraryDependencies ++= Seq(
   Dependencies.pekkoActor,
   Dependencies.pekkoSlf4j,
-  Dependencies.pekkoTestkit % Test
+  Dependencies.pekkoTestkit % "test"
 )
