@@ -82,7 +82,7 @@ clean: clean-dist
 	@rm -f .toree-dev-image
 	@-docker rmi -f $(TOREE_DEV_IMAGE)
 
-.toree-dev-image: .clean-toree-dev-image
+.toree-dev-image:
 	@docker build -t $(TOREE_DEV_IMAGE) -f Dockerfile.toree-dev .
 	touch $@
 
