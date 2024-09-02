@@ -18,7 +18,7 @@
 package org.apache.toree.kernel.protocol.v5.handler
 
 import org.apache.toree.comm.{CommRegistrar, CommStorage, KernelCommWriter}
-import org.apache.toree.kernel.protocol.v5.content.{ShutdownReply, ShutdownRequest, CommOpen}
+import org.apache.toree.kernel.protocol.v5.content.{CommOpen, ShutdownReply, ShutdownReplyOk, ShutdownRequest}
 import org.apache.toree.kernel.protocol.v5.kernel.{ActorLoader, Utilities}
 import org.apache.toree.kernel.protocol.v5._
 import org.apache.toree.security.KernelSecurityManager
@@ -43,7 +43,7 @@ class ShutdownHandler(
 
     val kernelInfo = SparkKernelInfo
 
-    val shutdownReply = ShutdownReply(false)
+    val shutdownReply = ShutdownReplyOk(false)
 
     val replyHeader = Header(
       java.util.UUID.randomUUID.toString,

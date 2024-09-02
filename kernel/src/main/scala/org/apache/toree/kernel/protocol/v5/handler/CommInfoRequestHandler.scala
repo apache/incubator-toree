@@ -19,13 +19,13 @@ package org.apache.toree.kernel.protocol.v5.handler
 
 import org.apache.toree.comm.CommStorage
 import org.apache.toree.kernel.protocol.v5._
-import org.apache.toree.kernel.protocol.v5.content.CommInfoReply
+import org.apache.toree.kernel.protocol.v5.content.{CommInfoReply, CommInfoReplyOk}
 import org.apache.toree.kernel.protocol.v5.kernel.ActorLoader
 import org.apache.toree.utils.MessageLogSupport
 import play.api.libs.json.Json
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, future}
+import scala.concurrent.Future
 
 /**
  * Receives a CommInfoRequest KernelMessage and returns a CommInfoReply
@@ -63,7 +63,7 @@ class CommInfoRequestHandler(
         commStorage.getTargets().map(buildCommMap(_)).reduce(_ ++ _)
       }
     }
-    val commInfoReply = CommInfoReply(commMap.asInstanceOf[Map[String, Map[String, String]]])
+    val commInfoReply = CommInfoReplyOk(commMap.asInstanceOf[Map[String, Map[String, String]]])
 
     val kernelInfo = SparkKernelInfo
 
