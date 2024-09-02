@@ -161,7 +161,7 @@ dist: dist/toree pip-release
 dev: DOCKER_WORKDIR=/srv/toree/etc/examples/notebooks
 dev: SUSPEND=n
 dev: DEBUG_PORT=5005
-dev: .toree-dev-image dist
+dev: dist .toree-dev-image
 	@$(DOCKER) \
 		-e SPARK_OPTS="--master=local[4] --driver-java-options=-agentlib:jdwp=transport=dt_socket,server=y,suspend=$(SUSPEND),address=5005" \
 		-p $(DEBUG_PORT):5005 -p 8888:8888 $(TOREE_DEV_IMAGE) \
