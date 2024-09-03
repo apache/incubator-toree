@@ -19,7 +19,7 @@ package org.apache.toree.dependencies
 import java.io.{File, FileInputStream, PrintStream}
 import java.net.{URI, URL}
 import java.util.Properties
-import coursier.core.{Authentication, Configuration, MinimizedExclusions, Repository}
+import coursier.core.{Authentication, Configuration, Repository}
 import coursier.Dependency
 import coursier.cache.loggers.RefreshLogger
 import coursier.ivy.{IvyRepository, IvyXml}
@@ -93,8 +93,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     val start = Resolution(Seq(
       Dependency(Module(Organization(groupId), ModuleName(artifactId)), version)
         .withTransitive(transitive)
-        // NOTE: Source/Javadoc not downloaded by default
-        .withMinimizedExclusions(MinimizedExclusions(exclusions))
+        .withExclusions(exclusions) // NOTE: Source/Javadoc not downloaded by default
         .withConfiguration {
           configuration.map(c => new Configuration(c)).getOrElse(Configuration.default)
         }
