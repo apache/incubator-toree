@@ -40,6 +40,11 @@ class CoursierDependencyDownloader extends DependencyDownloader {
   @volatile private var printStream: PrintStream = System.out
   @volatile private var localDirectory: URI = null
 
+  private val downloadLogger: RefreshLogger = RefreshLogger.create(printStream)
+  downloadLogger.init(Some(120))
+  sys.addShutdownHook(downloadLogger.stop())
+
+
   // Initialization
   setDownloadDirectory(DependencyDownloader.DefaultDownloadDirectory)
   addMavenRepository(DependencyDownloader.DefaultMavenRepository, None)
@@ -119,7 +124,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
     val localCache = FileCache()
       .withLocation(downloadLocations)
       // TODO logger should respect `verbose` and `trace`
-      .withLogger(RefreshLogger.create(printStream))
+      .withLogger(downloadLogger)
 
     val fetch = ResolutionProcess.fetch(
       fetchLocations,
