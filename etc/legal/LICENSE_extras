@@ -13,51 +13,40 @@ Apache License 2.0
    com.google.guava:guava:14.0.1
    org.apache.pekko:pekko-slf4j_2.12:1.0.2
    org.apache.pekko:pekko-actor_2.12:1.0.2
-   com.typesafe:config:1.3.0 -> https://github.com/lightbend/config/blob/master/LICENSE-2.0.txt
-   com.typesafe.play:play-json_2.11:2.3.10 -> https://github.com/playframework/play-json/blob/master/LICENSE
-   com.typesafe.play:play-datacommons_2.11:2.3.10
-   com.typesafe.play:play-functional_2.11:2.3.10
-   com.typesafe.play:play-iteratees_2.11:2.3.10
+   com.typesafe:config:1.4.3 -> https://github.com/lightbend/config/blob/master/LICENSE-2.0.txt
+   com.typesafe.play:play-json_2.12:2.7.4 -> https://github.com/playframework/play-json/blob/master/LICENSE
+   com.typesafe.play:play-functional_2.12:2.7.4
    commons-logging:commons-logging:1.1.3 -> https://github.com/apache/commons-logging/blob/trunk/LICENSE.txt
-   io.get-coursier:coursier-cache_2.11:1.0.0-RC10 -> https://github.com/coursier/coursier/blob/master/LICENSE
-   io.get-coursier:coursier_2.11:1.0.0-RC10 -> https://github.com/coursier/coursier/blob/master/LICENSE
-   joda-time:joda-time:2.3 -> https://github.com/JodaOrg/joda-time/blob/master/LICENSE.txt
-   org.springframework:spring-core:4.1.1.RELEASE
+   io.get-coursier:coursier-cache_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
+   io.get-coursier:coursier_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
+   joda-time:joda-time:2.10.1 -> https://github.com/JodaOrg/joda-time/blob/master/LICENSE.txt
+   org.springframework:spring-core:5.2.2.RELEASE
    org.apache.commons:commons-exec:1.3 -> https://github.com/apache/commons-exec/blob/trunk/LICENSE.txt
-   org.joda:joda-convert:1.6 -> https://github.com/JodaOrg/joda-convert/blob/master/LICENSE.txt
-
 
 ========================================================================
 MPL v2
 ========================================================================
 
-   org.zeromq:jeromq:0.3.6 -> https://github.com/zeromq/jeromq/blob/master/LICENSE
+   org.zeromq:jeromq:0.5.3 -> https://github.com/zeromq/jeromq/blob/master/LICENSE
 
 ========================================================================
 BSD-like
 ========================================================================
 
-   asm:asm-commons:5.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
-   asm:asm-tree:5.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
-   asm:asm-util:5.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
-   asm:asm:5.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
+   asm:asm-commons:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
+   asm:asm-tree:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
+   asm:asm-util:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
+   asm:asm:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
    com.github.jupyter:jvm-repr:0.1.0 -> https://github.com/jupyter/jvm-repr/blob/master/LICENSE
-   jline:jline:2.6 -> https://github.com/jline/jline2/blob/master/LICENSE.txt and licenses/LICENSE-jline.txt
-   org.clapper:classutil_2.11:1.0.12 -> http://software.clapper.org/javautil/#copyright-and-license and licenses/LICENSE-clapper.txt
-   org.clapper:grizzled-scala_2.11:2.4.1 -> http://software.clapper.org/grizzled-scala/#copyright-and-license and licenses/LICENSE-clapper.txt
-   org.scala-lang.modules:scala-java8-compat_2.11:0.7.0 -> https://github.com/scala/scala-java8-compat/blob/master/LICENSE
-   org.scala-lang.modules:scala-xml_2.11:1.0.6 -> https://github.com/scala/scala-xml/blob/master/LICENSE.md
-   org.scala-lang:scala-reflect:2.11.8 -> http://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
-   org.scala-stm:scala-stm_2.11:0.7 -> https://nbronson.github.io/scala-stm/license.html and licenses/LICENSE-scala-stm.txt
-   org.scalaz:scalaz-concurrent_2.11:7.2.13 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE and licenses/LICENSE-scalaz.txt
-   org.scalaz:scalaz-core_2.11:7.2.13 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE and licenses/LICENSE-scalaz.txt
-   org.scalaz:scalaz-effect_2.11:7.2.13 -> https://github.com/scalaz/scalaz/blob/series/7.1.x/etc/LICENCE and licenses/LICENSE-scalaz.txt
-   org.scalamacros:quasiquotes_2.10:2.0.1 -> http://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
+   org.clapper:classutil_2.12:1.5.1 -> http://software.clapper.org/javautil/#copyright-and-license and licenses/LICENSE-clapper.txt
+   org.clapper:grizzled-scala_2.12:4.9.3 -> http://software.clapper.org/grizzled-scala/#copyright-and-license and licenses/LICENSE-clapper.txt
+   org.scala-lang.modules:scala-java8-compat_2.12:1.0.2 -> https://github.com/scala/scala-java8-compat/blob/master/LICENSE
+   org.scala-lang.modules:scala-xml_2.12:2.1.0 -> https://github.com/scala/scala-xml/blob/master/LICENSE.md
+   org.scala-lang:scala-reflect:2.12.15 -> http://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
 
 ========================================================================
 MIT license
 ========================================================================
 
-   com.lihaoyi:ammonite-terminal_2.10:0.5.0 -> https://github.com/lihaoyi/Ammonite/blob/master/LICENSE and licenses/LICENSE-ammonite.txt
    net.sf.jopt-simple:jopt-simple:4.9 -> https://pholser.github.io/jopt-simple/license.html and licenses/LICENSE-jopt-simple.txt
-   org.slf4j:slf4j-api:1.7.21 -> http://www.slf4j.org/license.html and licenses/LICENSE-slf4j.txt
+   org.slf4j:slf4j-api:1.7.32 -> http://www.slf4j.org/license.html and licenses/LICENSE-slf4j.txt
