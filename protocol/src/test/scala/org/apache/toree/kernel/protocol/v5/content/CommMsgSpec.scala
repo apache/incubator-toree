@@ -88,7 +88,7 @@ class CommMsgSpec extends AnyFunSpec with Matchers {
         val CompleteRequestResults = commMsgJson.validate[CommMsg]
 
         CompleteRequestResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: CommMsg) => valid
         ) should be (commMsg)
       }

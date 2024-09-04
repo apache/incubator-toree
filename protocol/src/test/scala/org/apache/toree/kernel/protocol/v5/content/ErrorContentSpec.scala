@@ -58,7 +58,7 @@ class ErrorContentSpec extends AnyFunSpec with Matchers {
         val CompleteRequestResults = errorJson.validate[ErrorContent]
 
         CompleteRequestResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ErrorContent) => valid
         ) should be (error)
       }

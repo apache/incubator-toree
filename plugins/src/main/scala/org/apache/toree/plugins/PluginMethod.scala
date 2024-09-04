@@ -34,7 +34,7 @@ case class PluginMethod(
   method: Method
 ) {
   /** Represents the collection of names of events this method supports. */
-  lazy val eventNames: collection.Seq[String] = {
+  lazy val eventNames: Seq[String] = {
     Option(method.getAnnotation(classOf[Event]))
       .map(_.name()).map(Seq(_)).getOrElse(Nil) ++
     Option(method.getAnnotation(classOf[Events]))

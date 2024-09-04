@@ -62,7 +62,7 @@ class HistoryReplySpec extends AnyFunSpec with Matchers {
         val CompleteRequestResults = historyReplyJson.validate[HistoryReply]
 
         CompleteRequestResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: HistoryReply) => valid
         ) should be (historyReply)
       }

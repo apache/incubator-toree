@@ -60,7 +60,7 @@ class ShutdownReplySpec extends AnyFunSpec with Matchers {
         val ShutdownReplyResults = shutdownReplyJson.validate[ShutdownReply]
 
         ShutdownReplyResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ShutdownReply) => valid
         ) should be (shutdownReply)
       }

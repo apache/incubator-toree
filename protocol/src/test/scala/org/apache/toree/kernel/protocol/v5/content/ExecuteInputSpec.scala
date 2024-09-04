@@ -60,7 +60,7 @@ class ExecuteInputSpec extends AnyFunSpec with Matchers {
         val executeInputResults = executeInputJson.validate[ExecuteInput]
 
         executeInputResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ExecuteInput) => valid
         ) should be (executeInput)
       }

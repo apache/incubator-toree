@@ -65,7 +65,7 @@ class KernelInfoReplySpec extends AnyFunSpec with Matchers {
         val kernelInfoReplyResults = kernelInfoReplyJson.validate[KernelInfoReply]
 
         kernelInfoReplyResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: KernelInfoReply) => valid
         ) should be (kernelInfoReply)
       }

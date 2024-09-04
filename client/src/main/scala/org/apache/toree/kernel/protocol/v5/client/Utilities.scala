@@ -79,7 +79,7 @@ object Utilities extends LogLike {
   }
 
   implicit def KernelMessageToZMQMessage(kernelMessage : KernelMessage) : ZMQMessage = {
-    val frames: mutable.ListBuffer[ByteString] = scala.collection.mutable.ListBuffer()
+    val frames: mutable.ListBuffer[ByteString] = mutable.ListBuffer()
     kernelMessage.ids.map((id: Array[Byte]) => frames += ByteString.apply(id))
     frames += "<IDS|MSG>"
     frames += kernelMessage.signature

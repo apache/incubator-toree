@@ -59,7 +59,7 @@ class ExecuteReplyErrorSpec extends AnyFunSpec with Matchers {
         val ExecuteReplyErrorResults = executeReplyErrorJson.validate[ExecuteReplyError]
 
         ExecuteReplyErrorResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ExecuteReplyError) => valid
         ) should be (executeReplyError)
       }

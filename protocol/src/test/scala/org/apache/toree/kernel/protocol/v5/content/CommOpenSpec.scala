@@ -61,7 +61,7 @@ class CommOpenSpec extends AnyFunSpec with Matchers {
         val CompleteRequestResults = commOpenJson.validate[CommOpen]
 
         CompleteRequestResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: CommOpen) => valid
         ) should be (commOpen)
       }

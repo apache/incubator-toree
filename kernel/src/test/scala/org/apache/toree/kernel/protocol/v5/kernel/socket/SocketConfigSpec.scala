@@ -71,7 +71,7 @@ class SocketConfigSpec extends AnyFunSpec with Matchers {
         val CompleteRequestResults = socketConfigJson.validate[SocketConfig]
 
         CompleteRequestResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: SocketConfig) => valid
         ) should be (socketConfig)
       }

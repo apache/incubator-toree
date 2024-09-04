@@ -105,7 +105,7 @@ class PluginSearcher {
     extraClasses: Map[String, ClassInfo]
   ): Iterator[ClassInfo] = {
     @tailrec def classMatches(
-      classesToCheck: collection.Seq[ClassInfo]
+      classesToCheck: Seq[ClassInfo]
     ): Boolean = {
       if (classesToCheck.isEmpty) false
       else if (classesToCheck.exists(_.name == ancestor)) true

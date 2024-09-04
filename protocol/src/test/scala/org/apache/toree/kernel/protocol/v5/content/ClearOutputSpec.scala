@@ -59,7 +59,7 @@ class ClearOutputSpec extends AnyFunSpec with Matchers {
         val CompleteRequestResults = clearOutputJson.validate[ClearOutput]
 
         CompleteRequestResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ClearOutput) => valid
         ) should be (clearOutput)
       }

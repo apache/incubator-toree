@@ -38,8 +38,8 @@ import scala.language.existentials
  *                     implementations of this class loader
  */
 class MultiClassLoader(
-  private val urls: collection.Seq[URL],
-  private val classLoaders: collection.Seq[ClassLoader]
+  private val urls: Seq[URL],
+  private val classLoaders: Seq[ClassLoader]
 ) extends URLClassLoader(
   classLoaders.flatMap({
     case urlClassLoader: URLClassLoader => urlClassLoader.getURLs.toSeq

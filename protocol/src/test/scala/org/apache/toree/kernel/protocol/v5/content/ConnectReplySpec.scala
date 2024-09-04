@@ -62,7 +62,7 @@ class ConnectReplySpec extends AnyFunSpec with Matchers {
         val ConnectReplyResults = connectReplyJson.validate[ConnectReply]
 
         ConnectReplyResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ConnectReply) => valid
         ) should be (connectReply)
       }

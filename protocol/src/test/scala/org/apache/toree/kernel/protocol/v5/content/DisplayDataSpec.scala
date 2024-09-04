@@ -62,7 +62,7 @@ class DisplayDataSpec extends AnyFunSpec with Matchers {
         val displayDataResults = displayDataJson.validate[DisplayData]
 
         displayDataResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: DisplayData) => valid
         ) should be (displayData)
       }

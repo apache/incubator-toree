@@ -60,7 +60,7 @@ class CommCloseSpec extends AnyFunSpec with Matchers {
         val CompleteRequestResults = commCloseJson.validate[CommClose]
 
         CompleteRequestResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: CommClose) => valid
         ) should be (commClose)
       }

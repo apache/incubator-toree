@@ -64,7 +64,7 @@ class ExecuteRequestSpec extends AnyFunSpec with Matchers {
         val executeRequestResults = executeRequestJson.validate[ExecuteRequest]
 
         executeRequestResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ExecuteRequest) => valid
         ) should be (executeRequest)
       }

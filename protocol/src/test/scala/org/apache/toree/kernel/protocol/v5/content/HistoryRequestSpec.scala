@@ -67,7 +67,7 @@ class HistoryRequestSpec extends AnyFunSpec with Matchers {
         val CompleteRequestResults = historyRequestJson.validate[HistoryRequest]
 
         CompleteRequestResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: HistoryRequest) => valid
         ) should be (historyRequest)
       }

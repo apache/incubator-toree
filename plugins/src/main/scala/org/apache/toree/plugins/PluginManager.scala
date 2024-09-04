@@ -76,7 +76,7 @@ class PluginManager(
    *
    * @return The collection of loaded plugins
    */
-  def initialize(): collection.Seq[Plugin] = {
+  def initialize(): Seq[Plugin] = {
     val newPlugins = internalPlugins.flatMap(t =>
       loadPlugin(t._1, t._2).toOption
     ).toSeq
@@ -96,7 +96,7 @@ class PluginManager(
     // Search for plugins in our new paths, then add loaded plugins to list
     // NOTE: Iterator returned from plugin searcher, so avoid building a
     //       large collection by performing all tasks together
-    @volatile var newPlugins = collection.Seq[Plugin]()
+    @volatile var newPlugins = Seq[Plugin]()
     pluginSearcher.search(paths: _*).foreach(ci => {
       // Add valid path to class loader
       pluginClassLoader.addURL(ci.location.toURI.toURL)
@@ -162,7 +162,7 @@ class PluginManager(
   def initializePlugins(
     plugins: Seq[Plugin],
     scopedDependencyManager: DependencyManager = DependencyManager.Empty
-  ): collection.Seq[PluginMethodResult] = {
+  ): Seq[PluginMethodResult] = {
     val pluginMethods = plugins.flatMap(_.initMethods)
     val results = invokePluginMethods(
       pluginMethods,
@@ -199,7 +199,7 @@ class PluginManager(
     plugins: Seq[Plugin],
     scopedDependencyManager: DependencyManager = DependencyManager.Empty,
     destroyOnFailure: Boolean = true
-  ): collection.Seq[PluginMethodResult] = {
+  ): Seq[PluginMethodResult] = {
     val pluginMethods = plugins.flatMap(_.destroyMethods)
     val results = invokePluginMethods(
       pluginMethods,
@@ -278,7 +278,7 @@ class PluginManager(
   def fireEvent(
     eventName: String,
     scopedDependencies: Dependency[_ <: AnyRef]*
-  ): collection.Seq[PluginMethodResult] = {
+  ): Seq[PluginMethodResult] = {
     val dependencyManager = new DependencyManager
     scopedDependencies.foreach(d => dependencyManager.add(d))
     fireEvent(eventName, dependencyManager)
@@ -295,7 +295,7 @@ class PluginManager(
   def fireEvent(
     eventName: String,
     scopedDependencyManager: DependencyManager = DependencyManager.Empty
-  ): collection.Seq[PluginMethodResult] = {
+  ): Seq[PluginMethodResult] = {
     val methods = plugins.flatMap(_.eventMethodMap.getOrElse(eventName, Nil))
 
     invokePluginMethods(methods.toSeq, scopedDependencyManager)
@@ -313,9 +313,9 @@ class PluginManager(
    * @return The collection of results in order of priority
    */
   private def invokePluginMethods(
-    pluginMethods: collection.Seq[PluginMethod],
+    pluginMethods: Seq[PluginMethod],
     scopedDependencyManager: DependencyManager
-  ): collection.Seq[PluginMethodResult] = {
+  ): Seq[PluginMethodResult] = {
     // Continue trying to invoke plugins until we finish them all or
     // we reach a state where no plugin can be completed
     val completedMethods = Array.ofDim[PluginMethodResult](pluginMethods.size)
@@ -360,7 +360,7 @@ class PluginManager(
    * @param pluginMethods The collection of plugin methods to sort
    * @return The sorted plugin methods
    */
-  private def prioritizePluginMethods(pluginMethods: collection.Seq[PluginMethod]) =
+  private def prioritizePluginMethods(pluginMethods: Seq[PluginMethod]) =
     pluginMethods
       .groupBy(_.priority)
       .flatMap(_._2.sortWith(_.plugin.priority > _.plugin.priority))

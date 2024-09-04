@@ -70,31 +70,31 @@ trait Plugin {
     _internalPluginManager
 
   /** Represents all @init methods in the plugin. */
-  @Internal private[plugins] final lazy val initMethods: collection.Seq[PluginMethod] = {
+  @Internal private[plugins] final lazy val initMethods: Seq[PluginMethod] = {
     allMethods.filter(_.isInit)
   }
 
   /** Represents all @destroy methods in the plugin. */
-  @Internal private[plugins] final lazy val destroyMethods: collection.Seq[PluginMethod] = {
+  @Internal private[plugins] final lazy val destroyMethods: Seq[PluginMethod] = {
     allMethods.filter(_.isDestroy)
   }
 
   /** Represents all @event methods in the plugin. */
-  @Internal private[plugins] final lazy val eventMethods: collection.Seq[PluginMethod] = {
+  @Internal private[plugins] final lazy val eventMethods: Seq[PluginMethod] = {
     allMethods.filter(_.isEvent)
   }
 
   /** Represents all @events methods in the plugin. */
-  @Internal private[plugins] final lazy val eventsMethods: collection.Seq[PluginMethod] = {
+  @Internal private[plugins] final lazy val eventsMethods: Seq[PluginMethod] = {
     allMethods.filter(_.isEvents)
   }
 
   /** Represents all public/protected methods contained by this plugin. */
-  private final lazy val allMethods: collection.Seq[PluginMethod] =
+  private final lazy val allMethods: Seq[PluginMethod] =
     getClass.getMethods.map(PluginMethod.apply(this, _: Method))
 
   /** Represents mapping of event names to associated plugin methods. */
-  @Internal private[plugins] final lazy val eventMethodMap: Map[String, collection.Seq[PluginMethod]] = {
+  @Internal private[plugins] final lazy val eventMethodMap: Map[String, Seq[PluginMethod]] = {
     val allEventMethods = (eventMethods ++ eventsMethods).distinct
     val allEventNames = allEventMethods.flatMap(_.eventNames).distinct
     allEventNames.map(name =>

@@ -57,7 +57,7 @@ class KernelStatusSpec extends AnyFunSpec with Matchers {
         val kernelStatusResults = kernelStatusJson.validate[KernelStatus]
 
         kernelStatusResults.fold(
-          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
           (valid: KernelStatus) => valid
         ) should be (kernelStatus)
       }
