@@ -63,6 +63,6 @@ jobs:
 #    - name: Run system tests
 #      run: |
 #        make SCALA_VERSION=${{ matrix.scala }} system-test
-    - name: Run license eudit
+    - name: Run license audit
       run: |
         make SCALA_VERSION=${{ matrix.scala }} audit-licenses
