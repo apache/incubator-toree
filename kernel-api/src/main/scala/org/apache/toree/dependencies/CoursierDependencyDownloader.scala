@@ -16,19 +16,21 @@
  */
 package org.apache.toree.dependencies
 
-import java.io.{File, FileInputStream, PrintStream}
-import java.net.{URI, URL}
-import java.util.Properties
 import coursier.core.{Authentication, Configuration, Repository}
 import coursier.Dependency
-import coursier.cache.loggers.RefreshLogger
 import coursier.ivy.{IvyRepository, IvyXml}
 import coursier.util.{Gather, Task}
-import coursier.cache.{ArtifactError, FileCache}
+import coursier.cache.{ArtifactError, CacheLogger, FileCache}
 import coursier.maven.MavenRepository
 import coursier.util.Task.sync
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 
+import java.io.{File, FileInputStream, PrintStream}
+import java.lang.{Long => JLong, Double => JDouble}
+import java.net.{URI, URL}
+import java.util.Properties
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Try
 
@@ -39,11 +41,6 @@ class CoursierDependencyDownloader extends DependencyDownloader {
   @volatile private var repositories: Seq[Repository] = Nil
   @volatile private var printStream: PrintStream = System.out
   @volatile private var localDirectory: URI = null
-
-  private val downloadLogger: RefreshLogger = RefreshLogger.create(printStream)
-  downloadLogger.init(Some(120))
-  sys.addShutdownHook(downloadLogger.stop())
-
 
   // Initialization
   setDownloadDirectory(DependencyDownloader.DefaultDownloadDirectory)
@@ -123,8 +120,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
 
     val localCache = FileCache()
       .withLocation(downloadLocations)
-      // TODO logger should respect `verbose` and `trace`
-      .withLogger(downloadLogger)
+      .withLogger(new DownloadLogger(verbose, trace))
 
     val fetch = ResolutionProcess.fetch(
       fetchLocations,
@@ -230,6 +226,66 @@ class CoursierDependencyDownloader extends DependencyDownloader {
 
     localDirectory = dir.toURI
     true
+  }
+
+  private class DownloadLogger(verbose: Boolean, trace: Boolean) extends CacheLogger {
+    import scala.collection.JavaConverters._
+    private val downloadId = new ConcurrentHashMap[String, String]().asScala
+    private val downloadFile = new ConcurrentHashMap[String, String]().asScala
+    private val downloadAmount = new ConcurrentHashMap[String, Long]().asScala
+    private val downloadTotal = new ConcurrentHashMap[String, Long]().asScala
+    private val counter = new AtomicLong(0)
+    private def nextId(): Long = counter.getAndIncrement()
+
+    override def foundLocally(url: String): Unit = {
+      val file = new File(new URL(url).getPath).getName
+      downloadFile.put(url, file)
+      val id = downloadId.getOrElse(url, url)
+      val f = s"(${downloadFile.getOrElse(url, "")})"
+      if (verbose) printStream.println(s"=> $id $f: Found at local")
+    }
+
+    override def downloadingArtifact(url: String): Unit = {
+      downloadId.put(url, nextId().toString)
+      val file = new File(new URL(url).getPath).getName
+      downloadFile.put(url, file)
+      val id = downloadId.getOrElse(url, url)
+      val f = s"(${downloadFile.getOrElse(url, "")})"
+
+      if (verbose) printStream.println(s"=> $id $f: Downloading $url")
+    }
+
+    override def downloadLength(
+       url: String,totalLength: Long, alreadyDownloaded: Long, watching: Boolean): Unit = {
+      val id = downloadId.getOrElse(url, url)
+      val f = s"(${downloadFile.getOrElse(url, "")})"
+      if (trace) printStream.println(s"===> $id $f: Is $totalLength total bytes")
+      downloadTotal.put(url, totalLength)
+    }
+
+    override def downloadProgress(url: String, downloaded: Long): Unit = {
+      downloadAmount.put(url, downloaded)
+
+      val ratio = downloadAmount(url).toDouble / downloadTotal.getOrElse[Long](url, 1).toDouble
+      val percent = ratio * 100.0
+
+      if (trace) printStream.printf(
+        "===> %s %s: Downloaded %d bytes (%.2f%%)\n",
+        downloadId.getOrElse(url, url),
+        s"(${downloadFile.getOrElse(url, "")})",
+        JLong.valueOf(downloaded),
+        JDouble.valueOf(percent)
+      )
+    }
+
+    override def downloadedArtifact(url: String, success: Boolean): Unit = {
+      if (verbose) {
+        val id = downloadId.getOrElse(url, url)
+        val f = s"(${downloadFile.getOrElse(url, "")})"
+        if (success) printStream.println(s"=> $id $f: Finished downloading")
+        else printStream.println(s"=> $id: An error occurred while downloading")
+      }
+    }
   }
 
   /**
