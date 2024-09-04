@@ -60,7 +60,7 @@ class CompleteRequestSpec extends AnyFunSpec with Matchers {
         val CompleteRequestResults = completeRequestJson.validate[CompleteRequest]
 
         CompleteRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: CompleteRequest) => valid
         ) should be (completeRequest)
       }
