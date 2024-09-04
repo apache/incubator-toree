@@ -67,7 +67,7 @@ class PluginSearcherSpec extends AnyFunSpec with Matchers
     name = "abstract.plugin",
     modifiers = Set(Modifier.Abstract)
   )
-  private val classInfos = immutable.Seq(
+  private val classInfos = Seq(
     pluginClassInfo,
     directPluginClassInfo, directAsInterfacePluginClassInfo,
     indirectPluginClassInfo, indirectAsInterfacePluginClassInfo,

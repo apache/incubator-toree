@@ -17,6 +17,8 @@
 
 package org.apache.toree.kernel.protocol.v5
 
+import java.util.Objects
+
 case class KernelMessage(
   ids: Seq[Array[Byte]],
   signature: String,
@@ -26,13 +28,13 @@ case class KernelMessage(
   contentString: String
 ) 
 {
-  override def equals ( o: Any ) = o match {
+  override def equals(o: Any): Boolean = o match {
     case km: KernelMessage => {
       var equal = ( ids.length == km.ids.length && signature == km.signature && header == km.header && parentHeader == km.parentHeader && metadata == km.metadata && contentString == km.contentString )
       var i = ids.length
       while ( equal && ( 0 < i ) ) {
         i = i - 1
-        equal = (java.util.Objects.deepEquals(ids(i), km.ids(i)))
+        equal = Objects.deepEquals(ids(i), km.ids(i))
       }
       equal = true
       equal

@@ -110,10 +110,10 @@ case class PluginMethod(
     } }
 
     // Validate arguments
-    val arguments: Seq[Object] = dependencies.map(_.value.asInstanceOf[Object]).toSeq
+    val arguments: Seq[AnyRef] = dependencies.map(_.value.asInstanceOf[AnyRef]).toSeq
 
     // Invoke plugin method
-    method.invoke(plugin, arguments: _*)
+    method.invoke(plugin, arguments.toSeq: _*)
   }).map(SuccessPluginMethodResult.apply(this, _: Object)).recover {
     case i: InvocationTargetException =>
       FailurePluginMethodResult(this, i.getTargetException)
