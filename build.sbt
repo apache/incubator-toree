@@ -20,9 +20,8 @@ import sbtassembly.AssemblyOption
 
 lazy val scala212 = "2.12.15"
 lazy val scala213 = "2.13.8"
-lazy val supportedScalaVersions = List(scala212, scala213)
 lazy val defaultScalaVersion = sys.env.get("SCALA_VERSION") match {
-  case Some(v) if v startsWith "2.12" => scala212
+  case Some("2.12") => scala212
   case _ => scala213
 }
 
@@ -31,7 +30,7 @@ ThisBuild / version := Properties.envOrElse("VERSION", "0.0.0-dev") +
   (if ((ThisBuild / isSnapshot ).value) "-SNAPSHOT" else "")
 ThisBuild / isSnapshot := Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
 ThisBuild / organization := "org.apache.toree.kernel"
-ThisBuild / crossScalaVersions := Seq("2.12.15", "2.13.8")
+ThisBuild / crossScalaVersions := Seq(scala212, scala213)
 ThisBuild / scalaVersion := defaultScalaVersion
 ThisBuild / Dependencies.sparkVersion := {
   val envVar = "APACHE_SPARK_VERSION"
@@ -125,10 +124,12 @@ ThisBuild / credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 /** Root Toree project. */
 lazy val root = (project in file("."))
-  // crossScalaVersions must be set to Nil on the aggregating project
-  .settings(name := "toree", crossScalaVersions := Nil, publish / skip := true)
+  .settings(name := "toree")
   .aggregate(
     macros,protocol,plugins,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
+  )
+  .dependsOn(
+    macros,protocol,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
   )
 
 /**

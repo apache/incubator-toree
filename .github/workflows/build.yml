@@ -55,14 +55,14 @@ jobs:
       uses: sbt/setup-sbt@v1        
     - name: Build
       run: |
-        SCALA_VERSION=${{ matrix.scala }} make clean release
+        make SCALA_VERSION=${{ matrix.scala }} clean release
     - name: Run tests
       run: |
-        make test
+        make SCALA_VERSION=${{ matrix.scala }} test
 #    See https://issues.apache.org/jira/browse/TOREE-526
 #    - name: Run system tests
 #      run: |
-#        make system-test
+#        make SCALA_VERSION=${{ matrix.scala }} system-test
     - name: Run license eudit
       run: |
-        make audit-licenses
+        make SCALA_VERSION=${{ matrix.scala }} audit-licenses
