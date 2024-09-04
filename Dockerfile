@@ -26,8 +26,8 @@ RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
     npm install -g bower
 
 # for Apache Spark demos
-ENV APACHE_SPARK_VERSION 3.3.2
-ENV APACHE_SPARK_CUSTOM_NAME=hadoop3
+ARG APACHE_SPARK_VERSION=3.3.2
+ARG SCALA_VERSION=2.13
 
 RUN apt-get -y update && \
     apt-get -y install software-properties-common
@@ -47,11 +47,11 @@ RUN echo "===> install Java"  && \
     update-java-alternatives -s java-8-oracle
 
 RUN cd /tmp && \
+    if [ "$SCALA_VERSION" = "2.13" ]; then APACHE_SPARK_CUSTOM_NAME=hadoop3-scala2.13; else APACHE_SPARK_CUSTOM_NAME=hadoop3; fi && \
     wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz && \
     tar xzf spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz -C /usr/local && \
-    rm spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz
-
-RUN cd /usr/local && ln -s spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME} spark
+    rm spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz && \
+    ln -snf /usr/local/spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME} /usr/local/spark
 
 # R support
 RUN apt-get update && \

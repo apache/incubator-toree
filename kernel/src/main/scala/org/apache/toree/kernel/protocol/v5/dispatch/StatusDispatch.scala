@@ -26,7 +26,7 @@ import org.apache.toree.utils.LogLike
 import play.api.libs.json.Json
 
 class StatusDispatch(actorLoader: ActorLoader) extends Actor with LogLike {
-  private def sendStatusMessage(kernelStatus: KernelStatusType, parentHeader: Header) {
+  private def sendStatusMessage(kernelStatus: KernelStatusType, parentHeader: Header): Unit = {
     //  Create the status message and send it to the relay
     val km : KernelMessage = KMBuilder()
       .withIds(Seq(MessageType.Outgoing.Status.toString.getBytes))

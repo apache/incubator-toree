@@ -131,7 +131,7 @@ class ExecuteRequestHandler(
       }
     }
 
-    def parseErrorHandler(invalid: Seq[(JsPath, Seq[JsonValidationError])]) = {
+    def parseErrorHandler(invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) = {
       val errs = invalid.map (e => s"JSPath ${e._1} has error ${e._2}").toList
       logger.error(s"Validation errors when parsing ExecuteRequest: ${errs}")
       val replyError: ExecuteReply = ExecuteReplyError(
@@ -161,7 +161,7 @@ class ExecuteRequestHandler(
    */
   def relayErrorMessages(relayActor: ActorSelection,
                          replyError: ExecuteReply,
-                         skeletonBuilder: KMBuilder) {
+                         skeletonBuilder: KMBuilder): Unit = {
     val executeReplyMsg = skeletonBuilder
       .withHeader(MessageType.Outgoing.ExecuteReply)
       .withMetadata(Metadata("status" -> replyError.status))
