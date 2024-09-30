@@ -32,7 +32,7 @@ object Dependencies {
 
   val config = "com.typesafe" % "config" % "1.4.3" // Apache v2
 
-  val coursierVersion = "2.0.0"
+  val coursierVersion = "2.0.16"
   val coursier = "io.get-coursier" %% "coursier" % coursierVersion // Apache v2
   val coursierCache = "io.get-coursier" %% "coursier-cache" % coursierVersion // Apache v2
 
@@ -41,8 +41,8 @@ object Dependencies {
   // which is a "provided" dependency, so Ivy is not bundled in the assembly and
   // must not be listed in etc/legal. See etc/legal/README.md.
 
-  // use the same jackson version in test than the one provided at runtime by Spark 3.4.x
-  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.14.2" // Apache v2
+  // use the same jackson version in test than the one provided at runtime by Spark 3.5.x
+  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.15.2" // Apache v2
 
   val jeroMq = "org.zeromq" % "jeromq" % "0.5.3" // MPL v2
 
@@ -90,6 +90,6 @@ object Dependencies {
     )
   }
 
-  val py4j = "net.sf.py4j" % "py4j" % "0.10.7" % "provided"
+  val py4j = "net.sf.py4j" % "py4j" % "0.10.9.7" % "provided"
 
 }
