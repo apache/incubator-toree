@@ -204,7 +204,7 @@ trait StandardComponentInitialization extends ComponentInitialization {
   private def initializePlugins(
     config: Config,
     pluginManager: PluginManager
-  ) = {
+  ): Unit = {
     val magicUrlArray = config.getStringList("magic_urls").asScala
       .map(s => new java.net.URL(s)).toArray
 
@@ -217,17 +217,18 @@ trait StandardComponentInitialization extends ComponentInitialization {
     // Load internal plugins under kernel module
     logger.debug("Loading internal plugins")
     val internalPlugins = pluginManager.initialize()
-    logger.info(internalPlugins.size + " internal plugins loaded")
+    val internalPluginsSize = internalPlugins.size
+    logger.info(s"$internalPluginsSize internal plugins loaded")
 
     // Load external plugins if provided
     logger.debug("Loading external plugins")
     val externalPlugins = if (magicUrlArray.nonEmpty) {
       val externalPlugins = pluginManager.loadPlugins(
-        magicUrlArray.map(_.getFile).map(new File(_)): _*
+        magicUrlArray.map(_.getFile).map(new File(_)).toSeq: _*
       )
       pluginManager.initializePlugins(externalPlugins)
       externalPlugins
     } else Nil
-    logger.info(externalPlugins.size + " external plugins loaded")
+    logger.info(s"${externalPlugins.size} external plugins loaded")
   }
 }
