@@ -23,24 +23,30 @@ FROM jupyter/all-spark-notebook
 USER root
 
 # Spark dependencies
-ARG APACHE_SPARK_VERSION=3.4.4
+ARG APACHE_SPARK_VERSION=3.5.7
 ARG SCALA_VERSION=2.12
 
-RUN apt-get -y update && \
-    apt-get install -y --no-install-recommends openjdk-8-jdk ca-certificates-java  && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    update-ca-certificates -f && \
-    JAVA_8=`update-alternatives --list java | grep java-8-openjdk` && \
-    update-alternatives --set java $JAVA_8
+RUN JAVA_8=`update-alternatives --list java | grep java-1.8.0-openjdk` || echo $JAVA_8 && \
+    if [ "x$JAVA_8" = "x" ]; then \
+        apt-get -y update ; \
+        apt-get install -y --no-install-recommends openjdk-8-jdk ca-certificates-java ; \
+        apt-get clean ; \
+        rm -rf /var/lib/apt/lists/* ; \
+        update-ca-certificates -f ; \
+        JAVA_8=`update-java-alternatives --list | grep java-1.8.0-openjdk | awk '{print $NF}'` ; \
+        update-java-alternatives --set $JAVA_8 ; \
+    fi
 
 # Installing Spark3
-RUN cd /tmp && \
-    if [ "$SCALA_VERSION" = "2.13" ]; then APACHE_SPARK_CUSTOM_NAME=hadoop3-scala2.13; else APACHE_SPARK_CUSTOM_NAME=hadoop3; fi && \
-    wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz && \
-    tar xzf spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz -C /usr/local && \
-    rm spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz && \
-    ln -snf /usr/local/spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME} /usr/local/spark
+RUN if [ "$SCALA_VERSION" = "2.13" ]; then APACHE_SPARK_CUSTOM_NAME=hadoop3-scala2.13; else APACHE_SPARK_CUSTOM_NAME=hadoop3; fi && \
+    SPARK_TGZ_NAME=spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME} && \
+    if [ ! -d "/usr/local/$SPARK_TGZ_NAME" ]; then \
+        cd /tmp ; \
+        wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/${SPARK_TGZ_NAME}.tgz ; \
+        tar -xzf ${SPARK_TGZ_NAME}.tgz -C /usr/local ; \
+        rm ${SPARK_TGZ_NAME}.tgz ; \
+        ln -snf /usr/local/$SPARK_TGZ_NAME /usr/local/spark ; \
+    fi
 
 # Remove other scala kernels
 RUN cd /opt/conda/share/jupyter/kernels/ && \
