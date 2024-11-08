@@ -70,7 +70,7 @@ object KernelSecurityManager {
     * the only path by which we should permit System.exit to succeed within the notebook.
     * Note that dual SIGINTs occur from a non-restricted thread group and are also permitted.
     */
-  def enableRestrictedExit() {
+  def enableRestrictedExit(): Unit = {
     val currentGroup = Thread.currentThread().getThreadGroup
     tlEnableRestrictedExit.set(currentGroup.getName == RestrictedGroupName)
   }

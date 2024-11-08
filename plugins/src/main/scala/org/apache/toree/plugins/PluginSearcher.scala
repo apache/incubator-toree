@@ -120,7 +120,7 @@ class PluginSearcher {
       }
     }
 
-    classes.values.toIterator
+    classes.values.iterator
       .filter(_.isConcrete)
       .filter(c => classMatches(Seq(c)))
   }

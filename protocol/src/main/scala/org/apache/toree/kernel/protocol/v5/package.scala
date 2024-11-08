@@ -36,7 +36,7 @@ package object v5 {
         Map.empty
       } else {
         // triple quotes due https://github.com/scala/bug/issues/6476
-        kv.toMap.mapValues(v => Json.parse(s""""$v""""))
+        kv.toMap.mapValues(v => Json.parse(s""""$v"""")).toMap
       }
     }
 
