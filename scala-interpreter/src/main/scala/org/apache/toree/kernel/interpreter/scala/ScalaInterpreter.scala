@@ -51,9 +51,9 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
   protected val logger = LoggerFactory.getLogger(this.getClass.getName)
 
-  //honors caller's context classloader. If it's set, fall back to this class's classloader.
-  private val _contextClassloader = Thread.currentThread().getContextClassLoader
-  protected val _thisClassloader =  if (_contextClassloader == null) this.getClass.getClassLoader else _contextClassloader
+  // honors caller's context classloader. If it isn't set, fall back to this class's classloader.
+  protected val _thisClassloader = Option(Thread.currentThread().getContextClassLoader)
+      .getOrElse(this.getClass.getClassLoader)
 
   protected val lastResultOut = new ByteArrayOutputStream()
 
