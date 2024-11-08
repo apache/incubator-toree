@@ -112,7 +112,7 @@ class AddDeps extends LineMagic with IncludeInterpreter
       )
 
       // pass the new Jars to the kernel
-      kernel.addJars(uris.filter(_.getPath.endsWith(".jar")): _*)
+      kernel.addJars(uris.filter(_.getPath.endsWith(".jar")).toSeq: _*)
     } else {
       printHelp(printStream, """%AddDeps my.company artifact-id version""")
     }

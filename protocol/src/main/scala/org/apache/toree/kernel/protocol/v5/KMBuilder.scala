@@ -39,7 +39,7 @@ import org.apache.toree.kernel.protocol.v5.MessageType.MessageType
   *               .withContentString("content").build
 **/
 case class KMBuilder(km: KernelMessage = KernelMessage(
-                                            ids           = Seq(),
+                                            ids           = Seq.empty.toSeq,
                                             signature     = "",
                                             header        = HeaderBuilder.empty,
                                             parentHeader  = HeaderBuilder.empty,
@@ -49,7 +49,7 @@ case class KMBuilder(km: KernelMessage = KernelMessage(
   require(km != null)
 
   def withIds(newVal: Seq[Array[Byte]]) : KMBuilder =
-    KMBuilder(this.km.copy(ids = newVal))
+    KMBuilder(this.km.copy(ids = newVal.toSeq))
 
   def withSignature(newVal: String) : KMBuilder =
     KMBuilder(this.km.copy(signature = newVal))

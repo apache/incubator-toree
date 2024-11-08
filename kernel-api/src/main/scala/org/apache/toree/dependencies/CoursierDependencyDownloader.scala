@@ -105,7 +105,7 @@ class CoursierDependencyDownloader extends DependencyDownloader {
             artifactClassifier.map(c => Classifier(c)).getOrElse(Classifier.empty)
           )
         }
-    ))
+    ).toSeq)
 
     printStream.println(s"Marking $groupId:$artifactId:$version for download")
 

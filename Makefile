@@ -31,7 +31,7 @@ SNAPSHOT:=-SNAPSHOT
 endif
 
 APACHE_SPARK_VERSION?=3.3.2
-SCALA_VERSION?=2.12
+SCALA_VERSION?=2.13
 IMAGE?=jupyter/all-spark-notebook:latest
 EXAMPLE_IMAGE?=apache/toree-examples
 TOREE_DEV_IMAGE?=apache/toree-dev
@@ -49,7 +49,7 @@ endef
 
 RUN=$(RUN_PREFIX)$(1)$(RUN_SUFFIX)
 
-ENV_OPTS:=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)
+ENV_OPTS:=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) SCALA_VERSION=$(SCALA_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)
 
 ASSEMBLY_JAR:=toree-assembly-$(VERSION)$(SNAPSHOT).jar
 
@@ -83,7 +83,10 @@ clean: clean-dist
 	@-docker rmi -f $(TOREE_DEV_IMAGE)
 
 .toree-dev-image:
-	@docker build -t $(TOREE_DEV_IMAGE) -f Dockerfile.toree-dev .
+	@docker build -t $(TOREE_DEV_IMAGE) -f Dockerfile.toree-dev \
+		--build-arg APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) \
+		--build-arg SCALA_VERSION=$(SCALA_VERSION) \
+		.
 	touch $@
 
 .clean-binder-image:

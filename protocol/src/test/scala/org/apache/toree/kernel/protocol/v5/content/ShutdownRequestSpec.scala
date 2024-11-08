@@ -59,7 +59,7 @@ class ShutdownRequestSpec extends AnyFunSpec with Matchers {
         val ShutdownRequestResults = shutdownRequestJson.validate[ShutdownRequest]
 
         ShutdownRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: ShutdownRequest) => valid
         ) should be (shutdownRequest)
       }

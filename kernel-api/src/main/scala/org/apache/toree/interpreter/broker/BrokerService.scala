@@ -20,7 +20,7 @@ package org.apache.toree.interpreter.broker
 import org.apache.toree.interpreter.broker.BrokerTypes.{Code, CodeResults}
 
 import scala.concurrent.Future
-import scala.tools.nsc.interpreter._
+import java.io.{InputStream, OutputStream}
 
 /**
  * Represents the service that provides the high-level interface between the
