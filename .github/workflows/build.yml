@@ -59,9 +59,9 @@ jobs:
       run: |
         make test
 #    See https://issues.apache.org/jira/browse/TOREE-526
-#    - name: Run system tests
-#      run: |
-#        make system-test
+    - name: Run system tests
+      run: |
+        make system-test
     - name: Run license eudit
       run: |
         make audit-licenses
