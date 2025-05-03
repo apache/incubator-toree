@@ -16,6 +16,7 @@
  */
 
 import scala.util.Properties
+import sbtassembly.AssemblyOption
 
 // Version settings
 ThisBuild / version := Properties.envOrElse("VERSION", "0.0.0-dev") +
@@ -54,8 +55,8 @@ ThisBuild / scalacOptions ++= Seq(
 ThisBuild / javacOptions ++= Seq(
   "-Xlint:all",   // Enable all Java-based warnings
   "-Xlint:-path", // Suppress path warnings since we get tons of them
-  "-Xlint:-options",
-  "-Xlint:-processing",
+  "-Xlint:-options", // Suppress "options" warnings
+  "-Xlint:-processing", // Suppress annotation processing warnings
   "-Werror",       // Treat warnings as errors
   "-source", "1.8",
   "-target", "1.8"
@@ -219,11 +220,14 @@ assembly / assemblyShadeRules := Seq(
 
 assembly / assemblyMergeStrategy := {
   case "module-info.class" => MergeStrategy.discard
+  case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.discard
   case x =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
 }
 
 assembly / test := {}
-assembly / assemblyOption := (assembly / assemblyOption).value.copy(includeScala = false)
+assembly / assemblyOption ~= {
+  _.withIncludeScala(false)
+}
 assembly / aggregate := false

@@ -21,10 +21,10 @@ logLevel := Level.Warn
 addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.3")
 
 // Provides abilit to create an uber-jar
-addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.15.0")
+addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "2.3.1")
 
 // Provides a generated build info object to sync between build and application
-addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.9.0")
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.10.0")
 
 //  Used for signing jars published via `sbt publish-signed`
 addSbtPlugin("com.jsuereth" % "sbt-pgp" % "2.0.1")
