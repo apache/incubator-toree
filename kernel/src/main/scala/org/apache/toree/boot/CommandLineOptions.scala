@@ -88,6 +88,11 @@ class CommandLineOptions(args: Seq[String]) {
     "directory where user added jars are stored (MUST EXIST)"
   ).withRequiredArg().ofType(classOf[String])
 
+  private val _deps_dir = parser.accepts(
+    "deps-dir",
+    "directory where user dependencies are stored (MUST EXIST)"
+  ).withRequiredArg().ofType(classOf[String])
+
   private val _default_interpreter =
     parser.accepts("default-interpreter", "default interpreter for the kernel")
       .withRequiredArg().ofType(classOf[String])
@@ -171,6 +176,7 @@ class CommandLineOptions(args: Seq[String]) {
       "max_interpreter_threads" -> get(_max_interpreter_threads),
       "alternate_sigint" -> get(_alternate_sigint),
       "jar_dir" -> get(_jar_dir),
+      "deps_dir" -> get(_deps_dir),
       "default_interpreter" -> get(_default_interpreter),
       // deprecated in favor of spark-context-initialization-mode none
       // "nosparkcontext" -> (if (has(_nosparkcontext)) Some(true) else Some(false)),
