@@ -29,7 +29,7 @@ class InternalClassLoader(
 
   // TODO: Provides an exposed reference to the super loadClass to be stubbed
   // out in tests.
-  private[magic] def parentLoadClass(name: String, resolve: Boolean) =
+  private[magic] def parentLoadClass(name: String, resolve: Boolean): Class[_] =
     super.loadClass(name, resolve)
 
   /**

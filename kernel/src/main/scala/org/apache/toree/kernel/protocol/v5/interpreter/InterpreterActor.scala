@@ -63,7 +63,7 @@ class InterpreterActor(
   /**
    * Initializes all child actors performing tasks for the interpreter.
    */
-  override def preStart = {
+  override def preStart() = {
     executeRequestTask = interpreterTaskFactory.ExecuteRequestTask(
       context, InterpreterChildActorType.ExecuteRequestTask.toString)
     completeCodeTask = interpreterTaskFactory.CodeCompleteTask(
@@ -85,7 +85,7 @@ class InterpreterActor(
             ex.getLocalizedMessage,
             ex.getStackTrace.map(_.toString).toList)
           )
-      } pipeTo sender
+      } pipeTo sender()
     case (completeRequest: CompleteRequest) =>
       logger.debug(s"InterpreterActor requesting code completion for code " +
         s"${completeRequest.code}")
@@ -98,7 +98,7 @@ class InterpreterActor(
             ex.getLocalizedMessage,
             ex.getStackTrace.map(_.toString).toList)
           )
-      } pipeTo sender
+      } pipeTo sender()
     case (isCompleteRequest: IsCompleteRequest) =>
       logger.debug(s"InterpreterActor requesting is complete code ${isCompleteRequest.code}")
       (isCompleteTask ? isCompleteRequest) recover {
@@ -106,6 +106,6 @@ class InterpreterActor(
           logger.warn(s"Could not determine completeness for code ${isCompleteRequest.code}: " +
             s"${ex.getMessage}")
           Left(IsCompleteReply("unknown", ""))
-      } pipeTo sender
+      } pipeTo sender()
   }
 }

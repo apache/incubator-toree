@@ -170,7 +170,7 @@ class ZeroMQSocketRunnable(
         socket.close()
       } catch {
         case ex: Exception =>
-          logger.error("Failed to close socket!", _: Throwable)
+          logger.error("Failed to close socket!", ex: Throwable)
       }
     }
   }

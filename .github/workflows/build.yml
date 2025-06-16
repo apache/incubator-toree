@@ -31,6 +31,7 @@ jobs:
       fail-fast: false
       matrix:
         java: [ '8', '11' ]
+        scala: [ '2.12', '2.13' ]
     env:
       # define Java options for both official sbt and sbt-extras
       JAVA_OPTS: -Xms2048M -Xmx2048M -Xss6M -XX:ReservedCodeCacheSize=256M -Dfile.encoding=UTF-8
@@ -54,14 +55,14 @@ jobs:
       uses: sbt/setup-sbt@v1        
     - name: Build
       run: |
-        make clean release
+        make SCALA_VERSION=${{ matrix.scala }} clean release
     - name: Run tests
       run: |
-        make test
+        make SCALA_VERSION=${{ matrix.scala }} test
 #    See https://issues.apache.org/jira/browse/TOREE-526
 #    - name: Run system tests
 #      run: |
-#        make system-test
-    - name: Run license eudit
+#        make SCALA_VERSION=${{ matrix.scala }} system-test
+    - name: Run license audit
       run: |
-        make audit-licenses
+        make SCALA_VERSION=${{ matrix.scala }} audit-licenses

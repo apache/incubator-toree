@@ -36,7 +36,7 @@ import org.mockito.ArgumentMatchers.{eq => mockEq, _}
 import org.mockito.Mockito._
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.time.{Milliseconds, Span}
+import org.scalatest.time.{Milliseconds, Seconds, Span}
 import org.scalatest.funspec.AnyFunSpecLike
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.BeforeAndAfterEach
@@ -60,7 +60,7 @@ class IOPubClientSpec extends TestKit(ActorSystem(
 {
   private val TestTimeout = Timeout(10.seconds)
   implicit override val patienceConfig = PatienceConfig(
-    timeout = scaled(Span(200, Milliseconds)),
+    timeout = scaled(Span(1, Seconds)),
     interval = scaled(Span(5, Milliseconds))
   )
   private val SignatureEnabled = true

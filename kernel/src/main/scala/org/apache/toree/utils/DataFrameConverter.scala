@@ -21,6 +21,8 @@ import org.apache.spark.sql.{Dataset, Row}
 import org.apache.toree.plugins.Plugin
 import play.api.libs.json.{JsObject, Json}
 
+import scala.collection.immutable
+import scala.collection.mutable
 import scala.util.Try
 import org.apache.toree.plugins.annotations.Init
 
@@ -84,7 +86,8 @@ object DataFrameConverter {
   def fieldToString(any: Any): String =
     any match {
       case null => "null"
-      case seq: Seq[_] => seq.mkString("[", ", ", "]")
+      case seq: immutable.Seq[_] => seq.mkString("[", ", ", "]")
+      case seq: mutable.Seq[_] => seq.mkString("[", ", ", "]")
       case _ => any.toString
     }
 

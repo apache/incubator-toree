@@ -96,7 +96,7 @@ class PluginManager(
     // Search for plugins in our new paths, then add loaded plugins to list
     // NOTE: Iterator returned from plugin searcher, so avoid building a
     //       large collection by performing all tasks together
-    @volatile var newPlugins = collection.mutable.Seq[Plugin]()
+    @volatile var newPlugins = Seq[Plugin]()
     pluginSearcher.search(paths: _*).foreach(ci => {
       // Add valid path to class loader
       pluginClassLoader.addURL(ci.location.toURI.toURL)
@@ -110,7 +110,7 @@ class PluginManager(
       // Load the plugin using the given name and class
       loadPlugin(ci.name, klass).foreach(newPlugins :+= _)
     })
-    newPlugins
+    newPlugins.toSeq
   }
 
   /**
