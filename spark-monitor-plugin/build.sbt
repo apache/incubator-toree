@@ -18,9 +18,8 @@
 Test / fork := true
 
 // Needed for SparkMonitor plugin
+libraryDependencies ++= Dependencies.sparkAll.value
 libraryDependencies ++= Seq(
-  "org.apache.spark" %% "spark-core" % "3.3.2" % "provided",
-  "log4j" % "log4j" % "1.2.17" % "provided",
   "org.json4s" % "json4s-native_2.12" % "3.7.0-M11" % "provided",
   ("org.json4s" % "json4s-jackson_2.12" % "3.7.0-M11" % "provided").exclude("com.fasterxml.jackson.core" , "jackson-databind"),
 )

@@ -22,9 +22,7 @@ libraryDependencies ++= Seq(
   Dependencies.scalaReflect.value,
   Dependencies.clapper,
   Dependencies.slf4jApi,
-  "org.apache.spark" %% "spark-core" % "3.3.2" % "provided",
   "net.sf.py4j" % "py4j" % "0.10.7" % "provided",
-  "log4j" % "log4j" % "1.2.17" % "provided",
   "org.json4s" % "json4s-native_2.12" % "3.7.0-M11" % "provided",
   ("org.json4s" % "json4s-jackson_2.12" % "3.7.0-M11" % "provided").exclude("com.fasterxml.jackson.core" , "jackson-databind"),
 )
