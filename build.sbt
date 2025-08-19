@@ -129,7 +129,7 @@ lazy val root = (project in file("."))
     macros,protocol,plugins,sparkMonitorPlugin,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
   )
   .dependsOn(
-    macros,protocol,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel,sparkMonitorPlugin
+    macros,protocol,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
   )
 
 /**
@@ -152,7 +152,7 @@ lazy val protocol = (project in file("protocol"))
   */
 lazy val plugins = (project in file("plugins"))
   .settings(name := "toree-plugins")
-  .dependsOn(macros, protocol)
+  .dependsOn(macros)
 
 /**
   * Project representing the SparkMonitor plugin for Toree.
