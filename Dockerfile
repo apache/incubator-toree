@@ -26,7 +26,7 @@ RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
     npm install -g bower
 
 # for Apache Spark demos
-ENV APACHE_SPARK_VERSION 3.3.2
+ENV APACHE_SPARK_VERSION 3.4.4
 ENV APACHE_SPARK_CUSTOM_NAME=hadoop3
 
 RUN apt-get -y update && \
