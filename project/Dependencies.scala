@@ -55,7 +55,7 @@ object Dependencies {
   val scalaTestMockito = "org.scalatestplus" %% "mockito-4-11" % "3.2.16.0" // Apache v2
   val mockitoInline = "org.mockito" % "mockito-inline" % "4.11.0" // MIT
 
-  val slf4jApi = "org.slf4j" % "slf4j-api" % "1.7.32" // MIT
+  val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.6" // MIT
 
   val sparkVersion = settingKey[String]("Version of Apache Spark to use in Toree") // defined in root build
   val sparkCore = Def.setting{ "org.apache.spark" %% "spark-core" % sparkVersion.value } // Apache v2
