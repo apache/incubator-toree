@@ -23,7 +23,7 @@ ThisBuild / version := Properties.envOrElse("VERSION", "0.0.0-dev") +
   (if ((ThisBuild / isSnapshot ).value) "-SNAPSHOT" else "")
 ThisBuild / isSnapshot := Properties.envOrElse("IS_SNAPSHOT","true").toBoolean
 ThisBuild / organization := "org.apache.toree.kernel"
-ThisBuild / crossScalaVersions := Seq("2.12.15")
+ThisBuild / crossScalaVersions := Seq("2.12.17")
 ThisBuild / scalaVersion := (ThisBuild / crossScalaVersions ).value.head
 ThisBuild / Dependencies.sparkVersion := {
   val envVar = "APACHE_SPARK_VERSION"
