@@ -21,7 +21,7 @@ import scala.util.Properties
 object Dependencies {
 
   // Libraries
-  val pekkoVersion = "1.0.3" // Apache v2
+  val pekkoVersion = "1.1.5" // Apache v2
   val pekkoActor = "org.apache.pekko" %% "pekko-actor" % pekkoVersion // Apache v2
   val pekkoSlf4j = "org.apache.pekko" %% "pekko-slf4j" % pekkoVersion // Apache v2
   val pekkoTestkit = "org.apache.pekko" %% "pekko-testkit" % pekkoVersion // Apache v2
