@@ -18,9 +18,7 @@
 package org.apache.toree.plugins.sparkmonitor
 
 import org.apache.spark.scheduler._
-import org.json4s._
-import org.json4s.JsonDSL._
-import org.json4s.jackson.JsonMethods._
+import play.api.libs.json._
 import org.apache.spark._
 import org.apache.spark.TaskEndReason
 import org.apache.spark.JobExecutionStatus
@@ -32,9 +30,7 @@ import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
 import java.util.{TimerTask,Timer}
 import org.apache.toree.comm.CommWriter
 import org.apache.toree.kernel.protocol.v5.MsgData
-
-// JSON4S implicit formats
-import org.json4s.DefaultFormats
+import scala.util.Try
 
 /**
  * A SparkListener Implementation that forwards data to a Jupyter Kernel via comm
@@ -63,15 +59,16 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
   startActiveStageMonitoring()
 
   /** Send a JSON message via comm channel. */
-  def send(jsonString: String): Unit = {
+  def send(json: JsValue): Unit = {
+    val jsonString = Json.stringify(json)
     getCommWriter().foreach { writer =>
       try {
         // Create MsgData with the JSON content
         val msgData = MsgData("msgtype" -> "fromscala", "msg" -> jsonString)
-        
+
         // Send message directly using CommWriter
         writer.writeMsg(msgData)
-        
+
       } catch {
         case exception: Throwable =>
           logger.error("Exception sending comm message: ", exception)
@@ -79,7 +76,7 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
           logger.debug(s"SparkMonitor event: $jsonString")
       }
     }
-    
+
     // If no comm writer, just log the message
     if (getCommWriter().isEmpty) {
       logger.debug(s"SparkMonitor event (no comm): $jsonString")
@@ -163,14 +160,16 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
     startTime = appStarted.time
     appId = appStarted.appId.getOrElse("null")
     logger.info("Application Started: " + appId + "  ...Start Time: " + appStarted.time)
-    val json = ("msgtype" -> "sparkApplicationStart") ~
-      ("startTime" -> startTime) ~
-      ("appId" -> appId) ~
-      ("appAttemptId" -> appStarted.appAttemptId.getOrElse("null")) ~
-      ("appName" -> appStarted.appName) ~
-      ("sparkUser" -> appStarted.sparkUser)
+    val json = Json.obj(
+      "msgtype" -> "sparkApplicationStart",
+      "startTime" -> startTime,
+      "appId" -> appId,
+      "appAttemptId" -> appStarted.appAttemptId.getOrElse[String]("null"),
+      "appName" -> appStarted.appName,
+      "sparkUser" -> appStarted.sparkUser
+    )
 
-    send(pretty(render(json)))
+    send(json)
   }
 
   /**
@@ -181,24 +180,29 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
   override def onApplicationEnd(appEnded: SparkListenerApplicationEnd): Unit = {
     logger.info("Application ending...End Time: " + appEnded.time)
     endTime = appEnded.time
-    val json = ("msgtype" -> "sparkApplicationEnd") ~
-      ("endTime" -> endTime)
+    val json = Json.obj(
+      "msgtype" -> "sparkApplicationEnd",
+      "endTime" -> endTime
+    )
 
-    send(pretty(render(json)))
+    send(json)
     stopActiveStageMonitoring()
   }
 
   /** Converts stageInfo object to a JSON object. */
-  def stageInfoToJSON(stageInfo: StageInfo): JObject = {
+  def stageInfoToJSON(stageInfo: StageInfo): JsObject = {
     val completionTime: Long = stageInfo.completionTime.getOrElse(-1)
     val submissionTime: Long = stageInfo.submissionTime.getOrElse(-1)
 
-    (stageInfo.stageId.toString ->
-      ("attemptId" -> stageInfo.attemptNumber()) ~
-      ("name" -> stageInfo.name) ~
-      ("numTasks" -> stageInfo.numTasks) ~
-      ("completionTime" -> completionTime) ~
-      ("submissionTime" -> submissionTime))
+    Json.obj(
+      stageInfo.stageId.toString -> Json.obj(
+        "attemptId" -> stageInfo.attemptNumber(),
+        "name" -> stageInfo.name,
+        "numTasks" -> stageInfo.numTasks,
+        "completionTime" -> completionTime,
+        "submissionTime" -> submissionTime
+      )
+    )
   }
 
   /**
@@ -224,10 +228,11 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
     jobGroupToJobIds.getOrElseUpdate(jobGroup.orNull, new HashSet[JobId]).add(jobStart.jobId)
     jobStart.stageInfos.foreach(x => pendingStages(x.stageId) = x)
 
-    var stageinfojson: JObject = Nil
-    for (x <- jobStart.stageInfos) {
-      stageinfojson = stageinfojson ~ stageInfoToJSON(x)
+    // Merge all stage info objects into one JSON object
+    val stageinfojson = jobStart.stageInfos.foldLeft(Json.obj()) { (acc, stageInfo) =>
+      acc ++ stageInfoToJSON(stageInfo)
     }
+
     jobData.numTasks = {
       val allStages = jobStart.stageInfos
       val missingStages = allStages.filter(_.completionTime.isEmpty)
@@ -245,21 +250,23 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
       stageIdToData.getOrElseUpdate((stageInfo.stageId, stageInfo.attemptNumber()), new UIData.StageUIData)
     }
     val name = jobStart.properties.getProperty("callSite.short", "null")
-    val json = ("msgtype" -> "sparkJobStart") ~
-      ("jobGroup" -> jobGroup.getOrElse("null")) ~
-      ("jobId" -> jobStart.jobId) ~
-      ("status" -> "RUNNING") ~
-      ("submissionTime" -> Option(jobStart.time).filter(_ >= 0)) ~
-      ("stageIds" -> jobStart.stageIds) ~
-      ("stageInfos" -> stageinfojson) ~
-      ("numTasks" -> jobData.numTasks) ~
-      ("totalCores" -> totalCores) ~
-      ("appId" -> appId) ~
-      ("numExecutors" -> numExecutors) ~
-      ("name" -> name)
+    val json = Json.obj(
+      "msgtype" -> "sparkJobStart",
+      "jobGroup" -> jobGroup.getOrElse[String]("null"),
+      "jobId" -> jobStart.jobId,
+      "status" -> "RUNNING",
+      "submissionTime" -> Option(jobStart.time).filter(_ >= 0),
+      "stageIds" -> jobStart.stageIds,
+      "stageInfos" -> stageinfojson,
+      "numTasks" -> jobData.numTasks,
+      "totalCores" -> totalCores,
+      "appId" -> appId,
+      "numExecutors" -> numExecutors,
+      "name" -> name
+    )
     logger.info("Job Start: " + jobStart.jobId)
-    logger.debug(pretty(render(json)))
-    send(pretty(render(json)))
+    logger.debug(Json.prettyPrint(json))
+    send(json)
   }
 
   /** Called when a job ends. */
@@ -303,15 +310,17 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
       }
     }
 
-    val json = ("msgtype" -> "sparkJobEnd") ~
-      ("jobId" -> jobEnd.jobId) ~
-      ("status" -> status) ~
-      ("completionTime" -> jobData.completionTime)
+    val json = Json.obj(
+      "msgtype" -> "sparkJobEnd",
+      "jobId" -> jobEnd.jobId,
+      "status" -> status,
+      "completionTime" -> jobData.completionTime
+    )
 
     logger.info("Job End: " + jobEnd.jobId)
-    logger.debug(pretty(render(json)))
+    logger.debug(Json.prettyPrint(json))
 
-    send(pretty(render(json)))
+    send(json)
   }
 
   /** Called when a stage is completed. */
@@ -353,20 +362,22 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
     }
     val completionTime: Long = stage.completionTime.getOrElse(-1)
     val submissionTime: Long = stage.submissionTime.getOrElse(-1)
-    val json = ("msgtype" -> "sparkStageCompleted") ~
-      ("stageId" -> stage.stageId) ~
-      ("stageAttemptId" -> stage.attemptNumber()) ~
-      ("completionTime" -> completionTime) ~
-      ("submissionTime" -> submissionTime) ~
-      ("numTasks" -> stage.numTasks) ~
-      ("numFailedTasks" -> stageData.numFailedTasks) ~
-      ("numCompletedTasks" -> stageData.numCompletedTasks) ~
-      ("status" -> status) ~
-      ("jobIds" -> jobIds)
+    val json = Json.obj(
+      "msgtype" -> "sparkStageCompleted",
+      "stageId" -> stage.stageId,
+      "stageAttemptId" -> stage.attemptNumber(),
+      "completionTime" -> completionTime,
+      "submissionTime" -> submissionTime,
+      "numTasks" -> stage.numTasks,
+      "numFailedTasks" -> stageData.numFailedTasks,
+      "numCompletedTasks" -> stageData.numCompletedTasks,
+      "status" -> status,
+      "jobIds" -> jobIds
+    )
 
     logger.info("Stage Completed: " + stage.stageId)
-    logger.debug(pretty(render(json)))
-    send(pretty(render(json)))
+    logger.debug(Json.prettyPrint(json))
+    send(json)
   }
 
   /** Called when a stage is submitted for execution. */
@@ -392,17 +403,19 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
     val activeJobsDependentOnStage = stageIdToActiveJobIds.get(stage.stageId)
     val jobIds = activeJobsDependentOnStage
     val submissionTime: Long = stage.submissionTime.getOrElse(-1)
-    val json = ("msgtype" -> "sparkStageSubmitted") ~
-      ("stageId" -> stage.stageId) ~
-      ("stageAttemptId" -> stage.attemptNumber()) ~
-      ("name" -> stage.name) ~
-      ("numTasks" -> stage.numTasks) ~
-      ("parentIds" -> stage.parentIds) ~
-      ("submissionTime" -> submissionTime) ~
-      ("jobIds" -> jobIds)
+    val json = Json.obj(
+      "msgtype" -> "sparkStageSubmitted",
+      "stageId" -> stage.stageId,
+      "stageAttemptId" -> stage.attemptNumber(),
+      "name" -> stage.name,
+      "numTasks" -> stage.numTasks,
+      "parentIds" -> stage.parentIds,
+      "submissionTime" -> submissionTime,
+      "jobIds" -> jobIds
+    )
     logger.info("Stage Submitted: " + stage.stageId)
-    logger.debug(pretty(render(json)))
-    send(pretty(render(json)))
+    logger.debug(Json.prettyPrint(json))
+    send(json)
   }
 
   /** Called when scheduled stage tasks update was requested */
@@ -411,28 +424,32 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
     for ((stageId, stageInfo) <- activeStages) {
       val stageData = stageIdToData.getOrElseUpdate((stageInfo.stageId, stageInfo.attemptNumber()), new UIData.StageUIData)
       val jobIds = stageIdToActiveJobIds.get(stageInfo.stageId)
-      
-      val json = ("msgtype" -> "sparkStageActive") ~
-        ("stageId" -> stageInfo.stageId) ~
-        ("stageAttemptId" -> stageInfo.attemptNumber()) ~
-        ("name" -> stageInfo.name) ~
-        ("parentIds" -> stageInfo.parentIds) ~
-        ("numTasks" -> stageInfo.numTasks) ~
-        ("numActiveTasks" -> stageData.numActiveTasks) ~
-        ("numFailedTasks" -> stageData.numFailedTasks) ~
-        ("numCompletedTasks" -> stageData.numCompletedTasks) ~
-        ("jobIds" -> jobIds)
+
+      val json = Json.obj(
+        "msgtype" -> "sparkStageActive",
+        "stageId" -> stageInfo.stageId,
+        "stageAttemptId" -> stageInfo.attemptNumber(),
+        "name" -> stageInfo.name,
+        "parentIds" -> stageInfo.parentIds,
+        "numTasks" -> stageInfo.numTasks,
+        "numActiveTasks" -> stageData.numActiveTasks,
+        "numFailedTasks" -> stageData.numFailedTasks,
+        "numCompletedTasks" -> stageData.numCompletedTasks,
+        "jobIds" -> jobIds
+      )
 
       logger.info("Stage Update: " + stageInfo.stageId)
-      logger.debug(pretty(render(json)))
-      send(pretty(render(json)))
+      logger.debug(Json.prettyPrint(json))
+      send(json)
     }
 
     // Emit sparkStageActiveTasksMaxMessages spark tasks details from queue to frontend
     var count: Integer = 0
     while (sparkTasksQueue != null && !sparkTasksQueue.isEmpty() && count <= sparkStageActiveTasksMaxMessages) {
       count = count + 1
-      send(sparkTasksQueue.take())
+      val jsonString = sparkTasksQueue.take()
+      // Already stringified JSON, parse and send
+      Try(Json.parse(jsonString)).foreach(send)
     }
 
     if (count > 0) {
@@ -450,42 +467,47 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
       })
       stageData.numActiveTasks += 1
     }
-    var jobjson = ("jobdata" -> "taskstart")
+    var jobjson = Json.obj("jobdata" -> "taskstart")
     for (
       activeJobsDependentOnStage <- stageIdToActiveJobIds.get(taskStart.stageId);
       jobId <- activeJobsDependentOnStage;
       jobData <- jobIdToData.get(jobId)
     ) {
       jobData.numActiveTasks += 1
-      val jobjson = ("jobdata" ->
-        ("jobId" -> jobData.jobId) ~
-        ("numTasks" -> jobData.numTasks) ~
-        ("numActiveTasks" -> jobData.numActiveTasks) ~
-        ("numCompletedTasks" -> jobData.numCompletedTasks) ~
-        ("numSkippedTasks" -> jobData.numSkippedTasks) ~
-        ("numFailedTasks" -> jobData.numFailedTasks) ~
-        ("reasonToNumKilled" -> jobData.reasonToNumKilled) ~
-        ("numActiveStages" -> jobData.numActiveStages) ~
-        ("numSkippedStages" -> jobData.numSkippedStages) ~
-        ("numFailedStages" -> jobData.numFailedStages))
+      val jobjson = Json.obj(
+        "jobdata" -> Json.obj(
+          "jobId" -> jobData.jobId,
+          "numTasks" -> jobData.numTasks,
+          "numActiveTasks" -> jobData.numActiveTasks,
+          "numCompletedTasks" -> jobData.numCompletedTasks,
+          "numSkippedTasks" -> jobData.numSkippedTasks,
+          "numFailedTasks" -> jobData.numFailedTasks,
+          "reasonToNumKilled" -> jobData.reasonToNumKilled,
+          "numActiveStages" -> jobData.numActiveStages,
+          "numSkippedStages" -> jobData.numSkippedStages,
+          "numFailedStages" -> jobData.numFailedStages
+        )
+      )
     }
-    val json = ("msgtype" -> "sparkTaskStart") ~
-      ("launchTime" -> taskInfo.launchTime) ~
-      ("taskId" -> taskInfo.taskId) ~
-      ("stageId" -> taskStart.stageId) ~
-      ("stageAttemptId" -> taskStart.stageAttemptId) ~
-      ("index" -> taskInfo.index) ~
-      ("attemptNumber" -> taskInfo.attemptNumber) ~
-      ("executorId" -> taskInfo.executorId) ~
-      ("host" -> taskInfo.host) ~
-      ("status" -> taskInfo.status) ~
-      ("speculative" -> taskInfo.speculative)
+    val json = Json.obj(
+      "msgtype" -> "sparkTaskStart",
+      "launchTime" -> taskInfo.launchTime,
+      "taskId" -> taskInfo.taskId,
+      "stageId" -> taskStart.stageId,
+      "stageAttemptId" -> taskStart.stageAttemptId,
+      "index" -> taskInfo.index,
+      "attemptNumber" -> taskInfo.attemptNumber,
+      "executorId" -> taskInfo.executorId,
+      "host" -> taskInfo.host,
+      "status" -> taskInfo.status,
+      "speculative" -> taskInfo.speculative
+    )
 
     logger.info("Task Start: " + taskInfo.taskId)
-    logger.debug(pretty(render(json)))
+    logger.debug(Json.prettyPrint(json))
 
     // Buffer the message for periodic flushing
-    sparkTasksQueue.put(pretty(render(json)))
+    sparkTasksQueue.put(Json.stringify(json))
   }
 
   /** Called when a task is ended. */
@@ -529,7 +551,6 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
       }
     }
 
-    var jsonMetrics: JObject = ("" -> "")
     val totalExecutionTime = info.finishTime - info.launchTime
     def toProportion(time: Long) = time.toDouble / totalExecutionTime * 100
     var metricsOpt = Option(taskEnd.taskMetrics)
@@ -569,56 +590,63 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
     val serializationTimeProportionPos = shuffleWriteTimeProportionPos + shuffleWriteTimeProportion
     val gettingResultTimeProportionPos = serializationTimeProportionPos + serializationTimeProportion
 
-    if (!metricsOpt.isEmpty) {
-      jsonMetrics = ("shuffleReadTime" -> shuffleReadTime) ~
-        ("shuffleWriteTime" -> shuffleWriteTime) ~
-        ("serializationTime" -> serializationTime) ~
-        ("deserializationTime" -> deserializationTime) ~
-        ("gettingResultTime" -> gettingResultTime) ~
-        ("executorComputingTime" -> executorComputingTime) ~
-        ("schedulerDelay" -> schedulerDelay) ~
-        ("shuffleReadTimeProportion" -> shuffleReadTimeProportion) ~
-        ("shuffleWriteTimeProportion" -> shuffleWriteTimeProportion) ~
-        ("serializationTimeProportion" -> serializationTimeProportion) ~
-        ("deserializationTimeProportion" -> deserializationTimeProportion) ~
-        ("gettingResultTimeProportion" -> gettingResultTimeProportion) ~
-        ("executorComputingTimeProportion" -> executorComputingTimeProportion) ~
-        ("schedulerDelayProportion" -> schedulerDelayProportion) ~
-        ("shuffleReadTimeProportionPos" -> shuffleReadTimeProportionPos) ~
-        ("shuffleWriteTimeProportionPos" -> shuffleWriteTimeProportionPos) ~
-        ("serializationTimeProportionPos" -> serializationTimeProportionPos) ~
-        ("deserializationTimeProportionPos" -> deserializationTimeProportionPos) ~
-        ("gettingResultTimeProportionPos" -> gettingResultTimeProportionPos) ~
-        ("executorComputingTimeProportionPos" -> executorRuntimeProportionPos) ~
-        ("schedulerDelayProportionPos" -> schedulerDelayProportionPos) ~
-        ("resultSize" -> metricsOpt.map(_.resultSize).getOrElse(0L)) ~
-        ("jvmGCTime" -> metricsOpt.map(_.jvmGCTime).getOrElse(0L)) ~
-        ("memoryBytesSpilled" -> metricsOpt.map(_.memoryBytesSpilled).getOrElse(0L)) ~
-        ("diskBytesSpilled" -> metricsOpt.map(_.diskBytesSpilled).getOrElse(0L)) ~
-        ("peakExecutionMemory" -> metricsOpt.map(_.peakExecutionMemory).getOrElse(0L)) ~
-        ("test" -> info.gettingResultTime)
+    val jsonMetrics = if (metricsOpt.isDefined) {
+      Json.obj(
+        "shuffleReadTime" -> shuffleReadTime,
+        "shuffleWriteTime" -> shuffleWriteTime,
+        "serializationTime" -> serializationTime,
+        "deserializationTime" -> deserializationTime,
+        "gettingResultTime" -> gettingResultTime,
+        "executorComputingTime" -> executorComputingTime,
+        "schedulerDelay" -> schedulerDelay,
+        "shuffleReadTimeProportion" -> shuffleReadTimeProportion,
+        "shuffleWriteTimeProportion" -> shuffleWriteTimeProportion,
+        "serializationTimeProportion" -> serializationTimeProportion,
+        "deserializationTimeProportion" -> deserializationTimeProportion,
+        "gettingResultTimeProportion" -> gettingResultTimeProportion,
+        "executorComputingTimeProportion" -> executorComputingTimeProportion,
+        "schedulerDelayProportion" -> schedulerDelayProportion,
+        "shuffleReadTimeProportionPos" -> shuffleReadTimeProportionPos,
+        "shuffleWriteTimeProportionPos" -> shuffleWriteTimeProportionPos,
+        "serializationTimeProportionPos" -> serializationTimeProportionPos,
+        "deserializationTimeProportionPos" -> deserializationTimeProportionPos,
+        "gettingResultTimeProportionPos" -> gettingResultTimeProportionPos,
+        "executorComputingTimeProportionPos" -> executorRuntimeProportionPos,
+        "schedulerDelayProportionPos" -> schedulerDelayProportionPos,
+        "resultSize" -> metricsOpt.get.resultSize,
+        "jvmGCTime" -> metricsOpt.get.jvmGCTime,
+        "memoryBytesSpilled" -> metricsOpt.get.memoryBytesSpilled,
+        "diskBytesSpilled" -> metricsOpt.get.diskBytesSpilled,
+        "peakExecutionMemory" -> metricsOpt.get.peakExecutionMemory,
+        "test" -> info.gettingResultTime
+      )
+    } else {
+      Json.obj()
     }
-    val json = ("msgtype" -> "sparkTaskEnd") ~
-      ("launchTime" -> info.launchTime) ~
-      ("finishTime" -> info.finishTime) ~
-      ("taskId" -> info.taskId) ~
-      ("stageId" -> taskEnd.stageId) ~
-      ("taskType" -> taskEnd.taskType) ~
-      ("stageAttemptId" -> taskEnd.stageAttemptId) ~
-      ("index" -> info.index) ~
-      ("attemptNumber" -> info.attemptNumber) ~
-      ("executorId" -> info.executorId) ~
-      ("host" -> info.host) ~
-      ("status" -> info.status) ~
-      ("speculative" -> info.speculative) ~
-      ("errorMessage" -> errorMessage) ~
-      ("metrics" -> jsonMetrics)
+
+    val json = Json.obj(
+      "msgtype" -> "sparkTaskEnd",
+      "launchTime" -> info.launchTime,
+      "finishTime" -> info.finishTime,
+      "taskId" -> info.taskId,
+      "stageId" -> taskEnd.stageId,
+      "taskType" -> taskEnd.taskType,
+      "stageAttemptId" -> taskEnd.stageAttemptId,
+      "index" -> info.index,
+      "attemptNumber" -> info.attemptNumber,
+      "executorId" -> info.executorId,
+      "host" -> info.host,
+      "status" -> info.status,
+      "speculative" -> info.speculative,
+      "errorMessage" -> errorMessage,
+      "metrics" -> jsonMetrics
+    )
 
     logger.info("Task Ended: " + info.taskId)
-    logger.debug(pretty(render(json)))
+    logger.debug(Json.prettyPrint(json))
 
     // Buffer the message for periodic flushing
-    sparkTasksQueue.put(pretty(render(json)))
+    sparkTasksQueue.put(Json.stringify(json))
   }
 
   /** If stored stages data is too large, remove and garbage collect old stages */
@@ -666,31 +694,35 @@ class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) exten
     executorCores(executorAdded.executorId) = executorAdded.executorInfo.totalCores
     totalCores += executorAdded.executorInfo.totalCores
     numExecutors += 1
-    val json = ("msgtype" -> "sparkExecutorAdded") ~
-      ("executorId" -> executorAdded.executorId) ~
-      ("time" -> executorAdded.time) ~
-      ("host" -> executorAdded.executorInfo.executorHost) ~
-      ("numCores" -> executorAdded.executorInfo.totalCores) ~
-      ("totalCores" -> totalCores) // Sending this as browser data can be lost during reloads
+    val json = Json.obj(
+      "msgtype" -> "sparkExecutorAdded",
+      "executorId" -> executorAdded.executorId,
+      "time" -> executorAdded.time,
+      "host" -> executorAdded.executorInfo.executorHost,
+      "numCores" -> executorAdded.executorInfo.totalCores,
+      "totalCores" -> totalCores // Sending this as browser data can be lost during reloads
+    )
 
     logger.info("Executor Added: " + executorAdded.executorId)
-    logger.debug(pretty(render(json)))
-    send(pretty(render(json)))
+    logger.debug(Json.prettyPrint(json))
+    send(json)
   }
 
   /** Called when an executor is removed. */
   override def onExecutorRemoved(executorRemoved: SparkListenerExecutorRemoved): Unit = synchronized {
     totalCores -= executorCores.getOrElse(executorRemoved.executorId, 0)
     numExecutors -= 1
-    val json = ("msgtype" -> "sparkExecutorRemoved") ~
-      ("executorId" -> executorRemoved.executorId) ~
-      ("time" -> executorRemoved.time) ~
-      ("totalCores" -> totalCores) // Sending this as browser data can be lost during reloads
+    val json = Json.obj(
+      "msgtype" -> "sparkExecutorRemoved",
+      "executorId" -> executorRemoved.executorId,
+      "time" -> executorRemoved.time,
+      "totalCores" -> totalCores // Sending this as browser data can be lost during reloads
+    )
 
     logger.info("Executor Removed: " + executorRemoved.executorId)
-    logger.debug(pretty(render(json)))
+    logger.debug(Json.prettyPrint(json))
 
-    send(pretty(render(json)))
+    send(json)
   }
 }
 
