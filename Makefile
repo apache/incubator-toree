@@ -103,6 +103,8 @@ dev-binder: .binder-image
 		--workdir /home/main/notebooks $(BINDER_IMAGE) \
 		/home/main/start-notebook.sh --ip=0.0.0.0
 
+SPARK_MONITOR_JAR:=toree-spark-monitor-plugin-assembly-$(VERSION)$(SNAPSHOT).jar
+
 target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
 target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): ${shell find ./*/build.sbt}
@@ -110,7 +112,14 @@ target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): ${shell find ./project/*.scala} $
 target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): dist/toree-legal project/build.properties build.sbt
 	$(call RUN,$(ENV_OPTS) sbt root/assembly)
 
-build: target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR)
+spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): VM_WORKDIR=/src/toree-kernel
+spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): ${shell find ./spark-monitor-plugin/src/main/**/*}
+spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): spark-monitor-plugin/build.sbt
+spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): ${shell find ./project/*.scala} ${shell find ./project/*.sbt}
+spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): project/build.properties build.sbt
+	$(call RUN,$(ENV_OPTS) sbt sparkMonitorPlugin/assembly)
+
+build: target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR) spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR)
 
 test: VM_WORKDIR=/src/toree-kernel
 test:
@@ -119,9 +128,10 @@ test:
 sbt-%:
 	$(call RUN,$(ENV_OPTS) sbt $(subst sbt-,,$@) )
 
-dist/toree/lib: target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR)
+dist/toree/lib: target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR) spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR)
 	@mkdir -p dist/toree/lib
 	@cp target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR) dist/toree/lib/.
+	@cp spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR) dist/toree/lib/.
 
 dist/toree/bin: ${shell find ./etc/bin/*}
 	@mkdir -p dist/toree/bin

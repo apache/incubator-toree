@@ -30,8 +30,6 @@ libraryDependencies += Dependencies.scalaCompiler.value % "test"
 // Assembly configuration for separate jar
 enablePlugins(AssemblyPlugin)
 
-assembly / assemblyJarName := s"spark-monitor-plugin-${version.value}.jar"
-
 assembly / assemblyMergeStrategy := {
   case "module-info.class" => MergeStrategy.discard
   case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.discard
