@@ -47,7 +47,7 @@ RUN if [ "$SCALA_VERSION" = "2.13" ]; then APACHE_SPARK_CUSTOM_NAME=hadoop3-scal
     SPARK_TGZ_NAME=spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME} && \
     if [ ! -d "/usr/local/$SPARK_TGZ_NAME" ]; then \
         cd /tmp ; \
-        wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/${SPARK_TGZ_NAME}.tgz ; \
+        wget -q https://www.apache.org/dyn/closer.lua/spark/spark-${APACHE_SPARK_VERSION}/${SPARK_TGZ_NAME}.tgz?action=download -O ${SPARK_TGZ_NAME}.tgz ; \
         tar -xzf ${SPARK_TGZ_NAME}.tgz -C /usr/local ; \
         rm ${SPARK_TGZ_NAME}.tgz ; \
         ln -snf /usr/local/$SPARK_TGZ_NAME /usr/local/spark ; \
