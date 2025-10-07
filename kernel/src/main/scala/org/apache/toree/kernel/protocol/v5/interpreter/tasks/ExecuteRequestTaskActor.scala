@@ -82,25 +82,25 @@ class ExecuteRequestTaskActor(interpreter: Interpreter) extends Actor with LogLi
         logger.debug(s"Interpreter execution result was ${success}")
         success match {
           case Results.Success =>
-            val output = result.left.get
-            sender ! Left(output)
+            val output = result.swap.toOption.get
+            sender() ! Left(output)
           case Results.Error =>
-            val error = result.right.get
-            sender ! Right(error)
+            val error = result.toOption.get
+            sender() ! Right(error)
           case Results.Aborted =>
-            sender ! Right(new ExecuteAborted)
+            sender() ! Right(new ExecuteAborted)
           case Results.Incomplete =>
             // If we get an incomplete it's most likely a syntax error, so
             // let the user know.
-            sender ! Right(new ExecuteError("Syntax Error.", "", List()))
+            sender() ! Right(new ExecuteError("Syntax Error.", "", List()))
         }
       } else {
         // If we get empty code from a cell then just return ExecuteReplyOk
-        sender ! Left("")
+        sender() ! Left("")
       }
     case unknownValue =>
       logger.warn(s"Received unknown message type ${unknownValue}")
-      sender ! "Unknown message" // TODO: Provide a failure message type to be passed around?
+      sender() ! "Unknown message" // TODO: Provide a failure message type to be passed around?
   }
 
   private def buildOutputStream(

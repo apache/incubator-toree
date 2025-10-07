@@ -102,7 +102,7 @@ trait KernelLike {
 
   def config: Config
 
-  def addJars(uris: URI*)
+  def addJars(uris: URI*): Unit
 
   def sparkContext: SparkContext
 

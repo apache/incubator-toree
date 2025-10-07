@@ -35,7 +35,7 @@ class SignatureCheckerActor(
       val isValidSignature = hmacString == signature
       logger.trace(s"Signature ${signature} validity checked against " +
         s"hmac ${hmacString} with outcome ${isValidSignature}")
-      sender ! isValidSignature
+      sender() ! isValidSignature
     }
   }
 

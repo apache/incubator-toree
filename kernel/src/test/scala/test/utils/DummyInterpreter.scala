@@ -17,13 +17,12 @@
 
 package test.utils
 
-import java.net.URL
-
 import org.apache.toree.interpreter.Results.Result
 import org.apache.toree.interpreter.{ExecuteFailure, ExecuteOutput, Interpreter, LanguageInfo}
 import org.apache.toree.kernel.api.KernelLike
 
-import scala.tools.nsc.interpreter.{InputStream, OutputStream}
+import java.io.{InputStream, OutputStream}
+import java.net.URL
 
 class DummyInterpreter(kernel: KernelLike) extends Interpreter {
   /**

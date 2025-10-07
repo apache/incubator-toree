@@ -76,7 +76,7 @@ class IOPubClient(
     } else {
       logger.warn("Received message with null parent header.")
       logger.debug(s"Kernel message is: $kernelMessage")
-      sender.forward(Failure(new RuntimeException(PARENT_HEADER_NULL_MESSAGE)))
+      sender().forward(Failure(new RuntimeException(PARENT_HEADER_NULL_MESSAGE)))
     }
   }
 

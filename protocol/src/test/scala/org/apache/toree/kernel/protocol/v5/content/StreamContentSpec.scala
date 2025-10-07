@@ -58,7 +58,7 @@ class StreamContentSpec extends AnyFunSpec with Matchers {
         val CompleteRequestResults = streamJson.validate[StreamContent]
 
         CompleteRequestResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: StreamContent) => valid
         ) should be (stream)
       }

@@ -57,7 +57,7 @@ class InspectReplyOkSpec extends AnyFunSpec with Matchers {
         val InspectReplyOkResults = inspectReplyOkJson.validate[InspectReplyOk]
 
         InspectReplyOkResults.fold(
-          (invalid: Seq[(JsPath, Seq[JsonValidationError])]) => println("Failed!"),
+          (invalid: collection.Seq[(JsPath, collection.Seq[JsonValidationError])]) => println("Failed!"),
           (valid: InspectReplyOk) => valid
         ) should be (inspectReplyOk)
       }

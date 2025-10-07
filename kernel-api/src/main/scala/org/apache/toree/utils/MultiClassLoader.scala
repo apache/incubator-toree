@@ -77,20 +77,20 @@ class MultiClassLoader(
     }
 
     // NOTE: Using iterator to evaluate elements one at a time
-    classLoaders.toIterator
+    classLoaders.iterator
       .map(classLoader => tryFindClass(classLoader, name))
       .find(_.isSuccess)
       .map(_.get)
       .getOrElse(throw new ClassNotFoundException(name))
   }
 
-  override protected def findResource(name: String): URL = {
+  override def findResource(name: String): URL = {
     // NOTE: Using iterator to evaluate elements one at a time
-    classLoaders.toIterator.map(cl => _findResource(cl, name)).find(_ != null)
+    classLoaders.iterator.map(cl => _findResource(cl, name)).find(_ != null)
       .getOrElse(super.findResource(name))
   }
 
-  override protected def findResources(name: String): util.Enumeration[URL] = {
+  override def findResources(name: String): util.Enumeration[URL] = {
     val internalResources = classLoaders
       .flatMap(cl => Try(_findResources(cl, name)).toOption)
       .map(_.asScala)

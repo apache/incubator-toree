@@ -53,7 +53,7 @@ class InputRequestReplyHandler(
       // Is this an outgoing message to request data?
       if (kernelMessageType == inputRequestType) {
         val session = kernelMessage.parentHeader.session
-        responseMap(session) = sender
+        responseMap(session) = sender()
 
         logger.debug("Associating input request with session " + session)
 
