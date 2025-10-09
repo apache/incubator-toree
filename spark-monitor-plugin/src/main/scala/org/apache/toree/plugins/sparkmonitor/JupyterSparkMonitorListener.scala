@@ -20,16 +20,16 @@ package org.apache.toree.plugins.sparkmonitor
 import org.apache.spark.scheduler._
 import play.api.libs.json._
 import org.apache.spark._
-import org.apache.spark.TaskEndReason
 import org.apache.spark.JobExecutionStatus
-import org.apache.spark.SparkContext
-import org.apache.log4j.Logger
+
 import scala.collection.mutable
-import scala.collection.mutable.{ HashMap, HashSet, LinkedHashMap, ListBuffer }
+import scala.collection.mutable.{ HashMap, HashSet, ListBuffer }
 import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
 import java.util.{TimerTask,Timer}
 import org.apache.toree.comm.CommWriter
 import org.apache.toree.kernel.protocol.v5.MsgData
+import org.slf4j.LoggerFactory
+
 import scala.util.Try
 
 /**
@@ -47,7 +47,7 @@ import scala.util.Try
  */
 class JupyterSparkMonitorListener(getCommWriter: () => Option[CommWriter]) extends SparkListener {
 
-  val logger = Logger.getLogger(this.getClass.getName)
+  val logger = LoggerFactory.getLogger(this.getClass())
   logger.info("Started JupyterSparkMonitorListener for Jupyter Notebook")
   
   var onStageStatusActiveTask: TimerTask = null

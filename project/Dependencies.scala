@@ -84,4 +84,6 @@ object Dependencies {
     )
   }
 
+  val py4j = "net.sf.py4j" % "py4j" % "0.10.7" % "provided"
+
 }
