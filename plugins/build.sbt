@@ -22,7 +22,6 @@ libraryDependencies ++= Seq(
   Dependencies.scalaReflect.value,
   Dependencies.clapper,
   Dependencies.slf4jApi,
-  Dependencies.py4j,
 )
 
 // Test dependencies

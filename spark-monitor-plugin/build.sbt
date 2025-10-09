@@ -20,7 +20,8 @@ Test / fork := true
 // Needed for SparkMonitor plugin
 libraryDependencies ++= Dependencies.sparkAll.value
 libraryDependencies ++= Seq(
-  Dependencies.playJson
+  Dependencies.playJson,
+  Dependencies.py4j
 )
 
 // Test dependencies
