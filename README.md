@@ -80,6 +80,59 @@ This results in 2 packages.
 
 NOTE: `make release` uses `docker`. Please refer to `docker` installation instructions for your system.
 
+## Building Individual Components
+
+### Main Toree Assembly
+To build just the main Toree assembly jar (without spark-monitor-plugin):
+```
+sbt assembly
+```
+This creates: `target/scala-2.12/toree-assembly-<VERSION>.jar`
+
+### Spark Monitor Plugin
+To build the spark-monitor-plugin as a separate jar:
+```
+sbt sparkMonitorPlugin/assembly
+```
+This creates: `spark-monitor-plugin/target/scala-2.12/spark-monitor-plugin-<VERSION>.jar`
+
+### Build All Components
+To compile all projects including both the main assembly and spark-monitor-plugin:
+```
+sbt compile
+```
+
+**Note**: The spark-monitor-plugin is now built as a separate jar and is not included in the main Toree assembly.
+
+## Using the Spark Monitor Plugin
+
+To enable the Spark Monitor Plugin in your Toree application, you need to specify the path to the plugin JAR when starting Toree:
+
+### Option 1: Command Line Parameter
+```bash
+# Start Toree with spark-monitor-plugin enabled
+java -jar target/scala-2.12/toree-assembly-<VERSION>.jar --magic-url file:///path/to/spark-monitor-plugin/target/scala-2.12/spark-monitor-plugin-<VERSION>.jar [other-options]
+```
+
+### Option 2: Jupyter Kernel Installation
+When installing Toree as a Jupyter kernel, you can specify the plugin:
+```bash
+jupyter toree install --spark_home=<YOUR_SPARK_PATH> --kernel_name=toree_with_monitor --toree_opts="--magic-url file:///path/to/spark-monitor-plugin-<VERSION>.jar"
+```
+
+### Option 3: Configuration File
+You can also specify the plugin in a configuration file and use the `--profile` option:
+```json
+{
+  "magic_urls": ["file:///path/to/spark-monitor-plugin-<VERSION>.jar"]
+}
+```
+Then start with: `java -jar toree-assembly.jar --profile config.json`
+
+**Important**:
+- Make sure to use the absolute path to the spark-monitor-plugin JAR file and ensure the JAR is accessible from the location where Toree is running.
+- The JAR file name does not contain "toree" prefix to avoid automatic loading as an internal plugin. This allows you to control when the SparkMonitorPlugin is enabled via the `--magic-url` parameter.
+
 Run Examples
 ============
 To play with the example notebooks, run

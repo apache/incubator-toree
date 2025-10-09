@@ -126,7 +126,7 @@ ThisBuild / credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 lazy val root = (project in file("."))
   .settings(name := "toree")
   .aggregate(
-    macros,protocol,plugins,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
+    macros,protocol,plugins,sparkMonitorPlugin,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
   )
   .dependsOn(
     macros,protocol,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
@@ -153,6 +153,13 @@ lazy val protocol = (project in file("protocol"))
 lazy val plugins = (project in file("plugins"))
   .settings(name := "toree-plugins")
   .dependsOn(macros)
+
+/**
+  * Project representing the SparkMonitor plugin for Toree.
+  */
+lazy val sparkMonitorPlugin = (project in file("spark-monitor-plugin"))
+  .settings(name := "toree-spark-monitor-plugin")
+  .dependsOn(macros, protocol, plugins, kernel, kernelApi)
 
 /**
   * Project representing forms of communication used as input/output for the

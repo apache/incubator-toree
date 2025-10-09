@@ -17,12 +17,30 @@
 
 Test / fork := true
 
-// Needed for type inspection
+// Needed for SparkMonitor plugin
+libraryDependencies ++= Dependencies.sparkAll.value
 libraryDependencies ++= Seq(
-  Dependencies.scalaReflect.value,
-  Dependencies.clapper,
-  Dependencies.slf4jApi,
+  Dependencies.playJson,
+  Dependencies.py4j
 )
 
 // Test dependencies
 libraryDependencies += Dependencies.scalaCompiler.value % "test"
+
+// Assembly configuration for separate jar
+enablePlugins(AssemblyPlugin)
+
+assembly / assemblyMergeStrategy := {
+  case "module-info.class" => MergeStrategy.discard
+  case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.discard
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
+
+assembly / assemblyOption ~= {
+  _.withIncludeScala(false)
+}
+
+assembly / test := {}
