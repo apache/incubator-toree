@@ -19,6 +19,17 @@
 
 # RELEASE_NOTES
 
+## 0.5.0-incubating (2022.04)
+
+* Update to Apache Spark 3.0.3
+* Support Toree with Java SDK 11
+* Support for Scala 2.12
+* Fix exception propagation when using Scala 2.12
+* Spark init configurations (jars to driver and executors)
+* Fixed error handling on recent versions of Jupyter Notebook
+* Remove obsolete Vagrant support
+
+
 ## 0.4.0-incubating (2020.07)
 
 * Properly reply errors to iopub.error
