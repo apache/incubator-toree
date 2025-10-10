@@ -19,6 +19,22 @@
 
 # RELEASE_NOTES
 
+## 0.6.0-incubating (xx)
+
+* Add support to Scala 2.13
+* Remove support to Scala 2.11
+* Upgrade to Apache Spark 3.4.4
+* Added support to Jupyter Spark monitor
+* Downgrade Guava to 14.0.1 to align with Spark
+* Migrated to use Apache Pekko instead of Akka
+* Update ScalaInterpreter to use context classloader
+* Add support to ARM platform on docker images
+* Reply message should implement status field
+* Fix deadlock on closing ZMQ by upgrading jeromq to 0.5.3
+* Update AddJar command to support AWS S3a cloud storage
+* Update AddJar command to support Google cloud storage
+* Fire postRunCell event after cell execution
+
 ## 0.5.0-incubating (2022.04)
 
 * Update to Apache Spark 3.0.3
