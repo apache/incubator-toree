@@ -11,8 +11,8 @@ Apache License 2.0
 ========================================================================
 
    com.google.guava:guava:14.0.1
-   org.apache.pekko:pekko-slf4j_2.12:1.0.2
-   org.apache.pekko:pekko-actor_2.12:1.0.2
+   org.apache.pekko:pekko-slf4j_2.12:1.1.5
+   org.apache.pekko:pekko-actor_2.12:1.1.5
    com.typesafe:config:1.4.3 -> https://github.com/lightbend/config/blob/master/LICENSE-2.0.txt
    com.typesafe.play:play-json_2.12:2.7.4 -> https://github.com/playframework/play-json/blob/master/LICENSE
    com.typesafe.play:play-functional_2.12:2.7.4
@@ -20,8 +20,11 @@ Apache License 2.0
    io.get-coursier:coursier-cache_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
    io.get-coursier:coursier_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
    joda-time:joda-time:2.10.1 -> https://github.com/JodaOrg/joda-time/blob/master/LICENSE.txt
-   org.springframework:spring-core:5.2.2.RELEASE
+   org.springframework:spring-core:5.2.2.RELEASE -> https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt
    org.apache.commons:commons-exec:1.3 -> https://github.com/apache/commons-exec/blob/trunk/LICENSE.txt
+   org.scala-lang.modules:scala-java8-compat_2.12:1.0.2 -> https://github.com/scala/scala-java8-compat/blob/master/LICENSE
+   org.scala-lang.modules:scala-xml_2.12:2.1.0 -> https://github.com/scala/scala-xml/blob/master/LICENSE.md
+   org.scala-lang:scala-reflect:2.12.15 -> http://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
 
 ========================================================================
 MPL v2
@@ -40,9 +43,6 @@ BSD-like
    com.github.jupyter:jvm-repr:0.1.0 -> https://github.com/jupyter/jvm-repr/blob/master/LICENSE
    org.clapper:classutil_2.12:1.5.1 -> http://software.clapper.org/javautil/#copyright-and-license and licenses/LICENSE-clapper.txt
    org.clapper:grizzled-scala_2.12:4.9.3 -> http://software.clapper.org/grizzled-scala/#copyright-and-license and licenses/LICENSE-clapper.txt
-   org.scala-lang.modules:scala-java8-compat_2.12:1.0.2 -> https://github.com/scala/scala-java8-compat/blob/master/LICENSE
-   org.scala-lang.modules:scala-xml_2.12:2.1.0 -> https://github.com/scala/scala-xml/blob/master/LICENSE.md
-   org.scala-lang:scala-reflect:2.12.15 -> http://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
 
 ========================================================================
 MIT license
