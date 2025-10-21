@@ -200,3 +200,10 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+===============================================================================================
+
+The kernel module includes code from Guava which is licensed under the Apache License, Version 2.0.
+- kernel/src/main/scala/org/apache/toree/utils/ClassPath.java
+
+   Copyright (C) 2012 The Guava Authors
