@@ -60,13 +60,13 @@ fi
 
 export RAT_VERSION=0.12
 export rat_jar="$FWDIR"/etc/tools/apache-rat-${RAT_VERSION}.jar
-mkdir -p "$FWDIR"etc/tools/
 
 [[ -f "$rat_jar" ]] || acquire_rat_jar || {
     echo "Download failed. Obtain the rat jar manually and place it at $rat_jar"
     exit 1
 }
 
+mkdir -p target
 $java_cmd -jar "$rat_jar" -E "$FWDIR"/etc/tools/.rat-excludes -d "$FWDIR" > target/rat-results.txt
 
 if [ $? -ne 0 ]; then
