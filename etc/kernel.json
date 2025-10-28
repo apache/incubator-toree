@@ -4,7 +4,7 @@
   },
   "display_name": "Apache Toree (development)",
   "env": {
-    "PYTHONPATH": "/usr/local/spark/python:/usr/local/spark/python/lib/py4j-0.10.9.5-src.zip",
+    "PYTHONPATH": "/usr/local/spark/python:/usr/local/spark/python/lib/py4j-0.10.9.7-src.zip",
     "SPARK_HOME": "/usr/local/spark",
     "CAPTURE_STANDARD_ERR": "true",
     "MAX_INTERPRETER_THREADS": "16",
