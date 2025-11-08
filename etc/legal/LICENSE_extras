@@ -19,7 +19,11 @@ Apache License 2.0
    commons-logging:commons-logging:1.1.3 -> https://github.com/apache/commons-logging/blob/trunk/LICENSE.txt
    io.get-coursier:coursier-cache_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
    io.get-coursier:coursier_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
+   io.github.alexarchambault:windows-ansi -> https://github.com/alexarchambault/windows-ansi/blob/master/LICENSE
    joda-time:joda-time:2.10.1 -> https://github.com/JodaOrg/joda-time/blob/master/LICENSE.txt
+   com.milessabin:shapeless_2.12 -> https://github.com/milessabin/shapeless/blob/main/LICENSE
+   org.fusesource.jansi:jansi -> https://github.com/fusesource/jansi/blob/master/license.txt
+   org.fusesource.hawtjni:hawtjni-runtime (Apache-2.0 OR EPL-1.0) -> https://github.com/fusesource/hawtjni/blob/master/license.txt
    org.springframework:spring-core:5.2.2.RELEASE -> https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt
    org.apache.commons:commons-exec:1.3 -> https://github.com/apache/commons-exec/blob/trunk/LICENSE.txt
    org.scala-lang.modules:scala-java8-compat_2.12:1.0.2 -> https://github.com/scala/scala-java8-compat/blob/master/LICENSE
@@ -36,6 +40,8 @@ MPL v2
 BSD-like
 ========================================================================
 
+   io.argonaut:argonaut_2.12 (BSD-3-Clause) -> https://github.com/argonaut-io/argonaut/blob/master/LICENSE and licenses/LICENSE-argonaut.txt
+   com.neilalexander:jnacl (BSD-2-Clause) -> https://github.com/neilalexander/jnacl/blob/master/LICENSE and licenses/LICENSE-jnacl.txt
    asm:asm-commons:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
    asm:asm-tree:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
    asm:asm-util:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
