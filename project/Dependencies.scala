@@ -26,7 +26,7 @@ object Dependencies {
   val pekkoSlf4j = "org.apache.pekko" %% "pekko-slf4j" % pekkoVersion // Apache v2
   val pekkoTestkit = "org.apache.pekko" %% "pekko-testkit" % pekkoVersion // Apache v2
 
-  val clapper = "org.clapper" %% "classutil" % "1.5.1" // BSD 3-clause license, used for detecting plugins
+  val clapper = "org.clapper" %% "classutil" % "1.5.1" // Apache v2, used for detecting plugins
 
   val commonsExec = "org.apache.commons" % "commons-exec" % "1.3" // Apache v2
 

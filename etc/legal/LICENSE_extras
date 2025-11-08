@@ -13,6 +13,8 @@ Apache License 2.0
    com.google.guava:guava:14.0.1
    org.apache.pekko:pekko-slf4j_2.12:1.1.5
    org.apache.pekko:pekko-actor_2.12:1.1.5
+   org.clapper:classutil_2.12:1.5.1 -> http://software.clapper.org/javautil/#copyright-and-license and licenses/LICENSE-clapper.txt
+   org.clapper:grizzled-scala_2.12:4.9.3 -> http://software.clapper.org/grizzled-scala/#copyright-and-license and licenses/LICENSE-clapper.txt
    com.typesafe:config:1.4.3 -> https://github.com/lightbend/config/blob/master/LICENSE-2.0.txt
    com.typesafe.play:play-json_2.12:2.7.4 -> https://github.com/playframework/play-json/blob/master/LICENSE
    com.typesafe.play:play-functional_2.12:2.7.4
@@ -47,8 +49,6 @@ BSD-like
    asm:asm-util:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
    asm:asm:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
    com.github.jupyter:jvm-repr:0.1.0 -> https://github.com/jupyter/jvm-repr/blob/master/LICENSE
-   org.clapper:classutil_2.12:1.5.1 -> http://software.clapper.org/javautil/#copyright-and-license and licenses/LICENSE-clapper.txt
-   org.clapper:grizzled-scala_2.12:4.9.3 -> http://software.clapper.org/grizzled-scala/#copyright-and-license and licenses/LICENSE-clapper.txt
 
 ========================================================================
 MIT license
