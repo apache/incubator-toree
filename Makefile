@@ -70,7 +70,7 @@ build-info:
 	@echo '$(ENV_OPTS) $(VERSION)'
 
 clean-dist:
-	-rm -r dist
+	-rm -rf dist
 
 clean: VM_WORKDIR=/src/toree-kernel
 clean: clean-dist
