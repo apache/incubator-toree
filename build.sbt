@@ -18,7 +18,7 @@
 import scala.util.Properties
 import sbtassembly.AssemblyOption
 
-lazy val scala212 = "2.12.17"
+lazy val scala212 = "2.12.18"
 lazy val scala213 = "2.13.8"
 lazy val defaultScalaVersion = sys.env.get("SCALA_VERSION") match {
   case Some("2.13") => scala213
@@ -34,7 +34,7 @@ ThisBuild / crossScalaVersions := Seq(scala212, scala213)
 ThisBuild / scalaVersion := defaultScalaVersion
 ThisBuild / Dependencies.sparkVersion := {
   val envVar = "APACHE_SPARK_VERSION"
-  val defaultVersion = "3.4.4"
+  val defaultVersion = "3.5.7"
 
   Properties.envOrNone(envVar) match {
     case None =>
