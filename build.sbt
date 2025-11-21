@@ -108,7 +108,7 @@ ThisBuild / pomExtra := {
     <artifactId>apache</artifactId>
     <version>23</version>
   </parent>
-  <url>http://toree.incubator.apache.org/</url>
+  <url>http://toree.apache.org/</url>
   <scm>
     <url>git@github.com:apache/incubator-toree.git</url>
     <connection>scm:git:git@github.com:apache/incubator-toree.git</connection>

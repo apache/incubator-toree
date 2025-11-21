@@ -28,7 +28,7 @@ with open(os.path.join(here, 'toree', '_version.py')) as f:
 setup_args = dict(
     name='toree',
     author='Apache Toree Development Team',
-    author_email='dev@toree.incubator.apache.org',
+    author_email='dev@toree.apache.org',
     description='A Jupyter kernel for enabling remote applications to interaction with Apache Spark.',
     long_description = '''
     This package will install Apache Toree as a Jupyter kernel.
@@ -44,7 +44,7 @@ setup_args = dict(
     or stability of the code, it does indicate that the project has yet to be
     fully endorsed by the ASF.
     ''',
-    url='http://toree.incubator.apache.org/',
+    url='http://toree.apache.org/',
     version=version_ns['__version__'],
     license='Apache License 2.0',
     platforms=[],
