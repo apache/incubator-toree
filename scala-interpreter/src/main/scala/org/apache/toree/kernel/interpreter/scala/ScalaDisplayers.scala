@@ -23,8 +23,7 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.util.Try
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.Row
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import jupyter.Displayer
 import jupyter.Displayers
 import jupyter.MIMETypes
@@ -61,6 +60,13 @@ object ScalaDisplayers {
         MIMEType.PlainText -> text,
         MIMEType.TextHtml -> html
       )
+    }
+  })
+
+  Displayers.register(classOf[DataFrame], new Displayer[DataFrame] {
+    override def display(df: DataFrame): util.Map[String, String] = toJava {
+      val (text, html) = displayRows(df.head(20), Some(df.schema.fieldNames))
+      Map(MIMEType.PlainText -> text, MIMEType.TextHtml -> html)
     }
   })
 
