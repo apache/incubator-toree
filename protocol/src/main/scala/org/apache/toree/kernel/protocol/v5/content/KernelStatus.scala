@@ -23,7 +23,6 @@ import play.api.libs.json._
 case class KernelStatus (
   execution_state: String
 ) extends KernelMessageContent {
-  import KernelStatus.kernelStatusWrites
   override def content : String =
     Json.toJson(this)(KernelStatus.kernelStatusWrites).toString
 }
@@ -41,13 +40,13 @@ object KernelStatus extends TypeString {
 }
 
 object KernelStatusBusy extends KernelStatus("busy") {
-  import KernelStatus.kernelStatusWrites
+  private implicit val kernelStatusBusyWrites = Json.writes[KernelStatusBusy]
   override def toString(): String = {
     Json.toJson(this).toString
   }
 }
 object KernelStatusIdle extends KernelStatus("idle") {
-  import KernelStatus.kernelStatusWrites
+  private implicit val kernelStatusIdleWrites = Json.writes[KernelStatusIdle]
   override def toString(): String = {
     Json.toJson(this).toString
   }
