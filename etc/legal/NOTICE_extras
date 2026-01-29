@@ -1,1 +1,21 @@
 ========================================================================
+
+org.apache.ivy:ivy:2.5.1 -> https://github.com/apache/ant-ivy/blob/master/NOTICE
+
+========================================================================
+
+scala-xml
+Copyright (c) 2002-2026 EPFL
+Copyright (c) 2011-2026 Lightbend, Inc. dba Akka
+
+scala-xml includes software developed at
+LAMP/EPFL (https://lamp.epfl.ch/) and
+Akka (https://akka.io/).
+
+Licensed under the Apache License, Version 2.0 (the "License").
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
