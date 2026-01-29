@@ -47,7 +47,7 @@ object Dependencies {
 
   val jvmRepr = "com.github.jupyter" % "jvm-repr" % "0.1.0" // BSD 3-clause
 
-  val playJson = "com.typesafe.play" %% "play-json" % "2.7.4" // Apache v2
+  val playJson = "com.typesafe.play" %% "play-json" % "2.10.6" // Apache v2
 
   val scalaCompiler = Def.setting{ "org.scala-lang" % "scala-compiler" % scalaVersion.value } // BSD 3-clause
   val scalaLibrary = Def.setting{ "org.scala-lang" % "scala-library" % scalaVersion.value } // BSD 3-clause

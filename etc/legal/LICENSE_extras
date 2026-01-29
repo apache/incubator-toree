@@ -16,8 +16,8 @@ Apache License 2.0
    org.clapper:classutil_2.12:1.5.1 -> http://software.clapper.org/javautil/#copyright-and-license and licenses/LICENSE-clapper.txt
    org.clapper:grizzled-scala_2.12:4.9.3 -> http://software.clapper.org/grizzled-scala/#copyright-and-license and licenses/LICENSE-clapper.txt
    com.typesafe:config:1.4.3 -> https://github.com/lightbend/config/blob/master/LICENSE-2.0.txt
-   com.typesafe.play:play-json_2.12:2.7.4 -> https://github.com/playframework/play-json/blob/master/LICENSE
-   com.typesafe.play:play-functional_2.12:2.7.4
+   com.typesafe.play:play-json_2.12:2.10.6 -> https://github.com/playframework/play-json/blob/master/LICENSE
+   com.typesafe.play:play-functional_2.12:2.10.6
    commons-logging:commons-logging:1.1.3 -> https://github.com/apache/commons-logging/blob/trunk/LICENSE.txt
    io.get-coursier:coursier-cache_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
    io.get-coursier:coursier_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
