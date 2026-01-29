@@ -40,14 +40,12 @@ object KernelStatus extends TypeString {
 }
 
 object KernelStatusBusy extends KernelStatus("busy") {
-  private implicit val kernelStatusBusyWrites = Json.writes[KernelStatusBusy]
   override def toString(): String = {
-    Json.toJson(this).toString
+    Json.toJson(this.asInstanceOf[KernelStatus])(KernelStatus.kernelStatusWrites).toString
   }
 }
 object KernelStatusIdle extends KernelStatus("idle") {
-  private implicit val kernelStatusIdleWrites = Json.writes[KernelStatusIdle]
   override def toString(): String = {
-    Json.toJson(this).toString
+    Json.toJson(this.asInstanceOf[KernelStatus])(KernelStatus.kernelStatusWrites).toString
   }
 }
