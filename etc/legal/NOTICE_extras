@@ -1,6 +1,8 @@
 ========================================================================
 
 org.apache.ivy:ivy:2.5.1 -> https://github.com/apache/ant-ivy/blob/master/NOTICE
+org.apache.pekko:pekko-actor_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/pekko-actor-jar-notice.txt
+org.apache.pekko:pekko-slf4j_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/PekkoNotice.txt
 
 ========================================================================
 

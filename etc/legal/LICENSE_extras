@@ -12,11 +12,11 @@ Apache License 2.0
 
    com.google.guava:guava:14.0.1
    org.apache.ivy:ivy:2.5.1 -> https://github.com/apache/ant-ivy/blob/master/LICENSE
-   org.apache.pekko:pekko-slf4j_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/PekkoNotice.txt
-   org.apache.pekko:pekko-actor_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/pekko-actor-jar-notice.txt
+   org.apache.pekko:pekko-actor_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/pekko-actor-jar-license.txt
+   org.apache.pekko:pekko-slf4j_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/StandardLicense.txt
    org.clapper:classutil_2.12:1.5.1 -> http://software.clapper.org/javautil/#copyright-and-license and licenses/LICENSE-clapper.txt
    org.clapper:grizzled-scala_2.12:4.9.3 -> http://software.clapper.org/grizzled-scala/#copyright-and-license and licenses/LICENSE-clapper.txt
-   com.fasterxml.jackson.core:jackson-databind:2.14.2 -> https://github.com/FasterXML/jackson-databind/blob/3.x/LICENSE
+   com.fasterxml.jackson.core:jackson-databind:2.14.2 -> https://github.com/FasterXML/jackson-databind/blob/2.x/LICENSE
    com.typesafe:config:1.4.3 -> https://github.com/lightbend/config/blob/master/LICENSE-2.0.txt
    com.typesafe.play:play-json_2.12:2.9.4 -> https://github.com/playframework/play-json/blob/master/LICENSE
    com.typesafe.play:play-functional_2.12:2.9.4
