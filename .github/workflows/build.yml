@@ -42,7 +42,7 @@ jobs:
       TEST_DILATION: 3
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         clean: true
     - name: Setup Java
