@@ -41,11 +41,11 @@ object KernelStatus extends TypeString {
 
 object KernelStatusBusy extends KernelStatus("busy") {
   override def toString(): String = {
-    Json.toJson(this).toString
+    Json.toJson(this.asInstanceOf[KernelStatus])(KernelStatus.kernelStatusWrites).toString
   }
 }
 object KernelStatusIdle extends KernelStatus("idle") {
   override def toString(): String = {
-    Json.toJson(this).toString
+    Json.toJson(this.asInstanceOf[KernelStatus])(KernelStatus.kernelStatusWrites).toString
   }
 }
