@@ -6,6 +6,9 @@ org.apache.pekko:pekko-slf4j_2.12:1.1.5 -> https://github.com/apache/pekko/blob/
 com.fasterxml.jackson.core:jackson-core:2.14.2 -> https://github.com/FasterXML/jackson-core/blob/ceee70db0e6c54d907c75585e4678a43dabe3dd6/src/main/resources/META-INF/jackson-core-NOTICE#L17
 com.fasterxml.jackson.core:jackson-databind:2.14.2 -> https://github.com/FasterXML/jackson-databind/blob/37bd362bffb9d69dd4e3dfabc08ac64f0f8e4953/src/main/resources/META-INF/NOTICE#L17
 com.fasterxml.jackson.core:jackson-annotations:2.14.2 -> https://github.com/FasterXML/jackson-annotations/blob/92c08a9fc21d73f9f6aa730d4f90cb19105524c9/src/main/resources/META-INF/NOTICE#L17
+org.scala-lang.modules:scala-collection-compat_2.12:2.0.0 -> https://github.com/scala/scala-collection-compat/blob/main/NOTICE
+org.scala-lang.modules:scala-java8-compat_2.12:1.0.2 -> https://github.com/scala/scala-java8-compat/blob/main/NOTICE
+org.scala-lang.modules:scala-xml_2.12:2.1.0 -> https://github.com/scala/scala-xml/blob/main/NOTICE
 
 ========================================================================
 

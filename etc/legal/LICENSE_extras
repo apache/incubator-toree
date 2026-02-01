@@ -32,6 +32,7 @@ Apache License 2.0
    org.fusesource.hawtjni:hawtjni-runtime (Apache-2.0 OR EPL-1.0) -> https://github.com/fusesource/hawtjni/blob/master/license.txt
    org.springframework:spring-core:5.2.2.RELEASE -> https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt
    org.apache.commons:commons-exec:1.3 -> https://github.com/apache/commons-exec/blob/trunk/LICENSE.txt
+   org.scala-lang.modules:scala-collection-compat_2.12:2.0.0 -> https://github.com/scala/scala-collection-compat/blob/main/LICENSE
    org.scala-lang.modules:scala-java8-compat_2.12:1.0.2 -> https://github.com/scala/scala-java8-compat/blob/master/LICENSE
    org.scala-lang.modules:scala-xml_2.12:2.1.0 -> https://github.com/scala/scala-xml/blob/master/LICENSE.md
    org.scala-lang:scala-reflect:2.12.15 -> http://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
