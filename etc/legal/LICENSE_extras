@@ -14,8 +14,8 @@ Apache License 2.0
    org.apache.ivy:ivy:2.5.1 -> https://github.com/apache/ant-ivy/blob/master/LICENSE
    org.apache.pekko:pekko-actor_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/pekko-actor-jar-license.txt
    org.apache.pekko:pekko-slf4j_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/StandardLicense.txt
-   org.clapper:classutil_2.12:1.5.1 -> http://software.clapper.org/javautil/#copyright-and-license and licenses/LICENSE-clapper.txt
-   org.clapper:grizzled-scala_2.12:4.9.3 -> http://software.clapper.org/grizzled-scala/#copyright-and-license and licenses/LICENSE-clapper.txt
+   org.clapper:classutil_2.12:1.5.1 -> https://github.com/bmc/classutil/blob/master/LICENSE.md and licenses/LICENSE-clapper.txt
+   org.clapper:grizzled-scala_2.12:4.9.3 -> https://github.com/bmc/grizzled-scala/blob/master/LICENSE.md and licenses/LICENSE-clapper.txt
    com.fasterxml.jackson.core:jackson-core:2.14.2 -> https://github.com/FasterXML/jackson-core/blob/3.x/LICENSE
    com.fasterxml.jackson.core:jackson-databind:2.14.2 -> https://github.com/FasterXML/jackson-databind/blob/2.x/LICENSE
    com.fasterxml.jackson.core:jackson-annotations:2.14.2 -> https://github.com/FasterXML/jackson-annotations/blob/2.x/LICENSE
