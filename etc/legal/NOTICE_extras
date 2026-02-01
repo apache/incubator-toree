@@ -3,6 +3,9 @@
 org.apache.ivy:ivy:2.5.1 -> https://github.com/apache/ant-ivy/blob/master/NOTICE
 org.apache.pekko:pekko-actor_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/pekko-actor-jar-notice.txt
 org.apache.pekko:pekko-slf4j_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/PekkoNotice.txt
+com.fasterxml.jackson.core:jackson-core:2.14.2 -> https://github.com/FasterXML/jackson-core/blob/ceee70db0e6c54d907c75585e4678a43dabe3dd6/src/main/resources/META-INF/jackson-core-NOTICE#L17
+com.fasterxml.jackson.core:jackson-databind:2.14.2 -> https://github.com/FasterXML/jackson-databind/blob/37bd362bffb9d69dd4e3dfabc08ac64f0f8e4953/src/main/resources/META-INF/NOTICE#L17
+com.fasterxml.jackson.core:jackson-annotations:2.14.2 -> https://github.com/FasterXML/jackson-annotations/blob/92c08a9fc21d73f9f6aa730d4f90cb19105524c9/src/main/resources/META-INF/NOTICE#L17
 
 ========================================================================
 
@@ -21,3 +24,42 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+------
+
+scala-java8-compat
+Copyright (c) 2002-2026 EPFL
+Copyright (c) 2011-2026 Lightbend, Inc. dba Akka
+
+scala-java8-compat includes software developed at
+LAMP/EPFL (https://lamp.epfl.ch/) and
+Akka (https://akka.io/).
+
+Licensed under the Apache License, Version 2.0 (the "License").
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+------
+
+scala-collection-compat
+Copyright (c) 2002-2026 EPFL
+Copyright (c) 2011-2026 Lightbend, Inc. dba Akka
+
+Scala includes software developed at
+LAMP/EPFL (https://lamp.epfl.ch/) and
+Akka (https://akka.io/).
+
+Licensed under the Apache License, Version 2.0 (the "License").
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+------
+
+joda-time
+This product includes software developed by
+Joda.org (https://www.joda.org/).

@@ -10,13 +10,15 @@ licenses.
 Apache License 2.0
 ========================================================================
 
-   com.google.guava:guava:14.0.1
+   com.google.guava:guava:14.0.1 -> https://github.com/google/guava/blob/master/LICENSE
    org.apache.ivy:ivy:2.5.1 -> https://github.com/apache/ant-ivy/blob/master/LICENSE
    org.apache.pekko:pekko-actor_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/pekko-actor-jar-license.txt
    org.apache.pekko:pekko-slf4j_2.12:1.1.5 -> https://github.com/apache/pekko/blob/main/legal/StandardLicense.txt
    org.clapper:classutil_2.12:1.5.1 -> http://software.clapper.org/javautil/#copyright-and-license and licenses/LICENSE-clapper.txt
    org.clapper:grizzled-scala_2.12:4.9.3 -> http://software.clapper.org/grizzled-scala/#copyright-and-license and licenses/LICENSE-clapper.txt
+   com.fasterxml.jackson.core:jackson-core:2.14.2 -> https://github.com/FasterXML/jackson-core/blob/3.x/LICENSE
    com.fasterxml.jackson.core:jackson-databind:2.14.2 -> https://github.com/FasterXML/jackson-databind/blob/2.x/LICENSE
+   com.fasterxml.jackson.core:jackson-annotations:2.14.2 -> https://github.com/FasterXML/jackson-annotations/blob/2.x/LICENSE
    com.typesafe:config:1.4.3 -> https://github.com/lightbend/config/blob/master/LICENSE-2.0.txt
    com.typesafe.play:play-json_2.12:2.9.4 -> https://github.com/playframework/play-json/blob/master/LICENSE
    com.typesafe.play:play-functional_2.12:2.9.4
@@ -33,6 +35,7 @@ Apache License 2.0
    org.scala-lang.modules:scala-java8-compat_2.12:1.0.2 -> https://github.com/scala/scala-java8-compat/blob/master/LICENSE
    org.scala-lang.modules:scala-xml_2.12:2.1.0 -> https://github.com/scala/scala-xml/blob/master/LICENSE.md
    org.scala-lang:scala-reflect:2.12.15 -> http://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
+   org.typelevel:macro-compat_2.12:1.1.1 -> https://github.com/milessabin/macro-compat/blob/master/LICENSE
 
 ========================================================================
 MPL v2
