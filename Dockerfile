@@ -26,32 +26,32 @@ RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
     npm install -g bower
 
 # for Apache Spark demos
-ENV APACHE_SPARK_VERSION 3.4.4
+ENV APACHE_SPARK_VERSION 3.5.7
 ARG SCALA_VERSION=2.12
 
 RUN apt-get -y update && \
     apt-get -y install software-properties-common
 
-RUN \
-    echo "===> add webupd8 repository..."  && \
-    echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee /etc/apt/sources.list.d/webupd8team-java.list  && \
-    echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" | tee -a /etc/apt/sources.list.d/webupd8team-java.list  && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886  && \
-    apt-get update
+RUN JAVA_8=`update-alternatives --list java | grep java-1.8.0-openjdk` || echo $JAVA_8 && \
+    if [ "x$JAVA_8" = "x" ]; then \
+        apt-get -y update ; \
+        apt-get install -y --no-install-recommends openjdk-8-jdk ca-certificates-java ; \
+        apt-get clean ; \
+        rm -rf /var/lib/apt/lists/* ; \
+        update-ca-certificates -f ; \
+        JAVA_8=`update-java-alternatives --list | grep java-1.8.0-openjdk | awk '{print $NF}'` ; \
+        update-java-alternatives --set $JAVA_8 ; \
+    fi
 
-RUN echo "===> install Java"  && \
-    echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections  && \
-    echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections  && \
-    DEBIAN_FRONTEND=noninteractive  apt-get install -y --force-yes oracle-java8-installer oracle-java8-set-default && \
-    apt-get clean && \
-    update-java-alternatives -s java-8-oracle
-
-RUN cd /tmp && \
-    if [ "$SCALA_VERSION" = "2.13" ]; then APACHE_SPARK_CUSTOM_NAME=hadoop3-scala2.13; else APACHE_SPARK_CUSTOM_NAME=hadoop3; fi && \
-    wget -q https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz && \
-    tar xzf spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz -C /usr/local && \
-    rm spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME}.tgz && \
-    ln -snf /usr/local/spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME} /usr/local/spark
+RUN if [ "$SCALA_VERSION" = "2.13" ]; then APACHE_SPARK_CUSTOM_NAME=hadoop3-scala2.13; else APACHE_SPARK_CUSTOM_NAME=hadoop3; fi && \
+    SPARK_TGZ_NAME=spark-${APACHE_SPARK_VERSION}-bin-${APACHE_SPARK_CUSTOM_NAME} && \
+    if [ ! -d "/usr/local/$SPARK_TGZ_NAME" ]; then \
+        cd /tmp ; \
+        wget -q https://www.apache.org/dyn/closer.lua/spark/spark-${APACHE_SPARK_VERSION}/${SPARK_TGZ_NAME}.tgz?action=download -O ${SPARK_TGZ_NAME}.tgz ; \
+        tar -xzf ${SPARK_TGZ_NAME}.tgz -C /usr/local ; \
+        rm ${SPARK_TGZ_NAME}.tgz ; \
+        ln -snf /usr/local/$SPARK_TGZ_NAME /usr/local/spark ; \
+    fi
 
 # R support
 RUN apt-get update && \
@@ -62,7 +62,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ENV SPARK_HOME /usr/local/spark
-ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9.5-src.zip
+ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9.7-src.zip
 ENV PYSPARK_PYTHON /home/main/anaconda2/envs/python3/bin/python
 ENV R_LIBS_USER $SPARK_HOME/R/lib
 
