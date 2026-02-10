@@ -26,20 +26,24 @@ object Dependencies {
   val pekkoSlf4j = "org.apache.pekko" %% "pekko-slf4j" % pekkoVersion // Apache v2
   val pekkoTestkit = "org.apache.pekko" %% "pekko-testkit" % pekkoVersion // Apache v2
 
+  val asmVersion = "9.9"
+  val asm = "org.ow2.asm" % "asm" % asmVersion // Apache v2
+  val asmCommons = "org.ow2.asm" % "asm-commons" % asmVersion // Apache v2
+  val asmUtil = "org.ow2.asm" % "asm-util" % asmVersion // Apache v2
   val clapper = "org.clapper" %% "classutil" % "1.5.1" // Apache v2, used for detecting plugins
 
   val commonsExec = "org.apache.commons" % "commons-exec" % "1.3" // Apache v2
 
   val config = "com.typesafe" % "config" % "1.4.3" // Apache v2
 
-  val coursierVersion = "2.0.0"
+  val coursierVersion = "2.0.16"
   val coursier = "io.get-coursier" %% "coursier" % coursierVersion // Apache v2
   val coursierCache = "io.get-coursier" %% "coursier-cache" % coursierVersion // Apache v2
 
   val ivy = "org.apache.ivy" % "ivy" % "2.5.1" // Apache v2
 
-  // use the same jackson version in test than the one provided at runtime by Spark 3.4.x
-  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.14.2" // Apache v2
+  // use the same jackson version in test than the one provided at runtime by Spark 3.5.x
+  val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.15.2" // Apache v2
 
   val jeroMq = "org.zeromq" % "jeromq" % "0.5.3" // MPL v2
 
@@ -57,7 +61,7 @@ object Dependencies {
   val scalaTestMockito = "org.scalatestplus" %% "mockito-4-11" % "3.2.16.0" // Apache v2
   val mockitoInline = "org.mockito" % "mockito-inline" % "4.11.0" // MIT
 
-  val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.6" // MIT
+  val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.7" // MIT
 
   val sparkVersion = settingKey[String]("Version of Apache Spark to use in Toree") // defined in root build
   val sparkCore = Def.setting{ "org.apache.spark" %% "spark-core" % sparkVersion.value } // Apache v2
