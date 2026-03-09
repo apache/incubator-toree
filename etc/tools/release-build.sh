@@ -244,8 +244,10 @@ if [[ "$RELEASE_PREPARE" == "true" ]]; then
     git_tag_hash=`git rev-parse --short HEAD`
     sed -i .bak "s@^BASE_VERSION.*@BASE_VERSION?=$DEVELOPMENT_VERSION@g" Makefile
     git commit Makefile -m"Prepare for next development interaction $DEVELOPMENT_VERSION"
-    git push
-    git push --tags
+    if [ -z "$DRY_RUN" ]; then
+        git push
+        git push --tags
+    fi
 
     cd .. #exit toree
 
