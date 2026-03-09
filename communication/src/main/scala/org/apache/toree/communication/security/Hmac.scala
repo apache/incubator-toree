@@ -25,11 +25,13 @@ import org.apache.toree.communication.security.HmacAlgorithm.HmacAlgorithm
 object HmacAlgorithm extends Enumeration {
   type HmacAlgorithm = Value
 
-  def apply(key: String) = Value(key)
-
   val MD5     = Value("HmacMD5")
   val SHA1    = Value("HmacSHA1")
   val SHA256  = Value("HmacSHA256")
+
+  def apply(name: String): HmacAlgorithm = synchronized {
+    values.find(_.toString.equalsIgnoreCase(name)).getOrElse(Value(name))
+  }
 }
 
 object Hmac {

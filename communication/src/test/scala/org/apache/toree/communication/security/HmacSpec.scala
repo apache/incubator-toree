@@ -106,6 +106,21 @@ class HmacSpec extends AnyFunSpec with Matchers {
         //       the Scala enumeration value
         resultTypeName should be ("scala.Enumeration$Val")
       }
+
+      it("should reuse existing values for predefined algorithms (case-insensitive)") {
+        HmacAlgorithm("HmacSHA256") should be (HmacAlgorithm.SHA256)
+        HmacAlgorithm("hmacsha256") should be (HmacAlgorithm.SHA256)
+        HmacAlgorithm("HmacMD5") should be (HmacAlgorithm.MD5)
+        HmacAlgorithm("hmacmd5") should be (HmacAlgorithm.MD5)
+        HmacAlgorithm("HmacSHA1") should be (HmacAlgorithm.SHA1)
+        HmacAlgorithm("hmacsha1") should be (HmacAlgorithm.SHA1)
+      }
+
+      it("should reuse existing values for custom algorithms") {
+        val custom = HmacAlgorithm("CustomAlgorithm")
+        HmacAlgorithm("CustomAlgorithm") should be (custom)
+        HmacAlgorithm("customalgorithm") should be (custom)
+      }
     }
   }
 }
