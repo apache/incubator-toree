@@ -34,6 +34,18 @@
 * Update AddJar command to support AWS S3a cloud storage
 * Update AddJar command to support Google cloud storage
 * Fire postRunCell event after cell execution
+* Update Scala to 2.12.20 and 2.13.15
+
+### Breaking Changes
+
+* Release artifact naming has been updated for Apache compliance:
+  - Binary packages: `toree-<VERSION>-bin.tar.gz` → `apache-toree-<VERSION>-bin.tar.gz`
+  - Source packages: `toree-<VERSION>-src.tar.gz` → `apache-toree-<VERSION>-src.tar.gz`
+  - Binary archive top-level directory: `toree-<VERSION>/` → `apache-toree-<VERSION>/`
+  - Source archive top-level directory: `toree-<VERSION>-src/` → `apache-toree-<VERSION>-src/`
+  - Distribution directories: `dist/toree-bin` and `dist/toree-src` →
+    `dist/apache-toree-bin` and `dist/apache-toree-src`
+  - pip packages remain as `toree` and `apache-toree` (no change)
 
 ## 0.5.0-incubating (2022.04)
 

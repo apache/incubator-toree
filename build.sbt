@@ -18,8 +18,8 @@
 import scala.util.Properties
 import sbtassembly.AssemblyOption
 
-lazy val scala212 = "2.12.17"
-lazy val scala213 = "2.13.8"
+lazy val scala212 = "2.12.20"
+lazy val scala213 = "2.13.15"
 lazy val defaultScalaVersion = sys.env.get("SCALA_VERSION") match {
   case Some("2.13") => scala213
   case _ => scala212
