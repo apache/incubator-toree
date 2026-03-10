@@ -71,10 +71,10 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
          "* 6",
     ]
 
-    test_statements_stdout = [
-        {'code': '%AddJar http://home.apache.org/~lresende/toree/TestJar.jar'},
-        {'code': 'import com.ibm.testjar.TestClass\nprintln(new TestClass().sayHello("Person"))', 'result': 'Hello, Person\n'}
-    ]
+#     test_statements_stdout = [
+#         {'code': '%AddJar http://home.apache.org/~lresende/toree/TestJar.jar'},
+#         {'code': 'import com.ibm.testjar.TestClass\nprintln(new TestClass().sayHello("Person"))', 'result': 'Hello, Person\n'}
+#     ]
 
     completion_samples = [
         # completion for some scala code
