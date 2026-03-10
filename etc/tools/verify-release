@@ -35,8 +35,20 @@ results="Signature And Checksum Audit:"
 for directory in "$@"
 do
 	
-	# For all the files in the directory which are not signatures or checksums
-	for file_to_verify in `find ${FWDIR}/${directory} -type f -name toree-* -not -name *.asc -not -name *.md5 -not -name *.sha512 -maxdepth 1`; do
+	# All the release artifacts in the directory which are not signatures or checksums
+	artifacts=`find "${FWDIR}/${directory}" -maxdepth 1 -type f \( -name 'toree-*' -o -name 'apache-toree-*' \) -not -name '*.asc' -not -name '*.md5' -not -name '*.sha512' 2> /dev/null`
+
+	# A directory with nothing to verify must not be reported as a successful
+	# audit, otherwise a renamed or missing artifact passes silently
+	if [[ -z "${artifacts}" ]]; then
+		echo "ERROR: No release artifacts found in ${directory}"
+		results="${results}\n${FWDIR}/${directory}"
+		results="${results}\n\tx no release artifacts found"
+		failure=true
+		continue
+	fi
+
+	for file_to_verify in ${artifacts}; do
 		results="${results}\n${file_to_verify}"
 		 
 		# Verify the signature exists
@@ -99,7 +111,7 @@ do
 done
 
 
-printf "${results}\n"
+printf '%b\n' "${results}"
 
 if [ "${failure}" = true ]; then
 	exit 1

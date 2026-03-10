@@ -73,10 +73,14 @@ To build and package up Toree, run
 make release
 ```
 
-This results in 2 packages.
+This results in 4 artifacts, where `<VERSION>` is the full release version
+(for example `0.6.0-incubating`) and `<BASE_VERSION>` is that same version
+without the `-incubating` suffix.
 
-- `./dist/toree-<VERSION>-binary-release.tar.gz` is a simple package that contains JAR and executable
-- `./dist/toree-<VERSION>.tar.gz` is a `pip` installable package that adds Toree as a Jupyter kernel.
+- `./dist/apache-toree-src/apache-toree-<VERSION>-src.tar.gz` is the source release.
+- `./dist/apache-toree-bin/apache-toree-<VERSION>-bin.tar.gz` is a simple package that contains the JAR and executable.
+- `./dist/toree-pip/toree-<BASE_VERSION>.tar.gz` is a `pip` installable package that adds Toree as a Jupyter kernel, published to PyPI as `toree`.
+- `./dist/apache-toree-pip/apache-toree-<BASE_VERSION>.tar.gz` is the same `pip` package, published to PyPI as `apache-toree`.
 
 NOTE: `make release` uses `docker`. Please refer to `docker` installation instructions for your system.
 
