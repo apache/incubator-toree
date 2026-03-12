@@ -26,7 +26,7 @@ RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
     npm install -g bower
 
 # for Apache Spark demos
-ENV APACHE_SPARK_VERSION 3.4.4
+ENV APACHE_SPARK_VERSION 3.5.8
 ARG SCALA_VERSION=2.12
 
 RUN apt-get -y update && \
@@ -62,7 +62,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ENV SPARK_HOME /usr/local/spark
-ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9.5-src.zip
+ENV PYTHONPATH $SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9.7-src.zip
 ENV PYSPARK_PYTHON /home/main/anaconda2/envs/python3/bin/python
 ENV R_LIBS_USER $SPARK_HOME/R/lib
 
