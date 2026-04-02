@@ -19,23 +19,28 @@ Apache License 2.0
    com.fasterxml.jackson.core:jackson-core:2.14.2 -> https://github.com/FasterXML/jackson-core/blob/3.x/LICENSE
    com.fasterxml.jackson.core:jackson-databind:2.14.2 -> https://github.com/FasterXML/jackson-databind/blob/2.x/LICENSE
    com.fasterxml.jackson.core:jackson-annotations:2.14.2 -> https://github.com/FasterXML/jackson-annotations/blob/2.x/LICENSE
+   com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4 -> https://github.com/FasterXML/jackson-modules-java8/blob/2.x/LICENSE
+   com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4 -> https://github.com/FasterXML/jackson-modules-java8/blob/2.x/LICENSE
    com.typesafe:config:1.4.3 -> https://github.com/lightbend/config/blob/master/LICENSE-2.0.txt
    com.typesafe.play:play-json_2.12:2.9.4 -> https://github.com/playframework/play-json/blob/master/LICENSE
    com.typesafe.play:play-functional_2.12:2.9.4
    commons-logging:commons-logging:1.1.3 -> https://github.com/apache/commons-logging/blob/trunk/LICENSE.txt
    io.get-coursier:coursier-cache_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
    io.get-coursier:coursier_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
-   io.github.alexarchambault:windows-ansi -> https://github.com/alexarchambault/windows-ansi/blob/master/LICENSE
+   io.get-coursier:coursier-core_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
+   io.get-coursier:coursier-util_2.12:2.0.0 -> https://github.com/coursier/coursier/blob/master/LICENSE
+   io.github.alexarchambault.windows-ansi:windows-ansi:0.0.3 -> https://github.com/alexarchambault/windows-ansi/blob/master/LICENSE
    joda-time:joda-time:2.10.1 -> https://github.com/JodaOrg/joda-time/blob/master/LICENSE.txt
-   com.milessabin:shapeless_2.12 -> https://github.com/milessabin/shapeless/blob/main/LICENSE
+   com.chuusai:shapeless_2.12:2.3.3 -> https://github.com/milessabin/shapeless/blob/main/LICENSE
    org.fusesource.jansi:jansi -> https://github.com/fusesource/jansi/blob/master/license.txt
    org.fusesource.hawtjni:hawtjni-runtime (Apache-2.0 OR EPL-1.0) -> https://github.com/fusesource/hawtjni/blob/master/license.txt
    org.springframework:spring-core:5.2.2.RELEASE -> https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt
+   org.springframework:spring-jcl:5.2.2.RELEASE -> https://github.com/spring-projects/spring-framework/blob/main/LICENSE.txt
    org.apache.commons:commons-exec:1.3 -> https://github.com/apache/commons-exec/blob/trunk/LICENSE.txt
    org.scala-lang.modules:scala-collection-compat_2.12:2.0.0 -> https://github.com/scala/scala-collection-compat/blob/main/LICENSE
    org.scala-lang.modules:scala-java8-compat_2.12:1.0.2 -> https://github.com/scala/scala-java8-compat/blob/master/LICENSE
    org.scala-lang.modules:scala-xml_2.12:1.3.0 -> https://github.com/scala/scala-xml/blob/master/LICENSE.md
-   org.scala-lang:scala-reflect:2.12.17 -> http://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
+   org.scala-lang:scala-reflect:2.12.17 -> https://www.scala-lang.org/license.html and licenses/LICENSE-scala.txt
    org.typelevel:macro-compat_2.12:1.1.1 -> https://github.com/milessabin/macro-compat/blob/master/LICENSE
 
 ========================================================================
@@ -48,17 +53,18 @@ MPL v2
 BSD-like
 ========================================================================
 
-   io.argonaut:argonaut_2.12 (BSD-3-Clause) -> https://github.com/argonaut-io/argonaut/blob/master/LICENSE and licenses/LICENSE-argonaut.txt
-   com.neilalexander:jnacl (BSD-2-Clause) -> https://github.com/neilalexander/jnacl/blob/master/LICENSE and licenses/LICENSE-jnacl.txt
-   asm:asm-commons:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
-   asm:asm-tree:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
-   asm:asm-util:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
-   asm:asm:7.1 -> http://asm.ow2.org/license.html and licenses/LICENSE-asm.txt
+   com.github.alexarchambault:argonaut-shapeless_6.2_2.12:1.2.0-M12 (BSD-3-Clause) -> https://github.com/alexarchambault/argonaut-shapeless/blob/master/LICENSE
+   eu.neilalexander:jnacl:1.0.0 (BSD-2-Clause) -> https://github.com/neilalexander/jnacl/blob/master/LICENSE and licenses/LICENSE-jnacl.txt
+   org.ow2.asm:asm-analysis:7.1 -> https://gitlab.ow2.org/asm/asm/-/blob/master/LICENSE.txt and licenses/LICENSE-asm.txt
+   org.ow2.asm:asm-commons:7.1 -> https://gitlab.ow2.org/asm/asm/-/blob/master/LICENSE.txt and licenses/LICENSE-asm.txt
+   org.ow2.asm:asm-tree:7.1 -> https://gitlab.ow2.org/asm/asm/-/blob/master/LICENSE.txt and licenses/LICENSE-asm.txt
+   org.ow2.asm:asm-util:7.1 -> https://gitlab.ow2.org/asm/asm/-/blob/master/LICENSE.txt and licenses/LICENSE-asm.txt
+   org.ow2.asm:asm:7.1 -> https://gitlab.ow2.org/asm/asm/-/blob/master/LICENSE.txt and licenses/LICENSE-asm.txt
    com.github.jupyter:jvm-repr:0.1.0 -> https://github.com/jupyter/jvm-repr/blob/master/LICENSE
 
 ========================================================================
 MIT license
 ========================================================================
 
-   net.sf.jopt-simple:jopt-simple:4.9 -> https://pholser.github.io/jopt-simple/license.html and licenses/LICENSE-jopt-simple.txt
-   org.slf4j:slf4j-api:1.7.32 -> http://www.slf4j.org/license.html and licenses/LICENSE-slf4j.txt
+   net.sf.jopt-simple:jopt-simple:4.9 -> https://github.com/jopt-simple/jopt-simple/blob/jopt-simple-4.9/LICENSE.txt and licenses/LICENSE-jopt-simple.txt
+   org.slf4j:slf4j-api:2.0.16 -> https://www.slf4j.org/license.html and licenses/LICENSE-slf4j.txt
