@@ -23,7 +23,7 @@ FROM jupyter/all-spark-notebook
 USER root
 
 # Spark dependencies
-ARG APACHE_SPARK_VERSION=3.4.4
+ARG APACHE_SPARK_VERSION=3.5.8
 ARG SCALA_VERSION=2.12
 
 RUN JAVA_8=`update-alternatives --list java | grep java-1.8.0-openjdk` || echo $JAVA_8 && \
