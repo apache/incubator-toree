@@ -207,7 +207,7 @@ echo "RC                   ==> $RELEASE_RC"
 echo "Tag                  ==> $RELEASE_TAG"
 echo "Release staging dir  ==> $RELEASE_STAGING_FOLDER"
 if [ "$DRY_RUN" ]; then
-   echo "dry run ?           ==> true"
+   echo "dry run ?            ==> true"
 fi
 echo "  "
 echo "Deploying to :"
@@ -244,7 +244,10 @@ if [[ "$RELEASE_PREPARE" == "true" ]]; then
     git_tag_hash=`git rev-parse --short HEAD`
     sed -i .bak "s@^BASE_VERSION.*@BASE_VERSION?=$DEVELOPMENT_VERSION@g" Makefile
     git commit Makefile -m"Prepare for next development interaction $DEVELOPMENT_VERSION"
-    if [ -z "$DRY_RUN" ]; then
+    echo "Created release tag $RELEASE_TAG at git hash $git_tag_hash"
+    if [ -n "$DRY_RUN" ]; then
+        echo "DRY RUN: Skipping git push"
+    else
         git push
         git push --tags
     fi
@@ -264,8 +267,8 @@ if [[ "$RELEASE_PREPARE" == "true" ]]; then
         mkdir -p svn-toree/$RELEASE_STAGING_FOLDER/toree-pip
         mkdir -p svn-toree/$RELEASE_STAGING_FOLDER/apache-toree-pip
 
-        cp toree/dist/toree-bin/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/toree
-        cp toree/dist/toree-src/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/toree
+        cp toree/dist/apache-toree-bin/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/toree
+        cp toree/dist/apache-toree-src/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/toree
         cp toree/dist/toree-pip/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/toree-pip
         cp -r toree/dist/toree-pip/toree.egg-info svn-toree/$RELEASE_STAGING_FOLDER/toree-pip/
         cp toree/dist/apache-toree-pip/*.tar.gz svn-toree/$RELEASE_STAGING_FOLDER/apache-toree-pip
