@@ -165,7 +165,11 @@ dist/toree-legal/DISCLAIMER:
 dist/toree-legal: dist/toree-legal/LICENSE dist/toree-legal/NOTICE dist/toree-legal/DISCLAIMER
 	@cp -R etc/legal/licenses dist/toree-legal/.
 
-dist/toree: dist/toree/VERSION dist/toree/logo-64x64.png dist/toree-legal dist/toree/lib dist/toree/bin RELEASE_NOTES.md
+dist/toree/toree-assembly-$(VERSION).pom: etc/templates/toree-assembly-pom.xml
+	@mkdir -p dist/toree
+	@sed 's/@VERSION@/$(VERSION)/g' etc/templates/toree-assembly-pom.xml > dist/toree/toree-assembly-$(VERSION).pom
+
+dist/toree: dist/toree/VERSION dist/toree/logo-64x64.png dist/toree-legal dist/toree/lib dist/toree/bin dist/toree/toree-assembly-$(VERSION).pom RELEASE_NOTES.md
 	@cp -R dist/toree-legal/* dist/toree
 	@cp RELEASE_NOTES.md dist/toree/RELEASE_NOTES.md
 

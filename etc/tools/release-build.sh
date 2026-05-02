@@ -295,7 +295,7 @@ if [[ "$RELEASE_PREPARE" == "true" ]]; then
         svn ci -m"Apache Toree $RELEASE_STAGING_FOLDER"
 
         cd "$BASE_DIR/target"
-        mvn gpg:sign-and-deploy-file -DgroupId=org.apache.toree -DartifactId=toree-assembly -Dversion=$RELEASE_VERSION-incubating -Dpackaging=jar -Dfile=toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar -DrepositoryId=apache.releases.https -Durl=https://repository.apache.org/service/local/staging/deploy/maven2 -Dpassphrase=$GPG_PASSPHRASE
+        mvn gpg:sign-and-deploy-file -DgroupId=org.apache.toree -DartifactId=toree-assembly -Dversion=$RELEASE_VERSION-incubating -Dpackaging=jar -Dfile=toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar -DpomFile=toree/dist/toree/toree-assembly-$RELEASE_VERSION-incubating.pom -DrepositoryId=apache.releases.https -Durl=https://repository.apache.org/service/local/staging/deploy/maven2 -Dpassphrase=$GPG_PASSPHRASE
     fi
 
     cd "$BASE_DIR" #exit target
@@ -314,7 +314,7 @@ if [[ "$RELEASE_PUBLISH" == "true" ]]; then
     make clean dist release
 
     cd "$BASE_DIR/target"
-    mvn gpg:sign-and-deploy-file -DgroupId=org.apache.toree -DartifactId=toree-assembly -Dversion=$RELEASE_VERSION-incubating -Dpackaging=jar -Dfile=toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar -DrepositoryId=apache.releases.https -Durl=https://repository.apache.org/service/local/staging/deploy/maven2 -Dpassphrase=$GPG_PASSPHRASE
+    mvn gpg:sign-and-deploy-file -DgroupId=org.apache.toree -DartifactId=toree-assembly -Dversion=$RELEASE_VERSION-incubating -Dpackaging=jar -Dfile=toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar -DpomFile=toree/dist/toree/toree-assembly-$RELEASE_VERSION-incubating.pom -DrepositoryId=apache.releases.https -Durl=https://repository.apache.org/service/local/staging/deploy/maven2 -Dpassphrase=$GPG_PASSPHRASE
 
     cd "$BASE_DIR" #exit target
 
