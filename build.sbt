@@ -101,7 +101,15 @@ ThisBuild / packageBin / mappings := Seq(
   file("LICENSE") -> "LICENSE",
   file("NOTICE") -> "NOTICE"
 )
-ThisBuild / licenses := Seq("Apache 2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+ThisBuild / description := "Apache Toree is a Jupyter Notebook kernel that provides interactive " +
+  "applications to connect to and use Apache Spark using Scala language. " +
+  "Apache Toree is an effort undergoing incubation at the Apache Software Foundation (ASF), " +
+  "sponsored by the Apache Incubator PMC. Incubation is required of all newly accepted projects " +
+  "until a further review indicates that the infrastructure, communications, and decision making " +
+  "process have stabilized in a manner consistent with other successful ASF projects. While " +
+  "incubation status is not necessarily a reflection of the completeness or stability of the code, " +
+  "it does indicate that the project has yet to be fully endorsed by the ASF."
+ThisBuild / licenses := Seq("Apache License, Version 2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / pomExtra := {
   <parent>
     <groupId>org.apache</groupId>
