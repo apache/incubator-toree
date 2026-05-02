@@ -101,20 +101,29 @@ ThisBuild / packageBin / mappings := Seq(
   file("LICENSE") -> "LICENSE",
   file("NOTICE") -> "NOTICE"
 )
-ThisBuild / licenses := Seq("Apache 2" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+// The incubation disclaimer is read from DISCLAIMER rather than repeated here, so
+// the published POMs cannot drift from the file the ASF requires us to ship. It is
+// wrapped for readability in the file, so collapse the wrapping for POM metadata.
+ThisBuild / description := {
+  val disclaimer = IO.read((ThisBuild / baseDirectory).value / "DISCLAIMER")
+    .replaceAll("\\s+", " ")
+    .trim
+  "Apache Toree is a Jupyter Notebook kernel that provides interactive " +
+    "applications to connect to and use Apache Spark using Scala language. " +
+    disclaimer
+}
+ThisBuild / licenses := Seq("Apache License, Version 2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / pomExtra := {
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>23</version>
+    <version>39</version>
   </parent>
-  <url>http://toree.apache.org/</url>
+  <url>https://toree.apache.org/</url>
   <scm>
-    <url>git@github.com:apache/incubator-toree.git</url>
-    <connection>scm:git:git@github.com:apache/incubator-toree.git</connection>
-    <developerConnection>
-      scm:git:https://gitbox.apache.org/repos/asf/incubator-toree.git
-    </developerConnection>
+    <url>https://github.com/apache/incubator-toree</url>
+    <connection>scm:git:https://gitbox.apache.org/repos/asf/incubator-toree.git</connection>
+    <developerConnection>scm:git:git@github.com:apache/incubator-toree.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 }
