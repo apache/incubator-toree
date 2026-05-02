@@ -75,8 +75,8 @@ make release
 
 This results in 2 packages.
 
-- `./dist/toree-<VERSION>-binary-release.tar.gz` is a simple package that contains JAR and executable
-- `./dist/toree-<VERSION>.tar.gz` is a `pip` installable package that adds Toree as a Jupyter kernel.
+- `./dist/apache-toree-<VERSION>-bin.tar.gz` is a simple package that contains JAR and executable
+- `./dist/toree-<VERSION>.tar.gz` and `./dist/apache-toree-<VERSION>.tar.gz` are `pip` installable packages that add Toree as a Jupyter kernel.
 
 NOTE: `make release` uses `docker`. Please refer to `docker` installation instructions for your system.
 

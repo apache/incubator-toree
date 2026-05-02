@@ -35,6 +35,14 @@
 * Update AddJar command to support Google cloud storage
 * Fire postRunCell event after cell execution
 
+### Breaking Changes
+
+* Release artifact naming has been updated for Apache compliance:
+  - Binary packages: `toree-<VERSION>-bin.tar.gz` → `apache-toree-<VERSION>-bin.tar.gz`
+  - Source packages: `toree-<VERSION>-src.tar.gz` → `apache-toree-<VERSION>-src.tar.gz`
+  - Internal archive prefix: `toree-<VERSION>/` → `apache-toree-<VERSION>/`
+  - pip packages remain as `toree` and `apache-toree` (no change)
+
 ## 0.5.0-incubating (2022.04)
 
 * Update to Apache Spark 3.0.3
