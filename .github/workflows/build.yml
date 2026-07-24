@@ -52,7 +52,7 @@ jobs:
         java-version: ${{ matrix.java }}
         cache: sbt
     - name: Install sbt
-      uses: sbt/setup-sbt@af116cce31c00823d3903ce687f9cda3a4f19f1b # v1.2.1
+      uses: sbt/setup-sbt@6444f4c8111de4b9059c3975def104b03cfaa5f0 # v1.5.2
     - name: Build
       run: |
         make SCALA_VERSION=${{ matrix.scala }} clean release
