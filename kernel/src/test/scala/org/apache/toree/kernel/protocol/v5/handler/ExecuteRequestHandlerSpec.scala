@@ -18,7 +18,6 @@
 package org.apache.toree.kernel.protocol.v5.handler
 
 import java.io.OutputStream
-import java.util.concurrent.atomic.AtomicInteger
 
 import org.apache.pekko.actor._
 import org.apache.pekko.testkit.{ImplicitSender, TestKit, TestProbe}
@@ -36,8 +35,6 @@ import play.api.libs.json.Json
 import org.mockito.Mockito._
 import org.mockito.ArgumentMatchers._
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent._
 import test.utils.MaxAkkaTestTimeout
 class ExecuteRequestHandlerSpec extends TestKit(
   ActorSystem(
@@ -161,36 +158,24 @@ class ExecuteRequestHandlerSpec extends TestKit(
         handlerActor ! MockExecuteRequestKernelMessage
         replyToHandlerWithOkAndResult()
 
-        val msgCount = new AtomicInteger(0)
-        var statusMsgNum = -1
-        var statusReceived = false
-
-        val f1 = Future {
-          kernelMessageRelayProbe.fishForMessage(MaxAkkaTestTimeout) {
-            case KernelMessage(_, _, header, _, _, _) =>
-              if (header.msg_type == ExecuteResult.toTypeString &&
-                    !statusReceived)
-                msgCount.incrementAndGet()
-              else if (header.msg_type == ExecuteReply.toTypeString &&
-                    !statusReceived)
-                msgCount.incrementAndGet()
-              statusReceived || (msgCount.get() >= 2)
-          }
+        // BaseHandler only dispatches the Idle status from processFuture's
+        // onComplete callback, and ExecuteRequestHandler sends the
+        // ExecuteReply/ExecuteResult messages to the relay synchronously
+        // inside that same future chain (see handleExecuteRequest's
+        // `andThen`). So by the time Idle is observed here, both relay
+        // messages are guaranteed to already be sitting in
+        // kernelMessageRelayProbe's mailbox - no need to race two probes
+        // on separate threads to prove the ordering.
+        statusDispatchProbe.fishForMessage(MaxAkkaTestTimeout) {
+          case (status, _) => status == KernelStatusType.Idle
         }
 
-        val f2 = Future {
-          statusDispatchProbe.fishForMessage(MaxAkkaTestTimeout) {
-            case (status, header) =>
-              if (status == KernelStatusIdle.toString)
-                statusReceived = true
-                statusMsgNum = msgCount.get()
-            statusReceived || (msgCount.get() >= 2)
-          }
+        val relayedTypes = kernelMessageRelayProbe.receiveWhile(200.millis) {
+          case KernelMessage(_, _, header, _, _, _) => header.msg_type
         }
-        val fs = f1.zip(f2)
-        Await.ready(fs, 3 * MaxAkkaTestTimeout)
 
-        statusMsgNum should equal(2)
+        relayedTypes should contain(ExecuteResult.toTypeString)
+        relayedTypes should contain(ExecuteReply.toTypeString)
       }
 
       it("should send an execute input message") {
