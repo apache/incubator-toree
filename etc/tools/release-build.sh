@@ -50,7 +50,7 @@ OPTIONS
 
 A GPG passphrase is expected as an environment variable
 
-GPG_PASSPHRASE - Passphrase for GPG key used to sign release
+MAVEN_GPG_PASSPHRASE - Passphrase for GPG key used to sign release
 
 EXAMPLES
 
@@ -136,12 +136,21 @@ while [ "${1+defined}" ]; do
 done
 
 
-if [[ -z "$GPG_PASSPHRASE" ]]; then
-    echo 'The environment variable GPG_PASSPHRASE is not set. Enter the passphrase to'
+# Pinned so the release is reproducible and so passphraseEnvName (3.2.0+) is available.
+MVN_GPG_PLUGIN="org.apache.maven.plugins:maven-gpg-plugin:3.2.8"
+
+if [[ -z "$MAVEN_GPG_PASSPHRASE" ]]; then
+    echo 'The environment variable MAVEN_GPG_PASSPHRASE is not set. Enter the passphrase to'
     echo 'unlock the GPG signing key that will be used to sign the release!'
     echo
-    stty -echo && printf "GPG passphrase: " && read GPG_PASSPHRASE && printf '\n' && stty echo
-  fi
+    stty -echo && printf "GPG passphrase: " && read MAVEN_GPG_PASSPHRASE && printf '\n' && stty echo
+fi
+# maven-gpg-plugin reads the passphrase from this variable, so it must be exported
+# for the deploy commands below; a value inherited from the caller already is.
+# MAVEN_GPG_PASSPHRASE is the plugin's default passphraseEnvName, so no extra
+# configuration is needed to point it here. See:
+# https://github.com/apache/maven-gpg-plugin/blob/76316ce61699afaec7a298fd279e1c9133c38ac6/src/main/java/org/apache/maven/plugins/gpg/AbstractGpgMojo.java#L45
+export MAVEN_GPG_PASSPHRASE
 
 if [[ "$RELEASE_PREPARE" == "true" && -z "$RELEASE_VERSION" ]]; then
     echo "ERROR: --releaseVersion must be passed as an argument to run this script"
@@ -295,7 +304,16 @@ if [[ "$RELEASE_PREPARE" == "true" ]]; then
         svn ci -m"Apache Toree $RELEASE_STAGING_FOLDER"
 
         cd "$BASE_DIR/target"
-        mvn gpg:sign-and-deploy-file -DgroupId=org.apache.toree -DartifactId=toree-assembly -Dversion=$RELEASE_VERSION-incubating -Dpackaging=jar -Dfile=toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar -DrepositoryId=apache.releases.https -Durl=https://repository.apache.org/service/local/staging/deploy/maven2 -Dpassphrase=$GPG_PASSPHRASE
+        # The passphrase reaches the plugin through MAVEN_GPG_PASSPHRASE rather than the
+        # command line, where it would be visible to any local user through ps.
+        mvn "$MVN_GPG_PLUGIN:sign-and-deploy-file" \
+            -DgroupId=org.apache.toree \
+            -DartifactId=toree-assembly \
+            -Dversion="$RELEASE_VERSION-incubating" \
+            -Dpackaging=jar \
+            -Dfile="toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar" \
+            -DrepositoryId=apache.releases.https \
+            -Durl=https://repository.apache.org/service/local/staging/deploy/maven2
     fi
 
     cd "$BASE_DIR" #exit target
@@ -314,7 +332,16 @@ if [[ "$RELEASE_PUBLISH" == "true" ]]; then
     make clean dist release
 
     cd "$BASE_DIR/target"
-    mvn gpg:sign-and-deploy-file -DgroupId=org.apache.toree -DartifactId=toree-assembly -Dversion=$RELEASE_VERSION-incubating -Dpackaging=jar -Dfile=toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar -DrepositoryId=apache.releases.https -Durl=https://repository.apache.org/service/local/staging/deploy/maven2 -Dpassphrase=$GPG_PASSPHRASE
+    # The passphrase reaches the plugin through MAVEN_GPG_PASSPHRASE rather than the
+    # command line, where it would be visible to any local user through ps.
+    mvn "$MVN_GPG_PLUGIN:sign-and-deploy-file" \
+        -DgroupId=org.apache.toree \
+        -DartifactId=toree-assembly \
+        -Dversion="$RELEASE_VERSION-incubating" \
+        -Dpackaging=jar \
+        -Dfile="toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar" \
+        -DrepositoryId=apache.releases.https \
+        -Durl=https://repository.apache.org/service/local/staging/deploy/maven2
 
     cd "$BASE_DIR" #exit target
 
