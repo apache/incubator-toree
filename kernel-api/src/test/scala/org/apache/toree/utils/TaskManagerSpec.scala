@@ -136,6 +136,11 @@ class TaskManagerSpec extends AnyFunSpec with Matchers with MockitoSugar
 
         // Fill up the task manager and then add another task to the queue
         taskManager.add { while (true) { Thread.sleep(1000) } }
+
+        // Wait until the first task is executing before queueing the second
+        // one, so the size reflects one executing and one queued task
+        while (!taskManager.isExecutingTask) Thread.sleep(1)
+
         taskManager.add { while (true) { Thread.sleep(1000) } }
 
         taskManager.size should be (2)
