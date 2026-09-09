@@ -36,7 +36,10 @@ object Dependencies {
   val coursier = "io.get-coursier" %% "coursier" % coursierVersion // Apache v2
   val coursierCache = "io.get-coursier" %% "coursier-cache" % coursierVersion // Apache v2
 
-  val ivy = "org.apache.ivy" % "ivy" % "2.5.1" // Apache v2
+  // NOTE: Apache Ivy is deliberately not declared here. IvyDependencyDownloader
+  // imports org.apache.ivy, but those classes come transitively from spark-core,
+  // which is a "provided" dependency, so Ivy is not bundled in the assembly and
+  // must not be listed in etc/legal. See etc/legal/README.md.
 
   // use the same jackson version in test than the one provided at runtime by Spark 3.4.x
   val jacksonDatabind = "com.fasterxml.jackson.core" % "jackson-databind" % "2.14.2" // Apache v2
@@ -57,7 +60,10 @@ object Dependencies {
   val scalaTestMockito = "org.scalatestplus" %% "mockito-4-11" % "3.2.16.0" // Apache v2
   val mockitoInline = "org.mockito" % "mockito-inline" % "4.11.0" // MIT
 
-  val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.6" // MIT
+  // pekko-slf4j 1.1.5 requires 2.0.16 and evicts anything lower; keep this in
+  // sync with what actually resolves, since etc/legal/LICENSE_extras must
+  // record the resolved version
+  val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.16" // MIT
 
   val sparkVersion = settingKey[String]("Version of Apache Spark to use in Toree") // defined in root build
   val sparkCore = Def.setting{ "org.apache.spark" %% "spark-core" % sparkVersion.value } // Apache v2
