@@ -17,6 +17,27 @@
 # limitations under the License.
 #
 
+#
+# Verifies that source files in this repository carry an ASF license header,
+# by running Apache RAT (Release Audit Tool) over the working tree.
+#
+# Scope: SOURCE HEADERS ONLY. Despite the name, this script does not look at
+# third-party dependencies, and passing it says nothing about whether the
+# LICENSE and NOTICE shipped with the binary distribution accurately describe
+# what the assembly jar bundles. That is a separate concern, documented in
+# etc/legal/README.md, and is currently a manual audit.
+#
+# Usage:   etc/tools/check-licenses
+#
+# Files exempt from the header requirement are listed in
+# etc/tools/.rat-excludes. Add an entry there for generated files and for
+# formats that cannot carry comments, not to silence a fixable warning.
+#
+# The RAT jar is downloaded on first run and cached in etc/tools/.
+#
+# Output:  target/rat-results.txt
+# Exit:    0 if every file has a header, 1 if any file lacks one or RAT failed.
+#
 
 acquire_rat_jar () {
 
