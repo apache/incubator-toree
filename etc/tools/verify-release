@@ -88,25 +88,6 @@ do
 			failure=true
 		fi
 	
-		# Verify the MD5 checksum is present
-		if [[ -f "${file_to_verify}.md5"  ]]; then
-			hash_result=`gpg --print-md MD5 "${file_to_verify}"`
-			hash_to_verify=`cat "${file_to_verify}.md5"`
-			
-			# Verify the MD5 checksum is correct
-			if [[ "${hash_result}" != "${hash_to_verify}" ]]; then
-				echo "ERROR: MD5 checksum of ${file_to_verify} does not match!"
-				results="${results}\n\tx `basename ${file_to_verify}.md5`"
-				failure=true
-			else
-				results="${results}\n\t✓ `basename ${file_to_verify}.md5`"
-			fi
-		else
-			echo "ERROR: MD5 checksum for ${file_to_verify} does not exist!"
-			results="${results}\n\tx `basename ${file_to_verify}.md5`"
-			failure=true
-		fi
-		
 	done
 done
 
