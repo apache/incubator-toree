@@ -46,6 +46,11 @@
   - Distribution directories: `dist/toree-bin` and `dist/toree-src` →
     `dist/apache-toree-bin` and `dist/apache-toree-src`
   - pip packages remain as `toree` and `apache-toree` (no change)
+  - Staging layout on dist.apache.org: the `toree` directory holding the binary
+    and source artifacts is now `apache-toree`
+* Release artifacts no longer ship `.md5` checksums, which the ASF has
+  deprecated for release distribution. `.asc` signatures and `.sha512`
+  checksums are unchanged.
 
 ## 0.5.0-incubating (2022.04)
 

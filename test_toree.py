@@ -71,10 +71,10 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
          "* 6",
     ]
 
-#     test_statements_stdout = [
-#         {'code': '%AddJar http://home.apache.org/~lresende/toree/TestJar.jar'},
-#         {'code': 'import com.ibm.testjar.TestClass\nprintln(new TestClass().sayHello("Person"))', 'result': 'Hello, Person\n'}
-#     ]
+    test_statements_stdout = [
+        {'code': '%AddJar http://home.apache.org/~lresende/toree/TestJar.jar'},
+        {'code': 'import com.ibm.testjar.TestClass\nprintln(new TestClass().sayHello("Person"))', 'result': 'Hello, Person\n'}
+    ]
 
     completion_samples = [
         # completion for some scala code
@@ -89,6 +89,9 @@ class ToreeScalaKernelTests(jupyter_kernel_test.KernelTests):
         },
     ]
 
+    @unittest.skip("AddJar fixture http://home.apache.org/~lresende/toree/TestJar.jar "
+                   "returns 404; re-enable once the jar is served from a location the "
+                   "project controls")
     def test_scala_stdout(self):
         '''Asserts test_statements execute correctly meaning the last message is the expected result'''
         for sample in self.test_statements_stdout:

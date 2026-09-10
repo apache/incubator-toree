@@ -260,13 +260,13 @@ dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz: dist/toree
 
 pip-release: dist/toree-pip/toree-$(BASE_VERSION).tar.gz dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
 
-dist/toree-pip/toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha512: dist/toree-pip/toree-$(BASE_VERSION).tar.gz
+dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha512: dist/toree-pip/toree-$(BASE_VERSION).tar.gz
 	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/toree-$(BASE_VERSION).tar.gz
 
-dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.md5 dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha512: dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
+dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha512: dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
 	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
 
-sign-pip: dist/toree-pip/toree-$(BASE_VERSION).tar.gz.md5 dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha512 dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.md5 dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha512
+sign-pip: dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha512 dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha512
 
 publish-pip: PYPI_REPO?=https://pypi.python.org/pypi
 publish-pip: PYPI_USER?=
@@ -299,10 +299,10 @@ dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz: dist/toree
 
 bin-release: dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz
 
-dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.md5 dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.asc dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.sha512: dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz
+dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.asc dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.sha512: dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz
 	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz
 
-sign-bin: dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.md5 dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.asc dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.sha512
+sign-bin: dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.asc dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.sha512
 
 publish-bin:
 
@@ -315,10 +315,10 @@ dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz:
 
 src-release: dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz
 
-dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.md5 dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.asc dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.sha512: dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz
+dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.asc dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.sha512: dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz
 	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz
 
-sign-src: dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.md5 dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.asc dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.sha512
+sign-src: dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.asc dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.sha512
 
 publish-src:
 
