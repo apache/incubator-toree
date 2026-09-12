@@ -36,7 +36,7 @@ IMAGE?=jupyter/all-spark-notebook:latest
 EXAMPLE_IMAGE?=apache/toree-examples
 TOREE_DEV_IMAGE?=apache/toree-dev
 GPG?=gpg
-GPG_PASSWORD?=
+MAVEN_GPG_PASSPHRASE?=
 BINDER_IMAGE?=apache/toree-binder
 DOCKER_WORKDIR?=/srv/toree
 DOCKER_ARGS?=
@@ -237,7 +237,7 @@ system-test: pip-release .toree-dev-image
 # Jars
 ################################################################################
 publish-jars:
-	@$(ENV_OPTS) GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) sbt publish-signed
+	@$(ENV_OPTS) MAVEN_GPG_PASSPHRASE='$(MAVEN_GPG_PASSPHRASE)' GPG=$(GPG) sbt publish-signed
 
 ################################################################################
 # PIP PACKAGE
@@ -279,10 +279,10 @@ dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz: dist/toree
 pip-release: dist/toree-pip/toree-$(BASE_VERSION).tar.gz dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
 
 dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha512: dist/toree-pip/toree-$(BASE_VERSION).tar.gz
-	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/toree-$(BASE_VERSION).tar.gz
+	@MAVEN_GPG_PASSPHRASE='$(MAVEN_GPG_PASSPHRASE)' GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/toree-$(BASE_VERSION).tar.gz
 
 dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha512: dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
-	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
+	@MAVEN_GPG_PASSPHRASE='$(MAVEN_GPG_PASSPHRASE)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
 
 sign-pip: dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha512 dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha512
 
@@ -318,7 +318,7 @@ dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz: dist/toree
 bin-release: dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz
 
 dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.asc dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.sha512: dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz
-	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz
+	@MAVEN_GPG_PASSPHRASE='$(MAVEN_GPG_PASSPHRASE)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz
 
 sign-bin: dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.asc dist/apache-toree-bin/apache-toree-$(VERSION)-bin.tar.gz.sha512
 
@@ -334,7 +334,7 @@ dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz:
 src-release: dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz
 
 dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.asc dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.sha512: dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz
-	@GPG_PASSWORD='$(GPG_PASSWORD)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz
+	@MAVEN_GPG_PASSPHRASE='$(MAVEN_GPG_PASSPHRASE)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz
 
 sign-src: dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.asc dist/apache-toree-src/apache-toree-$(VERSION)-src.tar.gz.sha512
 

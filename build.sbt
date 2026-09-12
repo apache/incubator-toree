@@ -90,7 +90,7 @@ ThisBuild / libraryDependencies ++= Seq(
 )
 
 // Publish settings
-ThisBuild / pgpPassphrase := Some(Properties.envOrElse("GPG_PASSWORD","").toArray)
+ThisBuild / pgpPassphrase := Some(Properties.envOrElse("MAVEN_GPG_PASSPHRASE","").toArray)
 ThisBuild / publishTo := {
   if (isSnapshot.value)
     Some("Apache Staging Repo" at "https://repository.apache.org/content/repositories/snapshots/")
