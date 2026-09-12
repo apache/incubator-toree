@@ -51,6 +51,9 @@
   - pip packages remain as `toree` and `apache-toree` (no change)
   - Staging layout on dist.apache.org: the `toree` directory holding the binary
     and source artifacts is now `apache-toree`
+* The GPG passphrase is read from `MAVEN_GPG_PASSPHRASE` throughout the release
+  tooling; the `GPG_PASSWORD` variable previously understood by the Makefile,
+  `sign-file` and the sbt build is no longer consulted.
 * Release artifacts no longer ship `.md5` checksums, which the ASF has
   deprecated for release distribution. `.asc` signatures and `.sha512`
   checksums are unchanged.
