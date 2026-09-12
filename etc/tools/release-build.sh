@@ -37,9 +37,10 @@ system. Artifacts are left in target/toree/dist/ for review.
 and tags, stages artifacts to Apache SVN dist/dev, and deploys the assembly
 jar to the Apache Maven staging repository.
 
---release-prepare --releaseVersion="0.6.0" --developmentVersion="0.7.0.dev0" [--releaseRc="rc1"] [--tag="v0.6.0-incubating-rc1"] [--gitCommitHash="a874b73"] [--dryRun]
+--release-prepare --releaseVersion="0.6.0" --developmentVersion="0.7.0.dev0" [--releaseRc="rc1"] [--tag="v0.6.0-incubating-rc1"] [--gitCommitHash="a874b73"] [--gitRepo="/path/to/repo"] [--dryRun]
 Prepare a release locally: clone, version bump, tag, and build all artifacts.
-Use --dryRun to test version bump logic without building.
+Use --dryRun to test version bump logic without building. Use --gitRepo to
+rehearse a release from a fork or a local clone before the change is on master.
 
 --release-publish --releaseVersion="0.6.0" [--releaseRc="rc1"] [--tag="v0.6.0-incubating-rc1"]
 Publish a previously prepared release. Requires --release-prepare to have been
@@ -51,7 +52,10 @@ OPTIONS
 --developmentVersion - Release identifier used for next development cycle
 --releaseRc          - Release RC identifier used when publishing, default 'rc1'
 --tag                - Release Tag identifier used when tagging the release, default 'v\$releaseVersion-incubating-\$releaseRc'
---gitCommitHash      - Commit to build from, default master HEAD (prepare only)
+--gitCommitHash      - Commit, branch or tag to build from, default master HEAD (prepare only)
+--gitRepo            - Repository to build from, default the ASF canonical repository.
+                       Accepts a local path, so release tooling changes can be
+                       rehearsed before they land on master (prepare only)
 --dryRun             - Dry run only, skips the build step (prepare only)
 
 A GPG passphrase is expected as an environment variable
@@ -63,6 +67,7 @@ EXAMPLES
 release-build.sh --release-prepare --releaseVersion="0.6.0" --developmentVersion="0.7.0.dev0"
 release-build.sh --release-prepare --releaseVersion="0.6.0" --developmentVersion="0.7.0.dev0" --releaseRc="rc1" --tag="v0.6.0-incubating-rc1"
 release-build.sh --release-prepare --releaseVersion="0.6.0" --developmentVersion="0.7.0.dev0" --releaseRc="rc1" --dryRun
+release-build.sh --release-prepare --releaseVersion="0.6.0" --developmentVersion="0.7.0.dev0" --gitRepo="$HOME/src/incubator-toree" --gitCommitHash="my-branch"
 
 release-build.sh --release-publish --releaseVersion="0.6.0"
 release-build.sh --release-publish --releaseVersion="0.6.0" --releaseRc="rc1"
@@ -99,6 +104,10 @@ while [ "${1+defined}" ]; do
       ;;
     --gitCommitHash)
       GIT_REF="${PARTS[1]}"
+      shift
+      ;;
+    --gitRepo)
+      GIT_REPO="${PARTS[1]}"
       shift
       ;;
     --gitTag)
@@ -180,8 +189,19 @@ if [[ "$RELEASE_PUBLISH" == "true" && "$DRY_RUN" ]]; then
     exit_with_usage
 fi
 
+if [[ "$RELEASE_PUBLISH" == "true" && -n "$GIT_REPO" ]]; then
+    echo "ERROR: --gitRepo not supported for --release-publish"
+    exit_with_usage
+fi
+
 # Commit ref to checkout when building
 GIT_REF=${GIT_REF:-master}
+
+# Repository to build from. A release must be cut from the ASF canonical
+# repository; an override exists so that changes to the release tooling itself
+# can be rehearsed against a fork or a local clone before they land on master.
+GIT_REPO_CANONICAL="https://gitbox.apache.org/repos/asf/incubator-toree.git"
+GIT_REPO=${GIT_REPO:-$GIT_REPO_CANONICAL}
 
 BASE_DIR=$(pwd)
 
@@ -206,6 +226,7 @@ echo "-------------------------------------------------------------"
 echo "------- Release configuration -------------------------------"
 echo "-------------------------------------------------------------"
 echo "Executing            ==> $GOAL"
+echo "Git repository       ==> $GIT_REPO"
 echo "Git reference        ==> $GIT_REF"
 echo "Release version      ==> $RELEASE_VERSION"
 echo "Full Release version ==> $FULL_RELEASE_VERSION"
@@ -220,6 +241,12 @@ echo "  "
 echo "Deploying to :"
 echo $RELEASE_STAGING_LOCATION
 echo "  "
+
+if [[ "$GIT_REPO" != "$GIT_REPO_CANONICAL" ]]; then
+    echo "WARNING: Building from $GIT_REPO rather than the ASF canonical repository."
+    echo "WARNING: The result is a rehearsal and must not be published as a release."
+    echo "  "
+fi
 
 function validate_dependency {
     if ! command -v "$1" &> /dev/null; then
@@ -279,7 +306,7 @@ function checkout_code {
     mkdir target
     cd target
     rm -rf toree
-    git clone https://gitbox.apache.org/repos/asf/incubator-toree.git toree
+    git clone "$GIT_REPO" toree
     cd toree
     git checkout $GIT_REF
     git_hash=`git rev-parse --short HEAD`
