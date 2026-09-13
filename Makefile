@@ -199,7 +199,7 @@ dev: dist .toree-dev-image
 		bash -c "jupyter lab --debug --ip=* --no-browser"
 
 define JUPYTER_COMMAND
-pip install toree-$(BASE_VERSION).tar.gz
+pip install toree-$(VERSION).tar.gz
 jupyter toree install --interpreters=Scala,SQL
 cd /srv/toree/etc/examples/notebooks
 jupyter lab --debug --ip=* --no-browser
@@ -242,8 +242,8 @@ publish-jars:
 ################################################################################
 # PIP PACKAGE
 ################################################################################
-dist/toree-pip/toree-$(BASE_VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
-dist/toree-pip/toree-$(BASE_VERSION).tar.gz: dist/toree
+dist/toree-pip/toree-$(VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
+dist/toree-pip/toree-$(VERSION).tar.gz: dist/toree
 	@mkdir -p dist/toree-pip
 	@cp -r dist/toree dist/toree-pip
 	@cp dist/toree/LICENSE dist/toree-pip/LICENSE
@@ -256,10 +256,12 @@ dist/toree-pip/toree-$(BASE_VERSION).tar.gz: dist/toree
 	printf "__version__ = '$(BASE_VERSION)'\n" >> dist/toree-pip/toree/_version.py
 	printf "__commit__ = '$(COMMIT)'\n" >> dist/toree-pip/toree/_version.py
 	@$(DOCKER) --user=root $(IMAGE) python setup.py sdist --dist-dir=.
-	@$(DOCKER) -p 8888:8888 --user=root	$(IMAGE) bash -c 'pip install toree-$(BASE_VERSION).tar.gz && jupyter toree install'
+	@mv dist/toree-pip/toree-$(BASE_VERSION).tar.gz dist/toree-pip/toree-$(VERSION).tar.gz
 
-dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/apache-toree-pip
-dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz: dist/toree
+	@$(DOCKER) -p 8888:8888 --user=root	$(IMAGE) bash -c 'pip install toree-$(VERSION).tar.gz && jupyter toree install'
+
+dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/apache-toree-pip
+dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz: dist/toree
 	@mkdir -p dist/apache-toree-pip
 	@cp -r dist/toree dist/apache-toree-pip
 	@cp dist/toree/LICENSE dist/apache-toree-pip/LICENSE
@@ -273,18 +275,20 @@ dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz: dist/toree
 	@printf "__commit__ = '$(COMMIT)'\n" >> dist/apache-toree-pip/toree/_version.py
 	@sed -i -e "s#name='toree'#name='apache-toree'#g" dist/apache-toree-pip/setup.py
 	@$(DOCKER) --user=root $(IMAGE) python setup.py sdist --dist-dir=.
-	@$(DOCKER) -p 8888:8888 --user=root	$(IMAGE) bash -c 'pip install apache-toree-$(BASE_VERSION).tar.gz && jupyter toree install'
+	@mv dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz
+
+	@$(DOCKER) -p 8888:8888 --user=root	$(IMAGE) bash -c 'pip install apache-toree-$(VERSION).tar.gz && jupyter toree install'
 
 
-pip-release: dist/toree-pip/toree-$(BASE_VERSION).tar.gz dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
+pip-release: dist/toree-pip/toree-$(VERSION).tar.gz dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz
 
-dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha512: dist/toree-pip/toree-$(BASE_VERSION).tar.gz
-	@MAVEN_GPG_PASSPHRASE='$(MAVEN_GPG_PASSPHRASE)' GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/toree-$(BASE_VERSION).tar.gz
+dist/toree-pip/toree-$(VERSION).tar.gz.asc dist/toree-pip/toree-$(VERSION).tar.gz.sha512: dist/toree-pip/toree-$(VERSION).tar.gz
+	@MAVEN_GPG_PASSPHRASE='$(MAVEN_GPG_PASSPHRASE)' GPG=$(GPG) etc/tools/./sign-file dist/toree-pip/toree-$(VERSION).tar.gz
 
-dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha512: dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
-	@MAVEN_GPG_PASSPHRASE='$(MAVEN_GPG_PASSPHRASE)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz
+dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz.asc dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz.sha512: dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz
+	@MAVEN_GPG_PASSPHRASE='$(MAVEN_GPG_PASSPHRASE)' GPG=$(GPG) etc/tools/./sign-file dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz
 
-sign-pip: dist/toree-pip/toree-$(BASE_VERSION).tar.gz.asc dist/toree-pip/toree-$(BASE_VERSION).tar.gz.sha512 dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.asc dist/apache-toree-pip/apache-toree-$(BASE_VERSION).tar.gz.sha512
+sign-pip: dist/toree-pip/toree-$(VERSION).tar.gz.asc dist/toree-pip/toree-$(VERSION).tar.gz.sha512 dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz.asc dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz.sha512
 
 publish-pip: PYPI_REPO?=https://pypi.python.org/pypi
 publish-pip: PYPI_USER?=
@@ -297,14 +301,14 @@ publish-pip: sign-pip
 		-v `pwd`:/srv/toree $(DOCKER_ARGS) \
 		$(IMAGE) bash -c '$(PYPIRC) pip install twine && \
 		python setup.py register -r $(PYPI_REPO) && \
-		twine upload -r pypi toree-$(BASE_VERSION).tar.gz toree-$(BASE_VERSION).tar.gz.asc'
+		twine upload -r pypi toree-$(VERSION).tar.gz toree-$(VERSION).tar.gz.asc'
 	@docker run -t --rm \
 		--workdir /srv/toree/dist/apache-toree-pip \
 		-e PYTHONPATH='/srv/toree' \
 		-v `pwd`:/srv/toree $(DOCKER_ARGS) \
 		$(IMAGE) bash -c '$(PYPIRC) pip install twine && \
 		python setup.py register -r $(PYPI_REPO) && \
-		twine upload -r pypi apache-toree-$(BASE_VERSION).tar.gz apache-toree-$(BASE_VERSION).tar.gz.asc'
+		twine upload -r pypi apache-toree-$(VERSION).tar.gz apache-toree-$(VERSION).tar.gz.asc'
 
 ################################################################################
 # BIN PACKAGE
