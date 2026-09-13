@@ -52,6 +52,7 @@ RUN=$(RUN_PREFIX)$(1)$(RUN_SUFFIX)
 ENV_OPTS:=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) SCALA_VERSION=$(SCALA_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)
 
 ASSEMBLY_JAR:=toree-assembly-$(VERSION)$(SNAPSHOT).jar
+ASSEMBLY_POM:=toree-assembly-$(VERSION)$(SNAPSHOT).pom
 
 help:
 	@echo '	'
@@ -165,7 +166,24 @@ dist/toree-legal/DISCLAIMER:
 dist/toree-legal: dist/toree-legal/LICENSE dist/toree-legal/NOTICE dist/toree-legal/DISCLAIMER
 	@cp -R etc/legal/licenses dist/toree-legal/.
 
-dist/toree: dist/toree/VERSION dist/toree/logo-64x64.png dist/toree-legal dist/toree/lib dist/toree/bin RELEASE_NOTES.md
+# The deployed POM is generated rather than hand-maintained so that the version
+# and the incubation disclaimer have a single source of truth. awk reads the
+# disclaimer as data, so no character in DISCLAIMER can break the substitution
+# the way it could in a sed replacement.
+dist/toree/$(ASSEMBLY_POM): etc/templates/toree-assembly-pom.xml DISCLAIMER
+	@mkdir -p dist/toree
+	@awk -v version='$(VERSION)$(SNAPSHOT)' ' \
+		$$0 == "@DISCLAIMER@" { \
+			while ((getline line < "DISCLAIMER") > 0) { \
+				if (line == "") print ""; else print "    " line \
+			} \
+			close("DISCLAIMER"); \
+			next \
+		} \
+		{ gsub(/@VERSION@/, version); print } \
+	' etc/templates/toree-assembly-pom.xml > dist/toree/$(ASSEMBLY_POM)
+
+dist/toree: dist/toree/VERSION dist/toree/logo-64x64.png dist/toree-legal dist/toree/lib dist/toree/bin dist/toree/$(ASSEMBLY_POM) RELEASE_NOTES.md
 	@cp -R dist/toree-legal/* dist/toree
 	@cp RELEASE_NOTES.md dist/toree/RELEASE_NOTES.md
 

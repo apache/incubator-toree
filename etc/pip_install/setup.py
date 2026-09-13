@@ -25,28 +25,32 @@ version_ns = {}
 with open(os.path.join(here, 'toree', '_version.py')) as f:
     exec(f.read(), {}, version_ns)
 
+# The incubation disclaimer is read from the DISCLAIMER file shipped alongside
+# this package rather than repeated here, so the PyPI metadata cannot drift from
+# the copy the ASF requires the distribution to carry. The file is indented to
+# match the surrounding literal. A missing DISCLAIMER must never fail an
+# install, so fall back to the summary line on its own.
+long_description = '''
+    This package will install Apache Toree as a Jupyter kernel.
+'''
+try:
+    with open(os.path.join(here, 'DISCLAIMER')) as f:
+        disclaimer = f.read().strip()
+    long_description += '\n' + '\n'.join(
+        '    ' + line if line.strip() else '' for line in disclaimer.splitlines()
+    ) + '\n    '
+except OSError:
+    pass
+
 setup_args = dict(
     name='toree',
     author='Apache Toree Development Team',
     author_email='dev@toree.apache.org',
     description='A Jupyter kernel for enabling remote applications to interaction with Apache Spark.',
-    long_description = '''
-    This package will install Apache Toree as a Jupyter kernel.
-
-    Apache Toree is an effort undergoing incubation at the Apache Software
-    Foundation (ASF), sponsored by the Apache Incubator PMC.
-
-    Incubation is required of all newly accepted projects until a further review
-    indicates that the infrastructure, communications, and decision making process
-    have stabilized in a manner consistent with other successful ASF projects.
-
-    While incubation status is not necessarily a reflection of the completeness
-    or stability of the code, it does indicate that the project has yet to be
-    fully endorsed by the ASF.
-    ''',
-    url='http://toree.apache.org/',
+    long_description=long_description,
+    url='https://toree.apache.org/',
     version=version_ns['__version__'],
-    license='Apache License 2.0',
+    license='Apache License, Version 2.0',
     platforms=[],
     packages=['toree'],
     include_package_data=True,

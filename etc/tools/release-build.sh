@@ -310,11 +310,8 @@ if [[ "$RELEASE_PREPARE" == "true" ]]; then
         # The passphrase reaches the plugin through MAVEN_GPG_PASSPHRASE rather than the
         # command line, where it would be visible to any local user through ps.
         mvn "$MVN_GPG_PLUGIN:sign-and-deploy-file" \
-            -DgroupId=org.apache.toree \
-            -DartifactId=toree-assembly \
-            -Dversion="$RELEASE_VERSION-incubating" \
-            -Dpackaging=jar \
             -Dfile="toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar" \
+            -DpomFile="toree/dist/toree/toree-assembly-$RELEASE_VERSION-incubating.pom" \
             -DrepositoryId=apache.releases.https \
             -Durl=https://repository.apache.org/service/local/staging/deploy/maven2
     fi
@@ -338,11 +335,8 @@ if [[ "$RELEASE_PUBLISH" == "true" ]]; then
     # The passphrase reaches the plugin through MAVEN_GPG_PASSPHRASE rather than the
     # command line, where it would be visible to any local user through ps.
     mvn "$MVN_GPG_PLUGIN:sign-and-deploy-file" \
-        -DgroupId=org.apache.toree \
-        -DartifactId=toree-assembly \
-        -Dversion="$RELEASE_VERSION-incubating" \
-        -Dpackaging=jar \
         -Dfile="toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar" \
+        -DpomFile="toree/dist/toree/toree-assembly-$RELEASE_VERSION-incubating.pom" \
         -DrepositoryId=apache.releases.https \
         -Durl=https://repository.apache.org/service/local/staging/deploy/maven2
 
