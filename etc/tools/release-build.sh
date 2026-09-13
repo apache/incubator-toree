@@ -277,8 +277,8 @@ function validate_artifacts {
     local artifacts=(
         "target/toree/dist/apache-toree-bin/apache-toree-$FULL_RELEASE_VERSION-bin.tar.gz"
         "target/toree/dist/apache-toree-src/apache-toree-$FULL_RELEASE_VERSION-src.tar.gz"
-        "target/toree/dist/toree-pip/toree-$RELEASE_VERSION.tar.gz"
-        "target/toree/dist/apache-toree-pip/apache-toree-$RELEASE_VERSION.tar.gz"
+        "target/toree/dist/toree-pip/toree-$FULL_RELEASE_VERSION.tar.gz"
+        "target/toree/dist/apache-toree-pip/apache-toree-$FULL_RELEASE_VERSION.tar.gz"
         "target/toree/dist/toree/lib/toree-assembly-$FULL_RELEASE_VERSION.jar"
         "target/toree/dist/toree/toree-assembly-$FULL_RELEASE_VERSION.pom"
     )
