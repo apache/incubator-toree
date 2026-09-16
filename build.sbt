@@ -97,10 +97,6 @@ ThisBuild / publishTo := {
   else
     Some("Apache Staging Repo" at "https://repository.apache.org/content/repositories/staging/")
 }
-ThisBuild / packageBin / mappings := Seq(
-  file("LICENSE") -> "LICENSE",
-  file("NOTICE") -> "NOTICE"
-)
 // The incubation disclaimer is read from DISCLAIMER rather than repeated here, so
 // the published POMs cannot drift from the file the ASF requires us to ship. It is
 // wrapped for readability in the file, so collapse the wrapping for POM metadata.
@@ -131,9 +127,27 @@ ThisBuild / credentials ++= (if ((Path.userHome / ".ivy2" / ".credentials").exis
 
 // Project structure
 
+/**
+  * Settings applied to every module's own (non-assembly) jar so that, unlike the
+  * assembly jars (which bundle the dist/toree-legal set separately), each plain
+  * published jar carries the project's own top-level LICENSE, NOTICE and DISCLAIMER.
+  * Must be scoped to Compile/packageBin directly (not ThisBuild) and appended with
+  * ++=, since packageBin's mappings are defined per-project by the JVM plugin and a
+  * ThisBuild-scoped assignment is never consulted once that per-project default
+  * exists; := would also replace the class/resource mappings instead of adding to them.
+  */
+lazy val legalFileMappings = Seq(
+  Compile / packageBin / mappings ++= Seq(
+    file("LICENSE") -> "LICENSE",
+    file("NOTICE") -> "NOTICE",
+    file("DISCLAIMER") -> "DISCLAIMER"
+  )
+)
+
 /** Root Toree project. */
 lazy val root = (project in file("."))
   .settings(name := "apache-toree")
+  .settings(legalFileMappings)
   .aggregate(
     macros,protocol,plugins,sparkMonitorPlugin,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
   )
@@ -147,6 +161,7 @@ lazy val root = (project in file("."))
   */
 lazy val macros = (project in file("macros"))
   .settings(name := "apache-toree-macros")
+  .settings(legalFileMappings)
 
 /**
   * Project representing the IPython kernel message protocol in Scala. Used
@@ -154,6 +169,7 @@ lazy val macros = (project in file("macros"))
   */
 lazy val protocol = (project in file("protocol"))
   .settings(name := "apache-toree-protocol")
+  .settings(legalFileMappings)
   .dependsOn(macros)
 
 /**
@@ -161,6 +177,7 @@ lazy val protocol = (project in file("protocol"))
   */
 lazy val plugins = (project in file("plugins"))
   .settings(name := "apache-toree-plugins")
+  .settings(legalFileMappings)
   .dependsOn(macros)
 
 /**
@@ -168,6 +185,17 @@ lazy val plugins = (project in file("plugins"))
   */
 lazy val sparkMonitorPlugin = (project in file("spark-monitor-plugin"))
   .settings(name := "apache-toree-spark-monitor-plugin")
+  .settings(legalFileMappings)
+  .settings(
+    // Mirrors the root project's own dist/toree-legal wiring (below) so this
+    // project's assembly jar carries the same LICENSE/NOTICE/DISCLAIMER/third-party
+    // licenses bundle as toree-assembly (TOREE-570). Must use ThisBuild/baseDirectory,
+    // not this project's own baseDirectory, since "dist/toree-legal" lives at the
+    // repo root, not under spark-monitor-plugin/.
+    Compile / unmanagedResourceDirectories += {
+      (ThisBuild / baseDirectory).value / "dist/toree-legal"
+    }
+  )
   .dependsOn(macros, protocol, plugins, kernel, kernelApi)
 
 /**
@@ -176,6 +204,7 @@ lazy val sparkMonitorPlugin = (project in file("spark-monitor-plugin"))
   */
 lazy val communication = (project in file("communication"))
   .settings(name := "apache-toree-communication")
+  .settings(legalFileMappings)
   .dependsOn(macros, protocol)
 
 /**
@@ -184,6 +213,7 @@ lazy val communication = (project in file("communication"))
 */
 lazy val kernelApi = (project in file("kernel-api"))
   .settings(name := "apache-toree-kernel-api")
+  .settings(legalFileMappings)
   .dependsOn(macros, plugins)
 
 /**
@@ -191,6 +221,7 @@ lazy val kernelApi = (project in file("kernel-api"))
 */
 lazy val client = (project in file("client"))
   .settings(name := "apache-toree-client")
+  .settings(legalFileMappings)
   .dependsOn(macros, protocol, communication)
 
 /**
@@ -198,6 +229,7 @@ lazy val client = (project in file("client"))
 */
 lazy val scalaInterpreter = (project in file("scala-interpreter"))
   .settings(name := "apache-toree-scala-interpreter")
+  .settings(legalFileMappings)
   .dependsOn(plugins, protocol, kernelApi)
 
 /**
@@ -205,6 +237,7 @@ lazy val scalaInterpreter = (project in file("scala-interpreter"))
 */
 lazy val sqlInterpreter = (project in file("sql-interpreter"))
   .settings(name := "apache-toree-sql-interpreter")
+  .settings(legalFileMappings)
   .dependsOn(plugins, protocol, kernelApi, scalaInterpreter)
 
 /**
@@ -212,6 +245,7 @@ lazy val sqlInterpreter = (project in file("sql-interpreter"))
 */
 lazy val kernel = (project in file("kernel"))
   .settings(name := "apache-toree-kernel")
+  .settings(legalFileMappings)
   .dependsOn(
     macros % "test->test;compile->compile",
     protocol % "test->test;compile->compile",
