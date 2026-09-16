@@ -279,8 +279,8 @@ function validate_artifacts {
         "target/toree/dist/apache-toree-src/apache-toree-$FULL_RELEASE_VERSION-src.tar.gz"
         "target/toree/dist/toree-pip/toree-$FULL_RELEASE_VERSION.tar.gz"
         "target/toree/dist/apache-toree-pip/apache-toree-$FULL_RELEASE_VERSION.tar.gz"
-        "target/toree/dist/toree/lib/toree-assembly-$FULL_RELEASE_VERSION.jar"
-        "target/toree/dist/toree/toree-assembly-$FULL_RELEASE_VERSION.pom"
+        "target/toree/dist/toree/lib/apache-toree-assembly-$FULL_RELEASE_VERSION.jar"
+        "target/toree/dist/toree/apache-toree-assembly-$FULL_RELEASE_VERSION.pom"
     )
 
     for artifact in "${artifacts[@]}"; do
@@ -425,8 +425,8 @@ if [[ "$RELEASE_PUBLISH" == "true" ]]; then
     # The passphrase reaches the plugin through MAVEN_GPG_PASSPHRASE rather than the
     # command line, where it would be visible to any local user through ps.
     mvn "$MVN_GPG_PLUGIN:sign-and-deploy-file" \
-        -Dfile="toree/dist/toree/lib/toree-assembly-$RELEASE_VERSION-incubating.jar" \
-        -DpomFile="toree/dist/toree/toree-assembly-$RELEASE_VERSION-incubating.pom" \
+        -Dfile="toree/dist/toree/lib/apache-toree-assembly-$RELEASE_VERSION-incubating.jar" \
+        -DpomFile="toree/dist/toree/apache-toree-assembly-$RELEASE_VERSION-incubating.pom" \
         -DrepositoryId=apache.releases.https \
         -Durl=https://repository.apache.org/service/local/staging/deploy/maven2
 
