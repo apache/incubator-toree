@@ -33,6 +33,13 @@ enablePlugins(AssemblyPlugin)
 assembly / assemblyMergeStrategy := {
   case "module-info.class" => MergeStrategy.discard
   case PathList("META-INF", "versions", "9", "module-info.class") => MergeStrategy.discard
+  // Keep this project's own DISCLAIMER/LICENSE/NOTICE (TOREE-569) out of the
+  // blanket META-INF discard below, which exists for unrelated META-INF noise
+  // (service descriptors, signature files, etc.) from bundled dependencies.
+  case x @ PathList("META-INF", file)
+      if file == "DISCLAIMER" || file.startsWith("LICENSE") || file.startsWith("NOTICE") =>
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    oldStrategy(x)
   case PathList("META-INF", xs @ _*) => MergeStrategy.discard
   case x =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
