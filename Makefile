@@ -117,7 +117,7 @@ spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): VM_WORK
 spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): ${shell find ./spark-monitor-plugin/src/main/**/*}
 spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): spark-monitor-plugin/build.sbt
 spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): ${shell find ./project/*.scala} ${shell find ./project/*.sbt}
-spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): project/build.properties build.sbt
+spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR): dist/toree-legal project/build.properties build.sbt
 	$(call RUN,$(ENV_OPTS) sbt sparkMonitorPlugin/assembly)
 
 build: target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR) spark-monitor-plugin/target/scala-$(SCALA_VERSION)/$(SPARK_MONITOR_JAR)
