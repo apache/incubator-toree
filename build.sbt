@@ -144,10 +144,43 @@ lazy val legalFileMappings = Seq(
   )
 )
 
+/**
+  * Settings applied to the projects that produce an assembly (fat) jar, so that
+  * DISCLAIMER, LICENSE and NOTICE from dist/toree-legal land under META-INF instead
+  * of the jar root (TOREE-569), matching standard jar conventions. The third-party
+  * licenses/ directory from the same source is untouched by this and stays at the
+  * jar root, since the ticket only asks to relocate those three files.
+  *
+  * dist/toree-legal's own on-disk layout is deliberately left alone: `make dist`
+  * also copies it directly into the release distribution root, where ASF policy
+  * requires LICENSE/NOTICE/DISCLAIMER to stay top-level - a separate concern from
+  * how they're laid out inside this jar. So rather than restructure that shared
+  * directory, unmanagedResources/excludeFilter drops the three files from the
+  * regular (root-level) resource scan, and a resourceGenerator copies them
+  * straight into META-INF instead.
+  */
+lazy val assemblyLegalFiles = Seq(
+  Compile / unmanagedResourceDirectories += {
+    (ThisBuild / baseDirectory).value / "dist/toree-legal"
+  },
+  Compile / unmanagedResources / excludeFilter :=
+    (Compile / unmanagedResources / excludeFilter).value || "LICENSE" || "NOTICE" || "DISCLAIMER",
+  Compile / resourceGenerators += Def.task {
+    val legalDir = (ThisBuild / baseDirectory).value / "dist/toree-legal"
+    val outDir = (Compile / resourceManaged).value / "META-INF"
+    Seq("LICENSE", "NOTICE", "DISCLAIMER").map { name =>
+      val target = outDir / name
+      IO.copyFile(legalDir / name, target)
+      target
+    }
+  }.taskValue
+)
+
 /** Root Toree project. */
 lazy val root = (project in file("."))
   .settings(name := "apache-toree")
   .settings(legalFileMappings)
+  .settings(assemblyLegalFiles)
   .aggregate(
     macros,protocol,plugins,sparkMonitorPlugin,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
   )
@@ -186,16 +219,10 @@ lazy val plugins = (project in file("plugins"))
 lazy val sparkMonitorPlugin = (project in file("spark-monitor-plugin"))
   .settings(name := "apache-toree-spark-monitor-plugin")
   .settings(legalFileMappings)
-  .settings(
-    // Mirrors the root project's own dist/toree-legal wiring (below) so this
-    // project's assembly jar carries the same LICENSE/NOTICE/DISCLAIMER/third-party
-    // licenses bundle as toree-assembly (TOREE-570). Must use ThisBuild/baseDirectory,
-    // not this project's own baseDirectory, since "dist/toree-legal" lives at the
-    // repo root, not under spark-monitor-plugin/.
-    Compile / unmanagedResourceDirectories += {
-      (ThisBuild / baseDirectory).value / "dist/toree-legal"
-    }
-  )
+  // Mirrors the root project's own dist/toree-legal wiring so this project's
+  // assembly jar carries the same LICENSE/NOTICE/DISCLAIMER/third-party licenses
+  // bundle as toree-assembly (TOREE-570), under META-INF (TOREE-569).
+  .settings(assemblyLegalFiles)
   .dependsOn(macros, protocol, plugins, kernel, kernelApi)
 
 /**
@@ -264,7 +291,6 @@ enablePlugins(ScalaUnidocPlugin)
 )
 
 libraryDependencies ++= Dependencies.sparkAll.value
-Compile / unmanagedResourceDirectories += { baseDirectory.value / "dist/toree-legal" }
 
 assembly / assemblyShadeRules := Seq(
   ShadeRule.rename("org.clapper.classutil.**" -> "shadeclapper.@0").inAll,
