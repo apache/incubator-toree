@@ -21,7 +21,6 @@ import org.apache.toree.kernel.protocol.v5.{KernelMessageContent, Data, Metadata
 import play.api.libs.json._
 
 case class DisplayData(
-  source: String,
   data: Data,
   metadata: Metadata
 ) extends KernelMessageContent {

@@ -35,7 +35,7 @@ class DisplayMethods(
   private[api] val kmBuilder = kernelMessageBuilder.withParent(parentMessage)
 
   override def content(mimeType: String, data: String): Unit = {
-    val displayData = v5.content.DisplayData("user", Map(mimeType -> data), Map())
+    val displayData = v5.content.DisplayData(Map(mimeType -> data), Map())
 
     val kernelMessage = kmBuilder
       .withIds(Seq(v5.content.DisplayData.toTypeString.getBytes))
