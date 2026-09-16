@@ -127,7 +127,7 @@ ThisBuild / pomExtra := {
     <tag>HEAD</tag>
   </scm>
 }
-ThisBuild / credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+ThisBuild / credentials ++= (if ((Path.userHome / ".ivy2" / ".credentials").exists) Seq(Credentials(Path.userHome / ".ivy2" / ".credentials")) else Nil)
 
 // Project structure
 
@@ -250,3 +250,5 @@ assembly / assemblyOption ~= {
   _.withIncludeScala(false)
 }
 assembly / aggregate := false
+
+Global / excludeLintKeys ++= Set(pgpPassphrase, mappings)
