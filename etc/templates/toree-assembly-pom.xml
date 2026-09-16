@@ -27,7 +27,7 @@
   </parent>
 
   <groupId>org.apache.toree</groupId>
-  <artifactId>toree-assembly</artifactId>
+  <artifactId>apache-toree-assembly</artifactId>
   <version>@VERSION@</version>
   <packaging>jar</packaging>
 

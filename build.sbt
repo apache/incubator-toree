@@ -133,7 +133,7 @@ ThisBuild / credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 /** Root Toree project. */
 lazy val root = (project in file("."))
-  .settings(name := "toree")
+  .settings(name := "apache-toree")
   .aggregate(
     macros,protocol,plugins,sparkMonitorPlugin,communication,kernelApi,client,scalaInterpreter,sqlInterpreter,kernel
   )
@@ -146,28 +146,28 @@ lazy val root = (project in file("."))
   * any other project using them.
   */
 lazy val macros = (project in file("macros"))
-  .settings(name := "toree-macros")
+  .settings(name := "apache-toree-macros")
 
 /**
   * Project representing the IPython kernel message protocol in Scala. Used
   * by the client and kernel implementations.
   */
 lazy val protocol = (project in file("protocol"))
-  .settings(name := "toree-protocol")
+  .settings(name := "apache-toree-protocol")
   .dependsOn(macros)
 
 /**
   * Project representing base plugin system for the Toree infrastructure.
   */
 lazy val plugins = (project in file("plugins"))
-  .settings(name := "toree-plugins")
+  .settings(name := "apache-toree-plugins")
   .dependsOn(macros)
 
 /**
   * Project representing the SparkMonitor plugin for Toree.
   */
 lazy val sparkMonitorPlugin = (project in file("spark-monitor-plugin"))
-  .settings(name := "toree-spark-monitor-plugin")
+  .settings(name := "apache-toree-spark-monitor-plugin")
   .dependsOn(macros, protocol, plugins, kernel, kernelApi)
 
 /**
@@ -175,7 +175,7 @@ lazy val sparkMonitorPlugin = (project in file("spark-monitor-plugin"))
   * client/kernel.
   */
 lazy val communication = (project in file("communication"))
-  .settings(name := "toree-communication")
+  .settings(name := "apache-toree-communication")
   .dependsOn(macros, protocol)
 
 /**
@@ -183,35 +183,35 @@ lazy val communication = (project in file("communication"))
 * import this to implement their own magics and plugins.
 */
 lazy val kernelApi = (project in file("kernel-api"))
-  .settings(name := "toree-kernel-api")
+  .settings(name := "apache-toree-kernel-api")
   .dependsOn(macros, plugins)
 
 /**
 * Project representing the client code for connecting to the kernel backend.
 */
 lazy val client = (project in file("client"))
-  .settings(name := "toree-client")
+  .settings(name := "apache-toree-client")
   .dependsOn(macros, protocol, communication)
 
 /**
 * Project represents the scala interpreter used by the Spark Kernel.
 */
 lazy val scalaInterpreter = (project in file("scala-interpreter"))
-  .settings(name := "toree-scala-interpreter")
+  .settings(name := "apache-toree-scala-interpreter")
   .dependsOn(plugins, protocol, kernelApi)
 
 /**
 * Project represents the SQL interpreter used by the Spark Kernel.
 */
 lazy val sqlInterpreter = (project in file("sql-interpreter"))
-  .settings(name := "toree-sql-interpreter")
+  .settings(name := "apache-toree-sql-interpreter")
   .dependsOn(plugins, protocol, kernelApi, scalaInterpreter)
 
 /**
 * Project representing the kernel code for the Spark Kernel backend.
 */
 lazy val kernel = (project in file("kernel"))
-  .settings(name := "toree-kernel")
+  .settings(name := "apache-toree-kernel")
   .dependsOn(
     macros % "test->test;compile->compile",
     protocol % "test->test;compile->compile",
