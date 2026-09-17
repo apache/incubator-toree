@@ -15,8 +15,6 @@
  *  limitations under the License
  */
 
-Test / fork := true
-
 // Needed for SparkMonitor plugin
 libraryDependencies ++= Dependencies.sparkAll.value
 libraryDependencies ++= Seq(

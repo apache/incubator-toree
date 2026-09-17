@@ -15,8 +15,6 @@
  *  limitations under the License
  */
 
-Test / fork := true
-
 // Needed for type inspection
 libraryDependencies ++= Seq(
   Dependencies.scalaReflect.value,
