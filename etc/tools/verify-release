@@ -71,16 +71,14 @@ do
 		
 		# Verify the SHA512 checksum is present
 		if [[ -f "${file_to_verify}.sha512"  ]]; then
-			hash_result=`gpg --print-md SHA512 "${file_to_verify}"`
-			hash_to_verify=`cat "${file_to_verify}.sha512"`
-
-			# Verify the SHA512 checksum is correct
-			if [[ "${hash_result}" != "${hash_to_verify}" ]]; then
+			# The .sha512 holds a plain `sha512sum -c`-compatible line keyed to
+			# the bare filename, so verify it from within that directory.
+			if (cd "$(dirname "${file_to_verify}")" && shasum --algorithm 512 -c "$(basename "${file_to_verify}").sha512") &> /dev/null; then
+				results="${results}\n\t✓ `basename ${file_to_verify}.sha512`"
+			else
 				echo "ERROR: SHA checksum of ${file_to_verify} does not match!"
 				results="${results}\n\tx `basename ${file_to_verify}.sha512`"
 				failure=true
-			else
-				results="${results}\n\t✓ `basename ${file_to_verify}.sha512`"
 			fi
 		else
 			echo "ERROR: SHA checksum for ${file_to_verify} does not exist!"
