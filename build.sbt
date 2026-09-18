@@ -34,7 +34,7 @@ ThisBuild / crossScalaVersions := Seq(scala212, scala213)
 ThisBuild / scalaVersion := defaultScalaVersion
 ThisBuild / Dependencies.sparkVersion := {
   val envVar = "APACHE_SPARK_VERSION"
-  val defaultVersion = "3.4.4"
+  val defaultVersion = "3.5.9"
 
   Properties.envOrNone(envVar) match {
     case None =>
@@ -45,6 +45,8 @@ ThisBuild / Dependencies.sparkVersion := {
       version
   }
 }
+// Align with the scala-collection-compat version Spark provides
+ThisBuild / dependencyOverrides += "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0"
 
 // Compiler settings
 ThisBuild / scalacOptions ++= Seq(
