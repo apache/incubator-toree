@@ -26,14 +26,13 @@ import org.apache.toree.kernel.protocol.v5._
 class DisplayDataSpec extends AnyFunSpec with Matchers {
   val displayDataJson: JsValue = Json.parse("""
   {
-    "source": "<STRING>",
     "data": {},
     "metadata": {}
   }
   """)
 
   val displayData: DisplayData = DisplayData(
-    "<STRING>", Map(), Map()
+    Map(), Map()
   )
 
   describe("DisplayData") {
