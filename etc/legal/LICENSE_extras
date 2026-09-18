@@ -15,11 +15,11 @@ Apache License 2.0
    org.apache.pekko:pekko-slf4j_2.12:1.1.5 -> https://github.com/apache/pekko/blob/v1.1.5/legal/StandardLicense.txt
    org.clapper:classutil_2.12:1.5.1 -> https://github.com/bmc/classutil/blob/master/LICENSE.md and licenses/LICENSE-clapper.txt
    org.clapper:grizzled-scala_2.12:4.9.3 -> https://github.com/bmc/grizzled-scala/blob/release-4.9.3/LICENSE.md and licenses/LICENSE-clapper.txt
-   com.fasterxml.jackson.core:jackson-core:2.15.2 -> https://github.com/FasterXML/jackson-core/blob/jackson-core-2.15.2/LICENSE
-   com.fasterxml.jackson.core:jackson-databind:2.15.2 -> https://github.com/FasterXML/jackson-databind/blob/jackson-databind-2.15.2/LICENSE
-   com.fasterxml.jackson.core:jackson-annotations:2.15.2 -> https://github.com/FasterXML/jackson-annotations/blob/jackson-annotations-2.15.2/LICENSE
-   com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4 -> https://github.com/FasterXML/jackson-modules-java8/blob/jackson-modules-java8-2.11.4/LICENSE
-   com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4 -> https://github.com/FasterXML/jackson-modules-java8/blob/jackson-modules-java8-2.11.4/LICENSE
+   com.fasterxml.jackson.core:jackson-core:2.15.2 -> https://github.com/FasterXML/jackson-core/blob/2.x/LICENSE
+   com.fasterxml.jackson.core:jackson-databind:2.15.2 -> https://github.com/FasterXML/jackson-databind/blob/2.x/LICENSE
+   com.fasterxml.jackson.core:jackson-annotations:2.15.2 -> https://github.com/FasterXML/jackson-annotations/blob/2.x/LICENSE
+   com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.4 -> https://github.com/FasterXML/jackson-modules-java8/blob/2.x/LICENSE
+   com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.4 -> https://github.com/FasterXML/jackson-modules-java8/blob/2.x/LICENSE
    com.typesafe:config:1.4.3 -> https://github.com/lightbend/config/blob/v1.4.3/LICENSE-2.0.txt
    com.typesafe.play:play-json_2.12:2.9.4 -> https://github.com/playframework/play-json/blob/2.9.4/LICENSE
    com.typesafe.play:play-functional_2.12:2.9.4 -> https://github.com/playframework/play-json/blob/2.9.4/LICENSE
