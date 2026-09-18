@@ -34,7 +34,12 @@ file_to_sign="${FWDIR}/$1"
 if [[ -f "${file_to_sign}"  ]]; then
 		echo "Generating signature and sums for ${file_to_sign}"
 		echo ${MAVEN_GPG_PASSPHRASE} | ${GPG} --passphrase-fd 0 --armor --output "${file_to_sign}.asc" --detach-sig "${file_to_sign}"
-		echo ${MAVEN_GPG_PASSPHRASE} | ${GPG} --passphrase-fd 0 --print-md SHA512 "${file_to_sign}" >  "${file_to_sign}.sha512"
+		# `gpg --print-md` embeds the absolute path passed to it and prints the
+		# digest in its own grouped/uppercase format, not the plain
+		# `sha512sum -c`-compatible format ASF release verification expects.
+		# Run shasum against the bare filename from within its directory so
+		# the .sha512 only ever names the artifact, not the local build path.
+		(cd "$(dirname "${file_to_sign}")" && shasum --algorithm 512 "$(basename "${file_to_sign}")" > "$(basename "${file_to_sign}").sha512")
 		exit 0
 else
 	echo "ERROR: File ${file_to_sign} does not exist"
