@@ -72,6 +72,9 @@ ThisBuild / javaOptions ++= Seq(
   "-Xms1024M", "-Xmx4096M", "-Xss2m", "-XX:MetaspaceSize=1024M",
   "-XX:ReservedCodeCacheSize=256M", "-XX:+HeapDumpOnOutOfMemoryError"
 )
+// Mockito's inline mock maker self-attaches through the attach API, whose native
+// library loads once per JVM; fork tests so each module mocks in its own JVM.
+ThisBuild / Test / fork := true
 // Add additional test option to show time taken per test
 ThisBuild / Test / testOptions += Tests.Argument("-oDF")
 // Build-wide dependencies
