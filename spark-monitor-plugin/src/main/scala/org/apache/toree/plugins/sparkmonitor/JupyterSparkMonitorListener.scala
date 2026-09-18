@@ -15,6 +15,10 @@
  *  limitations under the License
  */
 
+// This file is derived from SparkMonitor's CustomListener.scala, originally written by the
+// SWAN team at CERN and licensed under the Apache License, Version 2.0.
+// https://github.com/swan-cern/sparkmonitor/blob/v3.3.0/scalalistener_spark3/CustomListener.scala
+
 package org.apache.toree.plugins.sparkmonitor
 
 import org.apache.spark.scheduler._

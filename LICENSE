@@ -207,3 +207,11 @@ The kernel module includes code from Guava which is licensed under the Apache Li
 - kernel/src/main/scala/org/apache/toree/utils/ClassPath.java
 
    Copyright (C) 2012 The Guava Authors
+
+===============================================================================================
+
+The spark-monitor-plugin module includes code derived from SparkMonitor which is licensed under
+the Apache License, Version 2.0.
+- spark-monitor-plugin/src/main/scala/org/apache/toree/plugins/sparkmonitor/JupyterSparkMonitorListener.scala
+
+   https://github.com/swan-cern/sparkmonitor
