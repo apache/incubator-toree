@@ -18,8 +18,12 @@
 import scala.util.Properties
 import sbtassembly.AssemblyOption
 
-lazy val scala212 = "2.12.20"
-lazy val scala213 = "2.13.15"
+// Must match the Scala version of the Spark distribution built against (see
+// APACHE_SPARK_VERSION in the Makefile): scala-compiler and scala-library are
+// provided by Spark at runtime, not bundled in the assembly, so compiling with
+// a different patch release breaks the interpreter at runtime.
+lazy val scala212 = "2.12.17"
+lazy val scala213 = "2.13.8"
 lazy val defaultScalaVersion = sys.env.get("SCALA_VERSION") match {
   case Some("2.13") => scala213
   case _ => scala212
