@@ -34,7 +34,6 @@
 * Update AddJar command to support AWS S3a cloud storage
 * Update AddJar command to support Google cloud storage
 * Fire postRunCell event after cell execution
-* Update Scala to 2.12.20 and 2.13.15
 * Deploy the `toree-assembly` jar with a complete POM carrying the license,
   description, incubation disclaimer, project URL and SCM metadata, replacing
   the minimal POM Maven generated when no POM was supplied
