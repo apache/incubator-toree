@@ -17,7 +17,8 @@
 package org.apache.toree.plugins
 
 import java.io.File
-import org.clapper.classutil.{ClassInfo, ClassFinder}
+import org.clapper.classutil.{ClassFinder, ClassInfo}
+import org.objectweb.asm.Opcodes
 import org.slf4j.LoggerFactory
 
 import scala.annotation.tailrec
@@ -52,7 +53,7 @@ class PluginSearcher {
    *
    * @return The new class finder
    */
-  protected def newClassFinder(): ClassFinder = ClassFinder(classpath)
+  protected def newClassFinder(): ClassFinder = ClassFinder(classpath, Some(Opcodes.ASM9))
 
   /**
    * Creates a new class finder for the given paths.
@@ -61,7 +62,7 @@ class PluginSearcher {
    *
    * @return The new class finder
    */
-  protected def newClassFinder(paths: Seq[File]): ClassFinder = ClassFinder(paths)
+  protected def newClassFinder(paths: Seq[File]): ClassFinder = ClassFinder(paths, Some(Opcodes.ASM9))
 
   /**
    * Loads all class information using the provided class finder.
