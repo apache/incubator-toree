@@ -26,7 +26,7 @@
 
 [Apache Toree][website]
 ============
-Apache Toree is a [Juypter Notebook](https://jupyter.org/) kernel. The main goal of Toree is to provide the foundation for
+Apache Toree (Incubating) is a [Juypter Notebook](https://jupyter.org/) kernel. The main goal of Toree is to provide the foundation for
 interactive applications that connect to and use [Apache Spark][1] using Scala language.
 
 Overview

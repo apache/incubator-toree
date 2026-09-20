@@ -111,7 +111,7 @@ ThisBuild / description := {
   val disclaimer = IO.read((ThisBuild / baseDirectory).value / "DISCLAIMER")
     .replaceAll("\\s+", " ")
     .trim
-  "Apache Toree is a Jupyter Notebook kernel that provides interactive " +
+  "Apache Toree (Incubating) is a Jupyter Notebook kernel that provides interactive " +
     "applications to connect to and use Apache Spark using Scala language. " +
     disclaimer
 }
