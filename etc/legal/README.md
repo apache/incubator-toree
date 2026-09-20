@@ -106,7 +106,7 @@ Start from the built jar, not the build definition:
 
 ```bash
 make build
-unzip -l target/scala-2.12/toree-assembly-*.jar
+unzip -l target/scala-2.12/apache-toree-assembly-*.jar
 ```
 
 Cross-check against the resolved classpath:
@@ -141,7 +141,7 @@ the dependency graph, and was listed here until March 2026 despite never
 shipping. Check the jar, not the graph:
 
 ```bash
-unzip -l target/scala-2.12/toree-assembly-*.jar | grep -c 'scala/xml'
+unzip -l target/scala-2.12/apache-toree-assembly-*.jar | grep -c 'scala/xml'
 ```
 
 Note that `scala-collection-compat` and `scala-java8-compat` publish classes
@@ -179,7 +179,7 @@ metadata, so the search above finds nothing at all. The package path is the
 only remaining trace:
 
 ```bash
-unzip -l target/scala-2.12/toree-assembly-*.jar \
+unzip -l target/scala-2.12/apache-toree-assembly-*.jar \
   | grep -oE '[a-z0-9/]*shaded?[a-z0-9/]*/' | sort -u
 ```
 
