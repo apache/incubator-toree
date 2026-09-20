@@ -309,7 +309,7 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     logger.debug(s"Attempting code completion for ${code}")
     val result = completer.complete(code, pos)
 
-    (result.cursor, result.candidates.map(_.toString))
+    (result.cursor, result.candidates.map(_.name))
   }
 
   /**

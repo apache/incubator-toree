@@ -21,9 +21,14 @@ import org.apache.toree.kernel.BuildInfo
 
 object SparkKernelInfo {
   /**
-   * Represents the protocol version (IPython) supported by this kernel.
+   * Represents the Jupyter messaging protocol revision declared in message
+   * headers and in kernel_info_reply. Toree implements the 5.0 message set
+   * plus the reply status field and comm_info messages from 5.1; 5.2 is the
+   * lowest revision for which clients do not apply the legacy envelope
+   * restrictions that reject the msg_id/msg_type keys jupyter_client adds to
+   * received messages.
    */
-  val protocolVersion         = "5.0"
+  val protocolVersion         = "5.2"
 
   /**
    * Represents what the kernel implements.

@@ -64,10 +64,9 @@ jobs:
     - name: Run tests
       run: |
         make SCALA_VERSION=${{ matrix.scala }} test
-#    See https://issues.apache.org/jira/browse/TOREE-526
-#    - name: Run system tests
-#      run: |
-#        make SCALA_VERSION=${{ matrix.scala }} system-test
+    - name: Run system tests
+      run: |
+        make SCALA_VERSION=${{ matrix.scala }} system-test
     - name: Run license audit
       run: |
         make SCALA_VERSION=${{ matrix.scala }} audit-licenses
