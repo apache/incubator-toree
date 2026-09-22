@@ -246,6 +246,7 @@ dist/toree-pip/toree-$(VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/dist/toree-pip
 dist/toree-pip/toree-$(VERSION).tar.gz: dist/toree
 	@mkdir -p dist/toree-pip
 	@cp -r dist/toree dist/toree-pip
+	@rm -f dist/toree-pip/toree/$(ASSEMBLY_POM)
 	@cp dist/toree/LICENSE dist/toree-pip/LICENSE
 	@cp dist/toree/NOTICE dist/toree-pip/NOTICE
 	@cp dist/toree/DISCLAIMER dist/toree-pip/DISCLAIMER
@@ -264,6 +265,7 @@ dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz: DOCKER_WORKDIR=/srv/toree/
 dist/apache-toree-pip/apache-toree-$(VERSION).tar.gz: dist/toree
 	@mkdir -p dist/apache-toree-pip
 	@cp -r dist/toree dist/apache-toree-pip
+	@rm -f dist/apache-toree-pip/toree/$(ASSEMBLY_POM)
 	@cp dist/toree/LICENSE dist/apache-toree-pip/LICENSE
 	@cp dist/toree/NOTICE dist/apache-toree-pip/NOTICE
 	@cp dist/toree/DISCLAIMER dist/apache-toree-pip/DISCLAIMER
