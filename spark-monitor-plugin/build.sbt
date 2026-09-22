@@ -49,3 +49,7 @@ assembly / assemblyOption ~= {
 }
 
 assembly / test := {}
+
+// Matches the root project's assemblyJarName convention (see build.sbt): embed
+// the Scala binary version so the filename follows Spark/Hadoop/Flink naming.
+assembly / assemblyJarName := s"toree-spark-monitor-plugin-assembly_${scalaBinaryVersion.value}-${version.value}.jar"

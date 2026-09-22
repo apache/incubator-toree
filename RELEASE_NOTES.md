@@ -56,6 +56,18 @@
 * Release artifacts no longer ship `.md5` checksums, which the ASF has
   deprecated for release distribution. `.asc` signatures and `.sha512`
   checksums are unchanged.
+* The `apache-` prefix added to SBT module names, the assembly jars and the
+  Maven artifactId has been reverted, per [dev@ list discussion](https://lists.apache.org/thread/spbg1z5yl5k4vpqvfgc7vopgg3cg9jwx):
+  the jars are published under the `org.apache.toree` groupId, so the prefix
+  on the artifact name itself was redundant. The assembly jar name now also
+  carries the Scala binary version, matching Spark/Hadoop/Flink convention:
+  - SBT/Maven module names: `apache-toree*` → `toree*`
+  - Assembly jar: `apache-toree-assembly-<VERSION>.jar` → `toree-assembly_<SCALA_VERSION>-<VERSION>.jar`
+  - Spark Monitor plugin jar: `apache-toree-spark-monitor-plugin-assembly-<VERSION>.jar` →
+    `toree-spark-monitor-plugin-assembly_<SCALA_VERSION>-<VERSION>.jar`
+  - Maven artifactId: `apache-toree-assembly` → `toree-assembly_<SCALA_VERSION>`
+  - This does not affect the distribution artifact naming above, which keeps
+    the `apache-toree` prefix as required by ASF distribution policy.
 
 ## 0.5.0-incubating (2022.04)
 
