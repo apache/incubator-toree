@@ -185,7 +185,7 @@ lazy val assemblyLegalFiles = Seq(
 
 /** Root Toree project. */
 lazy val root = (project in file("."))
-  .settings(name := "apache-toree")
+  .settings(name := "toree")
   .settings(legalFileMappings)
   .settings(assemblyLegalFiles)
   .aggregate(
@@ -200,7 +200,7 @@ lazy val root = (project in file("."))
   * any other project using them.
   */
 lazy val macros = (project in file("macros"))
-  .settings(name := "apache-toree-macros")
+  .settings(name := "toree-macros")
   .settings(legalFileMappings)
 
 /**
@@ -208,7 +208,7 @@ lazy val macros = (project in file("macros"))
   * by the client and kernel implementations.
   */
 lazy val protocol = (project in file("protocol"))
-  .settings(name := "apache-toree-protocol")
+  .settings(name := "toree-protocol")
   .settings(legalFileMappings)
   .dependsOn(macros)
 
@@ -216,7 +216,7 @@ lazy val protocol = (project in file("protocol"))
   * Project representing base plugin system for the Toree infrastructure.
   */
 lazy val plugins = (project in file("plugins"))
-  .settings(name := "apache-toree-plugins")
+  .settings(name := "toree-plugins")
   .settings(legalFileMappings)
   .dependsOn(macros)
 
@@ -224,7 +224,7 @@ lazy val plugins = (project in file("plugins"))
   * Project representing the SparkMonitor plugin for Toree.
   */
 lazy val sparkMonitorPlugin = (project in file("spark-monitor-plugin"))
-  .settings(name := "apache-toree-spark-monitor-plugin")
+  .settings(name := "toree-spark-monitor-plugin")
   .settings(legalFileMappings)
   // Mirrors the root project's own dist/toree-legal wiring so this project's
   // assembly jar carries the same LICENSE/NOTICE/DISCLAIMER/third-party licenses
@@ -237,7 +237,7 @@ lazy val sparkMonitorPlugin = (project in file("spark-monitor-plugin"))
   * client/kernel.
   */
 lazy val communication = (project in file("communication"))
-  .settings(name := "apache-toree-communication")
+  .settings(name := "toree-communication")
   .settings(legalFileMappings)
   .dependsOn(macros, protocol)
 
@@ -246,7 +246,7 @@ lazy val communication = (project in file("communication"))
 * import this to implement their own magics and plugins.
 */
 lazy val kernelApi = (project in file("kernel-api"))
-  .settings(name := "apache-toree-kernel-api")
+  .settings(name := "toree-kernel-api")
   .settings(legalFileMappings)
   .dependsOn(macros, plugins)
 
@@ -254,7 +254,7 @@ lazy val kernelApi = (project in file("kernel-api"))
 * Project representing the client code for connecting to the kernel backend.
 */
 lazy val client = (project in file("client"))
-  .settings(name := "apache-toree-client")
+  .settings(name := "toree-client")
   .settings(legalFileMappings)
   .dependsOn(macros, protocol, communication)
 
@@ -262,7 +262,7 @@ lazy val client = (project in file("client"))
 * Project represents the scala interpreter used by the Spark Kernel.
 */
 lazy val scalaInterpreter = (project in file("scala-interpreter"))
-  .settings(name := "apache-toree-scala-interpreter")
+  .settings(name := "toree-scala-interpreter")
   .settings(legalFileMappings)
   .dependsOn(plugins, protocol, kernelApi)
 
@@ -270,7 +270,7 @@ lazy val scalaInterpreter = (project in file("scala-interpreter"))
 * Project represents the SQL interpreter used by the Spark Kernel.
 */
 lazy val sqlInterpreter = (project in file("sql-interpreter"))
-  .settings(name := "apache-toree-sql-interpreter")
+  .settings(name := "toree-sql-interpreter")
   .settings(legalFileMappings)
   .dependsOn(plugins, protocol, kernelApi, scalaInterpreter)
 
@@ -278,7 +278,7 @@ lazy val sqlInterpreter = (project in file("sql-interpreter"))
 * Project representing the kernel code for the Spark Kernel backend.
 */
 lazy val kernel = (project in file("kernel"))
-  .settings(name := "apache-toree-kernel")
+  .settings(name := "toree-kernel")
   .settings(legalFileMappings)
   .dependsOn(
     macros % "test->test;compile->compile",
@@ -317,5 +317,10 @@ assembly / assemblyOption ~= {
   _.withIncludeScala(false)
 }
 assembly / aggregate := false
+// sbt-assembly's default jar name omits the Scala binary version; add it so
+// the artifact name matches the Maven convention used by Spark/Hadoop/Flink
+// (e.g. toree-assembly_2.12-0.6.0-incubating.jar) instead of colliding across
+// cross-builds.
+assembly / assemblyJarName := s"toree-assembly_${scalaBinaryVersion.value}-${version.value}.jar"
 
 Global / excludeLintKeys ++= Set(pgpPassphrase, mappings)

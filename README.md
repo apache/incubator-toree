@@ -86,19 +86,23 @@ NOTE: `make release` uses `docker`. Please refer to `docker` installation instru
 
 ## Building Individual Components
 
+`<SCALA_VERSION>` below is the Scala binary version being built against —
+`2.12` by default, or `2.13` when built with `SCALA_VERSION=2.13` (see
+`crossScalaVersions` in `build.sbt`).
+
 ### Main Toree Assembly
 To build just the main Toree assembly jar (without spark-monitor-plugin):
 ```
 sbt assembly
 ```
-This creates: `target/scala-2.12/apache-toree-assembly-<VERSION>.jar`
+This creates: `target/scala-<SCALA_VERSION>/toree-assembly_<SCALA_VERSION>-<VERSION>.jar`
 
 ### Spark Monitor Plugin
 To build the spark-monitor-plugin as a separate jar:
 ```
 sbt sparkMonitorPlugin/assembly
 ```
-This creates: `spark-monitor-plugin/target/scala-2.12/apache-toree-spark-monitor-plugin-assembly-<VERSION>.jar`
+This creates: `spark-monitor-plugin/target/scala-<SCALA_VERSION>/toree-spark-monitor-plugin-assembly_<SCALA_VERSION>-<VERSION>.jar`
 
 ### Build All Components
 To compile all projects including both the main assembly and spark-monitor-plugin:
@@ -115,23 +119,23 @@ To enable the Spark Monitor Plugin in your Toree application, you need to specif
 ### Option 1: Command Line Parameter
 ```bash
 # Start Toree with spark-monitor-plugin enabled
-java -jar target/scala-2.12/apache-toree-assembly-<VERSION>.jar --magic-url file:///path/to/spark-monitor-plugin/target/scala-2.12/apache-toree-spark-monitor-plugin-assembly-<VERSION>.jar [other-options]
+java -jar target/scala-<SCALA_VERSION>/toree-assembly_<SCALA_VERSION>-<VERSION>.jar --magic-url file:///path/to/spark-monitor-plugin/target/scala-<SCALA_VERSION>/toree-spark-monitor-plugin-assembly_<SCALA_VERSION>-<VERSION>.jar [other-options]
 ```
 
 ### Option 2: Jupyter Kernel Installation
 When installing Toree as a Jupyter kernel, you can specify the plugin:
 ```bash
-jupyter toree install --spark_home=<YOUR_SPARK_PATH> --kernel_name=toree_with_monitor --toree_opts="--magic-url file:///path/to/apache-toree-spark-monitor-plugin-assembly-<VERSION>.jar"
+jupyter toree install --spark_home=<YOUR_SPARK_PATH> --kernel_name=toree_with_monitor --toree_opts="--magic-url file:///path/to/toree-spark-monitor-plugin-assembly_<SCALA_VERSION>-<VERSION>.jar"
 ```
 
 ### Option 3: Configuration File
 You can also specify the plugin in a configuration file and use the `--profile` option:
 ```json
 {
-  "magic_urls": ["file:///path/to/apache-toree-spark-monitor-plugin-assembly-<VERSION>.jar"]
+  "magic_urls": ["file:///path/to/toree-spark-monitor-plugin-assembly_<SCALA_VERSION>-<VERSION>.jar"]
 }
 ```
-Then start with: `java -jar apache-toree-assembly-<VERSION>.jar --profile config.json`
+Then start with: `java -jar toree-assembly_<SCALA_VERSION>-<VERSION>.jar --profile config.json`
 
 **Important**:
 - Make sure to use the absolute path to the spark-monitor-plugin JAR file and ensure the JAR is accessible from the location where Toree is running.
