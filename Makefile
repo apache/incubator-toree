@@ -51,8 +51,8 @@ RUN=$(RUN_PREFIX)$(1)$(RUN_SUFFIX)
 
 ENV_OPTS:=APACHE_SPARK_VERSION=$(APACHE_SPARK_VERSION) SCALA_VERSION=$(SCALA_VERSION) VERSION=$(VERSION) IS_SNAPSHOT=$(IS_SNAPSHOT)
 
-ASSEMBLY_JAR:=apache-toree-assembly-$(VERSION)$(SNAPSHOT).jar
-ASSEMBLY_POM:=apache-toree-assembly-$(VERSION)$(SNAPSHOT).pom
+ASSEMBLY_JAR:=toree-assembly_$(SCALA_VERSION)-$(VERSION)$(SNAPSHOT).jar
+ASSEMBLY_POM:=toree-assembly_$(SCALA_VERSION)-$(VERSION)$(SNAPSHOT).pom
 
 help:
 	@echo '	'
@@ -104,7 +104,7 @@ dev-binder: .binder-image
 		--workdir /home/main/notebooks $(BINDER_IMAGE) \
 		/home/main/start-notebook.sh --ip=0.0.0.0
 
-SPARK_MONITOR_JAR:=apache-toree-spark-monitor-plugin-assembly-$(VERSION)$(SNAPSHOT).jar
+SPARK_MONITOR_JAR:=toree-spark-monitor-plugin-assembly_$(SCALA_VERSION)-$(VERSION)$(SNAPSHOT).jar
 
 target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): VM_WORKDIR=/src/toree-kernel
 target/scala-$(SCALA_VERSION)/$(ASSEMBLY_JAR): ${shell find ./*/src/main/**/*}
@@ -172,7 +172,7 @@ dist/toree-legal: dist/toree-legal/LICENSE dist/toree-legal/NOTICE dist/toree-le
 # the way it could in a sed replacement.
 dist/toree/$(ASSEMBLY_POM): etc/templates/toree-assembly-pom.xml DISCLAIMER
 	@mkdir -p dist/toree
-	@awk -v version='$(VERSION)$(SNAPSHOT)' ' \
+	@awk -v version='$(VERSION)$(SNAPSHOT)' -v scala_binary_version='$(SCALA_VERSION)' ' \
 		$$0 == "@DISCLAIMER@" { \
 			while ((getline line < "DISCLAIMER") > 0) { \
 				if (line == "") print ""; else print "    " line \
@@ -180,7 +180,7 @@ dist/toree/$(ASSEMBLY_POM): etc/templates/toree-assembly-pom.xml DISCLAIMER
 			close("DISCLAIMER"); \
 			next \
 		} \
-		{ gsub(/@VERSION@/, version); print } \
+		{ gsub(/@VERSION@/, version); gsub(/@SCALA_BINARY_VERSION@/, scala_binary_version); print } \
 	' etc/templates/toree-assembly-pom.xml > dist/toree/$(ASSEMBLY_POM)
 
 dist/toree: dist/toree/VERSION dist/toree/logo-64x64.png dist/toree-legal dist/toree/lib dist/toree/bin dist/toree/$(ASSEMBLY_POM) RELEASE_NOTES.md

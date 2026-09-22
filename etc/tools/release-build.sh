@@ -205,6 +205,11 @@ GIT_REPO=${GIT_REPO:-$GIT_REPO_CANONICAL}
 
 BASE_DIR=$(pwd)
 
+# Scala binary version the assembly jar/pom are built and named for. Must
+# match the Makefile's own default, since `make clean dist release` below is
+# invoked without an explicit SCALA_VERSION override.
+SCALA_VERSION=${SCALA_VERSION:-2.12}
+
 MVN="mvn"
 
 if [ -z "$RELEASE_RC" ]; then
@@ -279,8 +284,8 @@ function validate_artifacts {
         "target/toree/dist/apache-toree-src/apache-toree-$FULL_RELEASE_VERSION-src.tar.gz"
         "target/toree/dist/toree-pip/toree-$FULL_RELEASE_VERSION.tar.gz"
         "target/toree/dist/apache-toree-pip/apache-toree-$FULL_RELEASE_VERSION.tar.gz"
-        "target/toree/dist/toree/lib/apache-toree-assembly-$FULL_RELEASE_VERSION.jar"
-        "target/toree/dist/toree/apache-toree-assembly-$FULL_RELEASE_VERSION.pom"
+        "target/toree/dist/toree/lib/toree-assembly_$SCALA_VERSION-$FULL_RELEASE_VERSION.jar"
+        "target/toree/dist/toree/toree-assembly_$SCALA_VERSION-$FULL_RELEASE_VERSION.pom"
     )
 
     for artifact in "${artifacts[@]}"; do
@@ -425,8 +430,8 @@ if [[ "$RELEASE_PUBLISH" == "true" ]]; then
     # The passphrase reaches the plugin through MAVEN_GPG_PASSPHRASE rather than the
     # command line, where it would be visible to any local user through ps.
     mvn "$MVN_GPG_PLUGIN:sign-and-deploy-file" \
-        -Dfile="toree/dist/toree/lib/apache-toree-assembly-$RELEASE_VERSION-incubating.jar" \
-        -DpomFile="toree/dist/toree/apache-toree-assembly-$RELEASE_VERSION-incubating.pom" \
+        -Dfile="toree/dist/toree/lib/toree-assembly_$SCALA_VERSION-$RELEASE_VERSION-incubating.jar" \
+        -DpomFile="toree/dist/toree/toree-assembly_$SCALA_VERSION-$RELEASE_VERSION-incubating.pom" \
         -DrepositoryId=apache.releases.https \
         -Durl=https://repository.apache.org/service/local/staging/deploy/maven2
 
