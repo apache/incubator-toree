@@ -105,16 +105,19 @@ ThisBuild / publishTo := {
     Some("Apache Staging Repo" at "https://repository.apache.org/content/repositories/staging/")
 }
 // The incubation disclaimer is read from DISCLAIMER rather than repeated here, so
-// the published POMs cannot drift from the file the ASF requires us to ship. It is
-// wrapped for readability in the file, so collapse the wrapping for POM metadata.
-ThisBuild / description := {
-  val disclaimer = IO.read((ThisBuild / baseDirectory).value / "DISCLAIMER")
-    .replaceAll("\\s+", " ")
-    .trim
-  "Apache Toree (Incubating) is a Jupyter Notebook kernel that provides interactive " +
-    "applications to connect to and use Apache Spark using Scala language. " +
-    disclaimer
-}
+// the published POMs cannot drift from the file the ASF requires us to ship. The
+// layout matches the assembly POM that the Makefile renders from
+// etc/templates/toree-assembly-pom.xml: the summary, a blank line, then DISCLAIMER
+// verbatim. CommonPlugin indents it and keeps the line breaks in the written POM.
+def pomDescription(baseDir: File, summary: String*): String =
+  (summary ++ Seq("") ++ IO.readLines(baseDir / "DISCLAIMER")).mkString("\n")
+ThisBuild / description := pomDescription((ThisBuild / baseDirectory).value,
+  "Apache Toree is a Jupyter Notebook kernel that provides interactive",
+  "applications to connect to and use Apache Spark using Scala language.")
+// Without this, sbt fills <organization><name> with the groupId, and that element
+// would also override the ASF organization inherited from the apache parent POM.
+ThisBuild / organizationName := "The Apache Software Foundation"
+ThisBuild / organizationHomepage := Some(url("https://www.apache.org/"))
 ThisBuild / licenses := Seq("Apache License, Version 2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
 ThisBuild / pomExtra := {
   <parent>
@@ -225,6 +228,9 @@ lazy val plugins = (project in file("plugins"))
   */
 lazy val sparkMonitorPlugin = (project in file("spark-monitor-plugin"))
   .settings(name := "apache-toree-spark-monitor-plugin")
+  .settings(description := pomDescription((ThisBuild / baseDirectory).value,
+    "Apache Toree plugin that reports Apache Spark application, job, stage, task",
+    "and executor events to Jupyter clients through a SparkMonitor comm channel."))
   .settings(legalFileMappings)
   // Mirrors the root project's own dist/toree-legal wiring so this project's
   // assembly jar carries the same LICENSE/NOTICE/DISCLAIMER/third-party licenses

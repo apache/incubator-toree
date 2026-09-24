@@ -39,7 +39,7 @@
     from the copy the ASF requires the distribution to carry.
   -->
   <description>
-    Apache Toree (Incubating) is a Jupyter Notebook kernel that provides interactive
+    Apache Toree is a Jupyter Notebook kernel that provides interactive
     applications to connect to and use Apache Spark using Scala language.
 
 @DISCLAIMER@
