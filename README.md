@@ -26,7 +26,7 @@
 
 [Apache Toree][website]
 ============
-Apache Toree is a [Juypter Notebook](https://jupyter.org/) kernel. The main goal of Toree is to provide the foundation for
+Apache Toree (Incubating) is a [Jupyter Notebook](https://jupyter.org/) kernel. The main goal of Toree is to provide the foundation for
 interactive applications that connect to and use [Apache Spark][1] using Scala language.
 
 Overview
@@ -137,8 +137,7 @@ Then start with: `java -jar apache-toree-assembly-<VERSION>.jar --profile config
 - Make sure to use the absolute path to the spark-monitor-plugin JAR file and ensure the JAR is accessible from the location where Toree is running.
 - The plugin is not auto-loaded as an internal plugin because `run.sh` never puts it on the kernel's classpath — only the main assembly jar is passed to `spark-submit`. `PluginManager` only scans the classpath it is given for `Plugin` subclasses, so the plugin jar's filename is not what matters; specifying it explicitly via `--magic-url` is what makes it visible to the kernel.
 
-Run Examples
-============
+# Run Examples
 To play with the example notebooks, run
 ```
 make jupyter
@@ -147,8 +146,7 @@ make jupyter
 A notebook server will be launched in a `Docker` container with Toree and some other dependencies installed.
 Refer to your `Docker` setup for the ip address. The notebook will be at `http://<ip>:8888/`.
 
-Install
-=======
+# Install
 This requires you to have a distribution of Apache Spark downloaded to the system where Apache Toree will run. The following commands will install Apache Toree.
 ```
 pip install --upgrade toree
@@ -167,16 +165,13 @@ pip install https://dist.apache.org/repos/dist/dev/incubator/toree/0.2.0/snapsho
 jupyter toree install --spark_home=<YOUR_SPARK_PATH>
 ```
 
-Reporting Issues
-================
+# Reporting Issues
 Refer to and open issue [here][issues]
 
-Communication
-=============
+# Communication
 You can reach us through [gitter][gitter-url] or our [mailing list][mail-list]
 
-Version
-=======
+# Version
 We are working on publishing binary releases of Toree soon. As part of our move into Apache Incubator, Toree will start a new version sequence starting at `0.1`.
 
 Our goal is to keep `master` up to date with the latest version of Spark. When new versions of Spark require specific code changes to Toree, we will branch out older Spark version support.
@@ -191,8 +186,7 @@ Branch                       | Apache Spark Version
 
 Please note that for the most part, new features will mainly be added to the `master` branch.
 
-Resources
-=========
+# Resources
 
 We are currently enhancing our documentation, which is available in our [website][documentation].
 
@@ -213,3 +207,5 @@ We are currently enhancing our documentation, which is available in our [website
 [master]: https://github.com/apache/incubator-toree
 [0.1.x]: https://github.com/apache/incubator-toree/tree/0.1.x
 [0.4.x]: https://github.com/apache/incubator-toree/tree/0.4.x
+
+# [DISCLAIMER](DISCLAIMER)
