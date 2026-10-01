@@ -18,6 +18,9 @@
 // Needed for type inspection
 libraryDependencies ++= Seq(
   Dependencies.scalaReflect.value,
+  Dependencies.asm,
+  Dependencies.asmCommons,
+  Dependencies.asmUtil,
   Dependencies.clapper,
   Dependencies.slf4jApi,
 )
