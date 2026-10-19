@@ -50,9 +50,32 @@ object CommonPlugin extends AutoPlugin {
         streams.value.log.info(s"Copying ${inputFile.getPath} to ${outputFile.getPath}")
         IO.copyFile(inputFile, outputFile)
         Seq(outputFile)
-      }.taskValue
+      }.taskValue,
+      makePom := {
+        val pom = makePom.value
+        IO.write(pom, restoreDescriptionLines(IO.read(pom), description.value))
+        pom
+      }
     )
   }
+
+  // sbt pretty-prints the POM, which collapses <description> onto one line. Write
+  // the description back line by line, indented one level inside the element, so
+  // the DISCLAIMER paragraphs survive as they do in the assembly POM the Makefile
+  // renders from etc/templates/toree-assembly-pom.xml.
+  private val DescriptionElement = """(?s)([ \t]*)<description>.*?</description>""".r
+
+  def restoreDescriptionLines(pom: String, description: String): String =
+    DescriptionElement.findFirstMatchIn(pom) match {
+      case None => pom
+      case Some(m) =>
+        val indent = m.group(1)
+        val body = description.split("\n", -1).map { line =>
+          if (line.trim.isEmpty) "" else s"$indent    ${scala.xml.Utility.escape(line)}"
+        }
+        val element = (s"$indent<description>" +: body :+ s"$indent</description>").mkString("\n")
+        pom.substring(0, m.start) + element + pom.substring(m.end)
+    }
 
   def sysFilter(name: String): Boolean =
     (name endsWith "SpecForSystem") || (name startsWith "system.")
