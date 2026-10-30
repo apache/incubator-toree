@@ -27,7 +27,7 @@
   </parent>
 
   <groupId>org.apache.toree</groupId>
-  <artifactId>apache-toree-assembly</artifactId>
+  <artifactId>toree-assembly_@SCALA_BINARY_VERSION@</artifactId>
   <version>@VERSION@</version>
   <packaging>jar</packaging>
 

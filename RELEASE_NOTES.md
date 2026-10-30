@@ -56,6 +56,11 @@
 * Release artifacts no longer ship `.md5` checksums, which the ASF has
   deprecated for release distribution. `.asc` signatures and `.sha512`
   checksums are unchanged.
+* The assembly jar and its Maven artifactId now carry the Scala binary
+  version, matching the Spark/Hadoop/Flink convention, as Toree is now
+  built for both Scala 2.12 and 2.13:
+  - Assembly jar: `toree-assembly-<VERSION>.jar` → `toree-assembly_<SCALA_VERSION>-<VERSION>.jar`
+  - Maven artifactId: `toree-assembly` → `toree-assembly_<SCALA_VERSION>`
 
 ## 0.5.0-incubating (2022.04)
 
