@@ -313,8 +313,11 @@ object TaskManager {
   /**
    * The time in milliseconds stop() waits for interrupted tasks to finish
    * on their own before aborting their futures and abandoning the threads.
+   * Interrupted REPL cells take a few hundred milliseconds to unwind and
+   * report their exception; aborting them sooner would let their late
+   * output be attributed to the next cell.
    */
-  val AbortGracePeriod = 100
+  val AbortGracePeriod = 1000
 
   /** The maximum time to wait to add a task to the queue in milliseconds. */
   val MaximumTaskQueueTimeout = 10000

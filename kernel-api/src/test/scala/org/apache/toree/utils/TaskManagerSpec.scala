@@ -287,6 +287,30 @@ class TaskManagerSpec extends AnyFunSpec with Matchers with MockitoSugar
         }
       }
 
+      it("should let an interrupted task that is still unwinding report its own failure") {
+        // e.g. the REPL formatting an InterruptedException takes a few
+        // hundred ms; aborting it early would misattribute its output to
+        // the next cell.
+        class CellFailure extends RuntimeException
+        taskManager.start()
+        val f = taskManager.add {
+          try Thread.sleep(60000)
+          catch {
+            case _: InterruptedException =>
+              Thread.sleep(300)
+              throw new CellFailure
+          }
+        }
+
+        while (!taskManager.isExecutingTask) Thread.sleep(1)
+
+        taskManager.stop()
+
+        whenReady(f.failed) { result =>
+          result shouldBe a [CellFailure]
+        }
+      }
+
       it("should abort the future of a task that ignores interrupts") {
         val release = new AtomicBoolean(false)
         taskManager.start()
