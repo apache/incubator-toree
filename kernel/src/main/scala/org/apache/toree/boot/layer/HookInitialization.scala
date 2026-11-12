@@ -67,31 +67,17 @@ trait StandardHookInitialization extends HookInitialization {
 
   private def registerInterruptHook(config: Config, interpreter: Interpreter): Unit = {
     val self = this
+    val handler = new InterruptSignalHandler(
+      interrupt = () => interpreter.interrupt(),
+      shutdown = () => self.shutdown()
+    )
 
     import sun.misc.{Signal, SignalHandler}
 
     // TODO: Signals are not a good way to handle this since JVM only has the
     // proprietary sun API that is not necessarily available on all platforms
     Signal.handle(new Signal("INT"), new SignalHandler() {
-      private val MaxSignalTime: Long = 3000 // 3 seconds
-      var lastSignalReceived: Long    = 0
-
-      def handle(sig: Signal) = {
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastSignalReceived > MaxSignalTime) {
-          logger.info("Resetting code execution!")
-          interpreter.interrupt()
-
-          // TODO: Cancel group representing current code execution
-          //sparkContext.cancelJobGroup()
-
-          logger.info("Enter Ctrl-C twice to shutdown!")
-          lastSignalReceived = currentTime
-        } else {
-          logger.info("Shutting down kernel")
-          self.shutdown()
-        }
-      }
+      def handle(sig: Signal): Unit = handler.onSignal()
     })
     // Define handler for alternate signal that will be fired in cases where
     // the caller is in a background process in order to interrupt
@@ -104,14 +90,7 @@ trait StandardHookInitialization extends HookInitialization {
 
       try {
         Signal.handle(new Signal(altSigint), new SignalHandler() {
-
-            def handle(sig: Signal) = {
-              logger.info("Resetting code execution due to interrupt!")
-              interpreter.interrupt()
-
-              // TODO: Cancel group representing current code execution
-              //sparkContext.cancelJobGroup()
-            }
+          def handle(sig: Signal): Unit = handler.onAlternateSignal()
         })
       } catch {
         case e:Exception => logger.warn("Error occurred establishing alternate signal handler " +
