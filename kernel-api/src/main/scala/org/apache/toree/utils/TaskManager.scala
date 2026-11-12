@@ -108,6 +108,15 @@ class TaskManager(
 
   private val taskQueue = new ArrayBlockingQueue[Runnable](maxTasks)
 
+  /**
+   * Promises of tasks that have been added but not completed (queued or
+   * running). Tracked so that stop() can fail them: otherwise a task that
+   * ignores interrupts, or one dropped from the queue by shutdownNow(), would
+   * leave its future pending forever and block anyone awaiting it.
+   */
+  private val pendingPromises: java.util.Set[Promise[_]] =
+    ConcurrentHashMap.newKeySet[Promise[_]]()
+
   @volatile
   private[utils] var executor: Option[ScalingThreadPoolExecutor] = None
 
@@ -116,35 +125,48 @@ class TaskManager(
    *
    * @param taskFunction The new task as a block of code
    *
-   * @return Future representing the return value (or error) from the task
+   * @return Future representing the return value (or error) from the task;
+   *         fails with an `ExecutionException` wrapping a
+   *         [[TaskAbortedException]] if the task manager is stopped before
+   *         the task completes
    */
   def add[T <: Any](taskFunction: => T): Future[T] = {
     assert(executor.nonEmpty, "Task manager not started!")
 
     val taskPromise = Promise[T]()
+    pendingPromises.add(taskPromise)
 
     // Construct runnable that completes the promise
     logger.trace(s"Queueing new task to be processed!")
-    executor.foreach(_.execute(new Runnable {
-      override def run(): Unit = {
-        var threadName: String = "???"
-        try {
-          threadName = Try(Thread.currentThread().getName).getOrElse(threadName)
-          logger.trace(s"(Thread $threadName) Executing task!")
-          val result = taskFunction
+    try {
+      executor.foreach(_.execute(new Runnable {
+        override def run(): Unit = {
+          var threadName: String = "???"
+          try {
+            threadName = Try(Thread.currentThread().getName).getOrElse(threadName)
+            logger.trace(s"(Thread $threadName) Executing task!")
+            val result = taskFunction
 
-          logger.trace(s"(Thread $threadName) Task finished successfully!")
-          taskPromise.success(result)
-        } catch {
-          case ex: Throwable =>
-            val exName = ex.getClass.getName
-            val exMessage = Option(ex.getLocalizedMessage).getOrElse("???")
-            logger.trace(
-              s"(Thread $threadName) Task failed: ($exName) = $exMessage")
-            taskPromise.tryFailure(ex)
+            logger.trace(s"(Thread $threadName) Task finished successfully!")
+            // try*: the promise may already have been aborted by stop()
+            taskPromise.trySuccess(result)
+          } catch {
+            case ex: Throwable =>
+              val exName = ex.getClass.getName
+              val exMessage = Option(ex.getLocalizedMessage).getOrElse("???")
+              logger.trace(
+                s"(Thread $threadName) Task failed: ($exName) = $exMessage")
+              taskPromise.tryFailure(ex)
+          } finally {
+            pendingPromises.remove(taskPromise)
+          }
         }
-      }
-    }))
+      }))
+    } catch {
+      case ex: RejectedExecutionException =>
+        pendingPromises.remove(taskPromise)
+        throw ex
+    }
 
     taskPromise.future
   }
@@ -202,10 +224,39 @@ class TaskManager(
 
   /**
    * Stops internal processing of tasks.
+   *
+   * Running tasks are interrupted and given up to `AbortGracePeriod`
+   * milliseconds to finish on their own (so they report their own failure,
+   * e.g. an `InterruptedException`). Any task still pending after that,
+   * whether running or queued, has its future failed with a
+   * [[TaskAbortedException]]. Threads that ignore the interrupt cannot be
+   * forcibly stopped; they are abandoned and a warning is logged.
    */
   def stop(): Unit = {
-    executor.foreach(_.shutdownNow())
+    executor.foreach { ex =>
+      ex.shutdownNow()
+      val terminated = ex.awaitTermination(AbortGracePeriod, TimeUnit.MILLISECONDS)
+      if (!terminated) {
+        logger.warn(
+          s"${ex.getActiveCount} task thread(s) did not respond to interrupt " +
+          "and are still running; they have been abandoned and will keep " +
+          "consuming resources until they finish. Restart the kernel to " +
+          "reclaim them.")
+      }
+    }
     executor = None
+    abortPendingTasks()
+  }
+
+  /** Fails every not-yet-completed task future with TaskAbortedException. */
+  private def abortPendingTasks(): Unit = {
+    val it = pendingPromises.iterator()
+    while (it.hasNext) {
+      val promise = it.next()
+      it.remove()
+      promise.tryFailure(new TaskAbortedException(
+        "Task aborted because the task manager was stopped"))
+    }
   }
 }
 
@@ -236,6 +287,12 @@ object TaskManager {
    * if it cannot be interrupted.
    */
   val InterruptTimeout = 5000
+
+  /**
+   * The time in milliseconds stop() waits for interrupted tasks to finish
+   * on their own before aborting their futures and abandoning the threads.
+   */
+  val AbortGracePeriod = 100
 
   /** The maximum time to wait to add a task to the queue in milliseconds. */
   val MaximumTaskQueueTimeout = 10000
