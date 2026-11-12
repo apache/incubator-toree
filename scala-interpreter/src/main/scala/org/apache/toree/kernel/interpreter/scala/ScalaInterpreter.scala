@@ -180,6 +180,32 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
    protected def activeSparkContext: Option[SparkContext] =
      SparkSession.getDefaultSession.map(_.sparkContext).filterNot(_.isStopped)
 
+   /**
+    * Runs a cell's code so that Spark jobs it starts are interruptible when
+    * cancelled by interrupt().
+    *
+    * By default Spark only flags cancelled tasks as killed; a task blocked in
+    * user code (sleep, I/O) keeps its executor core until it finishes, so
+    * later cells stall. Setting the `spark.job.interruptOnCancel` local
+    * property on the cell's thread makes cancellation call
+    * `Thread.interrupt()` on the task threads. Users on HDFS versions
+    * affected by HDFS-1208 can opt out with
+    * `--conf spark.toree.interruptTasksOnCancel=false`.
+    *
+    * Only applies when Spark is already running: a cell that starts Spark
+    * itself (lazy initialization) runs with Spark's default behaviour.
+    *
+    * @param body The cell's code
+    * @tparam T The cell's result type
+    * @return The result of body
+    */
+   protected def withInterruptibleSparkJobs[T](body: => T): T = {
+     activeSparkContext
+       .filter(_.getConf.getBoolean(InterruptTasksOnCancelConf, defaultValue = true))
+       .foreach(_.setLocalProperty(SparkJobInterruptOnCancel, "true"))
+     body
+   }
+
    override def interrupt(): Interpreter = {
      require(taskManager != null)
 
@@ -446,6 +472,12 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 }
 
 object ScalaInterpreter {
+
+  /** Spark job property that makes job cancellation interrupt task threads. */
+  val SparkJobInterruptOnCancel = "spark.job.interruptOnCancel"
+
+  /** SparkConf key to opt out of interrupting Spark tasks on cell interrupt. */
+  val InterruptTasksOnCancelConf = "spark.toree.interruptTasksOnCancel"
 
   val HigherOrderFunction: Regex = """(\w+):\s+(\(\s*.*=>\s*\w+\))(\w+)\s*.*""".r
   val NamedResult: Regex = """((val|var)\s+)?(\w+):\s+([^=]+)\s+=\s*(.*)""".r

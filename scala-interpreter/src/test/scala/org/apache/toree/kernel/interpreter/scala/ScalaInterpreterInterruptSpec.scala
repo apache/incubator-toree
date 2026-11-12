@@ -20,10 +20,11 @@ package org.apache.toree.kernel.interpreter.scala
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.atomic.AtomicBoolean
 
-import org.apache.spark.SparkContext
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.toree.kernel.api.KernelLike
 import org.apache.toree.utils.{TaskAbortedException, TaskManager}
-import org.mockito.Mockito.{doThrow, never, verify}
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.{doThrow, never, verify, when}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.funspec.AnyFunSpec
@@ -71,6 +72,9 @@ class ScalaInterpreterInterruptSpec extends AnyFunSpec with Matchers
       while (!taskManager.isExecutingTask) Thread.sleep(1)
       f
     }
+
+    /** Exposes the per-cell Spark job wrapper used by interpretAddTask. */
+    def runCell[T](body: => T): T = withInterruptibleSparkJobs(body)
   }
 
   private def assertAborted(f: Future[_]): Unit =
@@ -113,6 +117,41 @@ class ScalaInterpreterInterruptSpec extends AnyFunSpec with Matchers
         noException should be thrownBy interpreter.interrupt()
 
         assertAborted(stuck)
+      }
+    }
+
+    describe("#withInterruptibleSparkJobs") {
+      def sparkWithConf(conf: SparkConf): SparkContext = {
+        val sc = mock[SparkContext]
+        when(sc.getConf).thenReturn(conf)
+        sc
+      }
+
+      it("should make the cell's Spark jobs interruptible on cancel") {
+        val sc = sparkWithConf(new SparkConf(false))
+        val interpreter = new TestInterpreter(spark = Some(sc))
+
+        interpreter.runCell { "result" } should be ("result")
+
+        verify(sc).setLocalProperty("spark.job.interruptOnCancel", "true")
+      }
+
+      it("should leave jobs alone when disabled via spark.toree.interruptTasksOnCancel") {
+        val sc = sparkWithConf(
+          new SparkConf(false).set("spark.toree.interruptTasksOnCancel", "false"))
+        val interpreter = new TestInterpreter(spark = Some(sc))
+
+        interpreter.runCell { "result" } should be ("result")
+
+        verify(sc, never()).setLocalProperty(anyString(), anyString())
+      }
+
+      it("should just run the cell when Spark is not running") {
+        val interpreter = new TestInterpreter(spark = None)
+
+        interpreter.runCell { "result" } should be ("result")
+
+        verify(mockKernel, never()).sparkContext
       }
     }
   }
