@@ -41,6 +41,7 @@ import java.io.OutputStream
 import scala.tools.nsc.util.ClassPath
 import scala.util.matching.Regex
 import scala.concurrent.duration.Duration
+import scala.util.control.NonFatal
 
 class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends Interpreter with ScalaInterpreterSpecific {
   import ScalaInterpreter._
@@ -165,11 +166,66 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      }
    }
 
+   /**
+    * Returns the SparkContext only if one is already running; never creates
+    * one.
+    *
+    * interrupt() runs on the JVM's signal-handler thread. On JDK 9+ that
+    * thread has no context class loader, so lazily creating Spark there fails
+    * in a static initializer and leaves Spark unusable for the rest of the
+    * JVM's life.
+    *
+    * @return The running SparkContext, or None if Spark has not been started
+    */
+   protected def activeSparkContext: Option[SparkContext] =
+     SparkSession.getDefaultSession.map(_.sparkContext).filterNot(_.isStopped)
+
+   /**
+    * Runs a cell's code so that Spark jobs it starts are interruptible when
+    * cancelled by interrupt().
+    *
+    * By default Spark only flags cancelled tasks as killed; a task blocked in
+    * user code (sleep, I/O) keeps its executor core until it finishes, so
+    * later cells stall. Setting the `spark.job.interruptOnCancel` local
+    * property on the cell's thread makes cancellation call
+    * `Thread.interrupt()` on the task threads. Users on HDFS versions
+    * affected by HDFS-1208 can opt out with
+    * `--conf spark.toree.interruptTasksOnCancel=false`.
+    *
+    * Only applies when Spark is already running: a cell that starts Spark
+    * itself (lazy initialization) runs with Spark's default behaviour.
+    *
+    * @param body The cell's code
+    * @tparam T The cell's result type
+    * @return The result of body
+    */
+   protected def withInterruptibleSparkJobs[T](body: => T): T = {
+     // Best effort: this runs before every cell, so a problem here (invalid
+     // opt-out value, stopped context) must never fail the user's code.
+     try {
+       activeSparkContext
+         .filter(interruptTasksOnCancelEnabled)
+         .foreach(_.setLocalProperty(SparkJobInterruptOnCancel, "true"))
+     } catch {
+       case NonFatal(ex) =>
+         logger.warn("Unable to make Spark jobs interruptible for this cell", ex)
+     }
+     body
+   }
+
+   private def interruptTasksOnCancelEnabled(sc: SparkContext): Boolean =
+     try sc.getConf.getBoolean(InterruptTasksOnCancelConf, defaultValue = true)
+     catch {
+       case _: IllegalArgumentException =>
+         logger.warn(s"Invalid boolean for $InterruptTasksOnCancelConf: " +
+           s"'${sc.getConf.get(InterruptTasksOnCancelConf)}'; using default (true)")
+         true
+     }
+
    override def interrupt(): Interpreter = {
      require(taskManager != null)
 
-     // TODO: use SparkContext.setJobGroup to avoid killing all jobs
-     kernel.sparkContext.cancelAllJobs()
+     cancelSparkJobs()
 
      // give the task 100ms to complete before restarting the task manager
      import scala.concurrent.ExecutionContext.Implicits.global
@@ -190,6 +246,18 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
      this
    }
+
+   /**
+    * Cancels Spark jobs if Spark is running. Failures are logged rather than
+    * thrown so that the running cell is still interrupted.
+    */
+   private def cancelSparkJobs(): Unit =
+     try {
+       // TODO: use SparkContext.setJobGroup to avoid killing all jobs
+       activeSparkContext.foreach(_.cancelAllJobs())
+     } catch {
+       case NonFatal(ex) => logger.warn("Failed to cancel Spark jobs", ex)
+     }
 
    override def interpret(code: String, silent: Boolean = false, output: Option[OutputStream]):
     (ToreeResults.Result, Either[ExecuteOutput, ExecuteFailure]) = {
@@ -420,6 +488,12 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 }
 
 object ScalaInterpreter {
+
+  /** Spark job property that makes job cancellation interrupt task threads. */
+  val SparkJobInterruptOnCancel = "spark.job.interruptOnCancel"
+
+  /** SparkConf key to opt out of interrupting Spark tasks on cell interrupt. */
+  val InterruptTasksOnCancelConf = "spark.toree.interruptTasksOnCancel"
 
   val HigherOrderFunction: Regex = """(\w+):\s+(\(\s*.*=>\s*\w+\))(\w+)\s*.*""".r
   val NamedResult: Regex = """((val|var)\s+)?(\w+):\s+([^=]+)\s+=\s*(.*)""".r

@@ -18,6 +18,7 @@
 package org.apache.toree.utils
 
 import java.util.concurrent.{ExecutionException, RejectedExecutionException}
+import java.util.concurrent.atomic.AtomicBoolean
 
 import org.scalatest.concurrent.PatienceConfiguration.Timeout
 import org.scalatest.concurrent.{Eventually, ScalaFutures, TimeLimits}
@@ -286,24 +287,101 @@ class TaskManagerSpec extends AnyFunSpec with Matchers with MockitoSugar
         }
       }
 
-      // TODO: Refactoring task manager to be parallelizable broke this ability
-      //       so this will need to be reimplemented or abandoned
-      ignore("should kill the thread if interrupts failed and kill enabled") {
+      it("should let an interrupted task that is still unwinding report its own failure") {
+        // e.g. the REPL formatting an InterruptedException takes a few
+        // hundred ms; aborting it early would misattribute its output to
+        // the next cell.
+        class CellFailure extends RuntimeException
         taskManager.start()
-        val f = taskManager.add { var x = 0; while (true) { x += 1 } }
+        val f = taskManager.add {
+          try Thread.sleep(60000)
+          catch {
+            case _: InterruptedException =>
+              Thread.sleep(300)
+              throw new CellFailure
+          }
+        }
 
-        // Wait for the task to start
         while (!taskManager.isExecutingTask) Thread.sleep(1)
 
-        // Kill the task
         taskManager.stop()
 
-        // Future should return ThreadDeath when killed
         whenReady(f.failed) { result =>
-          result shouldBe an [ExecutionException]
-          result.getCause shouldBe a [ThreadDeath]
+          result shouldBe a [CellFailure]
+        }
+      }
+
+      it("should abort the future of a task that ignores interrupts") {
+        val release = new AtomicBoolean(false)
+        taskManager.start()
+        val f = taskManager.add { ignoreInterruptsUntil(release) }
+
+        while (!taskManager.isExecutingTask) Thread.sleep(1)
+
+        try {
+          taskManager.stop()
+
+          // Without this, anything awaiting the future (e.g. the interpreter
+          // waiting on a cell) would block forever.
+          whenReady(f.failed) { result =>
+            result shouldBe an [ExecutionException]
+            result.getCause shouldBe a [TaskAbortedException]
+          }
+        } finally {
+          release.set(true)
+        }
+      }
+
+      it("should abort queued tasks that never started") {
+        val release = new AtomicBoolean(false)
+        val taskManager = new TaskManager(minimumWorkers = 1, maximumWorkers = 1)
+        taskManager.start()
+        taskManager.add { ignoreInterruptsUntil(release) }
+        val queued = taskManager.add { "never runs" }
+
+        while (!taskManager.isExecutingTask) Thread.sleep(1)
+
+        try {
+          taskManager.stop()
+
+          whenReady(queued.failed) { result =>
+            result shouldBe an [ExecutionException]
+            result.getCause shouldBe a [TaskAbortedException]
+          }
+        } finally {
+          release.set(true)
+        }
+      }
+      it("should still abort pending tasks when stopped from an interrupted thread") {
+        val release = new AtomicBoolean(false)
+        taskManager.start()
+        val f = taskManager.add { ignoreInterruptsUntil(release) }
+
+        while (!taskManager.isExecutingTask) Thread.sleep(1)
+
+        try {
+          Thread.currentThread().interrupt()
+          try taskManager.stop()
+          finally {
+            // The caller's interrupt status must be preserved (and cleared
+            // here so the rest of the test can block).
+            Thread.interrupted() should be (true)
+          }
+
+          taskManager.executor should be (None)
+          whenReady(f.failed) { result =>
+            result.getCause shouldBe a [TaskAbortedException]
+          }
+        } finally {
+          release.set(true)
         }
       }
     }
   }
+
+  /** Simulates user code that swallows interrupts (e.g. a CPU-bound loop). */
+  private def ignoreInterruptsUntil(release: AtomicBoolean): Unit =
+    while (!release.get()) {
+      try Thread.sleep(5) catch { case _: InterruptedException => }
+    }
 }

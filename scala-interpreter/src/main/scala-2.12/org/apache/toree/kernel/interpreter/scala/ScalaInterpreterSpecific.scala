@@ -373,12 +373,14 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
     taskManager.add {
       // Add a task using the given state of our streams
       StreamState.withStreams {
-        if (silent) {
-          iMain.beSilentDuring {
+        withInterruptibleSparkJobs {
+          if (silent) {
+            iMain.beSilentDuring {
+              iMain.interpret(code)
+            }
+          } else {
             iMain.interpret(code)
           }
-        } else {
-          iMain.interpret(code)
         }
       }
     }
