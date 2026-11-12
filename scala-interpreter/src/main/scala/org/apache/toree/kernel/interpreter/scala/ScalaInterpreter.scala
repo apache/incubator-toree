@@ -41,6 +41,7 @@ import java.io.OutputStream
 import scala.tools.nsc.util.ClassPath
 import scala.util.matching.Regex
 import scala.concurrent.duration.Duration
+import scala.util.control.NonFatal
 
 class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends Interpreter with ScalaInterpreterSpecific {
   import ScalaInterpreter._
@@ -165,11 +166,24 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
      }
    }
 
+   /**
+    * Returns the SparkContext only if one is already running; never creates
+    * one.
+    *
+    * interrupt() runs on the JVM's signal-handler thread. On JDK 9+ that
+    * thread has no context class loader, so lazily creating Spark there fails
+    * in a static initializer and leaves Spark unusable for the rest of the
+    * JVM's life.
+    *
+    * @return The running SparkContext, or None if Spark has not been started
+    */
+   protected def activeSparkContext: Option[SparkContext] =
+     SparkSession.getDefaultSession.map(_.sparkContext).filterNot(_.isStopped)
+
    override def interrupt(): Interpreter = {
      require(taskManager != null)
 
-     // TODO: use SparkContext.setJobGroup to avoid killing all jobs
-     kernel.sparkContext.cancelAllJobs()
+     cancelSparkJobs()
 
      // give the task 100ms to complete before restarting the task manager
      import scala.concurrent.ExecutionContext.Implicits.global
@@ -190,6 +204,18 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
      this
    }
+
+   /**
+    * Cancels Spark jobs if Spark is running. Failures are logged rather than
+    * thrown so that the running cell is still interrupted.
+    */
+   private def cancelSparkJobs(): Unit =
+     try {
+       // TODO: use SparkContext.setJobGroup to avoid killing all jobs
+       activeSparkContext.foreach(_.cancelAllJobs())
+     } catch {
+       case NonFatal(ex) => logger.warn("Failed to cancel Spark jobs", ex)
+     }
 
    override def interpret(code: String, silent: Boolean = false, output: Option[OutputStream]):
     (ToreeResults.Result, Either[ExecuteOutput, ExecuteFailure]) = {
