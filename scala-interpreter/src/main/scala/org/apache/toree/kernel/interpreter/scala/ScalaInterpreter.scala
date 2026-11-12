@@ -200,11 +200,27 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
     * @return The result of body
     */
    protected def withInterruptibleSparkJobs[T](body: => T): T = {
-     activeSparkContext
-       .filter(_.getConf.getBoolean(InterruptTasksOnCancelConf, defaultValue = true))
-       .foreach(_.setLocalProperty(SparkJobInterruptOnCancel, "true"))
+     // Best effort: this runs before every cell, so a problem here (invalid
+     // opt-out value, stopped context) must never fail the user's code.
+     try {
+       activeSparkContext
+         .filter(interruptTasksOnCancelEnabled)
+         .foreach(_.setLocalProperty(SparkJobInterruptOnCancel, "true"))
+     } catch {
+       case NonFatal(ex) =>
+         logger.warn("Unable to make Spark jobs interruptible for this cell", ex)
+     }
      body
    }
+
+   private def interruptTasksOnCancelEnabled(sc: SparkContext): Boolean =
+     try sc.getConf.getBoolean(InterruptTasksOnCancelConf, defaultValue = true)
+     catch {
+       case _: IllegalArgumentException =>
+         logger.warn(s"Invalid boolean for $InterruptTasksOnCancelConf: " +
+           s"'${sc.getConf.get(InterruptTasksOnCancelConf)}'; using default (true)")
+         true
+     }
 
    override def interrupt(): Interpreter = {
      require(taskManager != null)

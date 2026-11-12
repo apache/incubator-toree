@@ -121,6 +121,12 @@ class TaskManager(
   private[utils] var executor: Option[ScalingThreadPoolExecutor] = None
 
   /**
+   * Serializes start/stop/restart: each signal is handled on its own JVM
+   * thread, so an interrupt (restart) can race with a shutdown (stop).
+   */
+  private val lifecycleLock = new Object
+
+  /**
    * Adds a new task to the list to execute.
    *
    * @param taskFunction The new task as a block of code
@@ -131,7 +137,11 @@ class TaskManager(
    *         the task completes
    */
   def add[T <: Any](taskFunction: => T): Future[T] = {
-    assert(executor.nonEmpty, "Task manager not started!")
+    // Read the executor once: a concurrent stop() may clear the field, and a
+    // second read would then silently drop the task. A shut-down executor
+    // instead rejects it below.
+    val currentExecutor = executor
+    assert(currentExecutor.nonEmpty, "Task manager not started!")
 
     val taskPromise = Promise[T]()
     pendingPromises.add(taskPromise)
@@ -139,7 +149,7 @@ class TaskManager(
     // Construct runnable that completes the promise
     logger.trace(s"Queueing new task to be processed!")
     try {
-      executor.foreach(_.execute(new Runnable {
+      currentExecutor.foreach(_.execute(new Runnable {
         override def run(): Unit = {
           var threadName: String = "???"
           try {
@@ -203,7 +213,7 @@ class TaskManager(
    * Starts the task manager (begins processing tasks). Creates X new threads
    * in the process.
    */
-  def start(): Unit = {
+  def start(): Unit = lifecycleLock.synchronized {
     logger.trace(
       s"""
          |Initializing with the following settings:
@@ -217,7 +227,7 @@ class TaskManager(
   /**
    * Restarts internal processing of tasks (removing current task).
    */
-  def restart(): Unit = {
+  def restart(): Unit = lifecycleLock.synchronized {
     stop()
     start()
   }
@@ -231,21 +241,33 @@ class TaskManager(
    * whether running or queued, has its future failed with a
    * [[TaskAbortedException]]. Threads that ignore the interrupt cannot be
    * forcibly stopped; they are abandoned and a warning is logged.
+   *
+   * If the calling thread is interrupted while waiting, the wait ends early
+   * and its interrupt status is preserved; pending tasks are still aborted.
    */
-  def stop(): Unit = {
-    executor.foreach { ex =>
-      ex.shutdownNow()
-      val terminated = ex.awaitTermination(AbortGracePeriod, TimeUnit.MILLISECONDS)
-      if (!terminated) {
-        logger.warn(
-          s"${ex.getActiveCount} task thread(s) did not respond to interrupt " +
-          "and are still running; they have been abandoned and will keep " +
-          "consuming resources until they finish. Restart the kernel to " +
-          "reclaim them.")
+  def stop(): Unit = lifecycleLock.synchronized {
+    try {
+      executor.foreach { ex =>
+        ex.shutdownNow()
+        val terminated =
+          try ex.awaitTermination(AbortGracePeriod, TimeUnit.MILLISECONDS)
+          catch {
+            case _: InterruptedException =>
+              Thread.currentThread().interrupt()
+              ex.isTerminated
+          }
+        if (!terminated) {
+          logger.warn(
+            s"${ex.getActiveCount} task thread(s) did not respond to interrupt " +
+            "and are still running; they have been abandoned and will keep " +
+            "consuming resources until they finish. Restart the kernel to " +
+            "reclaim them.")
+        }
       }
+    } finally {
+      executor = None
+      abortPendingTasks()
     }
-    executor = None
-    abortPendingTasks()
   }
 
   /** Fails every not-yet-completed task future with TaskAbortedException. */

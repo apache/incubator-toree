@@ -153,6 +153,23 @@ class ScalaInterpreterInterruptSpec extends AnyFunSpec with Matchers
 
         verify(mockKernel, never()).sparkContext
       }
+
+      it("should still run the cell when the opt-out value is invalid") {
+        val sc = sparkWithConf(
+          new SparkConf(false).set("spark.toree.interruptTasksOnCancel", "flase"))
+        val interpreter = new TestInterpreter(spark = Some(sc))
+
+        interpreter.runCell { "result" } should be ("result")
+      }
+
+      it("should still run the cell when setting the job property fails") {
+        val sc = sparkWithConf(new SparkConf(false))
+        doThrow(new IllegalStateException("context stopped"))
+          .when(sc).setLocalProperty(anyString(), anyString())
+        val interpreter = new TestInterpreter(spark = Some(sc))
+
+        interpreter.runCell { "result" } should be ("result")
+      }
     }
   }
 }

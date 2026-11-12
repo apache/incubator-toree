@@ -328,6 +328,30 @@ class TaskManagerSpec extends AnyFunSpec with Matchers with MockitoSugar
           release.set(true)
         }
       }
+      it("should still abort pending tasks when stopped from an interrupted thread") {
+        val release = new AtomicBoolean(false)
+        taskManager.start()
+        val f = taskManager.add { ignoreInterruptsUntil(release) }
+
+        while (!taskManager.isExecutingTask) Thread.sleep(1)
+
+        try {
+          Thread.currentThread().interrupt()
+          try taskManager.stop()
+          finally {
+            // The caller's interrupt status must be preserved (and cleared
+            // here so the rest of the test can block).
+            Thread.interrupted() should be (true)
+          }
+
+          taskManager.executor should be (None)
+          whenReady(f.failed) { result =>
+            result.getCause shouldBe a [TaskAbortedException]
+          }
+        } finally {
+          release.set(true)
+        }
+      }
     }
   }
 
