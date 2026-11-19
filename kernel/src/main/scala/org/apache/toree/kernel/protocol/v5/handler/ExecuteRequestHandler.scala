@@ -166,9 +166,9 @@ class ExecuteRequestHandler(
       .withHeader(MessageType.Outgoing.ExecuteReply)
       .withMetadata(Metadata("status" -> replyError.status))
       .withContentString(replyError).build
-
+    val traceback = if (replyError.traceback.get.isEmpty) List(replyError.ename.get, replyError.evalue.get) else replyError.traceback.get
     val errorContent: ErrorContent =  ErrorContent(
-      replyError.ename.get, replyError.evalue.get, replyError.traceback.get)
+      replyError.ename.get, replyError.evalue.get, traceback)
 
     val errorMsg = skeletonBuilder
       .withHeader(MessageType.Outgoing.Error)
